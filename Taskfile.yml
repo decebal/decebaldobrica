@@ -1,0 +1,233 @@
+version: '3'
+
+vars:
+  PKG_MANAGER: bun
+  PROJECT_DIR: '{{.USER_WORKING_DIR}}'
+  DATA_DIR: ./data
+  DB_FILE: '{{.DATA_DIR}}/chat-history.db'
+
+tasks:
+  # === DEVELOPMENT ===
+  dev:
+    desc: Start Next.js development server with Turbopack
+    cmds:
+      - '{{.PKG_MANAGER}} run dev'
+
+  dev:watch:
+    desc: Start dev server and watch for file changes
+    cmds:
+      - '{{.PKG_MANAGER}} run dev --turbo'
+
+  # === BUILD & PRODUCTION ===
+  build:
+    desc: Build Next.js application for production
+    cmds:
+      - '{{.PKG_MANAGER}} run build'
+
+  start:
+    desc: Start production server
+    cmds:
+      - '{{.PKG_MANAGER}} run start'
+
+  build:analyze:
+    desc: Build and analyze bundle size
+    cmds:
+      - ANALYZE=true {{.PKG_MANAGER}} run build
+
+  # === CODE QUALITY ===
+  lint:
+    desc: Run Biome linter
+    cmds:
+      - '{{.PKG_MANAGER}} run lint'
+
+  lint:fix:
+    desc: Fix linting issues automatically
+    cmds:
+      - '{{.PKG_MANAGER}} run lint:fix'
+
+  format:
+    desc: Format code with Biome
+    cmds:
+      - '{{.PKG_MANAGER}} run format'
+
+  type-check:
+    desc: Run TypeScript type checking
+    cmds:
+      - '{{.PKG_MANAGER}} run type-check'
+
+  check:all:
+    desc: Run all checks (lint, format, type-check)
+    cmds:
+      - task: lint
+      - task: format
+      - task: type-check
+
+  # === DEPENDENCIES ===
+  install:
+    desc: Install dependencies with Bun
+    cmds:
+      - '{{.PKG_MANAGER}} install'
+
+  update:
+    desc: Update dependencies
+    cmds:
+      - '{{.PKG_MANAGER}} update'
+
+  clean:
+    desc: Clean build artifacts and dependencies
+    cmds:
+      - rm -rf .next
+      - rm -rf node_modules
+      - rm -rf out
+
+  # === AI SERVICES ===
+  ai:status:
+    desc: Check if Ollama is running
+    cmds:
+      - cmd: |
+          echo "Checking Ollama..."
+          curl -s http://localhost:11434/api/tags > /dev/null && echo "✅ Ollama: Running" || echo "❌ Ollama: Not running"
+
+  ai:models:
+    desc: List available Ollama models
+    cmds:
+      - ollama list
+
+  ai:pull:
+    desc: Pull a specific Ollama model (usage: task ai:pull MODEL=llama3.2)
+    cmds:
+      - ollama pull {{.MODEL}}
+
+  ai:start:
+    desc: Start Ollama service (macOS)
+    cmds:
+      - ollama serve
+
+  # === DATABASE ===
+  db:init:
+    desc: Initialize SQLite database
+    cmds:
+      - mkdir -p {{.DATA_DIR}}
+      - touch {{.DB_FILE}}
+
+  db:stats:
+    desc: Show database statistics
+    cmds:
+      - cmd: |
+          echo "📊 Database Statistics:"
+          echo ""
+          echo "Conversations:"
+          sqlite3 {{.DB_FILE}} "SELECT COUNT(*) FROM conversations;" 2>/dev/null || echo "0"
+          echo ""
+          echo "Messages:"
+          sqlite3 {{.DB_FILE}} "SELECT COUNT(*) FROM messages;" 2>/dev/null || echo "0"
+          echo ""
+          echo "Events:"
+          sqlite3 {{.DB_FILE}} "SELECT COUNT(*) FROM events;" 2>/dev/null || echo "0"
+          echo ""
+          echo "Payments:"
+          sqlite3 {{.DB_FILE}} "SELECT COUNT(*) FROM payments;" 2>/dev/null || echo "0"
+
+  db:backup:
+    desc: Backup database
+    cmds:
+      - cp {{.DB_FILE}} {{.DB_FILE}}.backup.{{now | date "2006-01-02-15-04-05"}}
+
+  db:reset:
+    desc: Reset database (WARNING: deletes all data)
+    prompt: This will delete all data. Are you sure?
+    cmds:
+      - rm -f {{.DB_FILE}}
+      - task: db:init
+
+  # === PAYMENTS ===
+  payment:stats:
+    desc: View payment statistics
+    cmds:
+      - cmd: |
+          echo "💰 Payment Statistics:"
+          echo ""
+          sqlite3 {{.DB_FILE}} "SELECT status, COUNT(*), SUM(amount) FROM payments GROUP BY status;" 2>/dev/null || echo "No payments yet"
+
+  payment:test:
+    desc: Test Solana Pay integration (devnet)
+    cmds:
+      - cmd: |
+          echo "Testing Solana Pay..."
+          echo "Network: ${NEXT_PUBLIC_SOLANA_NETWORK:-devnet}"
+          echo "Merchant: ${NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS:-not set}"
+
+  # === CALENDAR ===
+  calendar:test:
+    desc: Test Google Calendar connection
+    cmds:
+      - cmd: |
+          echo "Testing Google Calendar..."
+          echo "Client ID: ${GOOGLE_CLIENT_ID:+configured}"
+          echo "Client Secret: ${GOOGLE_CLIENT_SECRET:+configured}"
+          echo "Refresh Token: ${GOOGLE_REFRESH_TOKEN:+configured}"
+
+  # === ANALYTICS ===
+  analytics:events:
+    desc: Show recent analytics events
+    cmds:
+      - sqlite3 {{.DB_FILE}} "SELECT * FROM events ORDER BY timestamp DESC LIMIT 10;" 2>/dev/null || echo "No events yet"
+
+  analytics:summary:
+    desc: Show analytics summary
+    cmds:
+      - cmd: |
+          echo "📈 Analytics Summary:"
+          echo ""
+          echo "Events by type:"
+          sqlite3 {{.DB_FILE}} "SELECT event_type, COUNT(*) FROM events GROUP BY event_type;" 2>/dev/null || echo "No events yet"
+
+  # === DEPLOYMENT ===
+  deploy:vercel:
+    desc: Deploy to Vercel
+    cmds:
+      - vercel
+
+  deploy:vercel:prod:
+    desc: Deploy to Vercel production
+    cmds:
+      - vercel --prod
+
+  # === TESTING ===
+  test:
+    desc: Run tests (if configured)
+    cmds:
+      - echo "No tests configured yet. Add your test runner here."
+
+  # === UTILITIES ===
+  info:
+    desc: Show project information
+    cmds:
+      - cmd: |
+          echo "📦 Portfolio Next.js"
+          echo ""
+          echo "Node: $(node --version)"
+          echo "Bun: $(bun --version)"
+          echo "Next.js: $({{.PKG_MANAGER}} run next --version 2>/dev/null || echo 'not found')"
+          echo ""
+          echo "Project: {{.PROJECT_DIR}}"
+          echo "Database: {{.DB_FILE}}"
+
+  help:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # === QUICK ACTIONS ===
+  quick:setup:
+    desc: Quick setup - install deps and initialize DB
+    cmds:
+      - task: install
+      - task: db:init
+
+  quick:check:
+    desc: Quick health check - AI, DB, environment
+    cmds:
+      - task: ai:status
+      - task: db:stats
+      - cmd: echo "Environment: ${NODE_ENV:-development}"
