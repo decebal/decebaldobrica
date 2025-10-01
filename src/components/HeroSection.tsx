@@ -1,19 +1,20 @@
+'use client'
 
-import React, { useState } from 'react';
-import { ChevronDown, Play } from 'lucide-react';
-import { SpotlightCard } from './ui/spotlight-card';
-import { GlowButton } from './ui/glow-button';
-import { ShimmerButton } from './ui/shimmer-button';
+import { ChevronDown, Play } from 'lucide-react'
+import React, { useState } from 'react'
+import { GlowButton } from './ui/glow-button'
+import { ShimmerButton } from './ui/shimmer-button'
+import { SpotlightCard } from './ui/spotlight-card'
 
 const HeroSection = () => {
-  const [showVideo, setShowVideo] = useState(false);
-  
+  const [showVideo, setShowVideo] = useState(false)
+
   const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about');
+    const aboutSection = document.getElementById('about')
     if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
+      aboutSection.scrollIntoView({ behavior: 'smooth' })
     }
-  };
+  }
 
   return (
     <section className="min-h-screen pt-20 flex items-center relative">
@@ -22,15 +23,21 @@ const HeroSection = () => {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in text-white">
             Hello, I'm <span className="text-brand-teal">John Doe</span>
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p
+            className="text-xl md:text-2xl mb-8 text-gray-300 animate-fade-in"
+            style={{ animationDelay: '0.2s' }}
+          >
             A creative professional turning ideas into exceptional digital experiences.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <GlowButton onClick={scrollToAbout}>
-              Learn More About Me
-            </GlowButton>
-            <ShimmerButton 
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+          <div
+            className="flex flex-col sm:flex-row gap-4 animate-fade-in"
+            style={{ animationDelay: '0.4s' }}
+          >
+            <GlowButton onClick={scrollToAbout}>Learn More About Me</GlowButton>
+            <ShimmerButton
+              onClick={() =>
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+              }
             >
               Get in Touch
             </ShimmerButton>
@@ -40,12 +47,12 @@ const HeroSection = () => {
           <SpotlightCard className="max-w-sm md:max-w-md mx-auto">
             {!showVideo ? (
               <div className="relative aspect-video">
-                <img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&h=600" 
-                  alt="Video thumbnail" 
+                <img
+                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&h=600"
+                  alt="Video thumbnail"
                   className="w-full h-full object-cover rounded-lg"
                 />
-                <button 
+                <button
                   onClick={() => setShowVideo(true)}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors rounded-lg group"
                 >
@@ -56,9 +63,9 @@ const HeroSection = () => {
               </div>
             ) : (
               <div className="aspect-video">
-                <video 
-                  controls 
-                  autoPlay 
+                <video
+                  controls
+                  autoPlay
                   className="w-full h-full rounded-lg"
                   src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
                 >
@@ -70,15 +77,15 @@ const HeroSection = () => {
         </div>
       </div>
       <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <button 
-          onClick={scrollToAbout} 
+        <button
+          onClick={scrollToAbout}
           className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
         >
           <ChevronDown className="text-brand-teal" />
         </button>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default HeroSection;
+export default HeroSection

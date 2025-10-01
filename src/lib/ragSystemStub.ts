@@ -6,7 +6,7 @@ export async function initializeRAG() {
   return null
 }
 
-export async function queryKnowledgeBase(query: string, limit: number = 3) {
+export async function queryKnowledgeBase(query: string, limit = 3) {
   console.warn('RAG system stub - returning empty results')
   return []
 }

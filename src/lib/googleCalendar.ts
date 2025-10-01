@@ -1,29 +1,29 @@
-import { google } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
+import type { OAuth2Client } from 'google-auth-library'
+import { google } from 'googleapis'
 
 // Initialize OAuth2 client
-let oauth2Client: OAuth2Client | null = null;
+let oauth2Client: OAuth2Client | null = null
 
 export function initGoogleCalendar() {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    console.warn('⚠️  Google Calendar not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
-    return null;
+    console.warn('⚠️  Google Calendar not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET')
+    return null
   }
 
   oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3001/auth/google/callback'
-  );
+  )
 
   // If refresh token is available, set it
   if (process.env.GOOGLE_REFRESH_TOKEN) {
     oauth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-    });
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+    })
   }
 
-  return oauth2Client;
+  return oauth2Client
 }
 
 /**
@@ -31,19 +31,19 @@ export function initGoogleCalendar() {
  */
 export function getAuthUrl(): string {
   if (!oauth2Client) {
-    throw new Error('Google Calendar not initialized');
+    throw new Error('Google Calendar not initialized')
   }
 
   const scopes = [
     'https://www.googleapis.com/auth/calendar.events',
-    'https://www.googleapis.com/auth/calendar.readonly'
-  ];
+    'https://www.googleapis.com/auth/calendar.readonly',
+  ]
 
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
-    prompt: 'consent'
-  });
+    prompt: 'consent',
+  })
 }
 
 /**
@@ -51,46 +51,43 @@ export function getAuthUrl(): string {
  */
 export async function getTokensFromCode(code: string) {
   if (!oauth2Client) {
-    throw new Error('Google Calendar not initialized');
+    throw new Error('Google Calendar not initialized')
   }
 
-  const { tokens } = await oauth2Client.getToken(code);
-  oauth2Client.setCredentials(tokens);
+  const { tokens } = await oauth2Client.getToken(code)
+  oauth2Client.setCredentials(tokens)
 
-  console.log('✅ Google Calendar authorized');
-  console.log('📝 Save this refresh token to .env:');
-  console.log(`GOOGLE_REFRESH_TOKEN=${tokens.refresh_token}`);
+  console.log('✅ Google Calendar authorized')
+  console.log('📝 Save this refresh token to .env:')
+  console.log(`GOOGLE_REFRESH_TOKEN=${tokens.refresh_token}`)
 
-  return tokens;
+  return tokens
 }
 
 /**
  * Check availability for a specific time slot
  */
-export async function checkAvailability(
-  startTime: Date,
-  endTime: Date
-): Promise<boolean> {
+export async function checkAvailability(startTime: Date, endTime: Date): Promise<boolean> {
   if (!oauth2Client) {
-    return true; // If not configured, assume available
+    return true // If not configured, assume available
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     const response = await calendar.freebusy.query({
       requestBody: {
         timeMin: startTime.toISOString(),
         timeMax: endTime.toISOString(),
-        items: [{ id: 'primary' }]
-      }
-    });
+        items: [{ id: 'primary' }],
+      },
+    })
 
-    const busy = response.data.calendars?.primary?.busy || [];
-    return busy.length === 0; // Available if no busy slots
+    const busy = response.data.calendars?.primary?.busy || []
+    return busy.length === 0 // Available if no busy slots
   } catch (error) {
-    console.error('Error checking availability:', error);
-    return true; // Default to available on error
+    console.error('Error checking availability:', error)
+    return true // Default to available on error
   }
 }
 
@@ -102,29 +99,29 @@ export async function getFreeBusy(
   endDate: Date
 ): Promise<Array<{ start: Date; end: Date }>> {
   if (!oauth2Client) {
-    return [];
+    return []
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     const response = await calendar.freebusy.query({
       requestBody: {
         timeMin: startDate.toISOString(),
         timeMax: endDate.toISOString(),
-        items: [{ id: 'primary' }]
-      }
-    });
+        items: [{ id: 'primary' }],
+      },
+    })
 
-    const busy = response.data.calendars?.primary?.busy || [];
+    const busy = response.data.calendars?.primary?.busy || []
 
-    return busy.map(slot => ({
+    return busy.map((slot) => ({
       start: new Date(slot.start!),
-      end: new Date(slot.end!)
-    }));
+      end: new Date(slot.end!),
+    }))
   } catch (error) {
-    console.error('Error getting free/busy:', error);
-    return [];
+    console.error('Error getting free/busy:', error)
+    return []
   }
 }
 
@@ -132,20 +129,20 @@ export async function getFreeBusy(
  * Create a calendar event
  */
 export async function createCalendarEvent(event: {
-  summary: string;
-  description: string;
-  startTime: Date;
-  endTime: Date;
-  attendees?: string[];
-  location?: string;
+  summary: string
+  description: string
+  startTime: Date
+  endTime: Date
+  attendees?: string[]
+  location?: string
 }): Promise<string | null> {
   if (!oauth2Client) {
-    console.warn('Google Calendar not configured, skipping event creation');
-    return null;
+    console.warn('Google Calendar not configured, skipping event creation')
+    return null
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     const response = await calendar.events.insert({
       calendarId: 'primary',
@@ -155,36 +152,36 @@ export async function createCalendarEvent(event: {
         location: event.location,
         start: {
           dateTime: event.startTime.toISOString(),
-          timeZone: 'America/New_York' // Update to your timezone
+          timeZone: 'America/New_York', // Update to your timezone
         },
         end: {
           dateTime: event.endTime.toISOString(),
-          timeZone: 'America/New_York'
+          timeZone: 'America/New_York',
         },
-        attendees: event.attendees?.map(email => ({ email })),
+        attendees: event.attendees?.map((email) => ({ email })),
         reminders: {
           useDefault: false,
           overrides: [
             { method: 'email', minutes: 24 * 60 }, // 1 day before
-            { method: 'popup', minutes: 30 } // 30 minutes before
-          ]
+            { method: 'popup', minutes: 30 }, // 30 minutes before
+          ],
         },
         conferenceData: {
           createRequest: {
             requestId: `meeting-${Date.now()}`,
-            conferenceSolutionKey: { type: 'hangoutsMeet' }
-          }
-        }
+            conferenceSolutionKey: { type: 'hangoutsMeet' },
+          },
+        },
       },
       conferenceDataVersion: 1,
-      sendUpdates: 'all'
-    });
+      sendUpdates: 'all',
+    })
 
-    console.log('✅ Calendar event created:', response.data.htmlLink);
-    return response.data.id || null;
+    console.log('✅ Calendar event created:', response.data.htmlLink)
+    return response.data.id || null
   } catch (error) {
-    console.error('Error creating calendar event:', error);
-    return null;
+    console.error('Error creating calendar event:', error)
+    return null
   }
 }
 
@@ -194,18 +191,18 @@ export async function createCalendarEvent(event: {
 export async function updateCalendarEvent(
   eventId: string,
   updates: {
-    summary?: string;
-    description?: string;
-    startTime?: Date;
-    endTime?: Date;
+    summary?: string
+    description?: string
+    startTime?: Date
+    endTime?: Date
   }
 ): Promise<boolean> {
   if (!oauth2Client) {
-    return false;
+    return false
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     await calendar.events.patch({
       calendarId: 'primary',
@@ -213,23 +210,27 @@ export async function updateCalendarEvent(
       requestBody: {
         summary: updates.summary,
         description: updates.description,
-        start: updates.startTime ? {
-          dateTime: updates.startTime.toISOString(),
-          timeZone: 'America/New_York'
-        } : undefined,
-        end: updates.endTime ? {
-          dateTime: updates.endTime.toISOString(),
-          timeZone: 'America/New_York'
-        } : undefined
+        start: updates.startTime
+          ? {
+              dateTime: updates.startTime.toISOString(),
+              timeZone: 'America/New_York',
+            }
+          : undefined,
+        end: updates.endTime
+          ? {
+              dateTime: updates.endTime.toISOString(),
+              timeZone: 'America/New_York',
+            }
+          : undefined,
       },
-      sendUpdates: 'all'
-    });
+      sendUpdates: 'all',
+    })
 
-    console.log('✅ Calendar event updated');
-    return true;
+    console.log('✅ Calendar event updated')
+    return true
   } catch (error) {
-    console.error('Error updating calendar event:', error);
-    return false;
+    console.error('Error updating calendar event:', error)
+    return false
   }
 }
 
@@ -238,48 +239,48 @@ export async function updateCalendarEvent(
  */
 export async function deleteCalendarEvent(eventId: string): Promise<boolean> {
   if (!oauth2Client) {
-    return false;
+    return false
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     await calendar.events.delete({
       calendarId: 'primary',
       eventId,
-      sendUpdates: 'all'
-    });
+      sendUpdates: 'all',
+    })
 
-    console.log('✅ Calendar event deleted');
-    return true;
+    console.log('✅ Calendar event deleted')
+    return true
   } catch (error) {
-    console.error('Error deleting calendar event:', error);
-    return false;
+    console.error('Error deleting calendar event:', error)
+    return false
   }
 }
 
 /**
  * List upcoming events
  */
-export async function listUpcomingEvents(maxResults: number = 10) {
+export async function listUpcomingEvents(maxResults = 10) {
   if (!oauth2Client) {
-    return [];
+    return []
   }
 
   try {
-    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client })
 
     const response = await calendar.events.list({
       calendarId: 'primary',
       timeMin: new Date().toISOString(),
       maxResults,
       singleEvents: true,
-      orderBy: 'startTime'
-    });
+      orderBy: 'startTime',
+    })
 
-    return response.data.items || [];
+    return response.data.items || []
   } catch (error) {
-    console.error('Error listing events:', error);
-    return [];
+    console.error('Error listing events:', error)
+    return []
   }
 }

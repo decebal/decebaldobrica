@@ -3,9 +3,9 @@
 
 'use server'
 
-import { z } from 'zod'
-import { createConversation, addMessage, trackEvent } from '@/lib/chatHistory'
+import { addMessage, createConversation, trackEvent } from '@/lib/chatHistory'
 import { generateOllamaChatResponse } from '@/lib/ollamaChat'
+import { z } from 'zod'
 
 const chatSchema = z.object({
   messages: z.array(
@@ -31,7 +31,12 @@ export async function sendChatMessage(input: z.infer<typeof chatSchema>) {
         userAgent: 'next',
       })
       currentConversationId = conversation.id
-      trackEvent('conversation_started', { conversationId: currentConversationId }, userId, currentConversationId)
+      trackEvent(
+        'conversation_started',
+        { conversationId: currentConversationId },
+        userId,
+        currentConversationId
+      )
     }
 
     // Get last user message
@@ -51,11 +56,7 @@ export async function sendChatMessage(input: z.infer<typeof chatSchema>) {
     }
 
     // Generate AI response
-    const responseStream = await generateOllamaChatResponse(
-      messages,
-      currentConversationId,
-      userId
-    )
+    const responseStream = await generateOllamaChatResponse(messages, currentConversationId, userId)
 
     // Collect full response
     let fullResponse = ''

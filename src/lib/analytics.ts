@@ -1,25 +1,25 @@
-import posthog from 'posthog-js';
+import posthog from 'posthog-js'
 
-let analyticsInitialized = false;
+let analyticsInitialized = false
 
 /**
  * Initialize PostHog analytics (client-side only)
  */
 export function initAnalytics() {
   if (typeof window === 'undefined') {
-    return; // Server-side, skip
+    return // Server-side, skip
   }
 
   if (analyticsInitialized) {
-    return;
+    return
   }
 
-  const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
-  const apiHost = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com';
+  const apiKey = import.meta.env.VITE_POSTHOG_API_KEY
+  const apiHost = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com'
 
   if (!apiKey) {
-    console.warn('⚠️  PostHog not configured. Set VITE_POSTHOG_API_KEY to enable analytics');
-    return;
+    console.warn('⚠️  PostHog not configured. Set VITE_POSTHOG_API_KEY to enable analytics')
+    return
   }
 
   posthog.init(apiKey, {
@@ -29,27 +29,24 @@ export function initAnalytics() {
     capture_pageleave: true,
     loaded: (posthog) => {
       if (import.meta.env.DEV) {
-        posthog.debug(); // Enable debug mode in development
+        posthog.debug() // Enable debug mode in development
       }
-    }
-  });
+    },
+  })
 
-  analyticsInitialized = true;
-  console.log('✅ PostHog analytics initialized');
+  analyticsInitialized = true
+  console.log('✅ PostHog analytics initialized')
 }
 
 /**
  * Track a custom event
  */
-export function trackEvent(
-  eventName: string,
-  properties?: Record<string, any>
-) {
+export function trackEvent(eventName: string, properties?: Record<string, any>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return;
+    return
   }
 
-  posthog.capture(eventName, properties);
+  posthog.capture(eventName, properties)
 }
 
 /**
@@ -57,10 +54,10 @@ export function trackEvent(
  */
 export function identifyUser(userId: string, properties?: Record<string, any>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return;
+    return
   }
 
-  posthog.identify(userId, properties);
+  posthog.identify(userId, properties)
 }
 
 /**
@@ -68,12 +65,12 @@ export function identifyUser(userId: string, properties?: Record<string, any>) {
  */
 export function trackPageView(pageName?: string) {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return;
+    return
   }
 
   posthog.capture('$pageview', {
-    page: pageName || window.location.pathname
-  });
+    page: pageName || window.location.pathname,
+  })
 }
 
 /**
@@ -81,10 +78,10 @@ export function trackPageView(pageName?: string) {
  */
 export function resetAnalytics() {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return;
+    return
   }
 
-  posthog.reset();
+  posthog.reset()
 }
 
 /**
@@ -92,10 +89,10 @@ export function resetAnalytics() {
  */
 export function setUserProperties(properties: Record<string, any>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return;
+    return
   }
 
-  posthog.people.set(properties);
+  posthog.people.set(properties)
 }
 
 /**
@@ -103,10 +100,10 @@ export function setUserProperties(properties: Record<string, any>) {
  */
 export function isFeatureEnabled(featureName: string): boolean {
   if (!analyticsInitialized || typeof window === 'undefined') {
-    return false;
+    return false
   }
 
-  return posthog.isFeatureEnabled(featureName) || false;
+  return posthog.isFeatureEnabled(featureName) || false
 }
 
 // Chat-specific analytics helpers
@@ -118,8 +115,8 @@ export const chatAnalytics = {
     trackEvent('chat_conversation_started', {
       conversation_id: conversationId,
       user_id: userId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   },
 
   /**
@@ -130,8 +127,8 @@ export const chatAnalytics = {
       role,
       message_length: messageLength,
       conversation_id: conversationId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   },
 
   /**
@@ -142,8 +139,8 @@ export const chatAnalytics = {
       date,
       slots_found: slotsFound,
       conversation_id: conversationId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   },
 
   /**
@@ -162,8 +159,8 @@ export const chatAnalytics = {
       duration,
       has_email: hasEmail,
       conversation_id: conversationId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   },
 
   /**
@@ -174,8 +171,8 @@ export const chatAnalytics = {
       query_length: query.length,
       documents_found: documentsFound,
       conversation_id: conversationId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
   },
 
   /**
@@ -186,9 +183,9 @@ export const chatAnalytics = {
       error_type: errorType,
       error_message: errorMessage,
       conversation_id: conversationId,
-      timestamp: new Date().toISOString()
-    });
-  }
-};
+      timestamp: new Date().toISOString(),
+    })
+  },
+}
 
-export default posthog;
+export default posthog

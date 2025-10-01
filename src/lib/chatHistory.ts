@@ -1,25 +1,25 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import Database from 'better-sqlite3'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Database file location
-const DB_PATH = path.join(process.cwd(), 'data', 'chat-history.db');
+const DB_PATH = path.join(process.cwd(), 'data', 'chat-history.db')
 
 // Ensure data directory exists
-const dataDir = path.dirname(DB_PATH);
+const dataDir = path.dirname(DB_PATH)
 if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+  fs.mkdirSync(dataDir, { recursive: true })
 }
 
 // Initialize database
-const db = new Database(DB_PATH);
+const db = new Database(DB_PATH)
 
 // Enable WAL mode for better concurrency
-db.pragma('journal_mode = WAL');
+db.pragma('journal_mode = WAL')
 
 // Create tables
 db.exec(`
@@ -69,50 +69,50 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id, timestamp);
   CREATE INDEX IF NOT EXISTS idx_analytics_type ON analytics_events(event_type, timestamp DESC);
   CREATE INDEX IF NOT EXISTS idx_analytics_user ON analytics_events(user_id, timestamp DESC);
-`);
+`)
 
-console.log('✅ Chat history database initialized');
+console.log('✅ Chat history database initialized')
 
 export interface Conversation {
-  id: string;
-  userId?: string;
-  startedAt: number;
-  lastMessageAt: number;
-  messageCount: number;
-  metadata?: Record<string, any>;
+  id: string
+  userId?: string
+  startedAt: number
+  lastMessageAt: number
+  messageCount: number
+  metadata?: Record<string, any>
 }
 
 export interface Message {
-  id: string;
-  conversationId: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: number;
-  metadata?: Record<string, any>;
+  id: string
+  conversationId: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: number
+  metadata?: Record<string, any>
 }
 
 export interface AnalyticsEvent {
-  id: string;
-  eventType: string;
-  userId?: string;
-  conversationId?: string;
-  timestamp: number;
-  properties?: Record<string, any>;
+  id: string
+  eventType: string
+  userId?: string
+  conversationId?: string
+  timestamp: number
+  properties?: Record<string, any>
 }
 
 /**
  * Create a new conversation
  */
 export function createConversation(userId?: string, metadata?: Record<string, any>): Conversation {
-  const id = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const timestamp = Date.now();
+  const id = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const timestamp = Date.now()
 
   const stmt = db.prepare(`
     INSERT INTO conversations (id, user_id, started_at, last_message_at, message_count, metadata)
     VALUES (?, ?, ?, ?, 0, ?)
-  `);
+  `)
 
-  stmt.run(id, userId || null, timestamp, timestamp, metadata ? JSON.stringify(metadata) : null);
+  stmt.run(id, userId || null, timestamp, timestamp, metadata ? JSON.stringify(metadata) : null)
 
   return {
     id,
@@ -120,8 +120,8 @@ export function createConversation(userId?: string, metadata?: Record<string, an
     startedAt: timestamp,
     lastMessageAt: timestamp,
     messageCount: 0,
-    metadata
-  };
+    metadata,
+  }
 }
 
 /**
@@ -133,14 +133,14 @@ export function addMessage(
   content: string,
   metadata?: Record<string, any>
 ): Message {
-  const id = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const timestamp = Date.now();
+  const id = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const timestamp = Date.now()
 
   // Insert message
   const msgStmt = db.prepare(`
     INSERT INTO messages (id, conversation_id, role, content, timestamp, metadata)
     VALUES (?, ?, ?, ?, ?, ?)
-  `);
+  `)
 
   msgStmt.run(
     id,
@@ -149,16 +149,16 @@ export function addMessage(
     content,
     timestamp,
     metadata ? JSON.stringify(metadata) : null
-  );
+  )
 
   // Update conversation
   const convStmt = db.prepare(`
     UPDATE conversations
     SET last_message_at = ?, message_count = message_count + 1
     WHERE id = ?
-  `);
+  `)
 
-  convStmt.run(timestamp, conversationId);
+  convStmt.run(timestamp, conversationId)
 
   return {
     id,
@@ -166,8 +166,8 @@ export function addMessage(
     role,
     content,
     timestamp,
-    metadata
-  };
+    metadata,
+  }
 }
 
 /**
@@ -176,11 +176,11 @@ export function addMessage(
 export function getConversation(conversationId: string): Conversation | null {
   const stmt = db.prepare(`
     SELECT * FROM conversations WHERE id = ?
-  `);
+  `)
 
-  const row = stmt.get(conversationId) as any;
+  const row = stmt.get(conversationId) as any
 
-  if (!row) return null;
+  if (!row) return null
 
   return {
     id: row.id,
@@ -188,62 +188,62 @@ export function getConversation(conversationId: string): Conversation | null {
     startedAt: row.started_at,
     lastMessageAt: row.last_message_at,
     messageCount: row.message_count,
-    metadata: row.metadata ? JSON.parse(row.metadata) : undefined
-  };
+    metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
+  }
 }
 
 /**
  * Get messages for a conversation
  */
-export function getMessages(conversationId: string, limit: number = 100): Message[] {
+export function getMessages(conversationId: string, limit = 100): Message[] {
   const stmt = db.prepare(`
     SELECT * FROM messages
     WHERE conversation_id = ?
     ORDER BY timestamp ASC
     LIMIT ?
-  `);
+  `)
 
-  const rows = stmt.all(conversationId, limit) as any[];
+  const rows = stmt.all(conversationId, limit) as any[]
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     id: row.id,
     conversationId: row.conversation_id,
     role: row.role,
     content: row.content,
     timestamp: row.timestamp,
-    metadata: row.metadata ? JSON.parse(row.metadata) : undefined
-  }));
+    metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
+  }))
 }
 
 /**
  * Get recent conversations
  */
-export function getRecentConversations(userId?: string, limit: number = 10): Conversation[] {
+export function getRecentConversations(userId?: string, limit = 10): Conversation[] {
   let query = `
     SELECT * FROM conversations
-  `;
+  `
 
-  const params: any[] = [];
+  const params: any[] = []
 
   if (userId) {
-    query += ` WHERE user_id = ?`;
-    params.push(userId);
+    query += ` WHERE user_id = ?`
+    params.push(userId)
   }
 
-  query += ` ORDER BY last_message_at DESC LIMIT ?`;
-  params.push(limit);
+  query += ` ORDER BY last_message_at DESC LIMIT ?`
+  params.push(limit)
 
-  const stmt = db.prepare(query);
-  const rows = stmt.all(...params) as any[];
+  const stmt = db.prepare(query)
+  const rows = stmt.all(...params) as any[]
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     id: row.id,
     userId: row.user_id,
     startedAt: row.started_at,
     lastMessageAt: row.last_message_at,
     messageCount: row.message_count,
-    metadata: row.metadata ? JSON.parse(row.metadata) : undefined
-  }));
+    metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
+  }))
 }
 
 /**
@@ -252,10 +252,10 @@ export function getRecentConversations(userId?: string, limit: number = 10): Con
 export function deleteConversation(conversationId: string): boolean {
   const stmt = db.prepare(`
     DELETE FROM conversations WHERE id = ?
-  `);
+  `)
 
-  const result = stmt.run(conversationId);
-  return result.changes > 0;
+  const result = stmt.run(conversationId)
+  return result.changes > 0
 }
 
 /**
@@ -267,13 +267,13 @@ export function trackEvent(
   userId?: string,
   conversationId?: string
 ): void {
-  const id = `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const timestamp = Date.now();
+  const id = `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const timestamp = Date.now()
 
   const stmt = db.prepare(`
     INSERT INTO analytics_events (id, event_type, user_id, conversation_id, timestamp, properties)
     VALUES (?, ?, ?, ?, ?, ?)
-  `);
+  `)
 
   stmt.run(
     id,
@@ -282,69 +282,78 @@ export function trackEvent(
     conversationId || null,
     timestamp,
     properties ? JSON.stringify(properties) : null
-  );
+  )
 }
 
 /**
  * Get analytics events
  */
-export function getAnalyticsEvents(
-  eventType?: string,
-  limit: number = 100
-): AnalyticsEvent[] {
-  let query = `SELECT * FROM analytics_events`;
-  const params: any[] = [];
+export function getAnalyticsEvents(eventType?: string, limit = 100): AnalyticsEvent[] {
+  let query = `SELECT * FROM analytics_events`
+  const params: any[] = []
 
   if (eventType) {
-    query += ` WHERE event_type = ?`;
-    params.push(eventType);
+    query += ` WHERE event_type = ?`
+    params.push(eventType)
   }
 
-  query += ` ORDER BY timestamp DESC LIMIT ?`;
-  params.push(limit);
+  query += ` ORDER BY timestamp DESC LIMIT ?`
+  params.push(limit)
 
-  const stmt = db.prepare(query);
-  const rows = stmt.all(...params) as any[];
+  const stmt = db.prepare(query)
+  const rows = stmt.all(...params) as any[]
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     id: row.id,
     eventType: row.event_type,
     userId: row.user_id,
     conversationId: row.conversation_id,
     timestamp: row.timestamp,
-    properties: row.properties ? JSON.parse(row.properties) : undefined
-  }));
+    properties: row.properties ? JSON.parse(row.properties) : undefined,
+  }))
 }
 
 /**
  * Get analytics summary
  */
 export function getAnalyticsSummary() {
-  const totalConversations = db.prepare('SELECT COUNT(*) as count FROM conversations').get() as { count: number };
-  const totalMessages = db.prepare('SELECT COUNT(*) as count FROM messages').get() as { count: number };
-  const totalEvents = db.prepare('SELECT COUNT(*) as count FROM analytics_events').get() as { count: number };
+  const totalConversations = db.prepare('SELECT COUNT(*) as count FROM conversations').get() as {
+    count: number
+  }
+  const totalMessages = db.prepare('SELECT COUNT(*) as count FROM messages').get() as {
+    count: number
+  }
+  const totalEvents = db.prepare('SELECT COUNT(*) as count FROM analytics_events').get() as {
+    count: number
+  }
 
-  const messagesByRole = db.prepare(`
+  const messagesByRole = db
+    .prepare(`
     SELECT role, COUNT(*) as count
     FROM messages
     GROUP BY role
-  `).all() as Array<{ role: string; count: number }>;
+  `)
+    .all() as Array<{ role: string; count: number }>
 
-  const eventsByType = db.prepare(`
+  const eventsByType = db
+    .prepare(`
     SELECT event_type, COUNT(*) as count
     FROM analytics_events
     GROUP BY event_type
     ORDER BY count DESC
     LIMIT 10
-  `).all() as Array<{ event_type: string; count: number }>;
+  `)
+    .all() as Array<{ event_type: string; count: number }>
 
-  const recentActivity = db.prepare(`
+  const recentActivity = db
+    .prepare(`
     SELECT DATE(timestamp / 1000, 'unixepoch') as date, COUNT(*) as count
     FROM messages
     WHERE timestamp > ?
     GROUP BY date
     ORDER BY date DESC
-  `).all(Date.now() - 30 * 24 * 60 * 60 * 1000) as Array<{ date: string; count: number }>;
+  `)
+    .all(Date.now() - 30 * 24 * 60 * 60 * 1000) as Array<{ date: string; count: number }>
 
   return {
     totalConversations: totalConversations.count,
@@ -352,8 +361,8 @@ export function getAnalyticsSummary() {
     totalEvents: totalEvents.count,
     messagesByRole,
     eventsByType,
-    recentActivity
-  };
+    recentActivity,
+  }
 }
 
 /**
@@ -366,17 +375,17 @@ export function savePayment(
   conversationId?: string,
   userId?: string
 ): string {
-  const id = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const timestamp = Date.now();
+  const id = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const timestamp = Date.now()
 
   const stmt = db.prepare(`
     INSERT INTO payments (id, meeting_id, conversation_id, amount, reference, status, timestamp, user_id)
     VALUES (?, ?, ?, ?, ?, 'pending', ?, ?)
-  `);
+  `)
 
-  stmt.run(id, meetingId, conversationId || null, amount, reference, timestamp, userId || null);
+  stmt.run(id, meetingId, conversationId || null, amount, reference, timestamp, userId || null)
 
-  return id;
+  return id
 }
 
 /**
@@ -391,10 +400,10 @@ export function updatePaymentStatus(
     UPDATE payments
     SET status = ?, signature = ?
     WHERE id = ?
-  `);
+  `)
 
-  const result = stmt.run(status, signature || null, paymentId);
-  return result.changes > 0;
+  const result = stmt.run(status, signature || null, paymentId)
+  return result.changes > 0
 }
 
 /**
@@ -403,11 +412,11 @@ export function updatePaymentStatus(
 export function getPayment(paymentId: string) {
   const stmt = db.prepare(`
     SELECT * FROM payments WHERE id = ?
-  `);
+  `)
 
-  const row = stmt.get(paymentId) as any;
+  const row = stmt.get(paymentId) as any
 
-  if (!row) return null;
+  if (!row) return null
 
   return {
     id: row.id,
@@ -418,23 +427,23 @@ export function getPayment(paymentId: string) {
     status: row.status,
     signature: row.signature,
     timestamp: row.timestamp,
-    userId: row.user_id
-  };
+    userId: row.user_id,
+  }
 }
 
 /**
  * Get all payments
  */
-export function getAllPayments(limit: number = 100) {
+export function getAllPayments(limit = 100) {
   const stmt = db.prepare(`
     SELECT * FROM payments
     ORDER BY timestamp DESC
     LIMIT ?
-  `);
+  `)
 
-  const rows = stmt.all(limit) as any[];
+  const rows = stmt.all(limit) as any[]
 
-  return rows.map(row => ({
+  return rows.map((row) => ({
     id: row.id,
     meetingId: row.meeting_id,
     conversationId: row.conversation_id,
@@ -443,33 +452,39 @@ export function getAllPayments(limit: number = 100) {
     status: row.status,
     signature: row.signature,
     timestamp: row.timestamp,
-    userId: row.user_id
-  }));
+    userId: row.user_id,
+  }))
 }
 
 /**
  * Get payment statistics
  */
 export function getPaymentStatistics() {
-  const total = db.prepare('SELECT COUNT(*) as count FROM payments').get() as { count: number };
-  const confirmed = db.prepare('SELECT COUNT(*) as count FROM payments WHERE status = "confirmed"').get() as { count: number };
-  const pending = db.prepare('SELECT COUNT(*) as count FROM payments WHERE status = "pending"').get() as { count: number };
+  const total = db.prepare('SELECT COUNT(*) as count FROM payments').get() as { count: number }
+  const confirmed = db
+    .prepare('SELECT COUNT(*) as count FROM payments WHERE status = "confirmed"')
+    .get() as { count: number }
+  const pending = db
+    .prepare('SELECT COUNT(*) as count FROM payments WHERE status = "pending"')
+    .get() as { count: number }
 
-  const revenue = db.prepare('SELECT SUM(amount) as total FROM payments WHERE status = "confirmed"').get() as { total: number | null };
+  const revenue = db
+    .prepare('SELECT SUM(amount) as total FROM payments WHERE status = "confirmed"')
+    .get() as { total: number | null }
 
   return {
     totalPayments: total.count,
     confirmedPayments: confirmed.count,
     pendingPayments: pending.count,
-    totalRevenue: revenue.total || 0
-  };
+    totalRevenue: revenue.total || 0,
+  }
 }
 
 /**
  * Close database connection (for cleanup)
  */
 export function closeDatabase() {
-  db.close();
+  db.close()
 }
 
-export default db;
+export default db

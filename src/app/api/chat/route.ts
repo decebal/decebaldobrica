@@ -1,10 +1,10 @@
 // src/app/api/chat/route.ts
 // API Route for streaming AI responses using Server-Sent Events
 
-import { NextRequest } from 'next/server'
-import { z } from 'zod'
+import { addMessage, createConversation, trackEvent } from '@/lib/chatHistory'
 import { generateOllamaChatResponse } from '@/lib/ollamaChat'
-import { createConversation, addMessage, trackEvent } from '@/lib/chatHistory'
+import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 
 const chatRequestSchema = z.object({
   messages: z.array(
@@ -159,26 +159,20 @@ export async function GET(req: NextRequest) {
     const conversationId = searchParams.get('conversationId')
 
     if (!conversationId) {
-      return new Response(
-        JSON.stringify({ error: 'conversationId is required' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      )
+      return new Response(JSON.stringify({ error: 'conversationId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const { getConversation, getMessages } = await import('@/lib/chatHistory')
 
     const conversation = getConversation(conversationId)
     if (!conversation) {
-      return new Response(
-        JSON.stringify({ error: 'Conversation not found' }),
-        {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      )
+      return new Response(JSON.stringify({ error: 'Conversation not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const messages = getMessages(conversationId)

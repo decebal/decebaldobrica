@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(task:*)",
+      "Bash(bun run lint:*)",
+      "Bash(timeout:*)",
+      "Bash(bun add:*)",
+      "Bash(bun run:*)",
+      "Bash(tee:*)",
+      "Bash(pkill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

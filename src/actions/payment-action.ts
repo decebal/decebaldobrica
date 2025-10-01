@@ -3,18 +3,24 @@
 
 'use server'
 
-import { z } from 'zod'
-import {
-  createPaymentTransaction,
-  updatePaymentStatus,
-  getPaymentTransaction,
-  getMeetingConfig,
-  type PaymentTransaction,
-} from '@/lib/meetingPayments'
 import { savePayment, updatePaymentStatus as updateDbPaymentStatus } from '@/lib/chatHistory'
+import {
+  type PaymentTransaction,
+  createPaymentTransaction,
+  getMeetingConfig,
+  getPaymentTransaction,
+  updatePaymentStatus,
+} from '@/lib/meetingPayments'
+import {
+  FindReferenceError,
+  createQR,
+  encodeURL,
+  findReference,
+  validateTransfer,
+} from '@solana/pay'
 import { Connection, PublicKey } from '@solana/web3.js'
-import { encodeURL, createQR, findReference, validateTransfer, FindReferenceError } from '@solana/pay'
 import { Keypair } from '@solana/web3.js'
+import { z } from 'zod'
 
 const paymentInitSchema = z.object({
   meetingType: z.string(),
@@ -65,12 +71,7 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
     const reference = Keypair.generate().publicKey
 
     // Create payment transaction in memory
-    const paymentTransaction = createPaymentTransaction(
-      meetingId,
-      config.price,
-      reference,
-      userId
-    )
+    const paymentTransaction = createPaymentTransaction(meetingId, config.price, reference, userId)
 
     // Save to database
     const dbPaymentId = savePayment(

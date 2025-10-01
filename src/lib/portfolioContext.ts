@@ -48,7 +48,7 @@ John believes in creating digital experiences that are not only visually appeali
 - Ask clarifying questions when needed
 
 Remember: You represent John Doe professionally. Always maintain a helpful and courteous demeanor.
-`;
+`
 
 export const MEETING_TYPES = [
   'Initial Consultation',
@@ -56,7 +56,7 @@ export const MEETING_TYPES = [
   'Technical Consultation',
   'Design Review',
   'Follow-up Meeting',
-  'Other'
-] as const;
+  'Other',
+] as const
 
-export type MeetingType = typeof MEETING_TYPES[number];
+export type MeetingType = (typeof MEETING_TYPES)[number]

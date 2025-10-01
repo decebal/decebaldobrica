@@ -1,63 +1,79 @@
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+'use client'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { useEffect, useState } from 'react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 interface AnalyticsSummary {
-  totalConversations: number;
-  totalMessages: number;
-  totalEvents: number;
-  messagesByRole: Array<{ role: string; count: number }>;
-  eventsByType: Array<{ event_type: string; count: number }>;
-  recentActivity: Array<{ date: string; count: number }>;
+  totalConversations: number
+  totalMessages: number
+  totalEvents: number
+  messagesByRole: Array<{ role: string; count: number }>
+  eventsByType: Array<{ event_type: string; count: number }>
+  recentActivity: Array<{ date: string; count: number }>
 }
 
 interface AnalyticsEvent {
-  id: string;
-  eventType: string;
-  userId?: string;
-  conversationId?: string;
-  timestamp: number;
-  properties?: Record<string, any>;
+  id: string
+  eventType: string
+  userId?: string
+  conversationId?: string
+  timestamp: number
+  properties?: Record<string, any>
 }
 
-const COLORS = ['#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+const COLORS = ['#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
 
 export default function AnalyticsDashboard() {
-  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
-  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null)
+  const [events, setEvents] = useState<AnalyticsEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    fetchAnalytics()
+  }, [])
 
   const fetchAnalytics = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       // Fetch summary
-      const summaryRes = await fetch(`${API_URL}/api/analytics/summary`);
-      if (!summaryRes.ok) throw new Error('Failed to fetch analytics summary');
-      const summaryData = await summaryRes.json();
-      setSummary(summaryData);
+      const summaryRes = await fetch(`${API_URL}/api/analytics/summary`)
+      if (!summaryRes.ok) throw new Error('Failed to fetch analytics summary')
+      const summaryData = await summaryRes.json()
+      setSummary(summaryData)
 
       // Fetch recent events
-      const eventsRes = await fetch(`${API_URL}/api/analytics/events?limit=50`);
-      if (!eventsRes.ok) throw new Error('Failed to fetch analytics events');
-      const eventsData = await eventsRes.json();
-      setEvents(eventsData.events || []);
+      const eventsRes = await fetch(`${API_URL}/api/analytics/events?limit=50`)
+      if (!eventsRes.ok) throw new Error('Failed to fetch analytics events')
+      const eventsData = await eventsRes.json()
+      setEvents(eventsData.events || [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      console.error('Error fetching analytics:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error')
+      console.error('Error fetching analytics:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -67,7 +83,7 @@ export default function AnalyticsDashboard() {
           <p className="mt-4 text-muted-foreground">Loading analytics...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -80,11 +96,11 @@ export default function AnalyticsDashboard() {
           </CardHeader>
         </Card>
       </div>
-    );
+    )
   }
 
   if (!summary) {
-    return null;
+    return null
   }
 
   return (
@@ -116,9 +132,7 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summary.totalConversations}</div>
-            <p className="text-xs text-muted-foreground">
-              Unique chat sessions
-            </p>
+            <p className="text-xs text-muted-foreground">Unique chat sessions</p>
           </CardContent>
         </Card>
 
@@ -140,9 +154,7 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summary.totalMessages}</div>
-            <p className="text-xs text-muted-foreground">
-              Messages exchanged
-            </p>
+            <p className="text-xs text-muted-foreground">Messages exchanged</p>
           </CardContent>
         </Card>
 
@@ -164,9 +176,7 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{summary.totalEvents}</div>
-            <p className="text-xs text-muted-foreground">
-              Tracked events
-            </p>
+            <p className="text-xs text-muted-foreground">Tracked events</p>
           </CardContent>
         </Card>
       </div>
@@ -184,9 +194,7 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Activity (Last 30 Days)</CardTitle>
-              <CardDescription>
-                Daily message count over the past month
-              </CardDescription>
+              <CardDescription>Daily message count over the past month</CardDescription>
             </CardHeader>
             <CardContent className="pt-2">
               <ResponsiveContainer width="100%" height={350}>
@@ -213,9 +221,7 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Messages by Role</CardTitle>
-              <CardDescription>
-                Distribution of messages by sender
-              </CardDescription>
+              <CardDescription>Distribution of messages by sender</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -246,9 +252,7 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Top Events</CardTitle>
-              <CardDescription>
-                Most common event types
-              </CardDescription>
+              <CardDescription>Most common event types</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -269,17 +273,12 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Events</CardTitle>
-              <CardDescription>
-                Last 50 tracked events
-              </CardDescription>
+              <CardDescription>Last 50 tracked events</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {events.map((event) => (
-                  <div
-                    key={event.id}
-                    className="flex items-center justify-between border-b pb-2"
-                  >
+                  <div key={event.id} className="flex items-center justify-between border-b pb-2">
                     <div>
                       <p className="font-medium">{event.eventType}</p>
                       <p className="text-xs text-muted-foreground">
@@ -309,5 +308,5 @@ export default function AnalyticsDashboard() {
         </button>
       </div>
     </div>
-  );
+  )
 }

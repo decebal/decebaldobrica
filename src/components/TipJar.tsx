@@ -1,71 +1,79 @@
+'use client'
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Coffee, DollarSign, Heart } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { GlowButton } from "@/components/ui/glow-button";
-import SolanaPaymentModal from "@/components/SolanaPaymentModal";
-import PaymentMethodSelector from "@/components/PaymentMethodSelector";
-import { useToast } from "@/hooks/use-toast";
+import PaymentMethodSelector from '@/components/PaymentMethodSelector'
+import SolanaPaymentModal from '@/components/SolanaPaymentModal'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { GlowButton } from '@/components/ui/glow-button'
+import { Input } from '@/components/ui/input'
+import { useToast } from '@/hooks/use-toast'
+import { Coffee, DollarSign, Heart } from 'lucide-react'
+import type React from 'react'
+import { useState } from 'react'
 
 interface TipJarProps {
-  title: string;
-  author?: string;
+  title: string
+  author?: string
 }
 
-const TipJar: React.FC<TipJarProps> = ({ title, author = "the author" }) => {
-  const { toast } = useToast();
-  const [tipAmount, setTipAmount] = useState<number>(1);
-  const [showTipDialog, setShowTipDialog] = useState<boolean>(false);
-  const [paymentMethod, setPaymentMethod] = useState<string>("solana");
-  const [showSolanaModal, setShowSolanaModal] = useState<boolean>(false);
+const TipJar: React.FC<TipJarProps> = ({ title, author = 'the author' }) => {
+  const { toast } = useToast()
+  const [tipAmount, setTipAmount] = useState<number>(1)
+  const [showTipDialog, setShowTipDialog] = useState<boolean>(false)
+  const [paymentMethod, setPaymentMethod] = useState<string>('solana')
+  const [showSolanaModal, setShowSolanaModal] = useState<boolean>(false)
 
-  const predefinedAmounts = [1, 3, 5, 10];
+  const predefinedAmounts = [1, 3, 5, 10]
 
   const handleTipAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    setTipAmount(isNaN(value) ? 0 : value);
-  };
+    const value = Number.parseFloat(e.target.value)
+    setTipAmount(isNaN(value) ? 0 : value)
+  }
 
   const handlePaymentMethodChange = (method: string) => {
-    setPaymentMethod(method);
-  };
+    setPaymentMethod(method)
+  }
 
   const handleProceedToPayment = () => {
     if (tipAmount <= 0) {
       toast({
-        title: "Invalid amount",
-        description: "Please enter a valid tip amount",
-        variant: "destructive"
-      });
-      return;
+        title: 'Invalid amount',
+        description: 'Please enter a valid tip amount',
+        variant: 'destructive',
+      })
+      return
     }
 
-    if (paymentMethod === "solana") {
-      setShowTipDialog(false);
-      setShowSolanaModal(true);
-    } else if (paymentMethod === "stripe") {
+    if (paymentMethod === 'solana') {
+      setShowTipDialog(false)
+      setShowSolanaModal(true)
+    } else if (paymentMethod === 'stripe') {
       // For demonstration purposes, just show a toast
       toast({
-        title: "Stripe payment selected",
-        description: "Stripe integration would be implemented here",
-      });
-    } else if (paymentMethod === "paypal") {
+        title: 'Stripe payment selected',
+        description: 'Stripe integration would be implemented here',
+      })
+    } else if (paymentMethod === 'paypal') {
       // For demonstration purposes, just show a toast
       toast({
-        title: "PayPal payment selected",
-        description: "PayPal integration would be implemented here",
-      });
+        title: 'PayPal payment selected',
+        description: 'PayPal integration would be implemented here',
+      })
     }
-  };
+  }
 
   const handleSolanaPaymentSuccess = () => {
     toast({
-      title: "Thank you for your tip!",
+      title: 'Thank you for your tip!',
       description: `Your ${tipAmount} SOL tip is greatly appreciated.`,
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -75,9 +83,9 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = "the author" }) => {
         <p className="text-gray-300 mb-4">
           If you found this content helpful, consider supporting {author} with a tip.
         </p>
-        <Button 
+        <Button
           onClick={() => setShowTipDialog(true)}
-          variant="outline" 
+          variant="outline"
           className="group border-brand-teal/30 hover:border-brand-teal/60 hover:bg-brand-teal/10 transition-all"
         >
           <Coffee className="mr-2 h-4 w-4 text-brand-teal group-hover:text-brand-teal" />
@@ -103,8 +111,8 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = "the author" }) => {
                   <Button
                     key={amount}
                     type="button"
-                    variant={tipAmount === amount ? "default" : "outline"}
-                    className={tipAmount === amount ? "bg-brand-teal hover:bg-brand-teal/90" : ""}
+                    variant={tipAmount === amount ? 'default' : 'outline'}
+                    className={tipAmount === amount ? 'bg-brand-teal hover:bg-brand-teal/90' : ''}
                     onClick={() => setTipAmount(amount)}
                   >
                     ${amount}
@@ -126,17 +134,15 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = "the author" }) => {
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">Payment Method</label>
-              <PaymentMethodSelector 
-                selectedMethod={paymentMethod} 
-                onSelectMethod={handlePaymentMethodChange} 
+              <PaymentMethodSelector
+                selectedMethod={paymentMethod}
+                onSelectMethod={handlePaymentMethodChange}
               />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <GlowButton onClick={handleProceedToPayment}>
-              Proceed to payment
-            </GlowButton>
+            <GlowButton onClick={handleProceedToPayment}>Proceed to payment</GlowButton>
           </div>
         </DialogContent>
       </Dialog>
@@ -150,7 +156,7 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = "the author" }) => {
         onPaymentSuccess={handleSolanaPaymentSuccess}
       />
     </>
-  );
-};
+  )
+}
 
-export default TipJar;
+export default TipJar

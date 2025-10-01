@@ -1,27 +1,27 @@
-import { Resend } from 'resend';
-import { format, addMinutes } from 'date-fns';
+import { addMinutes, format } from 'date-fns'
+import { Resend } from 'resend'
 
-let resend: Resend | null = null;
+let resend: Resend | null = null
 
 export function initResend() {
   if (!process.env.RESEND_API_KEY) {
-    console.warn('⚠️  Resend not configured. Set RESEND_API_KEY to enable email notifications');
-    return null;
+    console.warn('⚠️  Resend not configured. Set RESEND_API_KEY to enable email notifications')
+    return null
   }
 
-  resend = new Resend(process.env.RESEND_API_KEY);
-  console.log('✅ Resend email service initialized');
-  return resend;
+  resend = new Resend(process.env.RESEND_API_KEY)
+  console.log('✅ Resend email service initialized')
+  return resend
 }
 
 export interface Meeting {
-  id: string;
-  type: string;
-  date: Date;
-  duration: number;
-  contactName?: string;
-  contactEmail?: string;
-  notes?: string;
+  id: string
+  type: string
+  date: Date
+  duration: number
+  contactName?: string
+  contactEmail?: string
+  notes?: string
 }
 
 /**
@@ -29,14 +29,14 @@ export interface Meeting {
  */
 export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean> {
   if (!resend || !meeting.contactEmail) {
-    console.log('Email not sent: Resend not configured or no contact email');
-    return false;
+    console.log('Email not sent: Resend not configured or no contact email')
+    return false
   }
 
-  const meetingEndTime = addMinutes(meeting.date, meeting.duration);
+  const meetingEndTime = addMinutes(meeting.date, meeting.duration)
 
-  const htmlContent = generateMeetingConfirmationHTML(meeting, meetingEndTime);
-  const textContent = generateMeetingConfirmationText(meeting, meetingEndTime);
+  const htmlContent = generateMeetingConfirmationHTML(meeting, meetingEndTime)
+  const textContent = generateMeetingConfirmationText(meeting, meetingEndTime)
 
   try {
     await resend.emails.send({
@@ -45,14 +45,14 @@ export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean
       subject: `Meeting Confirmed: ${meeting.type}`,
       html: htmlContent,
       text: textContent,
-      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM
-    });
+      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
+    })
 
-    console.log(`✅ Meeting confirmation sent to ${meeting.contactEmail}`);
-    return true;
+    console.log(`✅ Meeting confirmation sent to ${meeting.contactEmail}`)
+    return true
   } catch (error) {
-    console.error('Error sending email:', error);
-    return false;
+    console.error('Error sending email:', error)
+    return false
   }
 }
 
@@ -61,13 +61,13 @@ export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean
  */
 export async function sendMeetingReminder(meeting: Meeting): Promise<boolean> {
   if (!resend || !meeting.contactEmail) {
-    return false;
+    return false
   }
 
-  const meetingEndTime = addMinutes(meeting.date, meeting.duration);
+  const meetingEndTime = addMinutes(meeting.date, meeting.duration)
 
-  const htmlContent = generateMeetingReminderHTML(meeting, meetingEndTime);
-  const textContent = generateMeetingReminderText(meeting, meetingEndTime);
+  const htmlContent = generateMeetingReminderHTML(meeting, meetingEndTime)
+  const textContent = generateMeetingReminderText(meeting, meetingEndTime)
 
   try {
     await resend.emails.send({
@@ -75,14 +75,14 @@ export async function sendMeetingReminder(meeting: Meeting): Promise<boolean> {
       to: meeting.contactEmail,
       subject: `Reminder: ${meeting.type} in 24 hours`,
       html: htmlContent,
-      text: textContent
-    });
+      text: textContent,
+    })
 
-    console.log(`✅ Meeting reminder sent to ${meeting.contactEmail}`);
-    return true;
+    console.log(`✅ Meeting reminder sent to ${meeting.contactEmail}`)
+    return true
   } catch (error) {
-    console.error('Error sending reminder:', error);
-    return false;
+    console.error('Error sending reminder:', error)
+    return false
   }
 }
 
@@ -91,11 +91,11 @@ export async function sendMeetingReminder(meeting: Meeting): Promise<boolean> {
  */
 export async function sendMeetingCancellation(meeting: Meeting, reason?: string): Promise<boolean> {
   if (!resend || !meeting.contactEmail) {
-    return false;
+    return false
   }
 
-  const htmlContent = generateCancellationHTML(meeting, reason);
-  const textContent = generateCancellationText(meeting, reason);
+  const htmlContent = generateCancellationHTML(meeting, reason)
+  const textContent = generateCancellationText(meeting, reason)
 
   try {
     await resend.emails.send({
@@ -103,14 +103,14 @@ export async function sendMeetingCancellation(meeting: Meeting, reason?: string)
       to: meeting.contactEmail,
       subject: `Meeting Cancelled: ${meeting.type}`,
       html: htmlContent,
-      text: textContent
-    });
+      text: textContent,
+    })
 
-    console.log(`✅ Cancellation email sent to ${meeting.contactEmail}`);
-    return true;
+    console.log(`✅ Cancellation email sent to ${meeting.contactEmail}`)
+    return true
   } catch (error) {
-    console.error('Error sending cancellation:', error);
-    return false;
+    console.error('Error sending cancellation:', error)
+    return false
   }
 }
 
@@ -161,12 +161,16 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
           <span class="label">Duration:</span>
           <span class="value">${meeting.duration} minutes</span>
         </div>
-        ${meeting.notes ? `
+        ${
+          meeting.notes
+            ? `
         <div class="detail-row">
           <span class="label">Notes:</span>
           <span class="value">${meeting.notes}</span>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
 
       <p>A calendar invitation has been sent separately. You'll receive a reminder 24 hours before the meeting.</p>
@@ -185,7 +189,7 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
   </div>
 </body>
 </html>
-  `.trim();
+  `.trim()
 }
 
 /**
@@ -214,7 +218,7 @@ John Doe
 
 ---
 Need to reschedule? Visit: https://your-domain.com/contact
-  `.trim();
+  `.trim()
 }
 
 /**
@@ -270,7 +274,7 @@ function generateMeetingReminderHTML(meeting: Meeting, endTime: Date): string {
   </div>
 </body>
 </html>
-  `.trim();
+  `.trim()
 }
 
 /**
@@ -292,7 +296,7 @@ Looking forward to our conversation!
 
 Best regards,
 John Doe
-  `.trim();
+  `.trim()
 }
 
 /**
@@ -336,7 +340,7 @@ function generateCancellationHTML(meeting: Meeting, reason?: string): string {
   </div>
 </body>
 </html>
-  `.trim();
+  `.trim()
 }
 
 /**
@@ -363,5 +367,5 @@ John Doe
 
 ---
 Reschedule: https://your-domain.com/contact
-  `.trim();
+  `.trim()
 }

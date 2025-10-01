@@ -1,20 +1,31 @@
-import { Ollama } from 'ollama';
-import { MEETING_TYPES } from '@/lib/portfolioContext';
-import { checkAvailability as checkGoogleAvailability, createCalendarEvent as createGoogleEvent } from '@/lib/googleCalendar';
-import { sendMeetingConfirmation } from '@/lib/emailService';
-import type { Meeting } from '@/lib/emailService';
-import { trackEvent } from '@/lib/chatHistory';
-import { generateTimeSlots, formatTimeSlot, getMeetings, hasConflict, createCalendarEvent, saveMeeting, formatMeetingConfirmation } from '@/utils/calendar';
+import { trackEvent } from '@/lib/chatHistory'
+import { sendMeetingConfirmation } from '@/lib/emailService'
+import type { Meeting } from '@/lib/emailService'
+import {
+  checkAvailability as checkGoogleAvailability,
+  createCalendarEvent as createGoogleEvent,
+} from '@/lib/googleCalendar'
+import { MEETING_TYPES } from '@/lib/portfolioContext'
+import {
+  createCalendarEvent,
+  formatMeetingConfirmation,
+  formatTimeSlot,
+  generateTimeSlots,
+  getMeetings,
+  hasConflict,
+  saveMeeting,
+} from '@/utils/calendar'
+import { Ollama } from 'ollama'
 
 export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
+  role: 'user' | 'assistant' | 'system'
+  content: string
 }
 
-let ragSystem: any = null;
-let initializeRAG: any = null;
-let queryKnowledgeBase: any = null;
-let buildContext: any = null;
+let ragSystem: any = null
+let initializeRAG: any = null
+let queryKnowledgeBase: any = null
+let buildContext: any = null
 
 /**
  * Initialize RAG system on server start
@@ -24,22 +35,22 @@ export async function initOllamaChat() {
     // Lazy load RAG system to avoid build issues with chromadb
     if (!initializeRAG) {
       try {
-        const ragModule = await import('@/lib/ragSystem');
-        initializeRAG = ragModule.initializeRAG;
-        queryKnowledgeBase = ragModule.queryKnowledgeBase;
-        buildContext = ragModule.buildContext;
+        const ragModule = await import('@/lib/ragSystem')
+        initializeRAG = ragModule.initializeRAG
+        queryKnowledgeBase = ragModule.queryKnowledgeBase
+        buildContext = ragModule.buildContext
       } catch {
         // Fallback to stub if RAG system can't be loaded
-        const stubModule = await import('@/lib/ragSystemStub');
-        initializeRAG = stubModule.initializeRAG;
-        queryKnowledgeBase = stubModule.queryKnowledgeBase;
-        buildContext = stubModule.buildContext;
+        const stubModule = await import('@/lib/ragSystemStub')
+        initializeRAG = stubModule.initializeRAG
+        queryKnowledgeBase = stubModule.queryKnowledgeBase
+        buildContext = stubModule.buildContext
       }
     }
-    ragSystem = await initializeRAG();
-    console.log('✅ Ollama chat system initialized');
+    ragSystem = await initializeRAG()
+    console.log('✅ Ollama chat system initialized')
   } catch (error) {
-    console.warn('⚠️  RAG system initialization failed, will run without it:', error);
+    console.warn('⚠️  RAG system initialization failed, will run without it:', error)
   }
 }
 
@@ -48,12 +59,21 @@ export async function initOllamaChat() {
  */
 function detectMeetingIntent(message: string): boolean {
   const meetingKeywords = [
-    'schedule', 'meeting', 'book', 'appointment', 'consultation',
-    'available', 'availability', 'meet', 'call', 'talk', 'discuss'
-  ];
+    'schedule',
+    'meeting',
+    'book',
+    'appointment',
+    'consultation',
+    'available',
+    'availability',
+    'meet',
+    'call',
+    'talk',
+    'discuss',
+  ]
 
-  const lowerMessage = message.toLowerCase();
-  return meetingKeywords.some(keyword => lowerMessage.includes(keyword));
+  const lowerMessage = message.toLowerCase()
+  return meetingKeywords.some((keyword) => lowerMessage.includes(keyword))
 }
 
 /**
@@ -61,11 +81,16 @@ function detectMeetingIntent(message: string): boolean {
  */
 function detectAvailabilityIntent(message: string): boolean {
   const availabilityKeywords = [
-    'available', 'availability', 'free', 'open', 'when can', 'time slot'
-  ];
+    'available',
+    'availability',
+    'free',
+    'open',
+    'when can',
+    'time slot',
+  ]
 
-  const lowerMessage = message.toLowerCase();
-  return availabilityKeywords.some(keyword => lowerMessage.includes(keyword));
+  const lowerMessage = message.toLowerCase()
+  return availabilityKeywords.some((keyword) => lowerMessage.includes(keyword))
 }
 
 /**
@@ -76,32 +101,32 @@ function extractDate(message: string): string | null {
   const datePatterns = [
     /\d{4}-\d{2}-\d{2}/, // YYYY-MM-DD
     /\d{1,2}\/\d{1,2}\/\d{4}/, // MM/DD/YYYY
-  ];
+  ]
 
   for (const pattern of datePatterns) {
-    const match = message.match(pattern);
+    const match = message.match(pattern)
     if (match) {
-      return match[0];
+      return match[0]
     }
   }
 
   // Check for relative dates
-  const today = new Date();
-  const lowerMessage = message.toLowerCase();
+  const today = new Date()
+  const lowerMessage = message.toLowerCase()
 
   if (lowerMessage.includes('tomorrow')) {
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow.toISOString().split('T')[0]
   }
 
   if (lowerMessage.includes('next week')) {
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    return nextWeek.toISOString().split('T')[0];
+    const nextWeek = new Date(today)
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    return nextWeek.toISOString().split('T')[0]
   }
 
-  return null;
+  return null
 }
 
 /**
@@ -125,14 +150,14 @@ async function scheduleMeeting(
       type,
       contactName,
       contactEmail,
-      notes
-    });
+      notes,
+    })
 
     // Save to local storage
-    saveMeeting(meeting);
+    saveMeeting(meeting)
 
     // Try to create Google Calendar event
-    let calendarEventId: string | null = null;
+    let calendarEventId: string | null = null
     try {
       calendarEventId = await createGoogleEvent({
         summary: `${type} with ${contactName || 'Guest'}`,
@@ -140,14 +165,14 @@ async function scheduleMeeting(
         startTime: date,
         endTime: new Date(date.getTime() + duration * 60000),
         attendees: contactEmail ? [contactEmail] : [],
-        location: 'Video Conference'
-      });
+        location: 'Video Conference',
+      })
 
       if (calendarEventId) {
-        console.log('✅ Google Calendar event created:', calendarEventId);
+        console.log('✅ Google Calendar event created:', calendarEventId)
       }
     } catch (calError) {
-      console.warn('⚠️  Could not create Google Calendar event:', calError);
+      console.warn('⚠️  Could not create Google Calendar event:', calError)
     }
 
     // Try to send confirmation email
@@ -160,83 +185,96 @@ async function scheduleMeeting(
           duration: meeting.duration,
           contactName: meeting.contactName,
           contactEmail: meeting.contactEmail,
-          notes: meeting.notes
-        };
+          notes: meeting.notes,
+        }
 
-        const emailSent = await sendMeetingConfirmation(emailMeeting);
+        const emailSent = await sendMeetingConfirmation(emailMeeting)
         if (emailSent) {
-          console.log('✅ Confirmation email sent to', contactEmail);
+          console.log('✅ Confirmation email sent to', contactEmail)
         }
       } catch (emailError) {
-        console.warn('⚠️  Could not send confirmation email:', emailError);
+        console.warn('⚠️  Could not send confirmation email:', emailError)
       }
     }
 
     // Track meeting scheduled event
     if (conversationId) {
-      trackEvent('meeting_scheduled', {
-        meetingId: meeting.id,
-        type,
-        duration,
-        hasEmail: !!contactEmail,
-        googleCalendarUsed: !!calendarEventId
-      }, userId, conversationId);
+      trackEvent(
+        'meeting_scheduled',
+        {
+          meetingId: meeting.id,
+          type,
+          duration,
+          hasEmail: !!contactEmail,
+          googleCalendarUsed: !!calendarEventId,
+        },
+        userId,
+        conversationId
+      )
     }
 
-    return formatMeetingConfirmation(meeting);
+    return formatMeetingConfirmation(meeting)
   } catch (error) {
-    console.error('Error scheduling meeting:', error);
-    return 'I encountered an error while scheduling the meeting. Please try again or contact me directly.';
+    console.error('Error scheduling meeting:', error)
+    return 'I encountered an error while scheduling the meeting. Please try again or contact me directly.'
   }
 }
 
 /**
  * Check availability for a date
  */
-async function checkAvailability(date: string, conversationId?: string, userId?: string): Promise<string> {
+async function checkAvailability(
+  date: string,
+  conversationId?: string,
+  userId?: string
+): Promise<string> {
   try {
-    const requestedDate = new Date(date);
-    const allSlots = generateTimeSlots(requestedDate, 30);
-    const existingMeetings = getMeetings();
+    const requestedDate = new Date(date)
+    const allSlots = generateTimeSlots(requestedDate, 30)
+    const existingMeetings = getMeetings()
 
     // Check local calendar conflicts
-    let availableSlots = allSlots
-      .filter(slot => slot.available && !hasConflict(slot, existingMeetings));
+    const availableSlots = allSlots.filter(
+      (slot) => slot.available && !hasConflict(slot, existingMeetings)
+    )
 
     // If Google Calendar is configured, check against it too
-    const googleAvailableSlots = [];
+    const googleAvailableSlots = []
     for (const slot of availableSlots) {
-      const startTime = new Date(slot.start);
-      const endTime = new Date(slot.end);
-      const isAvailable = await checkGoogleAvailability(startTime, endTime);
+      const startTime = new Date(slot.start)
+      const endTime = new Date(slot.end)
+      const isAvailable = await checkGoogleAvailability(startTime, endTime)
       if (isAvailable) {
-        googleAvailableSlots.push(slot);
+        googleAvailableSlots.push(slot)
       }
     }
 
     // Use Google Calendar results if available, otherwise use local
-    const finalSlots = googleAvailableSlots.length > 0
-      ? googleAvailableSlots
-      : availableSlots;
+    const finalSlots = googleAvailableSlots.length > 0 ? googleAvailableSlots : availableSlots
 
-    const formattedSlots = finalSlots.map(slot => formatTimeSlot(slot));
+    const formattedSlots = finalSlots.map((slot) => formatTimeSlot(slot))
 
     // Track availability check
     if (conversationId) {
-      trackEvent('availability_checked', {
-        date,
-        slotsFound: formattedSlots.length,
-        googleCalendarUsed: googleAvailableSlots.length > 0
-      }, userId, conversationId);
+      trackEvent(
+        'availability_checked',
+        {
+          date,
+          slotsFound: formattedSlots.length,
+          googleCalendarUsed: googleAvailableSlots.length > 0,
+        },
+        userId,
+        conversationId
+      )
     }
 
     if (formattedSlots.length === 0) {
-      return `I don't have any available slots on ${date}. Would you like to try another date?`;
+      return `I don't have any available slots on ${date}. Would you like to try another date?`
     }
 
-    return `Here are my available times on ${date} (EST):\n\n${formattedSlots.slice(0, 8).join('\n')}\n\nWould you like to schedule a meeting for one of these times?`;
+    return `Here are my available times on ${date} (EST):\n\n${formattedSlots.slice(0, 8).join('\n')}\n\nWould you like to schedule a meeting for one of these times?`
   } catch (error) {
-    return `I had trouble checking availability for that date. Please provide a date in YYYY-MM-DD format.`;
+    return `I had trouble checking availability for that date. Please provide a date in YYYY-MM-DD format.`
   }
 }
 
@@ -248,32 +286,32 @@ export async function generateOllamaChatResponse(
   conversationId?: string,
   userId?: string
 ): Promise<AsyncIterableIterator<string>> {
-  const ollama = new Ollama({ host: 'http://localhost:11434' });
+  const ollama = new Ollama({ host: 'http://localhost:11434' })
 
   // Get the last user message
-  const lastUserMessage = messages.filter(m => m.role === 'user').pop();
+  const lastUserMessage = messages.filter((m) => m.role === 'user').pop()
 
   if (!lastUserMessage) {
-    throw new Error('No user message found');
+    throw new Error('No user message found')
   }
 
   // Check for meeting/availability intents
   if (detectAvailabilityIntent(lastUserMessage.content)) {
-    const date = extractDate(lastUserMessage.content);
+    const date = extractDate(lastUserMessage.content)
     if (date) {
-      const availabilityResponse = await checkAvailability(date, conversationId, userId);
+      const availabilityResponse = await checkAvailability(date, conversationId, userId)
       return (async function* () {
-        yield availabilityResponse;
-      })();
+        yield availabilityResponse
+      })()
     } else {
       return (async function* () {
-        yield "I'd be happy to check my availability! Could you please provide a specific date? For example: 'Are you available on 2025-10-15?' or 'What's your availability next Tuesday?'";
-      })();
+        yield "I'd be happy to check my availability! Could you please provide a specific date? For example: 'Are you available on 2025-10-15?' or 'What's your availability next Tuesday?'"
+      })()
     }
   }
 
   // Query RAG system for relevant context
-  let contextInfo = '';
+  let contextInfo = ''
   if (ragSystem) {
     try {
       const relevantDocs = await queryKnowledgeBase(
@@ -281,13 +319,13 @@ export async function generateOllamaChatResponse(
         ragSystem.collection,
         ragSystem.embeddings,
         3
-      );
+      )
 
       if (relevantDocs.length > 0) {
-        contextInfo = buildContext(relevantDocs);
+        contextInfo = buildContext(relevantDocs)
       }
     } catch (error) {
-      console.error('RAG query error:', error);
+      console.error('RAG query error:', error)
     }
   }
 
@@ -313,33 +351,33 @@ Meeting scheduling info:
 - Available Monday-Friday, 9 AM - 5 PM EST
 - Meeting types: ${MEETING_TYPES.join(', ')}
 - Duration: 30 minutes or 1 hour
-`;
+`
 
   // Build conversation history
-  const conversationHistory = messages.map(m => ({
+  const conversationHistory = messages.map((m) => ({
     role: m.role === 'system' ? 'system' : m.role,
-    content: m.content
-  }));
+    content: m.content,
+  }))
 
   // Add system prompt at the beginning
   conversationHistory.unshift({
     role: 'system',
-    content: systemPrompt
-  });
+    content: systemPrompt,
+  })
 
   // Stream response from Ollama
   const response = await ollama.chat({
     model: 'llama3.2:3b',
     messages: conversationHistory as any,
     stream: true,
-  });
+  })
 
   // Return async generator for streaming
   return (async function* () {
     for await (const part of response) {
       if (part.message?.content) {
-        yield part.message.content;
+        yield part.message.content
       }
     }
-  })();
+  })()
 }

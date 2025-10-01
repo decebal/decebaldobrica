@@ -1,83 +1,92 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, Calendar, Bot, User, CreditCard } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import SolanaPaymentModal from './SolanaPaymentModal';
-import { getMeetingConfig, requiresPayment, formatSOL, formatUSDEquivalent, createPaymentTransaction } from '@/lib/meetingPayments';
-import { generateUniqueReference } from '@/utils/solanaPay';
+import { useToast } from '@/hooks/use-toast'
+import {
+  MEETING_TYPES_WITH_PRICING,
+  createPaymentTransaction,
+  formatSOL,
+  formatUSDEquivalent,
+  getMeetingConfig,
+  requiresPayment,
+} from '@/lib/meetingPayments'
+import { generateUniqueReference } from '@/utils/solanaPay'
+import { Bot, Calendar, CreditCard, Loader2, Send, User } from 'lucide-react'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
+import SolanaPaymentModal from './SolanaPaymentModal'
 
 interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
   meetingRequest?: {
-    type: string;
-    date?: string;
-    duration?: number;
-    requiresPayment: boolean;
-    price?: number;
-  };
+    type: string
+    date?: string
+    duration?: number
+    requiresPayment: boolean
+    price?: number
+  }
 }
 
 const INITIAL_MESSAGE: Message = {
   id: 'initial',
   role: 'assistant',
-  content: "Hello! I'm John's AI assistant. I can help you learn about John's work, services, and I can even schedule a meeting for you. How can I help you today?",
-  timestamp: new Date()
-};
+  content:
+    "Hello! I'm John's AI assistant. I can help you learn about John's work, services, and I can even schedule a meeting for you. How can I help you today?",
+  timestamp: new Date(),
+}
 
 const ChatInterfaceAI = () => {
-  const { toast } = useToast();
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [pendingMeeting, setPendingMeeting] = useState<any>(null);
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const { toast } = useToast()
+  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [pendingMeeting, setPendingMeeting] = useState<any>(null)
+  const [conversationId, setConversationId] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
+      setIsVisible(true)
+    }, 100)
 
-    scrollToBottom();
-    inputRef.current?.focus();
+    scrollToBottom()
+    inputRef.current?.focus()
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) return
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
       content: input,
-      timestamp: new Date()
-    };
+      timestamp: new Date(),
+    }
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
+    setMessages((prev) => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
 
     try {
       // Call the AI API (use environment variable for production)
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
       const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: {
@@ -85,79 +94,82 @@ const ChatInterfaceAI = () => {
         },
         body: JSON.stringify({
           messages: [
-            ...messages.map(m => ({ role: m.role, content: m.content })),
-            { role: 'user', content: input }
+            ...messages.map((m) => ({ role: m.role, content: m.content })),
+            { role: 'user', content: input },
           ],
           conversationId,
-          userId: 'guest' // TODO: Replace with actual user ID if you have auth
+          userId: 'guest', // TODO: Replace with actual user ID if you have auth
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to get response from AI');
+        throw new Error('Failed to get response from AI')
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let assistantMessage = '';
-      let currentMessageId = `assistant-${Date.now()}`;
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantMessage = ''
+      const currentMessageId = `assistant-${Date.now()}`
 
       if (reader) {
         while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+          const { done, value } = await reader.read()
+          if (done) break
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
 
           for (const line of lines) {
             if (line.startsWith('data: ')) {
-              const data = line.slice(6);
+              const data = line.slice(6)
 
               if (data === '[DONE]') {
-                break;
+                break
               }
 
               try {
-                const parsed = JSON.parse(data);
+                const parsed = JSON.parse(data)
 
                 if (parsed.type === 'conversation_id') {
-                  setConversationId(parsed.conversationId);
+                  setConversationId(parsed.conversationId)
                 } else if (parsed.type === 'text') {
-                  assistantMessage += parsed.content;
+                  assistantMessage += parsed.content
 
                   // Detect meeting request in the message
-                  const meetingKeywords = ['schedule', 'meeting', 'book', 'consultation'];
-                  const hasMeetingIntent = meetingKeywords.some(keyword =>
+                  const meetingKeywords = ['schedule', 'meeting', 'book', 'consultation']
+                  const hasMeetingIntent = meetingKeywords.some((keyword) =>
                     assistantMessage.toLowerCase().includes(keyword)
-                  );
+                  )
 
                   // Update or add assistant message
-                  setMessages(prev => {
-                    const existingIndex = prev.findIndex(m => m.id === currentMessageId);
+                  setMessages((prev) => {
+                    const existingIndex = prev.findIndex((m) => m.id === currentMessageId)
                     if (existingIndex >= 0) {
-                      const updated = [...prev];
+                      const updated = [...prev]
                       updated[existingIndex] = {
                         ...updated[existingIndex],
-                        content: assistantMessage
-                      };
-                      return updated;
-                    } else {
-                      return [...prev, {
-                        id: currentMessageId,
-                        role: 'assistant',
                         content: assistantMessage,
-                        timestamp: new Date()
-                      }];
+                      }
+                      return updated
+                    } else {
+                      return [
+                        ...prev,
+                        {
+                          id: currentMessageId,
+                          role: 'assistant',
+                          content: assistantMessage,
+                          timestamp: new Date(),
+                        },
+                      ]
                     }
-                  });
+                  })
                 } else if (parsed.type === 'tool') {
                   // Handle tool calls (like meeting scheduling)
                   if (parsed.content.result?.message) {
                     toast({
                       title: '✅ Meeting Scheduled',
                       description: 'Check your messages for details',
-                    });
+                    })
                   }
                 }
               } catch (e) {
@@ -168,40 +180,41 @@ const ChatInterfaceAI = () => {
         }
       }
 
-      setIsLoading(false);
+      setIsLoading(false)
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('Chat error:', error)
 
       // Add error message
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: "I apologize, but I'm having trouble connecting to the AI service right now. This might be because the API server isn't running or the API key isn't configured. Please make sure to start the API server with 'npm run dev:api' and set your OPENAI_API_KEY environment variable.",
-        timestamp: new Date()
-      };
+        content:
+          "I apologize, but I'm having trouble connecting to the AI service right now. This might be because the API server isn't running or the API key isn't configured. Please make sure to start the API server with 'npm run dev:api' and set your OPENAI_API_KEY environment variable.",
+        timestamp: new Date(),
+      }
 
-      setMessages(prev => [...prev, errorMessage]);
-      setIsLoading(false);
+      setMessages((prev) => [...prev, errorMessage])
+      setIsLoading(false)
 
       toast({
         title: 'Connection Error',
         description: 'Unable to connect to AI service',
-        variant: 'destructive'
-      });
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   // Handle booking a meeting with payment
   const handleBookMeeting = (meetingType: string) => {
-    const config = getMeetingConfig(meetingType);
+    const config = getMeetingConfig(meetingType)
 
     if (!config) {
       toast({
         title: 'Invalid Meeting Type',
         description: 'Please select a valid meeting type',
-        variant: 'destructive'
-      });
-      return;
+        variant: 'destructive',
+      })
+      return
     }
 
     // Store pending meeting info
@@ -209,29 +222,29 @@ const ChatInterfaceAI = () => {
       type: meetingType,
       duration: config.duration,
       price: config.price,
-      requiresPayment: config.requiresPayment
-    });
+      requiresPayment: config.requiresPayment,
+    })
 
     if (config.requiresPayment) {
       // Show payment modal
-      setShowPaymentModal(true);
+      setShowPaymentModal(true)
     } else {
       // Free meeting - proceed directly
-      confirmMeetingBooking(meetingType);
+      confirmMeetingBooking(meetingType)
     }
-  };
+  }
 
   // Confirm meeting booking after payment (or for free meetings)
   const confirmMeetingBooking = async (meetingType: string) => {
     // Send confirmation message to chat
-    const confirmMessage = `Great! I'd like to book a ${meetingType}. Please provide your email and preferred date/time.`;
+    const confirmMessage = `Great! I'd like to book a ${meetingType}. Please provide your email and preferred date/time.`
 
-    setInput(confirmMessage);
+    setInput(confirmMessage)
 
     // Automatically send the message
-    const syntheticEvent = { preventDefault: () => {} } as React.FormEvent;
-    await handleSend(syntheticEvent);
-  };
+    const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
+    await handleSend(syntheticEvent)
+  }
 
   // Handle successful payment
   const handlePaymentSuccess = () => {
@@ -239,15 +252,16 @@ const ChatInterfaceAI = () => {
       toast({
         title: '✅ Payment Successful!',
         description: `Your payment of ${formatSOL(pendingMeeting.price)} has been confirmed.`,
-      });
+      })
 
-      confirmMeetingBooking(pendingMeeting.type);
-      setPendingMeeting(null);
+      confirmMeetingBooking(pendingMeeting.type)
+      setPendingMeeting(null)
     }
-  };
+  }
 
   return (
     <div
+      data-testid="chat-interface"
       className={`w-full transform transition-all duration-500 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
       }`}
@@ -269,15 +283,11 @@ const ChatInterfaceAI = () => {
           {messages.map((message, index) => (
             <div
               key={message.id}
-              className={`${
-                message.role === 'user' ? 'text-right' : 'text-left'
-              } animate-slide-up`}
+              className={`${message.role === 'user' ? 'text-right' : 'text-left'} animate-slide-up`}
               style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="flex items-start gap-2 mb-1">
-                {message.role === 'assistant' && (
-                  <Bot className="w-4 h-4 text-brand-teal mt-1" />
-                )}
+                {message.role === 'assistant' && <Bot className="w-4 h-4 text-brand-teal mt-1" />}
                 <div
                   className={`inline-block px-4 py-3 rounded-lg max-w-[85%] transition-all duration-300 ${
                     message.role === 'user'
@@ -287,14 +297,14 @@ const ChatInterfaceAI = () => {
                 >
                   <div className="whitespace-pre-wrap break-words">{message.content}</div>
                 </div>
-                {message.role === 'user' && (
-                  <User className="w-4 h-4 text-gray-400 mt-1" />
-                )}
+                {message.role === 'user' && <User className="w-4 h-4 text-gray-400 mt-1" />}
               </div>
-              <div className={`text-xs text-gray-400 px-1 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                {message.timestamp.toLocaleTimeString([], {
+              <div
+                className={`text-xs text-gray-400 px-1 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
+              >
+                {message.timestamp.toLocaleTimeString('en-US', {
                   hour: '2-digit',
-                  minute: '2-digit'
+                  minute: '2-digit',
                 })}
               </div>
             </div>
@@ -305,9 +315,18 @@ const ChatInterfaceAI = () => {
               <Bot className="w-4 h-4 text-brand-teal mt-1" />
               <div className="bg-white/10 text-white px-4 py-3 rounded-lg rounded-bl-none flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <span className="w-2 h-2 bg-brand-teal rounded-full animate-bounce" style={{ animationDelay: "0s" }}></span>
-                  <span className="w-2 h-2 bg-brand-teal rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
-                  <span className="w-2 h-2 bg-brand-teal rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></span>
+                  <span
+                    className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
+                    style={{ animationDelay: '0s' }}
+                  ></span>
+                  <span
+                    className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></span>
+                  <span
+                    className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
+                    style={{ animationDelay: '0.4s' }}
+                  ></span>
                 </div>
                 <span className="text-sm text-gray-300">AI is thinking...</span>
               </div>
@@ -319,7 +338,11 @@ const ChatInterfaceAI = () => {
       </div>
 
       {/* Input area */}
-      <form onSubmit={handleSend} className="bg-gradient-to-r from-brand-navy to-brand-darknavy p-4 rounded-b-lg border-t border-white/10 flex animate-slide-up shadow-lg" style={{ animationDelay: "0.3s" }}>
+      <form
+        onSubmit={handleSend}
+        className="bg-gradient-to-r from-brand-navy to-brand-darknavy p-4 rounded-b-lg border-t border-white/10 flex animate-slide-up shadow-lg"
+        style={{ animationDelay: '0.3s' }}
+      >
         <input
           ref={inputRef}
           type="text"
@@ -364,14 +387,9 @@ const ChatInterfaceAI = () => {
           <h4 className="text-sm font-medium text-brand-teal">Quick Book a Meeting</h4>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {Object.entries(import.meta.env.VITE_MEETING_TYPES || {
-            'Quick Chat (15 min)': { price: 0, requiresPayment: false },
-            'Consultation (30 min)': { price: 0.05, requiresPayment: true },
-            'Strategy Session (60 min)': { price: 0.1, requiresPayment: true },
-            'Deep Dive (90 min)': { price: 0.15, requiresPayment: true }
-          }).map(([type]) => {
-            const config = getMeetingConfig(type);
-            if (!config) return null;
+          {Object.entries(MEETING_TYPES_WITH_PRICING).map(([type]) => {
+            const config = getMeetingConfig(type)
+            if (!config) return null
 
             return (
               <button
@@ -402,7 +420,7 @@ const ChatInterfaceAI = () => {
                   </div>
                 )}
               </button>
-            );
+            )
           })}
         </div>
         <p className="text-[10px] text-gray-400 mt-2 text-center">
@@ -421,7 +439,7 @@ const ChatInterfaceAI = () => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ChatInterfaceAI;
+export default ChatInterfaceAI

@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Mail, Phone, MapPin, Linkedin, Twitter, Github, Instagram } from 'lucide-react';
+import { Github, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react'
+import React from 'react'
 
 const Footer = () => {
   return (
@@ -27,45 +26,39 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          
+
           <div>
             <h3 className="text-xl font-bold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a 
-                  href="#about" 
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
-                >
+                <a href="#about" className="text-gray-400 hover:text-brand-teal transition-colors">
                   About Me
                 </a>
               </li>
               <li>
-                <a 
-                  href="#work" 
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
-                >
+                <a href="#work" className="text-gray-400 hover:text-brand-teal transition-colors">
                   My Work
                 </a>
               </li>
               <li>
-                <a 
-                  href="#services" 
+                <a
+                  href="#services"
                   className="text-gray-400 hover:text-brand-teal transition-colors"
                 >
                   Services
                 </a>
               </li>
               <li>
-                <a 
-                  href="#testimonials" 
+                <a
+                  href="#testimonials"
                   className="text-gray-400 hover:text-brand-teal transition-colors"
                 >
                   Testimonials
                 </a>
               </li>
               <li>
-                <a 
-                  href="#contact" 
+                <a
+                  href="#contact"
                   className="text-gray-400 hover:text-brand-teal transition-colors"
                 >
                   Contact
@@ -73,7 +66,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-xl font-bold mb-4 text-white">Contact Information</h3>
             <ul className="space-y-3">
@@ -83,8 +76,8 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Phone className="mr-2 h-5 w-5 text-brand-teal" />
-                <a 
-                  href="tel:+11234567890" 
+                <a
+                  href="tel:+11234567890"
                   className="text-gray-400 hover:text-brand-teal transition-colors"
                 >
                   +1 (123) 456-7890
@@ -92,8 +85,8 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-5 w-5 text-brand-teal" />
-                <a 
-                  href="mailto:hello@johndoe.com" 
+                <a
+                  href="mailto:hello@johndoe.com"
                   className="text-gray-400 hover:text-brand-teal transition-colors"
                 >
                   hello@johndoe.com
@@ -102,13 +95,13 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500">
           <p>&copy; {new Date().getFullYear()} John Doe. All rights reserved.</p>
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

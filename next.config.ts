@@ -14,31 +14,8 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  webpack: (config, { isServer }) => {
-    // Fix for better-sqlite3
-    config.externals.push({
-      'better-sqlite3': 'commonjs better-sqlite3',
-    })
-
-    // Ignore chromadb in client bundle
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        chromadb: false,
-      }
-    }
-
-    // Ignore dynamic imports that cause issues
-    config.ignoreWarnings = [
-      { module: /node_modules\/chromadb/ },
-      { module: /node_modules\/@langchain/ },
-    ]
-
-    return config
-  },
+  // Externalize native packages for server-side use with Turbopack/Bun
+  serverExternalPackages: ['better-sqlite3', 'chromadb'],
 }
 
 export default nextConfig

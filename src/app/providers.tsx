@@ -3,11 +3,11 @@
 
 'use client'
 
-import { ThemeProvider } from 'next-themes'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
+import { ThemeProvider } from 'next-themes'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
+import { useState } from 'react'
 import { useEffect } from 'react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -38,12 +38,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <PostHogProvider client={posthog}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
       </ThemeProvider>
     </PostHogProvider>

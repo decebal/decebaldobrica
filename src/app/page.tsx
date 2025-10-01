@@ -1,9 +1,9 @@
 // src/app/page.tsx
 // Homepage - Server Component example
 
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Github, Linkedin, Mail } from 'lucide-react'
+import Link from 'next/link'
 
 export default function HomePage() {
   return (
@@ -67,8 +67,8 @@ export default function HomePage() {
           <div className="rounded-lg border bg-card p-6">
             <h3 className="mb-2 text-xl font-bold">AI Chat Assistant</h3>
             <p className="text-muted-foreground">
-              Powered by Ollama - completely free and runs locally. Context-aware responses about
-              my work and services.
+              Powered by Ollama - completely free and runs locally. Context-aware responses about my
+              work and services.
             </p>
           </div>
           <div className="rounded-lg border bg-card p-6">

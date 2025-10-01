@@ -1,8 +1,8 @@
 // src/app/contact/page.tsx
 // Contact page with AI chat
 
-import type { Metadata } from 'next'
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -31,10 +31,7 @@ export default function ContactPage() {
           <div className="grid gap-6 md:grid-cols-3 text-center">
             <div>
               <h3 className="font-semibold mb-2">Email</h3>
-              <a
-                href="mailto:hello@example.com"
-                className="text-brand-teal hover:underline"
-              >
+              <a href="mailto:hello@example.com" className="text-brand-teal hover:underline">
                 hello@example.com
               </a>
             </div>

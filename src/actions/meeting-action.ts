@@ -3,11 +3,11 @@
 
 'use server'
 
-import { z } from 'zod'
-import { google } from 'googleapis'
 import { addMessage, trackEvent } from '@/lib/chatHistory'
 import { getMeetingConfig } from '@/lib/meetingPayments'
+import { google } from 'googleapis'
 import { Resend } from 'resend'
+import { z } from 'zod'
 
 const bookMeetingSchema = z.object({
   meetingType: z.string(),
@@ -64,8 +64,18 @@ function getEmailClient() {
  */
 export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
   try {
-    const { meetingType, date, time, name, email, notes, timezone, conversationId, userId, paymentId } =
-      bookMeetingSchema.parse(input)
+    const {
+      meetingType,
+      date,
+      time,
+      name,
+      email,
+      notes,
+      timezone,
+      conversationId,
+      userId,
+      paymentId,
+    } = bookMeetingSchema.parse(input)
 
     // Get meeting configuration
     const config = getMeetingConfig(meetingType)
@@ -96,10 +106,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         dateTime: endDateTime.toISOString(),
         timeZone: timezone,
       },
-      attendees: [
-        { email },
-        { email: process.env.CALENDAR_OWNER_EMAIL || 'hello@example.com' },
-      ],
+      attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'hello@example.com' }],
       conferenceData: {
         createRequest: {
           requestId: `meeting-${Date.now()}`,
@@ -265,7 +272,7 @@ export async function cancelMeeting(input: z.infer<typeof cancelMeetingSchema>) 
  * Get available time slots for a specific date
  * Checks calendar for busy times and returns available slots
  */
-export async function getAvailableSlots(date: string, timezone: string = 'America/New_York') {
+export async function getAvailableSlots(date: string, timezone = 'America/New_York') {
   try {
     const calendar = getCalendarClient()
 
@@ -340,7 +347,7 @@ export async function rescheduleMeeting(
   eventId: string,
   newDate: string,
   newTime: string,
-  timezone: string = 'America/New_York'
+  timezone = 'America/New_York'
 ) {
   try {
     const calendar = getCalendarClient()

@@ -94,7 +94,7 @@ tasks:
       - ollama list
 
   ai:pull:
-    desc: Pull a specific Ollama model (usage: task ai:pull MODEL=llama3.2)
+    desc: Pull a specific Ollama model (usage - task ai:pull MODEL=llama3.2)
     cmds:
       - ollama pull {{.MODEL}}
 
@@ -134,7 +134,7 @@ tasks:
       - cp {{.DB_FILE}} {{.DB_FILE}}.backup.{{now | date "2006-01-02-15-04-05"}}
 
   db:reset:
-    desc: Reset database (WARNING: deletes all data)
+    desc: Reset database (WARNING - deletes all data)
     prompt: This will delete all data. Are you sure?
     cmds:
       - rm -f {{.DB_FILE}}
@@ -195,9 +195,34 @@ tasks:
 
   # === TESTING ===
   test:
-    desc: Run tests (if configured)
+    desc: Run all tests
     cmds:
-      - echo "No tests configured yet. Add your test runner here."
+      - task: test:e2e
+
+  test:e2e:
+    desc: Run E2E tests with Playwright
+    cmds:
+      - '{{.PKG_MANAGER}} run test:e2e'
+
+  test:e2e:ui:
+    desc: Run E2E tests with Playwright UI
+    cmds:
+      - '{{.PKG_MANAGER}} run test:e2e:ui'
+
+  test:e2e:debug:
+    desc: Debug E2E tests with Playwright
+    cmds:
+      - '{{.PKG_MANAGER}} run test:e2e:debug'
+
+  test:e2e:headed:
+    desc: Run E2E tests in headed mode (see browser)
+    cmds:
+      - '{{.PKG_MANAGER}} run test:e2e:headed'
+
+  test:install:
+    desc: Install Playwright browsers
+    cmds:
+      - '{{.PKG_MANAGER}} run test:install'
 
   # === UTILITIES ===
   info:
@@ -230,4 +255,5 @@ tasks:
     cmds:
       - task: ai:status
       - task: db:stats
-      - cmd: echo "Environment: ${NODE_ENV:-development}"
+      - cmd: |
+          echo "Environment: ${NODE_ENV:-development}"
