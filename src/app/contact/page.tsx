@@ -2,6 +2,7 @@
 // Contact page with AI chat
 
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
+import Footer from '@/components/Footer'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -11,55 +12,20 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
-          <p className="text-lg text-muted-foreground">
-            Chat with my AI assistant to schedule a meeting or ask questions
-          </p>
-        </div>
-
-        {/* AI Chat Interface */}
-        <div className="mb-12">
+    <div className="min-h-screen flex flex-col relative">
+      <main className="flex-1 flex flex-col items-center justify-center pt-24 pb-8">
+        <div className="w-full max-w-3xl px-4 mx-auto">
+          <div className="mb-6 text-center">
+            <h1 className="text-4xl font-bold text-brand-heading mb-2">Let's Connect</h1>
+            <p className="text-gray-300">
+              Chat with my AI assistant to learn more about my work or schedule a meeting
+            </p>
+          </div>
           <ChatInterfaceAI />
         </div>
+      </main>
 
-        {/* Traditional Contact Info */}
-        <div className="mt-12 border-t pt-8">
-          <h2 className="text-2xl font-bold mb-4 text-center">Other Ways to Reach Me</h2>
-          <div className="grid gap-6 md:grid-cols-3 text-center">
-            <div>
-              <h3 className="font-semibold mb-2">Email</h3>
-              <a href="mailto:hello@example.com" className="text-brand-teal hover:underline">
-                hello@example.com
-              </a>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">LinkedIn</h3>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-teal hover:underline"
-              >
-                /in/johndoe
-              </a>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">GitHub</h3>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-teal hover:underline"
-              >
-                @johndoe
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Footer />
     </div>
   )
 }

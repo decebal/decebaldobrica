@@ -8,30 +8,32 @@ import { Toaster as Sonner } from '@/components/ui/sonner'
 import { Toaster } from '@/components/ui/toaster'
 import { Providers } from './providers'
 import Navbar from '@/components/Navbar'
+import TexturedBackground from '@/components/TexturedBackground'
+import ScrollToTop from '@/components/ScrollToTop'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'John Doe - Portfolio',
-    template: '%s | John Doe Portfolio',
+    default: 'Decebal Dobrica - Portfolio',
+    template: '%s | Decebal Dobrica Portfolio',
   },
   description: 'Professional portfolio with AI chat assistant powered by Ollama',
   keywords: ['portfolio', 'AI', 'chat', 'Ollama', 'Solana Pay'],
-  authors: [{ name: 'John Doe' }],
-  creator: 'John Doe',
+  authors: [{ name: 'Decebal Dobrica' }],
+  creator: 'Decebal Dobrica',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    siteName: 'John Doe Portfolio',
-    title: 'John Doe - Portfolio',
+    siteName: 'Decebal Dobrica Portfolio',
+    title: 'Decebal Dobrica - Portfolio',
     description: 'Professional portfolio with AI chat assistant',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'John Doe - Portfolio',
+    title: 'Decebal Dobrica - Portfolio',
     description: 'Professional portfolio with AI chat assistant',
   },
 }
@@ -45,6 +47,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
+          <ScrollToTop />
+          <TexturedBackground />
           <Navbar />
           {children}
           <Toaster />

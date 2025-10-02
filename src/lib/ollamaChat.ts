@@ -330,10 +330,10 @@ export async function generateOllamaChatResponse(
   }
 
   // Build system prompt
-  const systemPrompt = `You are a helpful AI assistant for John Doe's professional portfolio website.
+  const systemPrompt = `You are a helpful AI assistant for Decebal Dobrica's professional portfolio website.
 
 Your role is to:
-1. Answer questions about John's work, services, and expertise
+1. Answer questions about Decebal's work, services, and expertise
 2. Help visitors schedule meetings
 3. Provide accurate information based on the knowledge base
 4. Be professional, friendly, and concise

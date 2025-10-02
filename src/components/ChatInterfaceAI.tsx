@@ -33,8 +33,8 @@ const INITIAL_MESSAGE: Message = {
   id: 'initial',
   role: 'assistant',
   content:
-    "Hello! I'm John's AI assistant. I can help you learn about John's work, services, and I can even schedule a meeting for you. How can I help you today?",
-  timestamp: new Date(),
+    "Hello! I'm Decebal's AI assistant. I can help you learn about Decebal's work, services, and I can even schedule a meeting for you. How can I help you today?",
+  timestamp: new Date('2024-01-01T12:00:00Z'),
 }
 
 const ChatInterfaceAI = () => {
@@ -54,14 +54,14 @@ const ChatInterfaceAI = () => {
       setIsVisible(true)
     }, 100)
 
-    scrollToBottom()
-    inputRef.current?.focus()
-
     return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
-    scrollToBottom()
+    // Only scroll after user has started chatting (more than just the initial message)
+    if (messages.length > 1) {
+      scrollToBottom()
+    }
   }, [messages])
 
   const scrollToBottom = () => {
@@ -348,7 +348,7 @@ const ChatInterfaceAI = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about John's work or schedule a meeting..."
+          placeholder="Ask about Decebal's work or schedule a meeting..."
           className="flex-1 bg-white/5 border border-white/20 rounded-l-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-teal/50 focus:border-transparent transition-all duration-300 placeholder:text-white/40"
           disabled={isLoading}
         />
@@ -372,9 +372,30 @@ const ChatInterfaceAI = () => {
           <div className="w-full">
             <p className="font-medium text-brand-teal">💡 Try asking me to:</p>
             <ul className="mt-1 space-y-1 text-xs">
-              <li>• Tell you about John's services and expertise</li>
-              <li>• Check availability and schedule a meeting</li>
-              <li>• Answer questions about John's portfolio</li>
+              <li>
+                <button
+                  onClick={() => setInput("Tell me about Decebal's services and expertise")}
+                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
+                >
+                  • Tell you about Decebal's services and expertise
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setInput('Check availability and schedule a meeting')}
+                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
+                >
+                  • Check availability and schedule a meeting
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setInput("Answer questions about Decebal's portfolio")}
+                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
+                >
+                  • Answer questions about Decebal's portfolio
+                </button>
+              </li>
             </ul>
           </div>
         </div>

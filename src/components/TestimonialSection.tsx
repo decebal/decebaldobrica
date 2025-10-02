@@ -12,7 +12,7 @@ const testimonials = [
     image:
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150',
     quote:
-      'Working with John has been an exceptional experience. His attention to detail and creative approach helped transform our brand identity. The results have exceeded our expectations.',
+      'Working with Decebal has been an exceptional experience. His attention to detail and creative approach helped transform our brand identity. The results have exceeded our expectations.',
     rating: 5,
   },
   {
@@ -23,7 +23,7 @@ const testimonials = [
     image:
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150',
     quote:
-      'John delivered beyond our expectations. His strategic thinking and technical expertise made our project a success. I highly recommend his services to anyone looking for quality work.',
+      'Decebal delivered beyond our expectations. His strategic thinking and technical expertise made our project a success. I highly recommend his services to anyone looking for quality work.',
     rating: 5,
   },
   {
@@ -34,7 +34,7 @@ const testimonials = [
     image:
       'https://images.unsplash.com/photo-1569913486515-b74bf7751574?auto=format&fit=crop&w=150&h=150',
     quote:
-      'The level of professionalism and skill that John brings to the table is remarkable. He understood our vision immediately and executed it flawlessly.',
+      'The level of professionalism and skill that Decebal brings to the table is remarkable. He understood our vision immediately and executed it flawlessly.',
     rating: 4,
   },
 ]

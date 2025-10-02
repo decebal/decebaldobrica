@@ -48,7 +48,13 @@ test.describe('Homepage', () => {
 
     // Check for key sections
     await expect(page.locator('h1')).toBeVisible()
-    await expect(page.locator('nav')).toBeVisible()
+
+    // Nav is only visible on desktop (hidden md:flex)
+    const viewport = page.viewportSize()
+    const isMobile = viewport && viewport.width < 768
+    if (!isMobile) {
+      await expect(page.locator('nav')).toBeVisible()
+    }
   })
 
   test('should have working navigation', async ({ page }) => {

@@ -43,16 +43,22 @@ test.describe('Application Health Check', () => {
     ).toBe(0)
   })
 
-  test('should have accessible navigation', async ({ page }) => {
+  test('should have accessible navigation', async ({ page, browserName }) => {
     await page.goto('/')
 
     // Check that main navigation elements are present
-    const nav = page.locator('nav')
-    await expect(nav).toBeVisible()
+    // Note: Nav is hidden on mobile (hidden md:flex), so only check on desktop
+    const viewport = page.viewportSize()
+    const isMobile = viewport && viewport.width < 768
 
-    // Check for common navigation items
-    const links = await nav.locator('a').count()
-    expect(links).toBeGreaterThan(0)
+    if (!isMobile) {
+      const nav = page.locator('nav')
+      await expect(nav).toBeVisible()
+
+      // Check for common navigation items
+      const links = await nav.locator('a').count()
+      expect(links).toBeGreaterThan(0)
+    }
   })
 
   test('should handle 404 pages gracefully', async ({ page }) => {

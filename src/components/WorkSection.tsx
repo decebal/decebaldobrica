@@ -174,7 +174,7 @@ const WorkSection = () => {
                 <p className="text-gray-300 mb-4">{project.description}</p>
                 <div className="flex justify-between items-center">
                   <Link
-                    to={`/work/${project.slug}`}
+                    href={`/work/${project.slug}`}
                     className="inline-flex items-center text-brand-teal font-medium hover:text-brand-teal/80"
                   >
                     View Details

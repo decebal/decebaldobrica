@@ -21,7 +21,7 @@ const HeroSection = () => {
       <div className="section-container flex flex-col md:flex-row items-center">
         <div className="flex-1 md:pr-8 mb-10 md:mb-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in text-white">
-            Hello, I'm <span className="text-brand-teal">John Doe</span>
+            Hello, I'm <span className="text-brand-teal">Decebal Dobrica</span>
           </h1>
           <p
             className="text-xl md:text-2xl mb-8 text-gray-300 animate-fade-in"

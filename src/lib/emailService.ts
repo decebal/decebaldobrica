@@ -180,11 +180,11 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
       </center>
 
       <p>Looking forward to speaking with you!</p>
-      <p>Best regards,<br>John Doe</p>
+      <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
       <p>Need to reschedule? <a href="https://your-domain.com/contact">Contact us</a></p>
-      <p>&copy; ${new Date().getFullYear()} John Doe. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} Decebal Dobrica. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -214,7 +214,7 @@ A calendar invitation has been sent separately. You'll receive a reminder 24 hou
 Looking forward to speaking with you!
 
 Best regards,
-John Doe
+Decebal Dobrica
 
 ---
 Need to reschedule? Visit: https://your-domain.com/contact
@@ -266,7 +266,7 @@ function generateMeetingReminderHTML(meeting: Meeting, endTime: Date): string {
       </div>
 
       <p>Looking forward to our conversation!</p>
-      <p>Best regards,<br>John Doe</p>
+      <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
       <p>Need to reschedule? <a href="https://your-domain.com/contact">Contact us</a></p>
@@ -295,7 +295,7 @@ Time: ${format(meeting.date, 'h:mm a')} - ${format(endTime, 'h:mm a')} EST
 Looking forward to our conversation!
 
 Best regards,
-John Doe
+Decebal Dobrica
   `.trim()
 }
 
@@ -332,7 +332,7 @@ function generateCancellationHTML(meeting: Meeting, reason?: string): string {
       <p>Please feel free to reschedule at your convenience.</p>
       <p>Apologies for any inconvenience.</p>
 
-      <p>Best regards,<br>John Doe</p>
+      <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
       <p><a href="https://your-domain.com/contact">Reschedule Meeting</a></p>
@@ -363,7 +363,7 @@ Please feel free to reschedule at your convenience.
 Apologies for any inconvenience.
 
 Best regards,
-John Doe
+Decebal Dobrica
 
 ---
 Reschedule: https://your-domain.com/contact
