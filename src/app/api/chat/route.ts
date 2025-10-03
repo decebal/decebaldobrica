@@ -13,8 +13,8 @@ const chatRequestSchema = z.object({
       content: z.string(),
     })
   ),
-  conversationId: z.string().optional(),
-  userId: z.string().optional(),
+  conversationId: z.string().nullable().optional(),
+  userId: z.string().nullable().optional(),
 })
 
 /**

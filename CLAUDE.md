@@ -83,6 +83,20 @@ task payment:test        # Test Solana Pay integration
 - **Solana Pay** for payments
 - **SQLite** (better-sqlite3) for data persistence
 - **RAG** (optional: ChromaDB for knowledge base)
+- **MDX** for blog posts with frontmatter
+
+### Personal Configuration
+
+All personal information (name, email, social links, professional details, etc.) is centralized in `src/config/personal.json`. This makes it easy to update your information in one place without hunting through multiple files. See `docs/PERSONAL_CONFIG.md` for detailed documentation.
+
+### Blog System
+
+The blog uses MDX files stored in `content/blog/`. All current blog posts (39 posts) were imported from the previous blog at https://decebalonprogramming.net/ using the import script `scripts/import-blog-posts.js`.
+
+To add new posts:
+1. Create `.mdx` files with frontmatter in `content/blog/`
+2. The RSS feed at `/rss.xml` is automatically generated
+3. Posts are sorted by date (newest first)
 
 ### Project Structure
 
@@ -90,6 +104,7 @@ task payment:test        # Test Solana Pay integration
 src/
 ├── app/                    # Next.js App Router pages
 │   ├── api/chat/          # Chat API route handler
+│   ├── blog/              # Blog pages
 │   ├── contact/           # Contact page
 │   └── page.tsx           # Home page
 ├── actions/               # Server Actions (Next.js)
@@ -102,7 +117,11 @@ src/
 │   ├── meetingPayments.ts # Payment configuration
 │   ├── googleCalendar.ts  # Google Calendar API
 │   ├── emailService.ts    # Email via Resend
+│   ├── blogPosts.ts       # Blog post utilities
+│   ├── personalConfig.ts  # Personal config loader
 │   └── portfolioContext.ts # Portfolio data/constants
+├── config/                # Configuration files
+│   └── personal.json      # Personal information (centralized)
 ├── components/            # React components
 │   ├── ui/               # shadcn/ui components
 │   ├── layouts/          # Layout components
@@ -110,8 +129,16 @@ src/
 ├── utils/                # Utility functions
 └── hooks/                # React hooks
 
+content/
+└── blog/                 # Blog posts (MDX files)
+    └── *.mdx             # 39 posts imported from decebalonprogramming.net
+
 data/
 └── chat-history.db       # SQLite database (created on init)
+
+docs/
+├── CRYPTO_PAYMENTS.md    # Crypto payment integration guide
+└── PERSONAL_CONFIG.md    # Personal config documentation
 ```
 
 ### Key Architecture Patterns

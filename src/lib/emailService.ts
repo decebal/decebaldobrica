@@ -40,7 +40,7 @@ export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean
 
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      from: process.env.EMAIL_FROM || 'noreply@decebaldobrica.com',
       to: meeting.contactEmail,
       subject: `Meeting Confirmed: ${meeting.type}`,
       html: htmlContent,
@@ -71,7 +71,7 @@ export async function sendMeetingReminder(meeting: Meeting): Promise<boolean> {
 
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      from: process.env.EMAIL_FROM || 'noreply@decebaldobrica.com',
       to: meeting.contactEmail,
       subject: `Reminder: ${meeting.type} in 24 hours`,
       html: htmlContent,
@@ -99,7 +99,7 @@ export async function sendMeetingCancellation(meeting: Meeting, reason?: string)
 
   try {
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      from: process.env.EMAIL_FROM || 'noreply@decebaldobrica.com',
       to: meeting.contactEmail,
       subject: `Meeting Cancelled: ${meeting.type}`,
       html: htmlContent,
@@ -176,14 +176,14 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
       <p>A calendar invitation has been sent separately. You'll receive a reminder 24 hours before the meeting.</p>
 
       <center>
-        <a href="https://your-domain.com/meetings/${meeting.id}" class="button">View Meeting Details</a>
+        <a href="https://decebaldobrica.com/meetings/${meeting.id}" class="button">View Meeting Details</a>
       </center>
 
       <p>Looking forward to speaking with you!</p>
       <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
-      <p>Need to reschedule? <a href="https://your-domain.com/contact">Contact us</a></p>
+      <p>Need to reschedule? <a href="https://decebaldobrica.com/contact">Contact us</a></p>
       <p>&copy; ${new Date().getFullYear()} Decebal Dobrica. All rights reserved.</p>
     </div>
   </div>
@@ -217,7 +217,7 @@ Best regards,
 Decebal Dobrica
 
 ---
-Need to reschedule? Visit: https://your-domain.com/contact
+Need to reschedule? Visit: https://decebaldobrica.com/contact
   `.trim()
 }
 
@@ -269,7 +269,7 @@ function generateMeetingReminderHTML(meeting: Meeting, endTime: Date): string {
       <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
-      <p>Need to reschedule? <a href="https://your-domain.com/contact">Contact us</a></p>
+      <p>Need to reschedule? <a href="https://decebaldobrica.com/contact">Contact us</a></p>
     </div>
   </div>
 </body>
@@ -335,7 +335,7 @@ function generateCancellationHTML(meeting: Meeting, reason?: string): string {
       <p>Best regards,<br>Decebal Dobrica</p>
     </div>
     <div class="footer">
-      <p><a href="https://your-domain.com/contact">Reschedule Meeting</a></p>
+      <p><a href="https://decebaldobrica.com/contact">Reschedule Meeting</a></p>
     </div>
   </div>
 </body>
@@ -366,6 +366,6 @@ Best regards,
 Decebal Dobrica
 
 ---
-Reschedule: https://your-domain.com/contact
+Reschedule: https://decebaldobrica.com/contact
   `.trim()
 }

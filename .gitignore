@@ -46,6 +46,9 @@ data/
 *.db-shm
 *.db-wal
 
+# ChromaDB
+chroma_data/
+
 # IDE
 .idea
 .vscode

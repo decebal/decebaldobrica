@@ -20,39 +20,39 @@ const services = [
     icon: <Briefcase className="h-8 w-8" />,
     title: 'Fractional CTO Services',
     description:
-      'Expert technical leadership without the full-time commitment. Strategic guidance for your tech decisions.',
+      'Strategic technical leadership for VC-backed startups. Accelerate portfolio velocity while keeping costs under control.',
     featured: true,
   },
   {
-    icon: <Clock className="h-8 w-8" />,
-    title: 'Technical Consultation',
+    icon: <Code className="h-8 w-8" />,
+    title: 'Blockchain Development',
     description:
-      'Book a dedicated consultation session to solve your most pressing technical challenges.',
+      'Build secure, scalable Web3 applications with Rust and TypeScript. From smart contracts to full dApps.',
     featured: true,
+  },
+  {
+    icon: <Database className="h-8 w-8" />,
+    title: 'Serverless Architecture',
+    description: 'Design and implement cost-effective, scalable cloud-native systems that grow with your startup.',
+    featured: false,
   },
   {
     icon: <Users className="h-8 w-8" />,
-    title: 'Team Building & Management',
-    description: 'Strategies for building and managing high-performing technical teams.',
+    title: 'Team Acceleration',
+    description: 'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
     featured: false,
   },
   {
     icon: <BarChart className="h-8 w-8" />,
-    title: 'Technology Strategy',
-    description: 'Long-term technology roadmapping and strategic planning for sustainable growth.',
+    title: 'Technical Due Diligence',
+    description: 'Comprehensive technical assessment for VC firms evaluating portfolio companies or new investments.',
     featured: false,
   },
   {
-    icon: <Database className="h-8 w-8" />,
-    title: 'System Architecture',
-    description: 'Designing scalable and efficient systems that support your business needs.',
-    featured: false,
-  },
-  {
-    icon: <Code className="h-8 w-8" />,
-    title: 'Code Reviews & Audits',
+    icon: <Lightbulb className="h-8 w-8" />,
+    title: 'MVP to Production',
     description:
-      'Thorough evaluation of your codebase to identify improvements and potential issues.',
+      'Transform validated ideas and no-code prototypes into scalable, production-ready applications.',
     featured: false,
   },
 ]
@@ -61,9 +61,9 @@ const ServicesSection = () => {
   return (
     <section id="services" className="py-16 md:py-24">
       <div className="section-container">
-        <h2 className="section-title">My Services</h2>
+        <h2 className="section-title">How I Can Help</h2>
         <p className="section-subtitle">
-          Comprehensive solutions tailored to meet your specific needs and goals.
+          Turn your capital into working, high-impact software—faster.
         </p>
 
         {/* Featured Services */}
@@ -80,7 +80,7 @@ const ServicesSection = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">{service.title}</h3>
                 <p className="text-gray-300 mb-6">{service.description}</p>
-                <Link href="/services/book">
+                <Link href={`/contact?category=${encodeURIComponent(service.title)}`}>
                   <ShimmerButton className="w-full">Book a Session</ShimmerButton>
                 </Link>
               </div>
@@ -108,13 +108,13 @@ const ServicesSection = () => {
         {/* CTA Section */}
         <div className="mt-16 text-center">
           <h3 className="text-2xl font-bold text-white mb-4">
-            Ready to elevate your tech strategy?
+            Ready to accelerate your portfolio velocity?
           </h3>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Book a consultation today and discover how my expertise can transform your technical
-            challenges into opportunities.
+            Whether you're a VC firm or a startup founder, let's discuss how fractional technical leadership
+            can help you ship faster, scale smarter, and build right.
           </p>
-          <Link href="/services/book">
+          <Link href="/contact?category=General+Consultation">
             <Button size="lg" className="bg-brand-teal hover:bg-brand-teal/90 text-white">
               Schedule Your Consultation
             </Button>

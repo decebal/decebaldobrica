@@ -14,25 +14,31 @@ export function initAnalytics() {
     return
   }
 
-  const apiKey = import.meta.env.VITE_POSTHOG_API_KEY
-  const apiHost = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com'
+  const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
+  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
 
   if (!apiKey) {
-    console.warn('⚠️  PostHog not configured. Set VITE_POSTHOG_API_KEY to enable analytics')
+    console.warn('⚠️  PostHog not configured. Set NEXT_PUBLIC_POSTHOG_KEY to enable analytics')
     return
   }
 
-  posthog.init(apiKey, {
-    api_host: apiHost,
-    autocapture: true,
-    capture_pageview: true,
-    capture_pageleave: true,
-    loaded: (posthog) => {
-      if (import.meta.env.DEV) {
-        posthog.debug() // Enable debug mode in development
-      }
-    },
-  })
+  try {
+    posthog.init(apiKey, {
+      api_host: apiHost,
+      autocapture: true,
+      capture_pageview: true,
+      capture_pageleave: true,
+      disable_session_recording: true, // Disable to reduce errors
+      loaded: (posthog) => {
+        if (process.env.NODE_ENV === 'development') {
+          posthog.debug() // Enable debug mode in development
+        }
+      },
+    })
+  } catch (error) {
+    console.warn('⚠️  PostHog initialization failed:', error)
+    return
+  }
 
   analyticsInitialized = true
   console.log('✅ PostHog analytics initialized')

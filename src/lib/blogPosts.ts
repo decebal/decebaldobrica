@@ -1,12 +1,11 @@
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
+import readingTime from 'reading-time'
+
 /**
  * Blog posts management
- * This file manages blog posts for the portfolio
- *
- * TODO: Integrate with your preferred content source:
- * - MDX files from a /content directory
- * - Headless CMS (Contentful, Sanity, etc.)
- * - Database (PostgreSQL, MongoDB, etc.)
- * - Git-based CMS (Forestry, Tina, etc.)
+ * Reads MDX files from content/blog directory
  */
 
 export interface BlogPost {
@@ -19,62 +18,72 @@ export interface BlogPost {
   tags?: string[]
   coverImage?: string
   readingTime?: string
+  canonicalUrl?: string // For imported posts from old blog
 }
+
+const BLOG_CONTENT_DIR = path.join(process.cwd(), 'content', 'blog')
 
 /**
  * Get all blog posts
  * Returns posts sorted by date (newest first)
  */
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  // TODO: Replace with actual data source
-  // Example implementations:
+  // Check if content directory exists
+  if (!fs.existsSync(BLOG_CONTENT_DIR)) {
+    console.warn('Blog content directory not found:', BLOG_CONTENT_DIR)
+    return []
+  }
 
-  // 1. From MDX files:
-  // const files = await fs.readdir('./content/blog')
-  // const posts = await Promise.all(files.map(async (file) => {
-  //   const content = await fs.readFile(`./content/blog/${file}`, 'utf-8')
-  //   const { data, content: mdxContent } = matter(content)
-  //   return { slug: file.replace('.mdx', ''), ...data, content: mdxContent }
-  // }))
+  const files = fs.readdirSync(BLOG_CONTENT_DIR).filter((file) => file.endsWith('.mdx'))
 
-  // 2. From CMS:
-  // const posts = await cmsClient.getEntries({ content_type: 'blogPost' })
+  const posts = files.map((file) => {
+    const filePath = path.join(BLOG_CONTENT_DIR, file)
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
 
-  // 3. From database:
-  // const posts = await db.select().from(blogPosts).orderBy(desc(blogPosts.date))
+    const { data, content } = matter(fileContent)
+    const stats = readingTime(content)
 
-  // For now, return empty array (or example posts for testing)
-  const examplePosts: BlogPost[] = [
-    // Uncomment to see example posts:
-    // {
-    //   slug: 'getting-started-with-nextjs',
-    //   title: 'Getting Started with Next.js 15',
-    //   description: 'A comprehensive guide to building modern web applications with Next.js 15 and the App Router.',
-    //   date: new Date('2025-01-15').toISOString(),
-    //   author: 'Decebal Dobrica',
-    //   tags: ['nextjs', 'react', 'web development'],
-    //   readingTime: '5 min read',
-    // },
-    // {
-    //   slug: 'solana-pay-integration',
-    //   title: 'Integrating Solana Pay for Crypto Payments',
-    //   description: 'Learn how to accept cryptocurrency payments in your web app using Solana Pay.',
-    //   date: new Date('2025-01-10').toISOString(),
-    //   author: 'Decebal Dobrica',
-    //   tags: ['solana', 'crypto', 'payments'],
-    //   readingTime: '8 min read',
-    // },
-  ]
+    return {
+      slug: data.slug || file.replace('.mdx', ''),
+      title: data.title || 'Untitled',
+      description: data.description || '',
+      date: data.date || new Date().toISOString(),
+      author: data.author || 'Decebal Dobrica',
+      tags: data.tags || [],
+      content,
+      readingTime: stats.text,
+      canonicalUrl: data.canonicalUrl,
+    } as BlogPost
+  })
 
-  return examplePosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 }
 
 /**
  * Get a single blog post by slug
  */
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  const posts = await getAllBlogPosts()
-  return posts.find((post) => post.slug === slug) || null
+  const filePath = path.join(BLOG_CONTENT_DIR, `${slug}.mdx`)
+
+  if (!fs.existsSync(filePath)) {
+    return null
+  }
+
+  const fileContent = fs.readFileSync(filePath, 'utf-8')
+  const { data, content } = matter(fileContent)
+  const stats = readingTime(content)
+
+  return {
+    slug: data.slug || slug,
+    title: data.title || 'Untitled',
+    description: data.description || '',
+    date: data.date || new Date().toISOString(),
+    author: data.author || 'Decebal Dobrica',
+    tags: data.tags || [],
+    content,
+    readingTime: stats.text,
+    canonicalUrl: data.canonicalUrl,
+  }
 }
 
 /**

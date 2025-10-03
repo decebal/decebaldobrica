@@ -52,7 +52,7 @@ const Navbar = () => {
             About Me
           </Link>
           <Link href="/work" className="brand-nav-link">
-            My Work
+            Case Studies
           </Link>
           <Link href="/services" className="brand-nav-link">
             Services
@@ -102,7 +102,7 @@ const Navbar = () => {
               onClick={closeMobileMenu}
               className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
             >
-              My Work
+              Case Studies
             </Link>
             <Link
               href="/services"

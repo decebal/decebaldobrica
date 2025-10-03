@@ -14,6 +14,7 @@ import { Bot, Calendar, CreditCard, Loader2, Send, User } from 'lucide-react'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import SolanaPaymentModal from './SolanaPaymentModal'
+import { ChatMessage } from './ChatMessage'
 
 interface Message {
   id: string
@@ -33,7 +34,7 @@ const INITIAL_MESSAGE: Message = {
   id: 'initial',
   role: 'assistant',
   content:
-    "Hello! I'm Decebal's AI assistant. I can help you learn about Decebal's work, services, and I can even schedule a meeting for you. How can I help you today?",
+    "Hello! I'm Decebal's AI assistant. I can help you learn about his fractional CTO services, blockchain expertise, and schedule a consultation. Whether you're a VC firm or startup founder, I'm here to help. What would you like to know?",
   timestamp: new Date('2024-01-01T12:00:00Z'),
 }
 
@@ -42,12 +43,14 @@ const ChatInterfaceAI = () => {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [pendingMeeting, setPendingMeeting] = useState<any>(null)
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null)
+  const [userJustSent, setUserJustSent] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,16 +60,26 @@ const ChatInterfaceAI = () => {
     return () => clearTimeout(timer)
   }, [])
 
+  // Smart scroll: only when user sends a message, bot is typing, or user is at bottom
   useEffect(() => {
-    // Only scroll after user has started chatting (more than just the initial message)
-    if (messages.length > 1) {
-      scrollToBottom()
-    }
-  }, [messages])
+    if (!chatContainerRef.current) return
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    const container = chatContainerRef.current
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+
+    // Auto-scroll if:
+    // 1. User just sent a message, OR
+    // 2. Bot is currently streaming/typing, OR
+    // 3. User is already near the bottom of the chat
+    if (userJustSent || streamingMessageId || isNearBottom) {
+      // Scroll within the chat container only, not the page
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      })
+      setUserJustSent(false)
+    }
+  }, [messages, userJustSent, streamingMessageId])
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,11 +96,11 @@ const ChatInterfaceAI = () => {
     setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
+    setUserJustSent(true) // Trigger scroll for user message
 
     try {
-      // Call the AI API (use environment variable for production)
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
-      const response = await fetch(`${API_URL}/api/chat`, {
+      // Call the AI API (use relative URL in Next.js)
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,6 +125,9 @@ const ChatInterfaceAI = () => {
       const currentMessageId = `assistant-${Date.now()}`
 
       if (reader) {
+        // Set streaming state for the current message
+        setStreamingMessageId(currentMessageId)
+
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
@@ -130,9 +146,11 @@ const ChatInterfaceAI = () => {
               try {
                 const parsed = JSON.parse(data)
 
-                if (parsed.type === 'conversation_id') {
+                if (parsed.type === 'init') {
+                  // Set conversation ID from API
                   setConversationId(parsed.conversationId)
-                } else if (parsed.type === 'text') {
+                } else if (parsed.type === 'chunk') {
+                  // Streaming chunk from API
                   assistantMessage += parsed.content
 
                   // Detect meeting request in the message
@@ -163,17 +181,21 @@ const ChatInterfaceAI = () => {
                       ]
                     }
                   })
-                } else if (parsed.type === 'tool') {
-                  // Handle tool calls (like meeting scheduling)
-                  if (parsed.content.result?.message) {
-                    toast({
-                      title: '✅ Meeting Scheduled',
-                      description: 'Check your messages for details',
-                    })
-                  }
+                } else if (parsed.type === 'complete') {
+                  // Stream complete - stop streaming animation
+                  console.log('✅ Response complete')
+                  setStreamingMessageId(null)
+                } else if (parsed.type === 'error') {
+                  // Handle error from API
+                  console.error('API Error:', parsed.error)
+                  setStreamingMessageId(null)
+                  throw new Error(parsed.error)
                 }
               } catch (e) {
                 // Skip invalid JSON
+                if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
+                  console.error('Stream parsing error:', e)
+                }
               }
             }
           }
@@ -181,6 +203,7 @@ const ChatInterfaceAI = () => {
       }
 
       setIsLoading(false)
+      setStreamingMessageId(null)
     } catch (error) {
       console.error('Chat error:', error)
 
@@ -189,12 +212,13 @@ const ChatInterfaceAI = () => {
         id: `error-${Date.now()}`,
         role: 'assistant',
         content:
-          "I apologize, but I'm having trouble connecting to the AI service right now. This might be because the API server isn't running or the API key isn't configured. Please make sure to start the API server with 'npm run dev:api' and set your OPENAI_API_KEY environment variable.",
+          "I apologize, but I'm having trouble connecting to the AI service right now. This might be because Ollama isn't running or isn't configured properly. Please make sure Ollama is running at http://localhost:11434 with the llama3.2 model installed.",
         timestamp: new Date(),
       }
 
       setMessages((prev) => [...prev, errorMessage])
       setIsLoading(false)
+      setStreamingMessageId(null)
 
       toast({
         title: 'Connection Error',
@@ -278,39 +302,21 @@ const ChatInterfaceAI = () => {
       </div>
 
       {/* Chat message area */}
-      <div className="bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90 min-h-[450px] max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+      <div
+        ref={chatContainerRef}
+        className="bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90 min-h-[450px] max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+      >
         <div className="px-5 py-6 space-y-4">
           {messages.map((message, index) => (
-            <div
+            <ChatMessage
               key={message.id}
-              className={`${message.role === 'user' ? 'text-right' : 'text-left'} animate-slide-up`}
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              <div className="flex items-start gap-2 mb-1">
-                {message.role === 'assistant' && <Bot className="w-4 h-4 text-brand-teal mt-1" />}
-                <div
-                  className={`inline-block px-4 py-3 rounded-lg max-w-[85%] transition-all duration-300 ${
-                    message.role === 'user'
-                      ? 'bg-brand-teal text-white rounded-br-none hover:shadow-md hover:shadow-brand-teal/30 ml-auto'
-                      : 'bg-white/10 text-white rounded-bl-none hover:bg-white/15'
-                  }`}
-                >
-                  <div className="whitespace-pre-wrap break-words">{message.content}</div>
-                </div>
-                {message.role === 'user' && <User className="w-4 h-4 text-gray-400 mt-1" />}
-              </div>
-              <div
-                className={`text-xs text-gray-400 px-1 ${message.role === 'user' ? 'text-right' : 'text-left'}`}
-              >
-                {message.timestamp.toLocaleTimeString('en-US', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </div>
-            </div>
+              message={message}
+              index={index}
+              isStreaming={message.id === streamingMessageId}
+            />
           ))}
 
-          {isLoading && (
+          {isLoading && !streamingMessageId && (
             <div className="flex items-start gap-2 text-left animate-fade-in">
               <Bot className="w-4 h-4 text-brand-teal mt-1" />
               <div className="bg-white/10 text-white px-4 py-3 rounded-lg rounded-bl-none flex items-center space-x-2">
@@ -332,8 +338,6 @@ const ChatInterfaceAI = () => {
               </div>
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
       </div>
 
@@ -374,26 +378,26 @@ const ChatInterfaceAI = () => {
             <ul className="mt-1 space-y-1 text-xs">
               <li>
                 <button
-                  onClick={() => setInput("Tell me about Decebal's services and expertise")}
+                  onClick={() => setInput("Tell me about your fractional CTO services")}
                   className="text-left hover:text-brand-teal transition-colors cursor-pointer"
                 >
-                  • Tell you about Decebal's services and expertise
+                  • Tell you about fractional CTO services
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => setInput('Check availability and schedule a meeting')}
+                  onClick={() => setInput('How can you help VC-backed startups?')}
                   className="text-left hover:text-brand-teal transition-colors cursor-pointer"
                 >
-                  • Check availability and schedule a meeting
+                  • How Decebal helps VC-backed startups
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => setInput("Answer questions about Decebal's portfolio")}
+                  onClick={() => setInput('I want to schedule a consultation')}
                   className="text-left hover:text-brand-teal transition-colors cursor-pointer"
                 >
-                  • Answer questions about Decebal's portfolio
+                  • Schedule a consultation
                 </button>
               </li>
             </ul>
@@ -401,53 +405,6 @@ const ChatInterfaceAI = () => {
         </div>
       </div>
 
-      {/* Quick Book Meeting Buttons */}
-      <div className="mt-4 p-4 bg-brand-navy/50 border border-brand-teal/20 rounded-lg">
-        <div className="flex items-center gap-2 mb-3">
-          <CreditCard className="w-4 h-4 text-brand-teal" />
-          <h4 className="text-sm font-medium text-brand-teal">Quick Book a Meeting</h4>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {Object.entries(MEETING_TYPES_WITH_PRICING).map(([type]) => {
-            const config = getMeetingConfig(type)
-            if (!config) return null
-
-            return (
-              <button
-                key={type}
-                onClick={() => handleBookMeeting(type)}
-                className="group relative p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-brand-teal/50 rounded-lg transition-all duration-300 text-left"
-              >
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-white mb-1">{type}</span>
-                  <div className="flex items-center gap-1">
-                    {config.requiresPayment ? (
-                      <>
-                        <span className="text-xs text-brand-teal font-semibold">
-                          {formatSOL(config.price)}
-                        </span>
-                        <span className="text-[10px] text-gray-400">
-                          {formatUSDEquivalent(config.price)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-xs text-green-400 font-semibold">FREE</span>
-                    )}
-                  </div>
-                </div>
-                {config.requiresPayment && (
-                  <div className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 transition-opacity">
-                    <CreditCard className="w-3 h-3 text-brand-teal" />
-                  </div>
-                )}
-              </button>
-            )
-          })}
-        </div>
-        <p className="text-[10px] text-gray-400 mt-2 text-center">
-          💳 Paid meetings accept Solana Pay • Free meetings are instant
-        </p>
-      </div>
 
       {/* Payment Modal */}
       {pendingMeeting && (

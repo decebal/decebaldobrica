@@ -1,7 +1,11 @@
 'use client'
 
-import { Award, Briefcase, GraduationCap, Heart } from 'lucide-react'
+import { config } from '@/lib/personalConfig'
+import { Award, Briefcase, GraduationCap, Heart, TrendingUp, Users, Zap } from 'lucide-react'
 import React, { useEffect, useRef } from 'react'
+import NumberTicker from '@/components/ui/number-ticker'
+import { motion } from 'framer-motion'
+import { Highlighter } from '@/components/ui/highlighter'
 
 const AboutSection = () => {
   const sectionRef = useRef<HTMLElement>(null)
@@ -34,14 +38,43 @@ const AboutSection = () => {
     }
   }, [])
 
+  const stats = [
+    { value: 15, label: "Years Experience", icon: Briefcase, suffix: "+" },
+    { value: 300, label: "Productivity Boost", icon: TrendingUp, suffix: "%" },
+    { value: 75, label: "Cost Reduction", icon: Zap, suffix: "%" },
+    { value: 10, label: "Team Size Led", icon: Users, suffix: "+" },
+  ]
+
   return (
     <section id="about" className="py-20" ref={sectionRef}>
       <div className="section-container">
         <h2 className="section-title">About Me</h2>
         <p className="section-subtitle">
-          Dedicated to crafting exceptional digital experiences through creativity, technical
-          skills, and a commitment to excellence.
+          {config.tagline}
         </p>
+
+        {/* Animated Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 mb-16">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+              viewport={{ once: true }}
+              className="relative group"
+            >
+              <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-brand-teal/50 transition-all duration-300 hover:shadow-lg hover:shadow-brand-teal/20">
+                <stat.icon className="h-6 w-6 text-brand-teal mb-3" />
+                <div className="text-3xl font-bold text-white mb-1">
+                  <NumberTicker value={stat.value} />
+                  <span className="text-brand-teal">{stat.suffix}</span>
+                </div>
+                <div className="text-sm text-gray-300">{stat.label}</div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
           <div className="order-2 md:order-1">
@@ -51,10 +84,14 @@ const AboutSection = () => {
                   <Briefcase size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">Professional Experience</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-white">
+                    <Highlighter color="#03c9a9" action="underline" isView>
+                      Professional Experience
+                    </Highlighter>
+                  </h3>
                   <p className="text-white">
-                    Over 8 years of experience in design and development, working with clients from
-                    startups to enterprise companies.
+                    {config.professional.yearsExperience} years as a {config.professional.title}. Recently led engineering teams at Ebury and built smart contract solutions at Mundo Wallet.
+                    {' '}{config.achievements.description}.
                   </p>
                 </div>
               </div>
@@ -64,10 +101,14 @@ const AboutSection = () => {
                   <GraduationCap size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">Education & Training</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-white">
+                    <Highlighter color="#03c9a9" action="underline" isView>
+                      Education & Certifications
+                    </Highlighter>
+                  </h3>
                   <p className="text-white">
-                    Bachelor's in Computer Science and continuous learning through specialized
-                    courses and certifications.
+                    {config.education.degree} from {config.education.institution}. {config.education.certifications.slice(0, 2).join(', ')},
+                    and ongoing professional development.
                   </p>
                 </div>
               </div>
@@ -77,9 +118,14 @@ const AboutSection = () => {
                   <Award size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">Awards & Recognition</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-white">
+                    <Highlighter color="#03c9a9" action="underline" isView>
+                      Technical Leadership
+                    </Highlighter>
+                  </h3>
                   <p className="text-white">
-                    Multiple industry awards for outstanding projects and innovative solutions.
+                    Led teams of {config.achievements.teamSize} engineers at Tellimer, Breakout Clips, and multiple startups.
+                    Expert in trunk development, monorepo strategies, and cloud architecture.
                   </p>
                 </div>
               </div>
@@ -89,10 +135,14 @@ const AboutSection = () => {
                   <Heart size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">Passion Projects</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-white">
+                    <Highlighter color="#03c9a9" action="underline" isView>
+                      Technical Writing & Innovation
+                    </Highlighter>
+                  </h3>
                   <p className="text-white">
-                    Dedicated to continuous improvement and exploring new technologies through
-                    personal projects.
+                    Writing extensively about AI engineering, event sourcing, and software architecture.
+                    Passionate about GenAI integration and emerging technologies.
                   </p>
                 </div>
               </div>
@@ -104,7 +154,7 @@ const AboutSection = () => {
               <div className="absolute -top-5 -left-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse"></div>
               <div className="absolute -bottom-5 -right-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse"></div>
               <img
-                src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=800&h=1000"
+                src="/images/gallery/img-07.jpg"
                 alt="Professional portrait"
                 className="w-full h-auto rounded-lg shadow-lg object-cover border border-brand-teal/20 transition-transform duration-500 hover:scale-[1.02] hover:shadow-xl hover:shadow-brand-teal/30"
               />

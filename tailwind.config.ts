@@ -152,7 +152,23 @@ export default {
             transform: "scale(1.5)",
             opacity: "0",
           },
-        }
+        },
+        "blink-cursor": {
+          "0%, 49%": {
+            opacity: "1"
+          },
+          "50%, 100%": {
+            opacity: "0"
+          }
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -163,6 +179,9 @@ export default {
         "spotlight": "spotlight 2s ease .75s 1 forwards",
         "shimmer": "shimmer 2s linear infinite",
         "glow": "glow 2s ease-in-out infinite",
+        "blink-cursor": "blink-cursor 1.2s step-end infinite",
+        marquee: "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

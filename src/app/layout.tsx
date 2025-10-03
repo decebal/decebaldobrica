@@ -10,31 +10,32 @@ import { Providers } from './providers'
 import Navbar from '@/components/Navbar'
 import TexturedBackground from '@/components/TexturedBackground'
 import ScrollToTop from '@/components/ScrollToTop'
+import { config } from '@/lib/personalConfig'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'Decebal Dobrica - Portfolio',
-    template: '%s | Decebal Dobrica Portfolio',
+    default: `${config.name} - ${config.professional.title}`,
+    template: `%s | ${config.name}`,
   },
-  description: 'Professional portfolio with AI chat assistant powered by Ollama',
-  keywords: ['portfolio', 'AI', 'chat', 'Ollama', 'Solana Pay'],
-  authors: [{ name: 'Decebal Dobrica' }],
-  creator: 'Decebal Dobrica',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  description: config.tagline,
+  keywords: ['Fractional CTO', 'Blockchain', 'Web3', 'TypeScript', 'Rust', 'Serverless', 'VC-backed startups', 'Technical Leadership', 'AI Engineering'],
+  authors: [{ name: config.name }],
+  creator: config.name,
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || config.website),
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    siteName: 'Decebal Dobrica Portfolio',
-    title: 'Decebal Dobrica - Portfolio',
-    description: 'Professional portfolio with AI chat assistant',
+    siteName: `${config.name} - ${config.professional.title}`,
+    title: `${config.name} - ${config.professional.title}`,
+    description: config.tagline,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Decebal Dobrica - Portfolio',
-    description: 'Professional portfolio with AI chat assistant',
+    title: `${config.name} - ${config.professional.title}`,
+    description: config.tagline,
   },
 }
 

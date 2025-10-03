@@ -6,6 +6,8 @@ import {
   createCalendarEvent as createGoogleEvent,
 } from '@/lib/googleCalendar'
 import { MEETING_TYPES } from '@/lib/portfolioContext'
+import { MEETING_TYPES_WITH_PRICING } from '@/lib/meetingPayments'
+import { featureFlags } from '@/lib/featureFlags'
 import {
   createCalendarEvent,
   formatMeetingConfirmation,
@@ -34,13 +36,24 @@ export async function initOllamaChat() {
   try {
     // Lazy load RAG system to avoid build issues with chromadb
     if (!initializeRAG) {
-      try {
-        const ragModule = await import('@/lib/ragSystem')
-        initializeRAG = ragModule.initializeRAG
-        queryKnowledgeBase = ragModule.queryKnowledgeBase
-        buildContext = ragModule.buildContext
-      } catch {
-        // Fallback to stub if RAG system can't be loaded
+      // Use RAG system if explicitly enabled, otherwise use stub
+      const enableRAG = process.env.NEXT_PUBLIC_ENABLE_RAG === 'true'
+
+      if (enableRAG) {
+        try {
+          const ragModule = await import('@/lib/ragSystem')
+          initializeRAG = ragModule.initializeRAG
+          queryKnowledgeBase = ragModule.queryKnowledgeBase
+          buildContext = ragModule.buildContext
+        } catch {
+          // Fallback to stub if RAG system can't be loaded
+          const stubModule = await import('@/lib/ragSystemStub')
+          initializeRAG = stubModule.initializeRAG
+          queryKnowledgeBase = stubModule.queryKnowledgeBase
+          buildContext = stubModule.buildContext
+        }
+      } else {
+        // Use stub directly when RAG is disabled
         const stubModule = await import('@/lib/ragSystemStub')
         initializeRAG = stubModule.initializeRAG
         queryKnowledgeBase = stubModule.queryKnowledgeBase
@@ -329,6 +342,17 @@ export async function generateOllamaChatResponse(
     }
   }
 
+  // Filter meeting types based on feature flag
+  const availableMeetingTypes = featureFlags.enablePaidMeetings
+    ? Object.keys(MEETING_TYPES_WITH_PRICING)
+    : Object.keys(MEETING_TYPES_WITH_PRICING).filter(
+        (type) => !MEETING_TYPES_WITH_PRICING[type].requiresPayment
+      )
+
+  const meetingPricingInfo = featureFlags.enablePaidMeetings
+    ? 'Quick chats are free, longer consultations have fees (paid via Solana Pay)'
+    : 'All consultations are currently free'
+
   // Build system prompt
   const systemPrompt = `You are a helpful AI assistant for Decebal Dobrica's professional portfolio website.
 
@@ -342,15 +366,27 @@ ${contextInfo}
 
 Important guidelines:
 - Use the context above to provide accurate answers
-- If asked about scheduling, guide users to provide date/time preferences
+- **When asked yes/no questions** (e.g., "Has Decebal worked with React?"), answer YES or NO first, then provide details
+- **Pronoun usage**: Refer to Decebal in third person. Say "as a fractional CTO, Decebal..." NOT "as Decebal's fractional CTO"
+- If asked about scheduling, mention that **the booking form is available below the chat interface** on this page
+- When users want to schedule, let them know they can scroll down to the booking form right below
+- Emphasize Decebal's expertise with VC-backed startups, blockchain, and portfolio velocity
 - Be conversational but professional
 - Keep responses concise (2-3 paragraphs max)
 - If you don't know something, admit it honestly
+- Highlight specific tech: TypeScript, Rust, Serverless, Blockchain, AI tooling, React, Next.js
+
+Technology preferences:
+- Decebal works with: TypeScript, Rust, React, Next.js, Node.js, Serverless, Blockchain (Solana, Ethereum)
+- Decebal has experience with PHP/Laravel but prefers not to work with them anymore
+- Decebal does NOT work with: Java, Scala, C#, F#, ASP.NET, Jenkins
 
 Meeting scheduling info:
 - Available Monday-Friday, 9 AM - 5 PM EST
-- Meeting types: ${MEETING_TYPES.join(', ')}
-- Duration: 30 minutes or 1 hour
+- Meeting types: ${availableMeetingTypes.join(', ')}
+- ${meetingPricingInfo}
+- Perfect for VC firms evaluating portfolio companies or founders seeking technical leadership
+- **The booking form is located directly below this chat** - users can scroll down to see all available meeting types and fill out the form
 `
 
   // Build conversation history

@@ -21,14 +21,14 @@ const ServicesPage = () => {
               className="text-xl text-gray-300 mb-8 animate-fade-in"
               style={{ animationDelay: '0.1s' }}
             >
-              Expert technical leadership and consultations to help your business thrive in the
-              digital landscape.
+              Accelerate portfolio velocity for VC-backed startups. Turn validated ideas into
+              scalable, production-ready software—faster.
             </p>
             <div
               className="flex flex-wrap justify-center gap-4 mb-12 animate-fade-in"
               style={{ animationDelay: '0.2s' }}
             >
-              <Link href="/services/book">
+              <Link href="/contact?category=Services+Page">
                 <ShimmerButton className="px-8 py-3">
                   <Briefcase className="mr-2 h-5 w-5" />
                   Book Consultation

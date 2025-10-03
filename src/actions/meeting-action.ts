@@ -16,10 +16,12 @@ const bookMeetingSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   notes: z.string().optional(),
+  category: z.string().optional(), // Track what prompted the booking
   timezone: z.string().default('America/New_York'),
   conversationId: z.string().optional(),
   userId: z.string().optional(),
   paymentId: z.string().optional(),
+  paymentMethod: z.enum(['SOL', 'BTC', 'ETH', 'USDC']).optional(),
 })
 
 const cancelMeetingSchema = z.object({
@@ -71,10 +73,12 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
       name,
       email,
       notes,
+      category,
       timezone,
       conversationId,
       userId,
       paymentId,
+      paymentMethod,
     } = bookMeetingSchema.parse(input)
 
     // Get meeting configuration
@@ -97,7 +101,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
 
     const event = {
       summary: `${meetingType} with ${name}`,
-      description: `Meeting Type: ${meetingType}\nDuration: ${config.duration} minutes\n\nNotes: ${notes || 'None'}\n\nPayment ID: ${paymentId || 'Free'}`,
+      description: `Meeting Type: ${meetingType}\nDuration: ${config.duration} minutes\n${category ? `Source: ${category}\n` : ''}\nNotes: ${notes || 'None'}\n\nPayment: ${paymentId ? `${paymentMethod || 'SOL'} - ${paymentId}` : 'Free'}`,
       start: {
         dateTime: startDateTime.toISOString(),
         timeZone: timezone,
@@ -106,7 +110,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         dateTime: endDateTime.toISOString(),
         timeZone: timezone,
       },
-      attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'hello@example.com' }],
+      attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'decebal@dobrica.dev' }],
       conferenceData: {
         createRequest: {
           requestId: `meeting-${Date.now()}`,
@@ -176,6 +180,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
           duration: config.duration,
           price: config.price,
           paymentId,
+          category,
         },
         userId,
         conversationId
