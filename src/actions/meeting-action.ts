@@ -4,9 +4,9 @@
 'use server'
 
 import { addMessage, trackEvent } from '@/lib/chatHistory'
+import { sendMeetingConfirmation } from '@/lib/emailService'
 import { getMeetingConfig } from '@/lib/meetingPayments'
 import { google } from 'googleapis'
-import { Resend } from 'resend'
 import { z } from 'zod'
 
 const bookMeetingSchema = z.object({
@@ -29,8 +29,22 @@ const cancelMeetingSchema = z.object({
   reason: z.string().optional(),
 })
 
+// Check if Google Calendar is configured
+function isGoogleCalendarConfigured() {
+  return !!(
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_REDIRECT_URI &&
+    process.env.GOOGLE_REFRESH_TOKEN
+  )
+}
+
 // Initialize Google Calendar client
 function getCalendarClient() {
+  if (!isGoogleCalendarConfigured()) {
+    throw new Error('Google Calendar not configured')
+  }
+
   const credentials = {
     client_id: process.env.GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
@@ -51,13 +65,9 @@ function getCalendarClient() {
   return google.calendar({ version: 'v3', auth: oauth2Client })
 }
 
-// Initialize Resend client
-function getEmailClient() {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    throw new Error('Resend API key not configured')
-  }
-  return new Resend(apiKey)
+// Check if email service is configured
+function isEmailConfigured() {
+  return !!process.env.RESEND_API_KEY
 }
 
 /**
@@ -96,79 +106,88 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
     const startDateTime = new Date(`${date}T${time}:00`)
     const endDateTime = new Date(startDateTime.getTime() + config.duration * 60000)
 
-    // Create Google Calendar event
-    const calendar = getCalendarClient()
+    let eventId: string | undefined
+    let meetLink: string | undefined
+    let calendarLink: string | undefined
 
-    const event = {
-      summary: `${meetingType} with ${name}`,
-      description: `Meeting Type: ${meetingType}\nDuration: ${config.duration} minutes\n${category ? `Source: ${category}\n` : ''}\nNotes: ${notes || 'None'}\n\nPayment: ${paymentId ? `${paymentMethod || 'SOL'} - ${paymentId}` : 'Free'}`,
-      start: {
-        dateTime: startDateTime.toISOString(),
-        timeZone: timezone,
-      },
-      end: {
-        dateTime: endDateTime.toISOString(),
-        timeZone: timezone,
-      },
-      attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'decebal@dobrica.dev' }],
-      conferenceData: {
-        createRequest: {
-          requestId: `meeting-${Date.now()}`,
-          conferenceSolutionKey: { type: 'hangoutsMeet' },
-        },
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          { method: 'email', minutes: 24 * 60 }, // 1 day before
-          { method: 'popup', minutes: 30 }, // 30 minutes before
-        ],
-      },
+    // Try to create Google Calendar event if configured
+    if (isGoogleCalendarConfigured()) {
+      try {
+        const calendar = getCalendarClient()
+
+        const event = {
+          summary: `${meetingType} with ${name}`,
+          description: `Meeting Type: ${meetingType}\nDuration: ${config.duration} minutes\n${category ? `Source: ${category}\n` : ''}\nNotes: ${notes || 'None'}\n\nPayment: ${paymentId ? `${paymentMethod || 'SOL'} - ${paymentId}` : 'Free'}`,
+          start: {
+            dateTime: startDateTime.toISOString(),
+            timeZone: timezone,
+          },
+          end: {
+            dateTime: endDateTime.toISOString(),
+            timeZone: timezone,
+          },
+          attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'discovery@decebaldobrica.com' }],
+          conferenceData: {
+            createRequest: {
+              requestId: `meeting-${Date.now()}`,
+              conferenceSolutionKey: { type: 'hangoutsMeet' },
+            },
+          },
+          reminders: {
+            useDefault: false,
+            overrides: [
+              { method: 'email', minutes: 24 * 60 }, // 1 day before
+              { method: 'popup', minutes: 30 }, // 30 minutes before
+            ],
+          },
+        }
+
+        const calendarResponse = await calendar.events.insert({
+          calendarId: 'primary',
+          requestBody: event,
+          conferenceDataVersion: 1,
+          sendUpdates: 'all',
+        })
+
+        eventId = calendarResponse.data.id
+        meetLink = calendarResponse.data.conferenceData?.entryPoints?.[0]?.uri
+        calendarLink = calendarResponse.data.htmlLink
+
+        console.log('✅ Google Calendar event created:', eventId)
+      } catch (calendarError) {
+        console.error('⚠️ Google Calendar error (continuing without it):', calendarError)
+        // Continue without calendar - we'll still send the email
+      }
+    } else {
+      console.log('⚠️ Google Calendar not configured - booking will proceed without calendar integration')
     }
 
-    const calendarResponse = await calendar.events.insert({
-      calendarId: 'primary',
-      requestBody: event,
-      conferenceDataVersion: 1,
-      sendUpdates: 'all',
-    })
-
-    const eventId = calendarResponse.data.id
-    const meetLink = calendarResponse.data.conferenceData?.entryPoints?.[0]?.uri
-
-    // Send confirmation email
-    try {
-      const resend = getEmailClient()
-      await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'noreply@example.com',
-        to: email,
-        subject: `Meeting Confirmed: ${meetingType}`,
-        html: `
-          <h2>Meeting Confirmed</h2>
-          <p>Hi ${name},</p>
-          <p>Your meeting has been confirmed!</p>
-
-          <h3>Details:</h3>
-          <ul>
-            <li><strong>Type:</strong> ${meetingType}</li>
-            <li><strong>Duration:</strong> ${config.duration} minutes</li>
-            <li><strong>Date:</strong> ${startDateTime.toLocaleDateString()}</li>
-            <li><strong>Time:</strong> ${startDateTime.toLocaleTimeString()}</li>
-            ${config.requiresPayment ? `<li><strong>Price:</strong> ${config.price} SOL</li>` : ''}
-          </ul>
-
-          ${meetLink ? `<p><a href="${meetLink}">Join Google Meet</a></p>` : ''}
-
-          <p>A calendar invitation has been sent to your email.</p>
-
-          ${notes ? `<h3>Your Notes:</h3><p>${notes}</p>` : ''}
-
-          <p>Looking forward to meeting you!</p>
-        `,
+    // Send confirmation email using branded template
+    if (isEmailConfigured()) {
+      try {
+        await sendMeetingConfirmation(
+          {
+            id: eventId || `booking-${Date.now()}`,
+            type: meetingType,
+            date: startDateTime,
+            duration: config.duration,
+            contactName: name,
+            contactEmail: email,
+            notes,
+          },
+          meetLink
+        )
+      } catch (emailError) {
+        console.error('⚠️ Failed to send confirmation email:', emailError)
+        // Don't fail the booking if email fails
+      }
+    } else {
+      console.log('⚠️ Email service not configured - booking details:', {
+        name,
+        email,
+        meetingType,
+        date: startDateTime.toISOString(),
       })
-    } catch (emailError) {
-      console.error('Failed to send confirmation email:', emailError)
-      // Don't fail the booking if email fails
     }
 
     // Track event
@@ -202,7 +221,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         startTime: startDateTime.toISOString(),
         endTime: endDateTime.toISOString(),
         meetLink,
-        calendarLink: calendarResponse.data.htmlLink,
+        calendarLink,
       },
     }
   } catch (error) {

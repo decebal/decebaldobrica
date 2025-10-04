@@ -147,13 +147,35 @@ export default function ContactBookingPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  // Smooth scroll to top when booking succeeds
+  useEffect(() => {
+    if (bookingSuccess) {
+      // Smooth scroll to top with a slight delay for the transition
+      const scrollToTop = () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      }
+
+      // Start scroll after a brief moment
+      const timer = setTimeout(scrollToTop, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [bookingSuccess])
+
   if (bookingSuccess) {
     return (
       <div className="min-h-screen relative">
         <Confetti particleCount={100} />
         <main className="pt-24 pb-16">
           <div className="section-container py-16">
-            <div className="max-w-2xl mx-auto text-center">
+            <motion.div
+              className="max-w-2xl mx-auto text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               <motion.div
                 className="mb-8 flex justify-center"
                 initial={{ scale: 0, rotate: -180 }}
@@ -164,14 +186,29 @@ export default function ContactBookingPage() {
                   <CheckCircle2 className="h-16 w-16 text-green-500" />
                 </div>
               </motion.div>
-              <h1 className="text-4xl font-bold mb-4 text-white">
+              <motion.h1
+                className="text-4xl font-bold mb-4 text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
                 <ComicText delay={0.5}>Booking Confirmed!</ComicText>
-              </h1>
-              <p className="text-xl text-gray-300 mb-8">
+              </motion.h1>
+              <motion.p
+                className="text-xl text-gray-300 mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
                 Your meeting has been successfully scheduled. You'll receive a calendar invitation
                 and confirmation email shortly.
-              </p>
-              <div className="flex gap-4 justify-center">
+              </motion.p>
+              <motion.div
+                className="flex gap-4 justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
                 <Link href="/services">
                   <Button variant="outline">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -181,8 +218,8 @@ export default function ContactBookingPage() {
                 <Link href="/">
                   <Button>Go to Home</Button>
                 </Link>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </main>
         <Footer />

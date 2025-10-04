@@ -3,15 +3,21 @@ import { Resend } from 'resend'
 
 let resend: Resend | null = null
 
-export function initResend() {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('⚠️  Resend not configured. Set RESEND_API_KEY to enable email notifications')
-    return null
+export function getResendClient() {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('⚠️  Resend not configured. Set RESEND_API_KEY to enable email notifications')
+      return null
+    }
+    resend = new Resend(process.env.RESEND_API_KEY)
+    console.log('✅ Resend email service initialized')
   }
-
-  resend = new Resend(process.env.RESEND_API_KEY)
-  console.log('✅ Resend email service initialized')
   return resend
+}
+
+// Keep initResend for backwards compatibility
+export function initResend() {
+  return getResendClient()
 }
 
 export interface Meeting {
@@ -27,19 +33,30 @@ export interface Meeting {
 /**
  * Send meeting confirmation email
  */
-export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean> {
-  if (!resend || !meeting.contactEmail) {
-    console.log('Email not sent: Resend not configured or no contact email')
+export async function sendMeetingConfirmation(meeting: Meeting, meetLink?: string): Promise<boolean> {
+  const client = getResendClient()
+
+  if (!client) {
+    console.log('⚠️  Email not sent: Resend not configured')
+    return false
+  }
+
+  if (!meeting.contactEmail) {
+    console.log('⚠️  Email not sent: No contact email provided')
     return false
   }
 
   const meetingEndTime = addMinutes(meeting.date, meeting.duration)
 
-  const htmlContent = generateMeetingConfirmationHTML(meeting, meetingEndTime)
-  const textContent = generateMeetingConfirmationText(meeting, meetingEndTime)
+  const htmlContent = generateMeetingConfirmationHTML(meeting, meetingEndTime, meetLink)
+  const textContent = generateMeetingConfirmationText(meeting, meetingEndTime, meetLink)
 
   try {
-    await resend.emails.send({
+    console.log(`📧 Sending meeting confirmation to ${meeting.contactEmail}...`)
+    console.log(`   From: ${process.env.EMAIL_FROM || 'noreply@decebaldobrica.com'}`)
+    console.log(`   Subject: Meeting Confirmed: ${meeting.type}`)
+
+    const result = await client.emails.send({
       from: process.env.EMAIL_FROM || 'noreply@decebaldobrica.com',
       to: meeting.contactEmail,
       subject: `Meeting Confirmed: ${meeting.type}`,
@@ -48,10 +65,27 @@ export async function sendMeetingConfirmation(meeting: Meeting): Promise<boolean
       replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
     })
 
+    console.log(`   Full response:`, JSON.stringify(result, null, 2))
     console.log(`✅ Meeting confirmation sent to ${meeting.contactEmail}`)
+    console.log(`   Email ID: ${result.data?.id || result.id || 'unknown'}`)
+
+    if (result.error) {
+      console.error('   ⚠️ Resend returned an error:', result.error)
+      return false
+    }
+
     return true
   } catch (error) {
-    console.error('Error sending email:', error)
+    console.error('❌ Error sending meeting confirmation email:', error)
+    if (error instanceof Error) {
+      console.error('   Error message:', error.message)
+      console.error('   Error stack:', error.stack)
+    }
+    // @ts-ignore - log the full error object
+    if (error?.response) {
+      // @ts-ignore
+      console.error('   API Response:', JSON.stringify(error.response, null, 2))
+    }
     return false
   }
 }
@@ -117,22 +151,31 @@ export async function sendMeetingCancellation(meeting: Meeting, reason?: string)
 /**
  * Generate meeting confirmation HTML
  */
-function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): string {
+function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date, meetLink?: string): string {
   return `
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #0ea5e9; color: white; padding: 20px; text-align: center; }
-    .content { background: #f8f9fa; padding: 30px; }
-    .meeting-details { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #0ea5e9; }
-    .detail-row { margin: 10px 0; }
-    .label { font-weight: bold; color: #666; }
-    .value { color: #333; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
-    .button { display: inline-block; padding: 12px 24px; background: #0ea5e9; color: white !important; text-decoration: none; border-radius: 5px; margin: 10px 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #e5e7eb; background: #0a1929; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; background: #0f1d35; }
+    .header { background: linear-gradient(135deg, #03c9a9 0%, #02a88d 100%); color: white; padding: 40px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
+    .content { padding: 40px 30px; background: #0f1d35; }
+    .content p { color: #d1d5db; margin: 16px 0; }
+    .meeting-details { background: rgba(3, 201, 169, 0.1); border-left: 4px solid #03c9a9; padding: 24px; margin: 24px 0; border-radius: 8px; }
+    .detail-row { margin: 12px 0; display: flex; align-items: baseline; }
+    .label { font-weight: 600; color: #03c9a9; min-width: 100px; }
+    .value { color: #f3f4f6; }
+    .button { display: inline-block; padding: 14px 28px; background: #03c9a9; color: white !important; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: 600; transition: background 0.2s; }
+    .button:hover { background: #02a88d; }
+    .footer { text-align: center; padding: 30px 20px; color: #9ca3af; font-size: 14px; background: #0a1929; border-top: 1px solid rgba(255,255,255,0.1); }
+    .footer a { color: #03c9a9; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .meet-link-box { background: rgba(3, 201, 169, 0.15); border: 2px solid #03c9a9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0; }
+    .meet-link-box a { color: #03c9a9; font-weight: 600; word-break: break-all; }
   </style>
 </head>
 <body>
@@ -155,7 +198,7 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
         </div>
         <div class="detail-row">
           <span class="label">Time:</span>
-          <span class="value">${format(meeting.date, 'h:mm a')} - ${format(endTime, 'h:mm a')} EST</span>
+          <span class="value">${format(meeting.date, 'h:mm a')} - ${format(endTime, 'h:mm a')}</span>
         </div>
         <div class="detail-row">
           <span class="label">Duration:</span>
@@ -173,18 +216,27 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
         }
       </div>
 
-      <p>A calendar invitation has been sent separately. You'll receive a reminder 24 hours before the meeting.</p>
+      ${
+        meetLink
+          ? `
+      <div class="meet-link-box">
+        <p style="margin: 0 0 10px 0; color: #03c9a9; font-weight: 600;">📹 Join Video Call</p>
+        <a href="${meetLink}">${meetLink}</a>
+      </div>
+      `
+          : '<p>A calendar invitation with the meeting link has been sent separately.</p>'
+      }
 
       <center>
-        <a href="https://decebaldobrica.com/meetings/${meeting.id}" class="button">View Meeting Details</a>
+        <a href="${meetLink || 'https://decebaldobrica.com/contact'}" class="button">${meetLink ? 'Join Meeting' : 'Add to Calendar'}</a>
       </center>
 
       <p>Looking forward to speaking with you!</p>
-      <p>Best regards,<br>Decebal Dobrica</p>
+      <p style="margin-top: 30px;">Best regards,<br><strong style="color: #03c9a9;">Decebal Dobrica</strong></p>
     </div>
     <div class="footer">
-      <p>Need to reschedule? <a href="https://decebaldobrica.com/contact">Contact us</a></p>
-      <p>&copy; ${new Date().getFullYear()} Decebal Dobrica. All rights reserved.</p>
+      <p>Need to reschedule? <a href="https://decebaldobrica.com/contact">Contact me</a></p>
+      <p style="margin-top: 16px;">&copy; ${new Date().getFullYear()} Decebal Dobrica. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -195,7 +247,7 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date): strin
 /**
  * Generate meeting confirmation plain text
  */
-function generateMeetingConfirmationText(meeting: Meeting, endTime: Date): string {
+function generateMeetingConfirmationText(meeting: Meeting, endTime: Date, meetLink?: string): string {
   return `
 Meeting Confirmed!
 
@@ -205,11 +257,11 @@ Your meeting has been successfully scheduled. Here are the details:
 
 Meeting Type: ${meeting.type}
 Date: ${format(meeting.date, 'EEEE, MMMM d, yyyy')}
-Time: ${format(meeting.date, 'h:mm a')} - ${format(endTime, 'h:mm a')} EST
+Time: ${format(meeting.date, 'h:mm a')} - ${format(endTime, 'h:mm a')}
 Duration: ${meeting.duration} minutes
 ${meeting.notes ? `Notes: ${meeting.notes}` : ''}
 
-A calendar invitation has been sent separately. You'll receive a reminder 24 hours before the meeting.
+${meetLink ? `Join Video Call: ${meetLink}` : 'A calendar invitation with the meeting link has been sent separately.'}
 
 Looking forward to speaking with you!
 
