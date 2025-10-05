@@ -3,6 +3,7 @@
 
 import ContactBookingPage from '@/components/ContactBookingPage'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Contact & Book',
@@ -10,5 +11,16 @@ export const metadata: Metadata = {
 }
 
 export default function ContactPage() {
-  return <ContactBookingPage />
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-4">Loading...</h1>
+          <p className="text-gray-300">Preparing contact form...</p>
+        </div>
+      </div>
+    }>
+      <ContactBookingPage />
+    </Suspense>
+  )
 }
