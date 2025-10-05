@@ -40,8 +40,8 @@ next-env.d.ts
 # Bun
 bun.lockb
 
-# Database
-data/
+# Database (root data/ directory only, not src/data/)
+/data/
 *.db
 *.db-shm
 *.db-wal
