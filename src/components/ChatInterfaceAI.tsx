@@ -1,325 +1,91 @@
 'use client'
 
-import { useToast } from '@/hooks/use-toast'
-import {
-  MEETING_TYPES_WITH_PRICING,
-  createPaymentTransaction,
-  formatSOL,
-  formatUSDEquivalent,
-  getMeetingConfig,
-  requiresPayment,
-} from '@/lib/meetingPayments'
-import { generateUniqueReference } from '@/utils/solanaPay'
-import { Bot, Calendar, CreditCard, Loader2, Send, User } from 'lucide-react'
-import type React from 'react'
+import { useChat } from '@ai-sdk/react'
+import { Bot, Calendar, Loader2, Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import SolanaPaymentModal from './SolanaPaymentModal'
 import { ChatMessage } from './ChatMessage'
 
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-  meetingRequest?: {
-    type: string
-    date?: string
-    duration?: number
-    requiresPayment: boolean
-    price?: number
-  }
-}
-
-const INITIAL_MESSAGE: Message = {
-  id: 'initial',
-  role: 'assistant',
-  content:
-    "Hello! I'm Decebal's AI assistant. I can help you learn about his fractional CTO services, blockchain expertise, and schedule a consultation. Whether you're a VC firm or startup founder, I'm here to help. What would you like to know?",
-  timestamp: new Date('2024-01-01T12:00:00Z'),
-}
-
 const ChatInterfaceAI = () => {
-  const { toast } = useToast()
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
-  const [pendingMeeting, setPendingMeeting] = useState<any>(null)
-  const [conversationId, setConversationId] = useState<string | null>(null)
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null)
-  const [userJustSent, setUserJustSent] = useState(false)
+  const [input, setInput] = useState('')
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(true)
-    }, 100)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Smart scroll: only when user sends a message, bot is typing, or user is at bottom
-  useEffect(() => {
-    if (!chatContainerRef.current) return
-
-    const container = chatContainerRef.current
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
-
-    // Auto-scroll if:
-    // 1. User just sent a message, OR
-    // 2. Bot is currently streaming/typing, OR
-    // 3. User is already near the bottom of the chat
-    if (userJustSent || streamingMessageId || isNearBottom) {
-      // Scroll within the chat container only, not the page
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: 'smooth'
-      })
-      setUserJustSent(false)
-    }
-  }, [messages, userJustSent, streamingMessageId])
-
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!input.trim() || isLoading) return
-
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-    setUserJustSent(true) // Trigger scroll for user message
-
-    try {
-      // Call the AI API (use relative URL in Next.js)
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [
-            ...messages.map((m) => ({ role: m.role, content: m.content })),
-            { role: 'user', content: input },
-          ],
-          conversationId,
-          userId: 'guest', // TODO: Replace with actual user ID if you have auth
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get response from AI')
-      }
-
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-      let assistantMessage = ''
-      const currentMessageId = `assistant-${Date.now()}`
-
-      if (reader) {
-        // Set streaming state for the current message
-        setStreamingMessageId(currentMessageId)
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6)
-
-              if (data === '[DONE]') {
-                break
-              }
-
-              try {
-                const parsed = JSON.parse(data)
-
-                if (parsed.type === 'init') {
-                  // Set conversation ID from API
-                  setConversationId(parsed.conversationId)
-                } else if (parsed.type === 'chunk') {
-                  // Streaming chunk from API
-                  assistantMessage += parsed.content
-
-                  // Detect meeting request in the message
-                  const meetingKeywords = ['schedule', 'meeting', 'book', 'consultation']
-                  const hasMeetingIntent = meetingKeywords.some((keyword) =>
-                    assistantMessage.toLowerCase().includes(keyword)
-                  )
-
-                  // Update or add assistant message
-                  setMessages((prev) => {
-                    const existingIndex = prev.findIndex((m) => m.id === currentMessageId)
-                    if (existingIndex >= 0) {
-                      const updated = [...prev]
-                      updated[existingIndex] = {
-                        ...updated[existingIndex],
-                        content: assistantMessage,
-                      }
-                      return updated
-                    } else {
-                      return [
-                        ...prev,
-                        {
-                          id: currentMessageId,
-                          role: 'assistant',
-                          content: assistantMessage,
-                          timestamp: new Date(),
-                        },
-                      ]
-                    }
-                  })
-                } else if (parsed.type === 'complete') {
-                  // Stream complete - stop streaming animation
-                  console.log('✅ Response complete')
-                  setStreamingMessageId(null)
-                } else if (parsed.type === 'error') {
-                  // Handle error from API
-                  console.error('API Error:', parsed.error)
-                  setStreamingMessageId(null)
-                  throw new Error(parsed.error)
-                }
-              } catch (e) {
-                // Skip invalid JSON
-                if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
-                  console.error('Stream parsing error:', e)
-                }
-              }
-            }
-          }
-        }
-      }
-
-      setIsLoading(false)
-      setStreamingMessageId(null)
-    } catch (error) {
-      console.error('Chat error:', error)
-
-      // Add error message
-      const errorMessage: Message = {
-        id: `error-${Date.now()}`,
+  const { messages, status, error, sendMessage } = useChat({
+    api: '/api/chat',
+    initialMessages: [
+      {
+        id: 'initial',
         role: 'assistant',
-        content:
-          "I apologize, but I'm having trouble connecting to the AI service right now. This might be because Ollama isn't running or isn't configured properly. Please make sure Ollama is running at http://localhost:11434 with the llama3.2 model installed.",
-        timestamp: new Date(),
-      }
+        createdAt: new Date(),
+        parts: [
+          {
+            type: 'text',
+            text: "Hello! I'm Decebal's AI assistant. I can answer questions about his fractional CTO services, blockchain expertise, and technical background. If you'd like to schedule a consultation, just let me know and I'll direct you to the booking form below!",
+          },
+        ],
+      },
+    ],
+  })
 
-      setMessages((prev) => [...prev, errorMessage])
-      setIsLoading(false)
-      setStreamingMessageId(null)
-
-      toast({
-        title: 'Connection Error',
-        description: 'Unable to connect to AI service',
-        variant: 'destructive',
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
       })
     }
-  }
-
-  // Handle booking a meeting with payment
-  const handleBookMeeting = (meetingType: string) => {
-    const config = getMeetingConfig(meetingType)
-
-    if (!config) {
-      toast({
-        title: 'Invalid Meeting Type',
-        description: 'Please select a valid meeting type',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    // Store pending meeting info
-    setPendingMeeting({
-      type: meetingType,
-      duration: config.duration,
-      price: config.price,
-      requiresPayment: config.requiresPayment,
-    })
-
-    if (config.requiresPayment) {
-      // Show payment modal
-      setShowPaymentModal(true)
-    } else {
-      // Free meeting - proceed directly
-      confirmMeetingBooking(meetingType)
-    }
-  }
-
-  // Confirm meeting booking after payment (or for free meetings)
-  const confirmMeetingBooking = async (meetingType: string) => {
-    // Send confirmation message to chat
-    const confirmMessage = `Great! I'd like to book a ${meetingType}. Please provide your email and preferred date/time.`
-
-    setInput(confirmMessage)
-
-    // Automatically send the message
-    const syntheticEvent = { preventDefault: () => {} } as React.FormEvent
-    await handleSend(syntheticEvent)
-  }
-
-  // Handle successful payment
-  const handlePaymentSuccess = () => {
-    if (pendingMeeting) {
-      toast({
-        title: '✅ Payment Successful!',
-        description: `Your payment of ${formatSOL(pendingMeeting.price)} has been confirmed.`,
-      })
-
-      confirmMeetingBooking(pendingMeeting.type)
-      setPendingMeeting(null)
-    }
-  }
+  }, [messages])
 
   return (
-    <div
-      data-testid="chat-interface"
-      className={`w-full transform transition-all duration-500 ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-      }`}
-    >
-      {/* Chat header with AI indicator */}
-      <div className="bg-gradient-to-r from-brand-teal to-brand-teal/80 text-white px-6 py-4 rounded-t-lg shadow-lg flex items-center relative overflow-hidden">
+    <div data-testid="chat-interface" className="flex flex-col h-[600px] w-full max-w-4xl mx-auto border border-white/10 rounded-lg overflow-hidden shadow-xl">
+      {/* Chat header */}
+      <div className="bg-gradient-to-r from-brand-teal to-brand-teal/80 text-white px-6 py-3 flex items-center justify-between relative overflow-hidden flex-shrink-0">
         <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent opacity-20"></div>
-        <div className="absolute -left-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-glow"></div>
-        <Bot className="w-6 h-6 mr-2 relative z-10" />
-        <div className="relative z-10">
-          <h3 className="font-medium text-lg">AI Assistant</h3>
-          <p className="text-xs text-white/80">Context-aware • Meeting Scheduler</p>
+        <div className="flex items-center relative z-10">
+          <Bot className="w-5 h-5 mr-2" />
+          <div>
+            <h3 className="font-medium text-base">AI Assistant</h3>
+            <p className="text-xs text-white/80">Powered by Groq • Llama 3.1</p>
+          </div>
         </div>
       </div>
 
       {/* Chat message area */}
       <div
         ref={chatContainerRef}
-        className="bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90 min-h-[450px] max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90"
       >
-        <div className="px-5 py-6 space-y-4">
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              message={message}
-              index={index}
-              isStreaming={message.id === streamingMessageId}
-            />
-          ))}
+          {messages.map((message, index) => {
+            // Extract text content from message parts (AI SDK v5 format)
+            const content = message.parts
+              .filter((part) => part.type === 'text')
+              .map((part) => part.text)
+              .join('')
 
-          {isLoading && !streamingMessageId && (
-            <div className="flex items-start gap-2 text-left animate-fade-in">
-              <Bot className="w-4 h-4 text-brand-teal mt-1" />
-              <div className="bg-white/10 text-white px-4 py-3 rounded-lg rounded-bl-none flex items-center space-x-2">
+            return (
+              <ChatMessage
+                key={message.id}
+                message={{
+                  id: message.id,
+                  role: message.role as 'user' | 'assistant',
+                  content,
+                  timestamp: message.createdAt || new Date(),
+                }}
+                index={index}
+                isStreaming={false}
+              />
+            )
+          })}
+
+        {status !== 'ready' && (
+          <div className="py-6 px-4 bg-white/5 animate-fade-in">
+            <div className="max-w-3xl mx-auto flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-brand-teal flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              <div className="flex-1 flex items-center gap-2">
                 <div className="flex space-x-1">
                   <span
                     className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
@@ -334,88 +100,84 @@ const ChatInterfaceAI = () => {
                     style={{ animationDelay: '0.4s' }}
                   ></span>
                 </div>
-                <span className="text-sm text-gray-300">AI is thinking...</span>
+                <span className="text-sm text-gray-300">Thinking...</span>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="py-6 px-4">
+            <div className="max-w-3xl mx-auto bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-sm text-red-300">
+              <p className="font-medium">Error: {error.message}</p>
+              <p className="text-xs mt-1">
+                Please check your connection and try again
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input area */}
-      <form
-        onSubmit={handleSend}
-        className="bg-gradient-to-r from-brand-navy to-brand-darknavy p-4 rounded-b-lg border-t border-white/10 flex animate-slide-up shadow-lg"
-        style={{ animationDelay: '0.3s' }}
-      >
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about Decebal's work or schedule a meeting..."
-          className="flex-1 bg-white/5 border border-white/20 rounded-l-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-teal/50 focus:border-transparent transition-all duration-300 placeholder:text-white/40"
-          disabled={isLoading}
-        />
-        <button
-          type="submit"
-          className="bg-brand-teal text-white rounded-r-lg hover:bg-brand-teal/80 transition-all duration-300 disabled:opacity-50 px-4 flex items-center justify-center group relative"
-          disabled={isLoading || !input.trim()}
+      <div className="border-t border-white/10 bg-gradient-to-r from-brand-navy to-brand-darknavy p-4 flex-shrink-0">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault()
+            if (!input.trim() || status !== 'ready') return
+            await sendMessage({ text: input })
+            setInput('')
+          }}
+          className="flex gap-2"
         >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Send className="h-5 w-5 group-hover:scale-110 transition-transform" />
-          )}
-        </button>
-      </form>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about Decebal's work or schedule a meeting..."
+            className="flex-1 bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-teal/50 focus:border-transparent transition-all duration-300 placeholder:text-white/40"
+            disabled={status !== 'ready'}
+          />
+          <button
+            type="submit"
+            className="bg-brand-teal text-white rounded-lg hover:bg-brand-teal/80 transition-all duration-300 disabled:opacity-50 px-5 flex items-center justify-center group relative"
+            disabled={status !== 'ready' || !input.trim()}
+          >
+            {status !== 'ready' ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Send className="h-5 w-5 group-hover:scale-110 transition-transform" />
+            )}
+          </button>
+        </form>
 
-      {/* Helpful info */}
-      <div className="mt-4 p-3 bg-brand-teal/10 border border-brand-teal/20 rounded-lg">
-        <div className="flex items-start gap-2 text-sm text-gray-300">
-          <Calendar className="w-4 h-4 text-brand-teal mt-0.5 flex-shrink-0" />
-          <div className="w-full">
-            <p className="font-medium text-brand-teal">💡 Try asking me to:</p>
-            <ul className="mt-1 space-y-1 text-xs">
-              <li>
-                <button
-                  onClick={() => setInput("Tell me about your fractional CTO services")}
-                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
-                >
-                  • Tell you about fractional CTO services
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setInput('How can you help VC-backed startups?')}
-                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
-                >
-                  • How Decebal helps VC-backed startups
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setInput('I want to schedule a consultation')}
-                  className="text-left hover:text-brand-teal transition-colors cursor-pointer"
-                >
-                  • Schedule a consultation
-                </button>
-              </li>
-            </ul>
-          </div>
+        {/* Suggestion chips */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            onClick={() => setInput('What are your fractional CTO services?')}
+            type="button"
+            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
+            disabled={status !== 'ready'}
+          >
+            Fractional CTO services
+          </button>
+          <button
+            onClick={() => setInput('Tell me about your blockchain experience')}
+            type="button"
+            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
+            disabled={status !== 'ready'}
+          >
+            Blockchain experience
+          </button>
+          <button
+            onClick={() => setInput('How do I schedule a consultation?')}
+            type="button"
+            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
+            disabled={status !== 'ready'}
+          >
+            Schedule consultation
+          </button>
         </div>
       </div>
-
-
-      {/* Payment Modal */}
-      {pendingMeeting && (
-        <SolanaPaymentModal
-          open={showPaymentModal}
-          onOpenChange={setShowPaymentModal}
-          amount={pendingMeeting.price}
-          serviceName={pendingMeeting.type}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
-      )}
     </div>
   )
 }

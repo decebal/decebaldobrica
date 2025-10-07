@@ -9,7 +9,7 @@ Comprehensive guide for deploying your portfolio to Vercel with all integrations
 4. [Google Calendar Setup](#google-calendar-setup)
 5. [Domain Configuration](#domain-configuration)
 6. [Database Configuration](#database-configuration)
-7. [Ollama AI Setup](#ollama-ai-setup)
+7. [Groq AI Setup](#groq-ai-setup)
 8. [Solana Pay Configuration](#solana-pay-configuration)
 9. [Post-Deployment Verification](#post-deployment-verification)
 10. [Troubleshooting](#troubleshooting)
@@ -72,9 +72,8 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxx
 GOOGLE_REDIRECT_URI=https://developers.google.com/oauthplayground
 GOOGLE_REFRESH_TOKEN=1//xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# Ollama AI (if self-hosting)
-OLLAMA_BASE_URL=https://your-ollama-server.com
-# OR leave empty to disable AI features in production
+# Groq AI Chat
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Solana Pay (Optional)
 NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta
@@ -319,30 +318,42 @@ For development/testing only:
 
 ---
 
-## Ollama AI Setup
+## Groq AI Setup
 
-### Option 1: Disable AI in Production (Simplest)
+### Fast LLM API with Groq
 
-Don't set `OLLAMA_BASE_URL` in Vercel environment variables. The app will gracefully disable AI features.
+Your portfolio uses **Groq** - a high-performance LLM API provider with custom LPU (Language Processing Unit) hardware for ultra-fast inference.
 
-### Option 2: Self-Host Ollama
+✅ **Free tier available** - Generous limits for personal projects
+✅ **Fast responses** - Groq's custom hardware delivers quick inference
+✅ **Llama 3.1 8B** - Using the `llama-3.1-8b-instant` model
+✅ **Simple setup** - Just add API key to environment variables
 
-1. Set up a VPS (DigitalOcean, AWS, etc.)
-2. Install Ollama: `curl https://ollama.ai/install.sh | sh`
-3. Pull model: `ollama pull llama3.2:3b`
-4. Run with network access: `OLLAMA_HOST=0.0.0.0:11434 ollama serve`
-5. Set up reverse proxy (nginx) with HTTPS
-6. Add to Vercel: `OLLAMA_BASE_URL=https://your-ollama-server.com`
+### Getting Your Groq API Key
 
-### Option 3: Use OpenAI API (Alternative)
+1. Go to https://console.groq.com
+2. Sign up for a free account
+3. Navigate to API Keys section
+4. Create a new API key
+5. Copy the key (starts with `gsk_`)
 
-Replace Ollama with OpenAI:
-1. Sign up at https://platform.openai.com
-2. Generate API key
-3. Update code to use OpenAI instead of Ollama
-4. Add to Vercel: `OPENAI_API_KEY=sk-...`
+### Add to Vercel
 
-**Recommended**: Disable AI in production initially, enable later if needed.
+Add this environment variable in Vercel Dashboard → Settings → Environment Variables:
+
+```bash
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+The chat will automatically start working with Groq's API after deployment.
+
+### Rate Limits (Free Tier)
+
+- Requests per minute: varies by model
+- Tokens per minute: ~6,000 for llama-3.1-8b-instant
+- Should be sufficient for most personal portfolio traffic
+
+If you need higher limits, Groq offers paid plans.
 
 ---
 
@@ -574,6 +585,6 @@ Minimal viable deployment:
 - **Cost**: Vercel free tier includes 100GB bandwidth/month
 - **Resend**: Free tier includes 3,000 emails/month
 - **Database**: SQLite on Vercel is NOT persistent (use Postgres for production)
-- **AI Features**: Consider disabling Ollama in production initially
+- **AI Features**: Groq provides free tier for AI chat with fast inference
 
 Good luck with your deployment! 🚀

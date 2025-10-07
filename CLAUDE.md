@@ -46,14 +46,13 @@ task check:all          # Run all checks
 - Semicolons as needed (not always)
 - Import type enforcement (`import type` required for types)
 
-### AI Services (Ollama)
-```bash
-task ai:status          # Check if Ollama is running
-task ai:models          # List available models
-task ai:pull MODEL=llama3.2  # Pull a model
-```
+### AI Services (Groq)
 
-**Required:** Ollama must be running at `http://localhost:11434` with model `llama3.2:3b` for the chat feature to work.
+AI chat uses Groq's fast LLM API with Llama 3.1 model. **Free tier available!**
+
+- Model: llama-3.1-8b-instant
+- Fast inference with Groq's custom LPU hardware
+- Requires `GROQ_API_KEY` environment variable
 
 ### Database (SQLite)
 ```bash
@@ -79,10 +78,9 @@ task payment:test        # Test Solana Pay integration
 - **Bun** as package manager and runtime
 - **TypeScript** with strict checking
 - **Tailwind CSS** + shadcn/ui components
-- **Ollama** for AI chat (local LLM)
+- **Groq** for AI chat (Llama 3.1 8B Instant)
 - **Solana Pay** for payments
 - **SQLite** (better-sqlite3) for data persistence
-- **RAG** (optional: ChromaDB for knowledge base)
 - **MDX** for blog posts with frontmatter
 
 ### Personal Configuration
@@ -103,16 +101,13 @@ To add new posts:
 ```
 src/
 ├── app/                    # Next.js App Router pages
-│   ├── api/chat/          # Chat API route handler
 │   ├── blog/              # Blog pages
 │   ├── contact/           # Contact page
 │   └── page.tsx           # Home page
 ├── actions/               # Server Actions (Next.js)
-│   ├── chat-action.ts     # Chat operations
 │   ├── meeting-action.ts  # Meeting scheduling
 │   └── payment-action.ts  # Payment processing
 ├── lib/                   # Core business logic
-│   ├── ollamaChat.ts      # AI chat with RAG integration
 │   ├── chatHistory.ts     # SQLite database layer
 │   ├── meetingPayments.ts # Payment configuration
 │   ├── googleCalendar.ts  # Google Calendar API
@@ -125,6 +120,7 @@ src/
 ├── components/            # React components
 │   ├── ui/               # shadcn/ui components
 │   ├── layouts/          # Layout components
+│   ├── ChatInterfaceAI.tsx # AI chat interface
 │   └── icons/            # Icon components
 ├── utils/                # Utility functions
 └── hooks/                # React hooks
@@ -150,11 +146,11 @@ docs/
 4. Results return to client components
 
 **AI Chat System:**
-- Uses Ollama (llama3.2:3b) for chat responses
-- Optional RAG system (ChromaDB) for portfolio context
-- Gracefully falls back to stub if RAG unavailable
-- Detects meeting/availability intents from user messages
-- Streams responses for better UX
+- Uses Groq API with Llama 3.1 8B Instant model
+- Vercel AI SDK v5 with `useChat` hook for streaming responses
+- System prompt configured with portfolio context for accurate answers
+- Redirects scheduling requests to booking form below chat
+- Max tokens limited to 400 for concise responses
 
 **Database Layer:**
 - Single SQLite database with 4 tables: `conversations`, `messages`, `analytics_events`, `payments`
@@ -177,12 +173,12 @@ docs/
 **next.config.ts:**
 - TypeScript and ESLint errors ignored during builds (use `task lint` and `task type-check` instead)
 - Uses Turbopack for fast dev mode (not webpack)
-- Native packages (better-sqlite3, chromadb) externalized via `serverExternalPackages`
+- Native packages (better-sqlite3) externalized via `serverExternalPackages`
 - Server Actions body size limit: 2MB
 
 **Environment Variables:**
 See `.env.example` for all required variables. Key ones:
-- `OLLAMA_BASE_URL` - Must be set for AI chat
+- `GROQ_API_KEY` - Required for AI chat functionality
 - `NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS` - Required for payments
 - `RESEND_API_KEY` - Required for emails
 - `GOOGLE_REFRESH_TOKEN` - Required for calendar integration
@@ -191,7 +187,6 @@ See `.env.example` for all required variables. Key ones:
 
 1. **Before starting development:**
    ```bash
-   task ai:status    # Ensure Ollama is running
    task db:init      # Initialize database
    task test:install # Install Playwright browsers (first time only)
    ```
@@ -201,17 +196,15 @@ See `.env.example` for all required variables. Key ones:
    - E2E tests will catch missing directives early
    - Server components are the default in Next.js 15 App Router
 
-3. **RAG system** is optional and may fail to load (chromadb issues). The app gracefully falls back to a stub implementation.
+3. **Payment testing:** Use Solana devnet for testing. Set `NEXT_PUBLIC_SOLANA_NETWORK=devnet`.
 
-4. **Payment testing:** Use Solana devnet for testing. Set `NEXT_PUBLIC_SOLANA_NETWORK=devnet`.
+4. **Database changes:** The schema auto-initializes on first import of `chatHistory.ts`. For manual changes, use SQLite CLI or update the schema in that file.
 
-5. **Database changes:** The schema auto-initializes on first import of `chatHistory.ts`. For manual changes, use SQLite CLI or update the schema in that file.
+5. **Adding new meeting types:** Edit `MEETING_TYPES_WITH_PRICING` in `src/lib/meetingPayments.ts` and `MEETING_TYPES` in `src/lib/portfolioContext.ts`.
 
-6. **Adding new meeting types:** Edit `MEETING_TYPES_WITH_PRICING` in `src/lib/meetingPayments.ts` and `MEETING_TYPES` in `src/lib/portfolioContext.ts`.
+6. **Styling:** Uses Tailwind + shadcn/ui. Components are in `src/components/ui/`. Use `cn()` utility from `src/lib/utils.ts` for conditional classes.
 
-7. **Styling:** Uses Tailwind + shadcn/ui. Components are in `src/components/ui/`. Use `cn()` utility from `src/lib/utils.ts` for conditional classes.
-
-8. **Testing before deployment:**
+7. **Testing before deployment:**
    ```bash
    task test:e2e     # Catch runtime errors early
    task lint:fix     # Fix linting issues
@@ -228,7 +221,7 @@ See `.env.example` for all required variables. Key ones:
 4. Import and use in client components
 
 ### Modify AI chat behavior
-Edit system prompt in `src/lib/ollamaChat.ts:294-316`
+Edit system prompt in `src/lib/portfolioContext.ts` (PORTFOLIO_CONTEXT constant) or adjust maxTokens in `src/app/api/chat/route.ts`
 
 ### Add new analytics events
 Use `trackEvent()` from `src/lib/chatHistory.ts` with custom event types

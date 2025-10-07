@@ -80,29 +80,6 @@ tasks:
       - rm -rf node_modules
       - rm -rf out
 
-  # === AI SERVICES ===
-  ai:status:
-    desc: Check if Ollama is running
-    cmds:
-      - cmd: |
-          echo "Checking Ollama..."
-          curl -s http://localhost:11434/api/tags > /dev/null && echo "✅ Ollama: Running" || echo "❌ Ollama: Not running"
-
-  ai:models:
-    desc: List available Ollama models
-    cmds:
-      - ollama list
-
-  ai:pull:
-    desc: Pull a specific Ollama model (usage - task ai:pull MODEL=llama3.2)
-    cmds:
-      - ollama pull {{.MODEL}}
-
-  ai:start:
-    desc: Start Ollama service (macOS)
-    cmds:
-      - ollama serve
-
   # === DATABASE ===
   db:init:
     desc: Initialize SQLite database
