@@ -1,12 +1,12 @@
 'use client'
 
+import { featureFlags } from '@/lib/featureFlags'
 import { config } from '@/lib/personalConfig'
 import { ChevronDown, Play } from 'lucide-react'
 import React, { useState } from 'react'
 import { GlowButton } from './ui/glow-button'
 import { NeonButton } from './ui/neon-button'
 import { SpotlightCard } from './ui/spotlight-card'
-import { featureFlags } from '@/lib/featureFlags'
 
 const HeroSection = () => {
   const [showVideo, setShowVideo] = useState(false)
@@ -36,9 +36,7 @@ const HeroSection = () => {
             style={{ animationDelay: '0.4s' }}
           >
             <GlowButton onClick={scrollToAbout}>Learn More About Me</GlowButton>
-            <NeonButton
-              onClick={() => (window.location.href = '/contact?category=Homepage+Hero')}
-            >
+            <NeonButton onClick={() => (window.location.href = '/contact?category=Homepage+Hero')}>
               Get in Touch
             </NeonButton>
           </div>

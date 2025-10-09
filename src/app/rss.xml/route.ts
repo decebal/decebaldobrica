@@ -1,8 +1,8 @@
 // RSS feed route handler
 // Generates RSS 2.0 feed from blog posts
 
-import { getAllBlogPosts, type BlogPost } from '@/lib/blogPosts'
-import { type NextRequest } from 'next/server'
+import { type BlogPost, getAllBlogPosts } from '@/lib/blogPosts'
+import type { NextRequest } from 'next/server'
 
 const generateRssFeed = (posts: BlogPost[]): string => {
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'

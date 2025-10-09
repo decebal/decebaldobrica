@@ -1,11 +1,11 @@
 'use client'
 
+import { Highlighter } from '@/components/ui/highlighter'
+import NumberTicker from '@/components/ui/number-ticker'
 import { config } from '@/lib/personalConfig'
+import { motion } from 'framer-motion'
 import { Award, Briefcase, GraduationCap, Heart, TrendingUp, Users, Zap } from 'lucide-react'
 import React, { useEffect, useRef } from 'react'
-import NumberTicker from '@/components/ui/number-ticker'
-import { motion } from 'framer-motion'
-import { Highlighter } from '@/components/ui/highlighter'
 
 const AboutSection = () => {
   const sectionRef = useRef<HTMLElement>(null)
@@ -39,19 +39,17 @@ const AboutSection = () => {
   }, [])
 
   const stats = [
-    { value: 15, label: "Years Experience", icon: Briefcase, suffix: "+" },
-    { value: 300, label: "Productivity Boost", icon: TrendingUp, suffix: "%" },
-    { value: 75, label: "Cost Reduction", icon: Zap, suffix: "%" },
-    { value: 10, label: "Team Size Led", icon: Users, suffix: "+" },
+    { value: 15, label: 'Years Experience', icon: Briefcase, suffix: '+' },
+    { value: 300, label: 'Productivity Boost', icon: TrendingUp, suffix: '%' },
+    { value: 75, label: 'Cost Reduction', icon: Zap, suffix: '%' },
+    { value: 10, label: 'Team Size Led', icon: Users, suffix: '+' },
   ]
 
   return (
     <section id="about" className="py-20" ref={sectionRef}>
       <div className="section-container">
         <h2 className="section-title">About Me</h2>
-        <p className="section-subtitle">
-          {config.tagline}
-        </p>
+        <p className="section-subtitle">{config.tagline}</p>
 
         {/* Animated Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 mb-16">
@@ -90,8 +88,9 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    {config.professional.yearsExperience} years as a {config.professional.title}. Recently led engineering teams at Ebury and built smart contract solutions at Mundo Wallet.
-                    {' '}{config.achievements.description}.
+                    {config.professional.yearsExperience} years as a {config.professional.title}.
+                    Recently led engineering teams at Ebury and built smart contract solutions at
+                    Mundo Wallet. {config.achievements.description}.
                   </p>
                 </div>
               </div>
@@ -107,8 +106,9 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    {config.education.degree} from {config.education.institution}. {config.education.certifications.slice(0, 2).join(', ')},
-                    and ongoing professional development.
+                    {config.education.degree} from {config.education.institution}.{' '}
+                    {config.education.certifications.slice(0, 2).join(', ')}, and ongoing
+                    professional development.
                   </p>
                 </div>
               </div>
@@ -124,8 +124,9 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    Led teams of {config.achievements.teamSize} engineers at Tellimer, Breakout Clips, and multiple startups.
-                    Expert in trunk development, monorepo strategies, and cloud architecture.
+                    Led teams of {config.achievements.teamSize} engineers at Tellimer, Breakout
+                    Clips, and multiple startups. Expert in trunk development, monorepo strategies,
+                    and cloud architecture.
                   </p>
                 </div>
               </div>
@@ -141,8 +142,8 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    Writing extensively about AI engineering, event sourcing, and software architecture.
-                    Passionate about GenAI integration and emerging technologies.
+                    Writing extensively about AI engineering, event sourcing, and software
+                    architecture. Passionate about GenAI integration and emerging technologies.
                   </p>
                 </div>
               </div>

@@ -1,7 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import React, { CSSProperties } from 'react'
+import type React from 'react'
+import type { CSSProperties } from 'react'
 
 interface NeonGradientCardProps {
   children: React.ReactNode

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -13,13 +12,14 @@ import {
 } from '@/components/ui/select'
 import {
   CRYPTO_PAYMENT_METHODS,
-  PAYMENT_GATEWAYS,
-  L2_NETWORKS,
-  recommendPaymentMethod,
-  estimateTransactionFee,
   type CryptoPaymentMethod,
+  L2_NETWORKS,
+  PAYMENT_GATEWAYS,
+  estimateTransactionFee,
+  recommendPaymentMethod,
 } from '@/lib/cryptoPayments'
-import { Info, CheckCircle2, Zap, Shield } from 'lucide-react'
+import { CheckCircle2, Info, Shield, Zap } from 'lucide-react'
+import { useState } from 'react'
 
 interface CryptoPaymentSelectorProps {
   amountUsd: number
@@ -159,15 +159,9 @@ export default function CryptoPaymentSelector({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="polygon">
-                  Polygon (MATIC) - ~$0.01-0.10 fee
-                </SelectItem>
-                <SelectItem value="arbitrum">
-                  Arbitrum - ~$0.01-0.50 fee
-                </SelectItem>
-                <SelectItem value="base">
-                  Base - ~$0.01-0.30 fee
-                </SelectItem>
+                <SelectItem value="polygon">Polygon (MATIC) - ~$0.01-0.10 fee</SelectItem>
+                <SelectItem value="arbitrum">Arbitrum - ~$0.01-0.50 fee</SelectItem>
+                <SelectItem value="base">Base - ~$0.01-0.30 fee</SelectItem>
                 <SelectItem value="mainnet">
                   Ethereum Mainnet - ~$2-10 fee (not recommended)
                 </SelectItem>
@@ -193,9 +187,7 @@ export default function CryptoPaymentSelector({
                 <SelectItem value="lightning">
                   Lightning Network - ~$0.001 fee (recommended)
                 </SelectItem>
-                <SelectItem value="mainnet">
-                  Bitcoin Mainnet - ~$1-5 fee
-                </SelectItem>
+                <SelectItem value="mainnet">Bitcoin Mainnet - ~$1-5 fee</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>

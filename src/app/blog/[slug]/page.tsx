@@ -1,16 +1,16 @@
-import { getBlogPost, getAllBlogPosts } from '@/lib/blogPosts'
-import { formatDate } from '@/lib/blogPosts'
+import { BlogCTA } from '@/components/BlogCTA'
 import Footer from '@/components/Footer'
 import { Badge } from '@/components/ui/badge'
-import { BlogCTA } from '@/components/BlogCTA'
-import { Calendar, Clock, User, ArrowLeft } from 'lucide-react'
+import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
+import { formatDate } from '@/lib/blogPosts'
+import { ArrowLeft, Calendar, Clock, User } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import 'highlight.js/styles/github-dark.css'
 
 interface BlogPostPageProps {
@@ -146,9 +146,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       ),
                       p: ({ children }) => <p className="text-gray-300 mb-4">{children}</p>,
                       ul: ({ children }) => (
-                        <ul className="list-disc pl-6 text-gray-300 mb-4 space-y-1">
-                          {children}
-                        </ul>
+                        <ul className="list-disc pl-6 text-gray-300 mb-4 space-y-1">{children}</ul>
                       ),
                       ol: ({ children }) => (
                         <ol className="list-decimal pl-6 text-gray-300 mb-4 space-y-1">
@@ -175,11 +173,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             </code>
                           )
                         }
-                        return (
-                          <code className={className}>
-                            {children}
-                          </code>
-                        )
+                        return <code className={className}>{children}</code>
                       },
                       pre: ({ children }) => (
                         <pre className="bg-gray-900 rounded-lg p-4 overflow-x-auto mb-4">
@@ -192,11 +186,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         </blockquote>
                       ),
                       img: ({ src, alt }) => (
-                        <img
-                          src={src}
-                          alt={alt || ''}
-                          className="rounded-lg my-6 w-full"
-                        />
+                        <img src={src} alt={alt || ''} className="rounded-lg my-6 w-full" />
                       ),
                       hr: () => <hr className="border-white/10 my-6" />,
                     }}

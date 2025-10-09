@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Chat Interface on Contact Page', () => {
   test('should render contact page with chat interface without errors', async ({ page }) => {
@@ -34,10 +34,7 @@ test.describe('Chat Interface on Contact Page', () => {
     }
 
     // Fail test if there are React errors
-    expect(
-      hasHydrationError,
-      `React errors detected:\n${errors.join('\n')}`
-    ).toBe(false)
+    expect(hasHydrationError, `React errors detected:\n${errors.join('\n')}`).toBe(false)
   })
 
   test('should display chat interface', async ({ page }) => {
@@ -45,7 +42,9 @@ test.describe('Chat Interface on Contact Page', () => {
     await page.waitForLoadState('networkidle')
 
     // Check for AI Assistant header within chat interface
-    await expect(page.locator('[data-testid="chat-interface"] h3:has-text("AI Assistant")')).toBeVisible({ timeout: 10000 })
+    await expect(
+      page.locator('[data-testid="chat-interface"] h3:has-text("AI Assistant")')
+    ).toBeVisible({ timeout: 10000 })
   })
 
   test('should have chat input field', async ({ page }) => {

@@ -126,7 +126,10 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
             dateTime: endDateTime.toISOString(),
             timeZone: timezone,
           },
-          attendees: [{ email }, { email: process.env.CALENDAR_OWNER_EMAIL || 'discovery@decebaldobrica.com' }],
+          attendees: [
+            { email },
+            { email: process.env.CALENDAR_OWNER_EMAIL || 'discovery@decebaldobrica.com' },
+          ],
           conferenceData: {
             createRequest: {
               requestId: `meeting-${Date.now()}`,
@@ -159,7 +162,9 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         // Continue without calendar - we'll still send the email
       }
     } else {
-      console.log('⚠️ Google Calendar not configured - booking will proceed without calendar integration')
+      console.log(
+        '⚠️ Google Calendar not configured - booking will proceed without calendar integration'
+      )
     }
 
     // Send confirmation email using branded template

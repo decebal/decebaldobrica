@@ -4,13 +4,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Navbar from '@/components/Navbar'
+import ScrollToTop from '@/components/ScrollToTop'
+import TexturedBackground from '@/components/TexturedBackground'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { Toaster } from '@/components/ui/toaster'
-import { Providers } from './providers'
-import Navbar from '@/components/Navbar'
-import TexturedBackground from '@/components/TexturedBackground'
-import ScrollToTop from '@/components/ScrollToTop'
 import { config } from '@/lib/personalConfig'
+import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +20,17 @@ export const metadata: Metadata = {
     template: `%s | ${config.name}`,
   },
   description: config.tagline,
-  keywords: ['Fractional CTO', 'Blockchain', 'Web3', 'TypeScript', 'Rust', 'Serverless', 'VC-backed startups', 'Technical Leadership', 'AI Engineering'],
+  keywords: [
+    'Fractional CTO',
+    'Blockchain',
+    'Web3',
+    'TypeScript',
+    'Rust',
+    'Serverless',
+    'VC-backed startups',
+    'Technical Leadership',
+    'AI Engineering',
+  ],
   authors: [{ name: config.name }],
   creator: config.name,
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || config.website),

@@ -1,7 +1,8 @@
 'use client'
 
-import { ChevronLeft, ChevronRight, Quote, Linkedin, ChevronDown } from 'lucide-react'
-import React, { useState, useRef, useEffect } from 'react'
+import { ChevronDown, ChevronLeft, ChevronRight, Linkedin, Quote } from 'lucide-react'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Highlight } from './ui/Highlight'
 
 interface Testimonial {
@@ -18,145 +19,148 @@ interface Testimonial {
 const testimonials: Testimonial[] = [
   {
     id: 1,
-    name: "Brad Stephens",
-    role: "Co-founder and Head of Product",
-    company: "Breakout Clips",
-    avatar: "/images/proofs/brad.svg",
-    relationship: "September 08, 2024, Brad managed Decebal directly",
+    name: 'Brad Stephens',
+    role: 'Co-founder and Head of Product',
+    company: 'Breakout Clips',
+    avatar: '/images/proofs/brad.svg',
+    relationship: 'September 08, 2024, Brad managed Decebal directly',
     description: (
       <p>
-        Working with Decebal has been a truly rewarding experience. He is one of
-        the most <Highlight>dependable and reliable</Highlight> people I've had
-        the pleasure of collaborating with, always delivering exceptional work,
-        no matter how complex the challenge. His technical expertise is
-        impressive, and his ability to navigate and solve problems quickly is a
-        testament to his skill. What really sets Decebal apart, though, is how
-        he{" "}
-        <Highlight>consistently goes above and beyond for the team</Highlight>.
-        He's not just focused on getting the job done - he deeply cares about
-        the success of the company and the people he works with, always offering
-        support and guidance to ensure we're{" "}
-        <Highlight>all growing together.</Highlight> I feel fortunate to have
-        worked with such a
+        Working with Decebal has been a truly rewarding experience. He is one of the most{' '}
+        <Highlight>dependable and reliable</Highlight> people I've had the pleasure of collaborating
+        with, always delivering exceptional work, no matter how complex the challenge. His technical
+        expertise is impressive, and his ability to navigate and solve problems quickly is a
+        testament to his skill. What really sets Decebal apart, though, is how he{' '}
+        <Highlight>consistently goes above and beyond for the team</Highlight>. He's not just
+        focused on getting the job done - he deeply cares about the success of the company and the
+        people he works with, always offering support and guidance to ensure we're{' '}
+        <Highlight>all growing together.</Highlight> I feel fortunate to have worked with such a
         <Highlight>dedicated and thoughtful leader.</Highlight>
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 2,
-    name: "Jon Heaton",
-    role: "SVP Engineering",
-    company: "Ebury",
-    relationship: "September 29, 2025, Jon managed Decebal directly",
+    name: 'Jon Heaton',
+    role: 'SVP Engineering',
+    company: 'Ebury',
+    relationship: 'September 29, 2025, Jon managed Decebal directly',
     description: (
       <p>
-        Dez works hard and strives to ensure engineers have the right tools, systems and processes in place to do their jobs well. He's a <Highlight>dedicated and hard working leader</Highlight> who cares a lot about the work and the team.
+        Dez works hard and strives to ensure engineers have the right tools, systems and processes
+        in place to do their jobs well. He's a{' '}
+        <Highlight>dedicated and hard working leader</Highlight> who cares a lot about the work and
+        the team.
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 3,
-    name: "Kevin Wallace",
-    role: "Data Deepdiver, Company Builder, Multi-Exit Founder",
-    relationship: "September 26, 2025, Kevin managed Decebal directly",
+    name: 'Kevin Wallace',
+    role: 'Data Deepdiver, Company Builder, Multi-Exit Founder',
+    relationship: 'September 26, 2025, Kevin managed Decebal directly',
     description: (
       <p>
-        I had the privilege of working with Decebal in a part-time capacity and his impact was immediate. He combined <Highlight>strong technical skill with clear communication and thoughtful problem-solving</Highlight> that led to better developer partnership relations. His methodical approach was very appealing to my operational background and he consistently met deadlines assigned without complaint.
-        <br /><br />
-        What impressed me most was how he delivered <Highlight>consistent, high-quality work despite a limited schedule</Highlight>. He managed time well, set clear expectations, and contributed at the level of a full-time teammate. Beyond the code, Decebal brought <Highlight>humility and professionalism</Highlight> (something very rare in tech/blockchain) listening first, giving thoughtful feedback, and raising the standard of collaboration across the team.
-        <br /><br />
-        Simply put? He made difficult tasks manageable and elevated the people around them. I would gladly work with Decebal again and highly recommend them for any team.
+        I had the privilege of working with Decebal in a part-time capacity and his impact was
+        immediate. He combined{' '}
+        <Highlight>
+          strong technical skill with clear communication and thoughtful problem-solving
+        </Highlight>{' '}
+        that led to better developer partnership relations. His methodical approach was very
+        appealing to my operational background and he consistently met deadlines assigned without
+        complaint.
+        <br />
+        <br />
+        What impressed me most was how he delivered{' '}
+        <Highlight>consistent, high-quality work despite a limited schedule</Highlight>. He managed
+        time well, set clear expectations, and contributed at the level of a full-time teammate.
+        Beyond the code, Decebal brought <Highlight>humility and professionalism</Highlight>{' '}
+        (something very rare in tech/blockchain) listening first, giving thoughtful feedback, and
+        raising the standard of collaboration across the team.
+        <br />
+        <br />
+        Simply put? He made difficult tasks manageable and elevated the people around them. I would
+        gladly work with Decebal again and highly recommend them for any team.
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 4,
-    name: "Ian Watt",
-    role: "Co-founder and Head of Product",
-    company: "Tellimer",
-    avatar: "/images/proofs/ian.svg",
-    relationship: "December 16, 2022, Ian managed Decebal directly",
+    name: 'Ian Watt',
+    role: 'Co-founder and Head of Product',
+    company: 'Tellimer',
+    avatar: '/images/proofs/ian.svg',
+    relationship: 'December 16, 2022, Ian managed Decebal directly',
     description: (
       <p>
-        Dez excels at mapping out a birds-eye view of a technical solution and
-        then{" "}
-        <Highlight>
-          working with individual team members to flesh out that solution
-        </Highlight>
-        . With his simultaneous interests in best practices and cutting-edge
-        technology, Dez always encouraged us to look for the best tool for each
-        job. Accordingly, I'm confident Decebal will excel at any firm looking
-        to bring{" "}
-        <Highlight>experience, technical confidence, and stability</Highlight>{" "}
-        to its engineering team.
+        Dez excels at mapping out a birds-eye view of a technical solution and then{' '}
+        <Highlight>working with individual team members to flesh out that solution</Highlight>. With
+        his simultaneous interests in best practices and cutting-edge technology, Dez always
+        encouraged us to look for the best tool for each job. Accordingly, I'm confident Decebal
+        will excel at any firm looking to bring{' '}
+        <Highlight>experience, technical confidence, and stability</Highlight> to its engineering
+        team.
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 5,
-    name: "Daniel Vliegenthart",
-    role: "Senior Data Engineer",
-    company: "Tellimer",
-    avatar: "/images/proofs/daniel.svg",
-    relationship: "April 3, 2023, Daniel worked with Decebal on the same team",
+    name: 'Daniel Vliegenthart',
+    role: 'Senior Data Engineer',
+    company: 'Tellimer',
+    avatar: '/images/proofs/daniel.svg',
+    relationship: 'April 3, 2023, Daniel worked with Decebal on the same team',
     description: (
       <p>
-        Decebal excels at architecting software solutions with{" "}
-        <Highlight>state-of-the-art technology and frameworks</Highlight>. I
-        have benefitted greatly from working with him on projects, and have
-        learnt a lot from his extensive technical knowledge.
+        Decebal excels at architecting software solutions with{' '}
+        <Highlight>state-of-the-art technology and frameworks</Highlight>. I have benefitted greatly
+        from working with him on projects, and have learnt a lot from his extensive technical
+        knowledge.
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 6,
-    name: "Selçuk Cihan",
-    role: "Software Development Engineer",
-    company: "Tellimer",
-    avatar: "/images/proofs/selcuk.svg",
-    relationship: "December 13, 2022, Selcuk reported directly to Decebal",
+    name: 'Selçuk Cihan',
+    role: 'Software Development Engineer',
+    company: 'Tellimer',
+    avatar: '/images/proofs/selcuk.svg',
+    relationship: 'December 13, 2022, Selcuk reported directly to Decebal',
     description: (
       <p>
-        As a full-stack software engineer, Decebal brings a wealth of knowledge
-        and experience in modern web development. He is a versatile and
-        adaptable developer who is able to{" "}
-        <Highlight>quickly learn and apply new technologies</Highlight> to solve
-        complex problems. In addition, he is always{" "}
-        <Highlight>
-          eager to share his knowledge and help his colleagues grow
-        </Highlight>{" "}
-        in their roles. As a manager, Decebal is dedicated to fostering{" "}
+        As a full-stack software engineer, Decebal brings a wealth of knowledge and experience in
+        modern web development. He is a versatile and adaptable developer who is able to{' '}
+        <Highlight>quickly learn and apply new technologies</Highlight> to solve complex problems.
+        In addition, he is always{' '}
+        <Highlight>eager to share his knowledge and help his colleagues grow</Highlight> in their
+        roles. As a manager, Decebal is dedicated to fostering{' '}
         <Highlight>a positive and collaborative work environment</Highlight>
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
   {
     id: 7,
-    name: "Florin Georgescu",
-    role: "QA Test Engineer",
-    company: "eMag",
-    avatar: "/images/proofs/florin.svg",
-    relationship: "February 22, 2019, Florin worked with Decebal on the same team",
+    name: 'Florin Georgescu',
+    role: 'QA Test Engineer',
+    company: 'eMag',
+    avatar: '/images/proofs/florin.svg',
+    relationship: 'February 22, 2019, Florin worked with Decebal on the same team',
     description: (
       <p>
-        I have known Decebal Dobrica for almost 2 years in my capacity as a QA
-        Tester at eMAG. He worked with me on various projects as a Full Stack
-        Programmer and based on his work, I would{" "}
-        <Highlight>
-          rank him as one of the best developers we have ever had
-        </Highlight>
-        .
+        I have known Decebal Dobrica for almost 2 years in my capacity as a QA Tester at eMAG. He
+        worked with me on various projects as a Full Stack Programmer and based on his work, I would{' '}
+        <Highlight>rank him as one of the best developers we have ever had</Highlight>.
       </p>
     ),
-    linkedinUrl: "https://www.linkedin.com/in/decebaldobrica/details/recommendations/",
+    linkedinUrl: 'https://www.linkedin.com/in/decebaldobrica/details/recommendations/',
   },
-];
+]
 
 const TestimonialSection = () => {
   const [activeIndex, setActiveIndex] = useState(0)

@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import React from 'react'
+import type React from 'react'
 
 interface NeonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
@@ -35,7 +35,9 @@ export function NeonButton({
       whileTap={{ scale: 0.95 }}
       {...props}
     >
-      <span className="relative z-10 inline-flex items-center justify-center gap-2">{children}</span>
+      <span className="relative z-10 inline-flex items-center justify-center gap-2">
+        {children}
+      </span>
     </motion.button>
   )
 }

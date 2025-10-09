@@ -12,8 +12,8 @@ import {
   PenTool,
   Users,
 } from 'lucide-react'
-import React from 'react'
 import Link from 'next/link'
+import React from 'react'
 
 const services = [
   {
@@ -33,19 +33,22 @@ const services = [
   {
     icon: <Database className="h-8 w-8" />,
     title: 'Serverless Architecture',
-    description: 'Design and implement cost-effective, scalable cloud-native systems that grow with your startup.',
+    description:
+      'Design and implement cost-effective, scalable cloud-native systems that grow with your startup.',
     featured: false,
   },
   {
     icon: <Users className="h-8 w-8" />,
     title: 'Team Acceleration',
-    description: 'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
+    description:
+      'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
     featured: false,
   },
   {
     icon: <BarChart className="h-8 w-8" />,
     title: 'Technical Due Diligence',
-    description: 'Comprehensive technical assessment for VC firms evaluating portfolio companies or new investments.',
+    description:
+      'Comprehensive technical assessment for VC firms evaluating portfolio companies or new investments.',
     featured: false,
   },
   {
@@ -111,8 +114,8 @@ const ServicesSection = () => {
             Ready to accelerate your portfolio velocity?
           </h3>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Whether you're a VC firm or a startup founder, let's discuss how fractional technical leadership
-            can help you ship faster, scale smarter, and build right.
+            Whether you're a VC firm or a startup founder, let's discuss how fractional technical
+            leadership can help you ship faster, scale smarter, and build right.
           </p>
           <Link href="/contact?category=General+Consultation">
             <Button size="lg" className="bg-brand-teal hover:bg-brand-teal/90 text-white">

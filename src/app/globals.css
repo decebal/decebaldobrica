@@ -6,7 +6,7 @@
   :root {
     /* Updated color palette to work with the new textured background */
     --background: 214 30% 95%;
-    --foreground: 0 0% 100%;  /* Changed to white for better readability on dark bg */
+    --foreground: 0 0% 100%; /* Changed to white for better readability on dark bg */
 
     --card: 0 0% 100%;
     --card-foreground: 214 80% 10%;
@@ -14,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 214 80% 10%;
 
-    --primary: 166 97% 40%;    /* Brand teal color */
+    --primary: 166 97% 40%; /* Brand teal color */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 77% 40%;  /* Brand navy color */
+    --secondary: 210 77% 40%; /* Brand navy color */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
@@ -47,7 +47,7 @@
     /* Brand Colors as CSS variables */
     --color-brand-teal: #03c9a9;
     --color-brand-navy: #0a66c2;
-    --color-brand-darknavy: #0C1C36;
+    --color-brand-darknavy: #0c1c36;
     --color-brand-lightgray: #f3f2ef;
   }
 
@@ -61,10 +61,10 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 166 97% 40%;    /* Brand teal color */
+    --primary: 166 97% 40%; /* Brand teal color */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 77% 40%;  /* Brand navy color */
+    --secondary: 210 77% 40%; /* Brand navy color */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -245,10 +245,10 @@
 
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }

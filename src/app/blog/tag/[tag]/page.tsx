@@ -1,11 +1,11 @@
 import Footer from '@/components/Footer'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
-import { Calendar, Clock, ArrowLeft, Tag, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Clock, Tag } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 
 const POSTS_PER_PAGE = 10
 
@@ -59,7 +59,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
   // Count posts per tag
   const tagCounts = new Map<string, number>()
   for (const post of allPosts) {
-    post.tags?.forEach(t => {
+    post.tags?.forEach((t) => {
       tagCounts.set(t, (tagCounts.get(t) || 0) + 1)
     })
   }
@@ -85,7 +85,8 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                 <h1 className="text-4xl font-bold text-white">{tag}</h1>
               </div>
               <p className="text-xl text-gray-300">
-                {allFilteredPosts.length} {allFilteredPosts.length === 1 ? 'post' : 'posts'} tagged with "{tag}"
+                {allFilteredPosts.length} {allFilteredPosts.length === 1 ? 'post' : 'posts'} tagged
+                with "{tag}"
               </p>
             </div>
 
@@ -133,9 +134,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <CardTitle className="text-white text-2xl mb-2">
-                            {post.title}
-                          </CardTitle>
+                          <CardTitle className="text-white text-2xl mb-2">{post.title}</CardTitle>
                           <CardDescription className="text-gray-300 text-base">
                             {post.description}
                           </CardDescription>
@@ -156,10 +155,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-4">
                           {post.tags.map((postTag) => (
-                            <Link
-                              key={postTag}
-                              href={`/blog/tag/${encodeURIComponent(postTag)}`}
-                            >
+                            <Link key={postTag} href={`/blog/tag/${encodeURIComponent(postTag)}`}>
                               <Badge
                                 variant="outline"
                                 className={`cursor-pointer transition-colors ${
@@ -185,7 +181,11 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
               <div className="mt-12 flex items-center justify-center gap-2">
                 {currentPage > 1 && (
                   <Link
-                    href={currentPage === 2 ? `/blog/tag/${encodeURIComponent(tag)}` : `/blog/tag/${encodeURIComponent(tag)}?page=${currentPage - 1}`}
+                    href={
+                      currentPage === 2
+                        ? `/blog/tag/${encodeURIComponent(tag)}`
+                        : `/blog/tag/${encodeURIComponent(tag)}?page=${currentPage - 1}`
+                    }
                     className="inline-flex items-center gap-2 px-4 py-2 bg-brand-teal/20 hover:bg-brand-teal/30 text-white rounded-lg transition-colors"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -216,7 +216,11 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                     return (
                       <Link
                         key={page}
-                        href={page === 1 ? `/blog/tag/${encodeURIComponent(tag)}` : `/blog/tag/${encodeURIComponent(tag)}?page=${page}`}
+                        href={
+                          page === 1
+                            ? `/blog/tag/${encodeURIComponent(tag)}`
+                            : `/blog/tag/${encodeURIComponent(tag)}?page=${page}`
+                        }
                         className={`px-4 py-2 rounded-lg transition-colors ${
                           page === currentPage
                             ? 'bg-brand-teal text-white'
@@ -244,7 +248,8 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
             {/* Page Info */}
             {totalPages > 1 && (
               <div className="mt-4 text-center text-gray-400 text-sm">
-                Showing {startIndex + 1}-{Math.min(endIndex, allFilteredPosts.length)} of {allFilteredPosts.length} posts
+                Showing {startIndex + 1}-{Math.min(endIndex, allFilteredPosts.length)} of{' '}
+                {allFilteredPosts.length} posts
               </div>
             )}
           </div>

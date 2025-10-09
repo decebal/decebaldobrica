@@ -1,12 +1,12 @@
 'use client'
 
-import { NeonGradientCard } from '@/components/ui/neon-gradient-card'
 import { Button } from '@/components/ui/button'
-import { MessageCircle, Github, Linkedin, Twitter } from 'lucide-react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { NeonGradientCard } from '@/components/ui/neon-gradient-card'
 import { setReferralData } from '@/utils/referralTracking'
+import { motion } from 'framer-motion'
+import { Github, Linkedin, MessageCircle, Twitter } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 interface BlogCTAProps {
   postTitle?: string
@@ -32,12 +32,7 @@ export function BlogCTA({ postTitle }: BlogCTAProps) {
             transition={{ type: 'spring', stiffness: 300 }}
           >
             <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-brand-teal shadow-lg shadow-brand-teal/50">
-              <Image
-                src="/images/avatar.jpg"
-                alt="Decebal Dobrica"
-                fill
-                className="object-cover"
-              />
+              <Image src="/images/avatar.jpg" alt="Decebal Dobrica" fill className="object-cover" />
             </div>
           </motion.div>
 
@@ -56,12 +51,11 @@ export function BlogCTA({ postTitle }: BlogCTAProps) {
                   Get in Touch
                 </Button>
               </Link>
-              <Link
-                href="https://github.com/decebal"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10">
+              <Link href="https://github.com/decebal" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
+                >
                   <Github className="mr-2 h-4 w-4" />
                   GitHub
                 </Button>
@@ -71,7 +65,10 @@ export function BlogCTA({ postTitle }: BlogCTAProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10">
+                <Button
+                  variant="outline"
+                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
+                >
                   <Linkedin className="mr-2 h-4 w-4" />
                   LinkedIn
                 </Button>
@@ -81,7 +78,10 @@ export function BlogCTA({ postTitle }: BlogCTAProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10">
+                <Button
+                  variant="outline"
+                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
+                >
                   <Twitter className="mr-2 h-4 w-4" />
                   Twitter
                 </Button>

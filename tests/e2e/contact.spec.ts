@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Contact Page', () => {
   test('should load contact page without React errors', async ({ page }) => {
@@ -32,9 +32,7 @@ test.describe('Contact Page', () => {
       console.error('React errors found:', errors)
     }
 
-    expect(hasReactError, `React errors detected:\n${errors.join('\n')}`).toBe(
-      false
-    )
+    expect(hasReactError, `React errors detected:\n${errors.join('\n')}`).toBe(false)
 
     // Verify page loaded
     await expect(page).toHaveTitle(/Contact/)
@@ -44,9 +42,9 @@ test.describe('Contact Page', () => {
     await page.goto('/contact')
 
     // Check for chat interface elements
-    const chatInterface = page.locator('[data-testid="chat-interface"]').or(
-      page.locator('textarea')
-    )
+    const chatInterface = page
+      .locator('[data-testid="chat-interface"]')
+      .or(page.locator('textarea'))
     await expect(chatInterface.first()).toBeVisible({ timeout: 10000 })
   })
 
@@ -118,7 +116,7 @@ test.describe('Contact Page', () => {
 
         // Check if success page rendered (only if booking succeeded)
         const successHeading = page.locator('h1:has-text("Booking Confirmed")')
-        const hasSuccessPage = await successHeading.count() > 0
+        const hasSuccessPage = (await successHeading.count()) > 0
 
         if (hasSuccessPage) {
           // Verify critical elements on success page are present
@@ -135,9 +133,7 @@ test.describe('Contact Page', () => {
           // Verify no JSX/parsing errors in console
           const hasParsingError = errors.some(
             (error) =>
-              error.includes('Parsing') ||
-              error.includes('Expected') ||
-              error.includes('jsx')
+              error.includes('Parsing') || error.includes('Expected') || error.includes('jsx')
           )
 
           expect(hasParsingError, `Parsing errors detected:\n${errors.join('\n')}`).toBe(false)

@@ -11,14 +11,14 @@ const BLOG_CONTENT_DIR = path.join(__dirname, '..', 'content', 'blog')
 const OLD_BLOG_BASE_URL = 'https://decebalonprogramming.net/post'
 
 // Get all MDX files
-const files = fs.readdirSync(BLOG_CONTENT_DIR).filter(file => file.endsWith('.mdx'))
+const files = fs.readdirSync(BLOG_CONTENT_DIR).filter((file) => file.endsWith('.mdx'))
 
 console.log(`Found ${files.length} blog posts`)
 
 let updated = 0
 let skipped = 0
 
-files.forEach(file => {
+files.forEach((file) => {
   const filePath = path.join(BLOG_CONTENT_DIR, file)
   const fileContent = fs.readFileSync(filePath, 'utf-8')
   const { data, content } = matter(fileContent)

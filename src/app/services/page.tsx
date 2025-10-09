@@ -1,7 +1,7 @@
 import Footer from '@/components/Footer'
+import ServicesSection from '@/components/ServicesSection'
 import EthereumIcon from '@/components/icons/EthereumIcon'
 import SolanaIcon from '@/components/icons/SolanaIcon'
-import ServicesSection from '@/components/ServicesSection'
 import { ShimmerButton } from '@/components/ui/shimmer-button'
 import { Bitcoin, Briefcase, Calendar } from 'lucide-react'
 import Link from 'next/link'

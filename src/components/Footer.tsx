@@ -1,9 +1,9 @@
 'use client'
 
+import { Highlighter } from '@/components/ui/highlighter'
+import { config } from '@/lib/personalConfig'
 import { Coffee, Copy, Github, Linkedin, Mail, MapPin, Twitter } from 'lucide-react'
 import React, { useState } from 'react'
-import { config } from '@/lib/personalConfig'
-import { Highlighter } from '@/components/ui/highlighter'
 
 const Footer = () => {
   const [copied, setCopied] = useState(false)
@@ -22,17 +22,30 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <div>
             <h3 className="text-xl font-bold mb-4 text-white">{config.name}</h3>
-            <p className="text-gray-300 mb-4">
-              {config.tagline}
-            </p>
+            <p className="text-gray-300 mb-4">{config.tagline}</p>
             <div className="flex space-x-4">
-              <a href={config.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-teal transition-colors">
+              <a
+                href={config.socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-brand-teal transition-colors"
+              >
                 <Linkedin size={20} />
               </a>
-              <a href={config.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-teal transition-colors">
+              <a
+                href={config.socialLinks.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-brand-teal transition-colors"
+              >
                 <Twitter size={20} />
               </a>
-              <a href={config.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-brand-teal transition-colors">
+              <a
+                href={config.socialLinks.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-brand-teal transition-colors"
+              >
                 <Github size={20} />
               </a>
             </div>
@@ -60,10 +73,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="/blog"
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
-                >
+                <a href="/blog" className="text-gray-400 hover:text-brand-teal transition-colors">
                   Blog
                 </a>
               </li>
@@ -104,9 +114,7 @@ const Footer = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/5 rounded-lg p-2 group">
-                  <code className="text-xs text-brand-teal font-mono flex-1">
-                    {ethAddress}
-                  </code>
+                  <code className="text-xs text-brand-teal font-mono flex-1">{ethAddress}</code>
                   <button
                     onClick={copyToClipboard}
                     className="text-gray-400 hover:text-brand-teal transition-colors shrink-0"
@@ -115,9 +123,7 @@ const Footer = () => {
                     <Copy className="h-4 w-4" />
                   </button>
                 </div>
-                {copied && (
-                  <p className="text-xs text-brand-teal mt-1">✓ Address copied!</p>
-                )}
+                {copied && <p className="text-xs text-brand-teal mt-1">✓ Address copied!</p>}
                 <p className="text-xs text-gray-500 mt-2">
                   Send ETH or ERC-20 tokens to support my work ☕
                 </p>
@@ -127,7 +133,9 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500">
-          <p>&copy; {new Date().getFullYear()} {config.name}. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} {config.name}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

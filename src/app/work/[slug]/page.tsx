@@ -1,9 +1,17 @@
-import { getCaseStudy, getAllCaseStudies } from '@/data/caseStudies'
 import Footer from '@/components/Footer'
-import { AlertCircle, ArrowLeft, CheckCircle2, Lightbulb, TrendingUp, User, Building } from 'lucide-react'
+import { getAllCaseStudies, getCaseStudy } from '@/data/caseStudies'
+import {
+  AlertCircle,
+  ArrowLeft,
+  Building,
+  CheckCircle2,
+  Lightbulb,
+  TrendingUp,
+  User,
+} from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 import ReactMarkdown from 'react-markdown'
 
 interface CaseStudyPageProps {
@@ -61,15 +69,16 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             <div className="inline-block px-4 py-2 bg-brand-teal/30 rounded-full text-brand-teal text-sm font-medium mb-4">
               {study.industry}
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {study.title}
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{study.title}</h1>
             <p className="text-2xl text-gray-100 mb-8">{study.tagline}</p>
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
               {study.metrics.map((metric, i) => (
-                <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10">
+                <div
+                  key={i}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10"
+                >
                   <div className="text-3xl font-bold text-brand-teal mb-1">{metric.value}</div>
                   <div className="text-sm text-gray-200 font-medium">{metric.label}</div>
                 </div>
@@ -100,7 +109,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                 </div>
                 <div className="flex items-center gap-2 text-gray-200 mb-4">
                   <Building className="h-4 w-4" />
-                  <span>{study.companyName} • {study.companyIndustry}</span>
+                  <span>
+                    {study.companyName} • {study.companyIndustry}
+                  </span>
                 </div>
               </div>
 
@@ -225,11 +236,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
           {/* CTA */}
           <div className="bg-gradient-to-r from-brand-teal/20 to-brand-teal/10 rounded-2xl p-8 border border-brand-teal/30 text-center">
-            <h3 className="text-2xl font-bold text-white mb-3">
-              Facing similar challenges?
-            </h3>
+            <h3 className="text-2xl font-bold text-white mb-3">Facing similar challenges?</h3>
             <p className="text-gray-100 mb-6 max-w-2xl mx-auto text-lg">
-              Let's talk. I'll help you decode the gap, align your team, and weaponize AI for speed, not chaos.
+              Let's talk. I'll help you decode the gap, align your team, and weaponize AI for speed,
+              not chaos.
             </p>
             <Link
               href={`/contact?category=${encodeURIComponent(`Case Study: ${study.title}`)}`}
@@ -237,7 +247,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             >
               Schedule a Tactical Briefing
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
               </svg>
             </Link>
           </div>

@@ -33,7 +33,10 @@ export interface Meeting {
 /**
  * Send meeting confirmation email
  */
-export async function sendMeetingConfirmation(meeting: Meeting, meetLink?: string): Promise<boolean> {
+export async function sendMeetingConfirmation(
+  meeting: Meeting,
+  meetLink?: string
+): Promise<boolean> {
   const client = getResendClient()
 
   if (!client) {
@@ -151,7 +154,11 @@ export async function sendMeetingCancellation(meeting: Meeting, reason?: string)
 /**
  * Generate meeting confirmation HTML
  */
-function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date, meetLink?: string): string {
+function generateMeetingConfirmationHTML(
+  meeting: Meeting,
+  endTime: Date,
+  meetLink?: string
+): string {
   return `
 <!DOCTYPE html>
 <html>
@@ -247,7 +254,11 @@ function generateMeetingConfirmationHTML(meeting: Meeting, endTime: Date, meetLi
 /**
  * Generate meeting confirmation plain text
  */
-function generateMeetingConfirmationText(meeting: Meeting, endTime: Date, meetLink?: string): string {
+function generateMeetingConfirmationText(
+  meeting: Meeting,
+  endTime: Date,
+  meetLink?: string
+): string {
   return `
 Meeting Confirmed!
 

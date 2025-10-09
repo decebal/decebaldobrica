@@ -6,37 +6,49 @@ import type { PublicKey } from '@solana/web3.js'
 export interface MeetingPaymentConfig {
   meetingType: string
   price: number // in SOL
+  priceUSD: number // in USD (base price, before geo-pricing)
   duration: number // in minutes
   requiresPayment: boolean
+  description?: string // Optional description of what's included
 }
 
 /**
  * Meeting types with pricing
+ * Prices reflect market rates for Fractional CTO services
+ * SOL prices calculated at ~$215/SOL (update as needed)
  */
 export const MEETING_TYPES_WITH_PRICING: Record<string, MeetingPaymentConfig> = {
   'Quick Chat (15 min)': {
     meetingType: 'Quick Chat (15 min)',
     price: 0, // Free
+    priceUSD: 0,
     duration: 15,
     requiresPayment: false,
+    description: 'Free discovery call to discuss your needs',
   },
-  'Consultation (30 min)': {
-    meetingType: 'Consultation (30 min)',
-    price: 0.05, // 0.05 SOL (~$5 at current prices)
+  'Discovery Call (30 min)': {
+    meetingType: 'Discovery Call (30 min)',
+    price: 0.7, // ~$150 at $215/SOL
+    priceUSD: 150,
     duration: 30,
     requiresPayment: true,
+    description: 'Initial project scoping and feasibility analysis',
   },
   'Strategy Session (60 min)': {
     meetingType: 'Strategy Session (60 min)',
-    price: 0.1, // 0.1 SOL (~$10)
+    price: 1.9, // ~$400 at $215/SOL
+    priceUSD: 400,
     duration: 60,
     requiresPayment: true,
+    description: 'Architecture review, tech stack decisions, and roadmap planning',
   },
   'Deep Dive (90 min)': {
     meetingType: 'Deep Dive (90 min)',
-    price: 0.15, // 0.15 SOL (~$15)
+    price: 3.3, // ~$700 at $215/SOL
+    priceUSD: 700,
     duration: 90,
     requiresPayment: true,
+    description: 'Comprehensive system architecture review and detailed technical planning',
   },
 }
 
@@ -209,4 +221,19 @@ export function getPaymentStatistics() {
     totalRevenue,
     averagePayment: confirmed > 0 ? totalRevenue / confirmed : 0,
   }
+}
+
+/**
+ * Get meeting price in USD (base price, before geo-pricing)
+ */
+export function getMeetingPriceUSD(meetingType: string): number {
+  const config = getMeetingConfig(meetingType)
+  return config?.priceUSD ?? 0
+}
+
+/**
+ * Format USD price for display
+ */
+export function formatUSD(amount: number): string {
+  return `$${amount.toFixed(0)}`
 }

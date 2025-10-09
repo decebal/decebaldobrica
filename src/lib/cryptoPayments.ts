@@ -94,10 +94,7 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
       'Multi-chain (Ethereum, Polygon, etc.)',
       'Self-custody',
     ],
-    cons: [
-      'Requires technical integration',
-      'No BTC support yet',
-    ],
+    cons: ['Requires technical integration', 'No BTC support yet'],
     setupUrl: 'https://docs.request.network',
   },
   {
@@ -113,11 +110,7 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
       'No KYC required',
       'Open source',
     ],
-    cons: [
-      'Requires server setup',
-      'Only supports Bitcoin',
-      'Technical knowledge needed',
-    ],
+    cons: ['Requires server setup', 'Only supports Bitcoin', 'Technical knowledge needed'],
     setupUrl: 'https://btcpayserver.org',
   },
   {
@@ -132,11 +125,7 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
       'Easy API integration',
       'Lightning Network support',
     ],
-    cons: [
-      'Higher fees than self-hosted',
-      'KYC may be required',
-      'Custodial',
-    ],
+    cons: ['Higher fees than self-hosted', 'KYC may be required', 'Custodial'],
     setupUrl: 'https://nowpayments.io',
   },
   {
@@ -145,17 +134,8 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     fees: '1%',
     integration: 'widget',
     recommended: false,
-    pros: [
-      'Trusted brand',
-      'Easy integration',
-      'No setup required',
-      'Automatic USDC settlements',
-    ],
-    cons: [
-      'Higher fees (1%)',
-      'Custodial',
-      'KYC required for large amounts',
-    ],
+    pros: ['Trusted brand', 'Easy integration', 'No setup required', 'Automatic USDC settlements'],
+    cons: ['Higher fees (1%)', 'Custodial', 'KYC required for large amounts'],
     setupUrl: 'https://commerce.coinbase.com',
   },
   {
@@ -164,17 +144,8 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     fees: 'Network fees only',
     integration: 'api',
     recommended: true,
-    pros: [
-      'No intermediary fees',
-      'Full control',
-      'Can use Layer 2',
-      'Self-custody',
-    ],
-    cons: [
-      'Requires wallet connection',
-      'More complex UX',
-      'Need to handle payment verification',
-    ],
+    pros: ['No intermediary fees', 'Full control', 'Can use Layer 2', 'Self-custody'],
+    cons: ['Requires wallet connection', 'More complex UX', 'Need to handle payment verification'],
   },
 ]
 

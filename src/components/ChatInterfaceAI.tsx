@@ -37,7 +37,10 @@ const ChatInterfaceAI = () => {
   }, [messages])
 
   return (
-    <div data-testid="chat-interface" className="flex flex-col h-[600px] w-full max-w-4xl mx-auto border border-white/10 rounded-lg overflow-hidden shadow-xl">
+    <div
+      data-testid="chat-interface"
+      className="flex flex-col h-[600px] w-full max-w-4xl mx-auto border border-white/10 rounded-lg overflow-hidden shadow-xl"
+    >
       {/* Chat header */}
       <div className="bg-gradient-to-r from-brand-teal to-brand-teal/80 text-white px-6 py-3 flex items-center justify-between relative overflow-hidden flex-shrink-0">
         <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent opacity-20"></div>
@@ -55,27 +58,27 @@ const ChatInterfaceAI = () => {
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90"
       >
-          {messages.map((message, index) => {
-            // Extract text content from message parts (AI SDK v5 format)
-            const content = message.parts
-              .filter((part) => part.type === 'text')
-              .map((part) => part.text)
-              .join('')
+        {messages.map((message, index) => {
+          // Extract text content from message parts (AI SDK v5 format)
+          const content = message.parts
+            .filter((part) => part.type === 'text')
+            .map((part) => part.text)
+            .join('')
 
-            return (
-              <ChatMessage
-                key={message.id}
-                message={{
-                  id: message.id,
-                  role: message.role as 'user' | 'assistant',
-                  content,
-                  timestamp: message.createdAt || new Date(),
-                }}
-                index={index}
-                isStreaming={false}
-              />
-            )
-          })}
+          return (
+            <ChatMessage
+              key={message.id}
+              message={{
+                id: message.id,
+                role: message.role as 'user' | 'assistant',
+                content,
+                timestamp: message.createdAt || new Date(),
+              }}
+              index={index}
+              isStreaming={false}
+            />
+          )
+        })}
 
         {status !== 'ready' && (
           <div className="py-6 px-4 bg-white/5 animate-fade-in">
@@ -110,9 +113,7 @@ const ChatInterfaceAI = () => {
           <div className="py-6 px-4">
             <div className="max-w-3xl mx-auto bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-sm text-red-300">
               <p className="font-medium">Error: {error.message}</p>
-              <p className="text-xs mt-1">
-                Please check your connection and try again
-              </p>
+              <p className="text-xs mt-1">Please check your connection and try again</p>
             </div>
           </div>
         )}

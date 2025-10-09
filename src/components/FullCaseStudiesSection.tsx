@@ -18,11 +18,7 @@ const FullCaseStudiesSection = () => {
 
         <div className="mt-16 space-y-16">
           {caseStudies.map((study, index) => (
-            <Link
-              key={study.id}
-              href={`/work/${study.slug}`}
-              className="block group"
-            >
+            <Link key={study.id} href={`/work/${study.slug}`} className="block group">
               <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-brand-teal/50 transition-all duration-500 hover:shadow-2xl hover:shadow-brand-teal/20 hover:scale-[1.02]">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-brand-teal/20 to-brand-teal/10 p-8 border-b border-white/10">
@@ -38,7 +34,10 @@ const FullCaseStudiesSection = () => {
                     </div>
                     <div className="hidden md:flex gap-2">
                       {study.metrics.map((metric, i) => (
-                        <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-3 min-w-[100px] text-center">
+                        <div
+                          key={i}
+                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 min-w-[100px] text-center"
+                        >
                           <div className="text-2xl font-bold text-brand-teal">{metric.value}</div>
                           <div className="text-xs text-gray-200 mt-1">{metric.label}</div>
                         </div>
@@ -58,12 +57,20 @@ const FullCaseStudiesSection = () => {
                       </div>
                       <div className="space-y-3 text-sm">
                         <div className="bg-white/5 rounded-lg p-3 border-l-2 border-red-400/50">
-                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">Problem</p>
-                          <p className="text-white line-clamp-3">{study.problem.replace(/\*\*/g, '').substring(0, 150)}...</p>
+                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">
+                            Problem
+                          </p>
+                          <p className="text-white line-clamp-3">
+                            {study.problem.replace(/\*\*/g, '').substring(0, 150)}...
+                          </p>
                         </div>
                         <div className="bg-white/5 rounded-lg p-3 border-l-2 border-orange-400/50">
-                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">Impact</p>
-                          <p className="text-white line-clamp-2">{study.impact.replace(/\*\*/g, '').substring(0, 120)}...</p>
+                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">
+                            Impact
+                          </p>
+                          <p className="text-white line-clamp-2">
+                            {study.impact.replace(/\*\*/g, '').substring(0, 120)}...
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -78,7 +85,9 @@ const FullCaseStudiesSection = () => {
                         {study.outcomes.slice(0, 3).map((outcome, i) => (
                           <div key={i} className="flex items-start gap-2 bg-white/5 rounded-lg p-2">
                             <CheckCircle2 className="h-4 w-4 text-brand-teal shrink-0 mt-0.5" />
-                            <p className="text-white text-sm line-clamp-2">{outcome.replace(/\*\*/g, '')}</p>
+                            <p className="text-white text-sm line-clamp-2">
+                              {outcome.replace(/\*\*/g, '')}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -92,8 +101,12 @@ const FullCaseStudiesSection = () => {
                       </div>
                       <div className="space-y-3">
                         <div className="bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 rounded-lg p-3 border border-yellow-400/20">
-                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">Key Lesson</p>
-                          <p className="text-white text-sm line-clamp-3">{study.lesson.replace(/\*\*/g, '')}</p>
+                          <p className="text-gray-200 text-xs mb-1 uppercase font-semibold">
+                            Key Lesson
+                          </p>
+                          <p className="text-white text-sm line-clamp-3">
+                            {study.lesson.replace(/\*\*/g, '')}
+                          </p>
                         </div>
                         <div className="text-xs text-gray-200 flex items-center gap-1">
                           <span>Read full case study</span>
@@ -108,7 +121,10 @@ const FullCaseStudiesSection = () => {
                 <div className="md:hidden px-8 pb-8">
                   <div className="flex gap-2 flex-wrap">
                     {study.metrics.map((metric, i) => (
-                      <div key={i} className="bg-white/10 backdrop-blur-sm rounded-lg p-3 flex-1 min-w-[100px] text-center">
+                      <div
+                        key={i}
+                        className="bg-white/10 backdrop-blur-sm rounded-lg p-3 flex-1 min-w-[100px] text-center"
+                      >
                         <div className="text-xl font-bold text-brand-teal">{metric.value}</div>
                         <div className="text-xs text-gray-200 mt-1">{metric.label}</div>
                       </div>
@@ -123,9 +139,7 @@ const FullCaseStudiesSection = () => {
         {/* CTA Section */}
         <div className="mt-16 text-center">
           <div className="inline-block bg-gradient-to-r from-brand-teal/20 to-brand-teal/10 rounded-2xl p-8 border border-brand-teal/30 max-w-3xl">
-            <h3 className="text-2xl font-bold text-white mb-3">
-              Ready to transform your team?
-            </h3>
+            <h3 className="text-2xl font-bold text-white mb-3">Ready to transform your team?</h3>
             <p className="text-gray-100 mb-6">
               If you're a founder facing resistance, misalignment, or chaos—let's decode the gap,
               align your team, and weaponize AI for speed, not confusion.

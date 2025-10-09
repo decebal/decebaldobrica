@@ -7,13 +7,7 @@ import path from 'path'
 export function loadKnowledgeBase(): string {
   const knowledgeBasePath = path.join(process.cwd(), 'src', 'knowledge-base')
 
-  const files = [
-    'about.md',
-    'services.md',
-    'expertise.md',
-    'case-studies.md',
-    'resume.md',
-  ]
+  const files = ['about.md', 'services.md', 'expertise.md', 'case-studies.md', 'resume.md']
 
   let combinedContext = `# Decebal Dobrica - Complete Knowledge Base\n\n`
   combinedContext += `This knowledge base contains comprehensive information about Decebal Dobrica, his services, expertise, case studies, and professional background.\n\n`

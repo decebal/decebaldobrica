@@ -1,9 +1,9 @@
 import Footer from '@/components/Footer'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
 import { config } from '@/lib/personalConfig'
-import { Calendar, Clock, ExternalLink, Tag, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, Clock, ExternalLink, Tag } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -30,7 +30,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
   // Count posts per tag
   const tagCounts = new Map<string, number>()
   for (const post of allPosts) {
-    post.tags?.forEach(tag => {
+    post.tags?.forEach((tag) => {
       tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
     })
   }
@@ -110,7 +110,10 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
             ) : (
               <div className="space-y-6">
                 {posts.map((post) => (
-                  <Card key={post.slug} className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]">
+                  <Card
+                    key={post.slug}
+                    className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]"
+                  >
                     <CardHeader>
                       <Link href={`/blog/${post.slug}`} className="cursor-pointer">
                         <div className="flex items-start justify-between gap-4">
@@ -139,10 +142,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-4">
                           {post.tags.map((tag) => (
-                            <Link
-                              key={tag}
-                              href={`/blog/tag/${encodeURIComponent(tag)}`}
-                            >
+                            <Link key={tag} href={`/blog/tag/${encodeURIComponent(tag)}`}>
                               <Badge
                                 variant="outline"
                                 className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10 cursor-pointer transition-colors"
@@ -223,7 +223,8 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
             {/* Page Info */}
             {totalPages > 1 && (
               <div className="mt-4 text-center text-gray-400 text-sm">
-                Showing {startIndex + 1}-{Math.min(endIndex, allPosts.length)} of {allPosts.length} posts
+                Showing {startIndex + 1}-{Math.min(endIndex, allPosts.length)} of {allPosts.length}{' '}
+                posts
               </div>
             )}
           </div>

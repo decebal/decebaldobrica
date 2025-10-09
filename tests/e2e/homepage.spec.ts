@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Homepage', () => {
   test('should load homepage without errors', async ({ page }) => {
@@ -34,10 +34,7 @@ test.describe('Homepage', () => {
     }
 
     // Fail test if there are React errors
-    expect(
-      hasHydrationError,
-      `React errors detected:\n${errors.join('\n')}`
-    ).toBe(false)
+    expect(hasHydrationError, `React errors detected:\n${errors.join('\n')}`).toBe(false)
 
     // Verify page loaded
     await expect(page).toHaveTitle(/Portfolio/)

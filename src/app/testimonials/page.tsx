@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer'
-import TestimonialSection from '@/components/TestimonialSection'
 import Gallery from '@/components/Gallery'
+import TestimonialSection from '@/components/TestimonialSection'
 import React from 'react'
 
 const galleryImages = [

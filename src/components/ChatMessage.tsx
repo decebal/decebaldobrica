@@ -15,12 +15,9 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, index }: ChatMessageProps) {
-
   return (
     <div
-      className={`py-6 px-4 ${
-        message.role === 'assistant' ? 'bg-white/5' : ''
-      } animate-slide-up`}
+      className={`py-6 px-4 ${message.role === 'assistant' ? 'bg-white/5' : ''} animate-slide-up`}
       style={{ animationDelay: `${index * 0.05}s` }}
     >
       <div className="max-w-3xl mx-auto flex gap-4">
@@ -45,16 +42,26 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
                 <ReactMarkdown
                   components={{
                     p: ({ children }) => <p className="mb-4 last:mb-0 leading-7">{children}</p>,
-                    ul: ({ children }) => <ul className="list-disc ml-5 mb-4 space-y-2">{children}</ul>,
-                    ol: ({ children }) => <ol className="list-decimal ml-5 mb-4 space-y-2">{children}</ol>,
+                    ul: ({ children }) => (
+                      <ul className="list-disc ml-5 mb-4 space-y-2">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal ml-5 mb-4 space-y-2">{children}</ol>
+                    ),
                     li: ({ children }) => <li className="leading-7">{children}</li>,
-                    strong: ({ children }) => <strong className="font-semibold text-brand-teal">{children}</strong>,
+                    strong: ({ children }) => (
+                      <strong className="font-semibold text-brand-teal">{children}</strong>
+                    ),
                     em: ({ children }) => <em className="italic text-gray-300">{children}</em>,
                     code: ({ children }) => (
-                      <code className="bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono text-brand-teal">{children}</code>
+                      <code className="bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono text-brand-teal">
+                        {children}
+                      </code>
                     ),
                     pre: ({ children }) => (
-                      <pre className="bg-white/10 p-4 rounded-lg overflow-x-auto my-4 border border-white/10">{children}</pre>
+                      <pre className="bg-white/10 p-4 rounded-lg overflow-x-auto my-4 border border-white/10">
+                        {children}
+                      </pre>
                     ),
                     a: ({ children, href }) => (
                       <a

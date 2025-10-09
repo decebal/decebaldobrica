@@ -1,7 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import React, { useState, useEffect } from 'react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
 
 interface SparklesProps {
   children: React.ReactNode

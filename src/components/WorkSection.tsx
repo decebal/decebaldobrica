@@ -1,10 +1,10 @@
 'use client'
 
+import Marquee from '@/components/ui/marquee'
 import { getAllCaseStudies } from '@/data/caseStudies'
 import { ArrowRight, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
-import Marquee from '@/components/ui/marquee'
 
 const WorkSection = () => {
   const caseStudies = getAllCaseStudies()
@@ -39,14 +39,15 @@ const WorkSection = () => {
                   {study.title}
                 </h3>
 
-                <p className="text-sm text-gray-300 mb-4 line-clamp-2">
-                  {study.tagline}
-                </p>
+                <p className="text-sm text-gray-300 mb-4 line-clamp-2">{study.tagline}</p>
 
                 {/* Compact Metrics */}
                 <div className="flex gap-2 mb-4">
                   {study.metrics.slice(0, 2).map((metric, i) => (
-                    <div key={i} className="flex-1 bg-white/5 backdrop-blur-sm rounded-lg p-2 text-center">
+                    <div
+                      key={i}
+                      className="flex-1 bg-white/5 backdrop-blur-sm rounded-lg p-2 text-center"
+                    >
                       <div className="text-lg font-bold text-brand-teal">{metric.value}</div>
                       <div className="text-xs text-gray-300">{metric.label}</div>
                     </div>
@@ -81,9 +82,7 @@ const WorkSection = () => {
         {/* CTA Section */}
         <div className="mt-16 text-center">
           <div className="inline-block bg-gradient-to-r from-brand-teal/20 to-brand-teal/10 rounded-2xl p-8 border border-brand-teal/30 max-w-3xl">
-            <h3 className="text-2xl font-bold text-white mb-3">
-              Ready to transform your team?
-            </h3>
+            <h3 className="text-2xl font-bold text-white mb-3">Ready to transform your team?</h3>
             <p className="text-gray-100 mb-6">
               If you're a founder facing resistance, misalignment, or chaos—let's decode the gap,
               align your team, and weaponize AI for speed, not confusion.

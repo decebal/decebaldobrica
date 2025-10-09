@@ -1,30 +1,68 @@
 'use client'
 
 import { bookMeeting } from '@/actions/meeting-action'
-import Footer from '@/components/Footer'
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
+import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ComicText } from '@/components/ui/comic-text'
+import { Confetti } from '@/components/ui/confetti'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Sparkles } from '@/components/ui/sparkles'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/hooks/use-toast'
+import { featureFlags } from '@/lib/featureFlags'
 import {
   MEETING_TYPES_WITH_PRICING,
-  formatSOL,
-  formatUSDEquivalent,
   type MeetingPaymentConfig,
+  formatSOL,
+  formatUSD,
+  formatUSDEquivalent,
 } from '@/lib/meetingPayments'
-import { Calendar, Clock, CreditCard, CheckCircle2, ArrowLeft, MessageSquare } from 'lucide-react'
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { ComicText } from '@/components/ui/comic-text'
-import { Sparkles } from '@/components/ui/sparkles'
-import { Confetti } from '@/components/ui/confetti'
+import { clearReferralData, formatReferralData, getReferralData } from '@/utils/referralTracking'
 import { motion } from 'framer-motion'
-import { getReferralData, clearReferralData, formatReferralData } from '@/utils/referralTracking'
-import { featureFlags } from '@/lib/featureFlags'
+import {
+  ArrowLeft,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  Info,
+  MapPin,
+  MessageSquare,
+} from 'lucide-react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+interface GeoPricingData {
+  success: boolean
+  location: {
+    country: string
+    city: string
+    region: string
+  }
+  pricing: {
+    tier: number
+    tierName: string
+    currency: string
+    multiplier: number
+    description: string
+  }
+  meetings: Array<{
+    meetingType: string
+    duration: number
+    requiresPayment: boolean
+    description?: string
+    basePrice: number
+    geoPrice: number
+    formattedPrice: string
+    priceCrypto: number
+  }>
+  discountEligible: boolean
+  discountMessage: string | null
+}
 
 export default function ContactBookingPage() {
   const searchParams = useSearchParams()
@@ -34,6 +72,8 @@ export default function ContactBookingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bookingSuccess, setBookingSuccess] = useState(false)
   const [category, setCategory] = useState<string | undefined>(urlCategory)
+  const [geoPricing, setGeoPricing] = useState<GeoPricingData | null>(null)
+  const [loadingGeo, setLoadingGeo] = useState(true)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -46,8 +86,27 @@ export default function ContactBookingPage() {
   })
 
   const meetingTypes = Object.values(MEETING_TYPES_WITH_PRICING).filter(
-    config => featureFlags.enablePaidMeetings || !config.requiresPayment
+    (config) => featureFlags.enablePaidMeetings || !config.requiresPayment
   )
+
+  // Fetch geo-pricing data on mount
+  useEffect(() => {
+    const fetchGeoPricing = async () => {
+      try {
+        const response = await fetch('/api/geo-pricing')
+        if (response.ok) {
+          const data = await response.json()
+          setGeoPricing(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch geo-pricing:', error)
+      } finally {
+        setLoadingGeo(false)
+      }
+    }
+
+    fetchGeoPricing()
+  }, [])
 
   // Load referral data from localStorage on mount
   useEffect(() => {
@@ -147,6 +206,12 @@ export default function ContactBookingPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  // Get geo-pricing for a specific meeting
+  const getGeoPriceForMeeting = (meetingType: string) => {
+    if (!geoPricing) return null
+    return geoPricing.meetings.find((m) => m.meetingType === meetingType)
+  }
+
   // Smooth scroll to top when booking succeeds
   useEffect(() => {
     if (bookingSuccess) {
@@ -154,7 +219,7 @@ export default function ContactBookingPage() {
       const scrollToTop = () => {
         window.scrollTo({
           top: 0,
-          behavior: 'smooth'
+          behavior: 'smooth',
         })
       }
 
@@ -174,7 +239,7 @@ export default function ContactBookingPage() {
               className="max-w-2xl mx-auto text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
             >
               <motion.div
                 className="mb-8 flex justify-center"
@@ -243,7 +308,8 @@ export default function ContactBookingPage() {
             transition={{ delay: 0.5 }}
             className="text-xl text-gray-300 max-w-2xl mb-2"
           >
-            Schedule a consultation or ask me anything about my services, experience, and availability.
+            Schedule a consultation or ask me anything about my services, experience, and
+            availability.
           </motion.p>
 
           {/* Referral indicator */}
@@ -257,6 +323,35 @@ export default function ContactBookingPage() {
               <div className="bg-brand-teal/10 border border-brand-teal/30 rounded-lg px-4 py-2 text-sm text-brand-teal">
                 📍 Coming from: <span className="font-semibold">{category}</span>
               </div>
+            </motion.div>
+          )}
+
+          {/* Geo-location and pricing info */}
+          {!loadingGeo && geoPricing && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="mt-4 space-y-2"
+            >
+              {/* Location indicator */}
+              <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-300">
+                <MapPin className="h-4 w-4 text-brand-teal" />
+                <span>
+                  Detected location:{' '}
+                  <span className="font-semibold text-white">
+                    {geoPricing.location.city}, {geoPricing.location.country}
+                  </span>
+                </span>
+              </div>
+
+              {/* Discount eligibility message */}
+              {geoPricing.discountMessage && (
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 text-sm text-yellow-200 flex items-start gap-2">
+                  <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{geoPricing.discountMessage}</span>
+                </div>
+              )}
             </motion.div>
           )}
         </div>
@@ -279,8 +374,13 @@ export default function ContactBookingPage() {
               <h2 className="text-2xl font-bold text-white">Ask My AI Assistant</h2>
             </div>
             <p className="text-gray-400 mb-6">
-              Have questions? Chat with my AI assistant for instant answers about services, availability, and more.
-              <span className="text-brand-teal font-semibold"> The booking form is available below</span> if you're ready to schedule a consultation.
+              Have questions? Chat with my AI assistant for instant answers about services,
+              availability, and more.
+              <span className="text-brand-teal font-semibold">
+                {' '}
+                The booking form is available below
+              </span>{' '}
+              if you're ready to schedule a consultation.
             </p>
             <ChatInterfaceAI />
           </motion.div>
@@ -289,17 +389,20 @@ export default function ContactBookingPage() {
         {/* Booking Form Section - Now Below Chat */}
         <div className="section-container py-8">
           <div className="max-w-4xl mx-auto space-y-8">
-              {meetingTypes.length > 1 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6 text-white">Available Consultations</h2>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {meetingTypes.map((config, index) => (
+            {meetingTypes.length > 1 && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6 text-white">Available Consultations</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {meetingTypes.map((config, index) => (
                     <motion.div
                       key={config.meetingType}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6 + index * 0.1 }}
-                      whileHover={{ scale: 1.05, rotate: selectedMeeting?.meetingType === config.meetingType ? 0 : 1 }}
+                      whileHover={{
+                        scale: 1.05,
+                        rotate: selectedMeeting?.meetingType === config.meetingType ? 0 : 1,
+                      }}
                       whileTap={{ scale: 0.98 }}
                     >
                       <Card
@@ -329,10 +432,29 @@ export default function ContactBookingPage() {
                                 <div className="flex items-center gap-2 text-brand-teal font-semibold text-sm">
                                   <CreditCard className="h-4 w-4" />
                                   <span>
-                                    {formatSOL(config.price)}
-                                    <span className="text-xs ml-1">
-                                      {formatUSDEquivalent(config.price)}
-                                    </span>
+                                    {(() => {
+                                      const geoPrice = getGeoPriceForMeeting(config.meetingType)
+                                      if (geoPrice && geoPricing) {
+                                        return (
+                                          <>
+                                            {geoPrice.formattedPrice}
+                                            {geoPrice.geoPrice !== geoPrice.basePrice && (
+                                              <span className="text-xs ml-1 text-gray-400">
+                                                (base: ${geoPrice.basePrice})
+                                              </span>
+                                            )}
+                                          </>
+                                        )
+                                      }
+                                      return (
+                                        <>
+                                          {formatUSD(config.priceUSD)}
+                                          <span className="text-xs ml-1">
+                                            or {formatSOL(config.price)}
+                                          </span>
+                                        </>
+                                      )
+                                    })()}
                                   </span>
                                 </div>
                                 <div className="text-xs text-gray-400">
@@ -346,19 +468,19 @@ export default function ContactBookingPage() {
                         </CardHeader>
                       </Card>
                     </motion.div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Booking Form */}
-              {selectedMeeting && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200 }}
-                >
-                  <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+            {/* Booking Form */}
+            {selectedMeeting && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200 }}
+              >
+                <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                   <CardHeader>
                     <CardTitle className="text-white text-2xl">
                       Book {selectedMeeting.meetingType}
@@ -449,8 +571,32 @@ export default function ContactBookingPage() {
                             <div>
                               <h4 className="font-semibold text-white mb-1">Payment Required</h4>
                               <p className="text-sm text-gray-300">
-                                This consultation requires a payment of {formatSOL(selectedMeeting.price)}{' '}
-                                ({formatUSDEquivalent(selectedMeeting.price)}).
+                                {(() => {
+                                  const geoPrice = getGeoPriceForMeeting(
+                                    selectedMeeting.meetingType
+                                  )
+                                  if (geoPrice && geoPricing) {
+                                    return (
+                                      <>
+                                        This consultation requires a payment of{' '}
+                                        <span className="font-semibold">
+                                          {geoPrice.formattedPrice}
+                                        </span>
+                                        {geoPrice.geoPrice !== geoPrice.basePrice && (
+                                          <> (base price: ${geoPrice.basePrice})</>
+                                        )}{' '}
+                                        or {formatSOL(selectedMeeting.price)}.
+                                      </>
+                                    )
+                                  }
+                                  return (
+                                    <>
+                                      This consultation requires a payment of{' '}
+                                      {formatUSD(selectedMeeting.priceUSD)} or{' '}
+                                      {formatSOL(selectedMeeting.price)}.
+                                    </>
+                                  )
+                                })()}
                               </p>
                             </div>
                           </div>
@@ -518,8 +664,8 @@ export default function ContactBookingPage() {
                     </form>
                   </CardContent>
                 </Card>
-                </motion.div>
-              )}
+              </motion.div>
+            )}
           </div>
         </div>
       </main>

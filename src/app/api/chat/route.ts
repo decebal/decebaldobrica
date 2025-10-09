@@ -1,6 +1,6 @@
-import { createGroq } from '@ai-sdk/groq'
-import { streamText, convertToCoreMessages } from 'ai'
 import { PORTFOLIO_CONTEXT } from '@/lib/portfolioContext'
+import { createGroq } from '@ai-sdk/groq'
+import { convertToCoreMessages, streamText } from 'ai'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
