@@ -149,11 +149,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         <ul className="list-disc pl-6 text-gray-300 mb-4 space-y-1">{children}</ul>
                       ),
                       ol: ({ children }) => (
-                        <ol className="list-decimal pl-6 text-gray-300 mb-4 space-y-1">
+                        <ol className="list-decimal pl-6 text-gray-300 mb-4 space-y-4">
                           {children}
                         </ol>
                       ),
-                      li: ({ children }) => <li className="text-gray-300">{children}</li>,
+                      li: ({ children }) => <li className="text-gray-300 leading-relaxed">{children}</li>,
                       a: ({ href, children }) => (
                         <a
                           href={href}
@@ -189,6 +189,38 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         <img src={src} alt={alt || ''} className="rounded-lg my-6 w-full" />
                       ),
                       hr: () => <hr className="border-white/10 my-6" />,
+                      table: ({ children }) => (
+                        <div className="overflow-x-auto my-6">
+                          <table className="min-w-full border-collapse bg-white/5 rounded-lg overflow-hidden">
+                            {children}
+                          </table>
+                        </div>
+                      ),
+                      thead: ({ children }) => (
+                        <thead className="bg-brand-teal/20 border-b-2 border-brand-teal">
+                          {children}
+                        </thead>
+                      ),
+                      tbody: ({ children }) => <tbody className="divide-y divide-white/10">{children}</tbody>,
+                      tr: ({ children }) => (
+                        <tr className="hover:bg-white/5 transition-colors">{children}</tr>
+                      ),
+                      th: ({ children }) => (
+                        <th className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider">
+                          {children}
+                        </th>
+                      ),
+                      td: ({ children }) => (
+                        <td className="px-6 py-4 text-sm text-gray-300 whitespace-nowrap">
+                          {children}
+                        </td>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="text-brand-teal font-bold">{children}</strong>
+                      ),
+                      em: ({ children }) => (
+                        <em className="text-gray-200 italic">{children}</em>
+                      ),
                     }}
                   >
                     {post.content}

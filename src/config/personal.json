@@ -30,10 +30,10 @@
     ]
   },
   "achievements": {
-    "productivityIncrease": "300%",
-    "costReduction": "75%",
+    "productivityIncrease": "3x",
+    "costReduction": "60-75%",
     "teamSize": "25+",
-    "description": "Increased developer productivity by 300% and reduced infrastructure costs by 75%"
+    "description": "Delivered 3x developer productivity gains and 60-75% infrastructure cost reductions through strategic technical leadership"
   },
   "education": {
     "degree": "Software Engineering",

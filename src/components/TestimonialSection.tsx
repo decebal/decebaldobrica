@@ -34,7 +34,7 @@ const testimonials: Testimonial[] = [
         <Highlight>consistently goes above and beyond for the team</Highlight>. He's not just
         focused on getting the job done - he deeply cares about the success of the company and the
         people he works with, always offering support and guidance to ensure we're{' '}
-        <Highlight>all growing together.</Highlight> I feel fortunate to have worked with such a
+        <Highlight>all growing together.</Highlight> I feel fortunate to have worked with such a{' '}
         <Highlight>dedicated and thoughtful leader.</Highlight>
       </p>
     ),
@@ -225,7 +225,7 @@ const TestimonialSection = () => {
             >
               {testimonials.map((testimonial) => (
                 <div key={testimonial.id} className="min-w-full px-4">
-                  <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-8 md:p-10 relative">
+                  <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-8 md:p-10 relative min-h-[500px] flex flex-col">
                     <div className="absolute top-6 right-6 text-brand-teal opacity-20">
                       <Quote size={64} />
                     </div>
@@ -268,12 +268,12 @@ const TestimonialSection = () => {
                     </div>
 
                     {/* Testimonial Content */}
-                    <div className="relative">
+                    <div className="relative flex-1 flex flex-col">
                       <blockquote
                         ref={(el) => {
                           if (el) contentRefs.current.set(testimonial.id, el)
                         }}
-                        className={`text-gray-100 text-lg leading-relaxed relative z-10 ${
+                        className={`text-gray-100 text-lg leading-relaxed relative z-10 flex-1 ${
                           isExpanded(testimonial.id) ? '' : 'line-clamp-4'
                         }`}
                       >
@@ -284,7 +284,7 @@ const TestimonialSection = () => {
                       {needsExpand.has(testimonial.id) && (
                         <button
                           onClick={() => toggleExpand(testimonial.id)}
-                          className="mt-3 inline-flex items-center gap-1 text-brand-teal hover:text-brand-teal/80 text-sm font-medium transition-colors"
+                          className="mt-3 inline-flex items-center gap-1 text-brand-teal hover:text-brand-teal/80 text-sm font-medium transition-colors self-start"
                         >
                           {isExpanded(testimonial.id) ? (
                             <>

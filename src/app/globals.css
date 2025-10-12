@@ -252,3 +252,107 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+/* React Timezone Select Styling - Complete Dark Theme */
+.timezone-select > div {
+  @apply bg-white/5 border-white/10 rounded-md;
+}
+
+.timezone-select input {
+  @apply text-white bg-transparent;
+}
+
+/* Main control container */
+.timezone-select div[class*="control"] {
+  @apply bg-white/5 border border-white/10 text-white cursor-pointer transition-colors duration-200;
+  min-height: 42px;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="control"]:hover {
+  @apply border-brand-teal/50 bg-white/5;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="control--is-focused"],
+.timezone-select div[class*="control--menu-is-open"] {
+  @apply border-brand-teal/50 bg-white/5;
+  box-shadow: none !important;
+}
+
+/* Value container */
+.timezone-select div[class*="ValueContainer"] {
+  @apply bg-transparent;
+}
+
+/* Input field */
+.timezone-select div[class*="Input"] {
+  @apply text-white;
+}
+
+.timezone-select div[class*="Input"] input {
+  @apply text-white bg-transparent;
+  color: white !important;
+}
+
+/* Dropdown menu */
+.timezone-select div[class*="menu"] {
+  @apply bg-[#0c1c36] border border-white/10 rounded-md;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.timezone-select div[class*="MenuList"] {
+  @apply bg-transparent;
+}
+
+/* Options */
+.timezone-select div[class*="option"] {
+  @apply text-white cursor-pointer transition-colors duration-150;
+  background-color: transparent !important;
+}
+
+.timezone-select div[class*="option"]:hover {
+  @apply bg-brand-teal/20;
+  background-color: rgba(3, 201, 169, 0.2) !important;
+}
+
+.timezone-select div[class*="option--is-focused"] {
+  @apply bg-brand-teal/20;
+  background-color: rgba(3, 201, 169, 0.2) !important;
+}
+
+.timezone-select div[class*="option--is-selected"] {
+  @apply bg-brand-teal/30 text-white;
+  background-color: rgba(3, 201, 169, 0.3) !important;
+}
+
+/* Selected value and placeholder */
+.timezone-select div[class*="singleValue"],
+.timezone-select div[class*="placeholder"] {
+  @apply text-white;
+  color: white !important;
+}
+
+/* Indicator separator */
+.timezone-select div[class*="indicatorSeparator"] {
+  @apply bg-white/10;
+}
+
+/* Dropdown indicators */
+.timezone-select div[class*="indicatorContainer"] {
+  @apply text-white;
+}
+
+.timezone-select svg {
+  @apply text-white;
+}
+
+/* Clear indicator */
+.timezone-select div[class*="clearIndicator"] {
+  @apply text-white hover:text-brand-teal cursor-pointer;
+}
+
+/* Loading indicator */
+.timezone-select div[class*="loadingIndicator"] {
+  @apply text-white;
+}

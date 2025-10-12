@@ -40,8 +40,8 @@ const AboutSection = () => {
 
   const stats = [
     { value: 15, label: 'Years Experience', icon: Briefcase, suffix: '+' },
-    { value: 300, label: 'Productivity Boost', icon: TrendingUp, suffix: '%' },
-    { value: 75, label: 'Cost Reduction', icon: Zap, suffix: '%' },
+    { value: 3, label: 'Productivity Gains', icon: TrendingUp, suffix: 'x' },
+    { value: 70, label: 'Cost Reduction', icon: Zap, suffix: '%' },
     { value: 10, label: 'Team Size Led', icon: Users, suffix: '+' },
   ]
 

@@ -34,7 +34,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import TimezoneSelect, { type ITimezone } from 'react-timezone-select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface GeoPricingData {
   success: boolean
@@ -74,6 +76,9 @@ export default function ContactBookingPage() {
   const [category, setCategory] = useState<string | undefined>(urlCategory)
   const [geoPricing, setGeoPricing] = useState<GeoPricingData | null>(null)
   const [loadingGeo, setLoadingGeo] = useState(true)
+  const [selectedTimezone, setSelectedTimezone] = useState<ITimezone>(
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  )
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -88,6 +93,84 @@ export default function ContactBookingPage() {
   const meetingTypes = Object.values(MEETING_TYPES_WITH_PRICING).filter(
     (config) => featureFlags.enablePaidMeetings || !config.requiresPayment
   )
+
+  // Generate time slots based on meeting duration, filtered by timezone
+  const timeSlots = useMemo(() => {
+    if (!selectedMeeting || !formData.date) return []
+
+    const slots: string[] = []
+    const duration = selectedMeeting.duration
+    // Determine interval: for 15-min meetings use 15min, for 30min use 30min, for 60/90 use 60min
+    const interval = duration === 15 ? 15 : duration === 30 ? 30 : 60
+
+    // Get user's timezone
+    const userTimezone = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
+    const myTimezone = 'Europe/London'
+
+    // Helper to get timezone offset in minutes for a specific date/time
+    const getTimezoneOffset = (date: Date, tz: string): number => {
+      // Format the date in both UTC and the target timezone
+      const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }))
+      const tzDate = new Date(date.toLocaleString('en-US', { timeZone: tz }))
+      return (tzDate.getTime() - utcDate.getTime()) / 60000
+    }
+
+    // Generate all possible slots in user's timezone (0-23 hours)
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += interval) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+
+        try {
+          // Create a date object representing this time in the user's timezone
+          // We'll use a reference date to calculate offsets
+          const [year, month, day] = formData.date.split('-').map(Number)
+          const referenceDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0))
+
+          // Get offset differences
+          const userOffset = getTimezoneOffset(referenceDate, userTimezone)
+          const myOffset = getTimezoneOffset(referenceDate, myTimezone)
+          const offsetDiff = myOffset - userOffset
+
+          // Calculate what time it would be in my timezone
+          const myHour = hour + Math.floor(offsetDiff / 60)
+          const myMinute = minute + (offsetDiff % 60)
+
+          // Normalize minutes and hours
+          let normalizedMyHour = myHour
+          let normalizedMyMinute = myMinute
+
+          if (normalizedMyMinute < 0) {
+            normalizedMyMinute += 60
+            normalizedMyHour -= 1
+          } else if (normalizedMyMinute >= 60) {
+            normalizedMyMinute -= 60
+            normalizedMyHour += 1
+          }
+
+          // Normalize hours (handle day wraparound)
+          normalizedMyHour = ((normalizedMyHour % 24) + 24) % 24
+
+          // Only include slots that fall within my business hours (9 AM - 5 PM Europe/London)
+          // Also ensure the meeting end time doesn't exceed 5 PM
+          const meetingEndHour = normalizedMyHour + Math.floor((normalizedMyMinute + duration) / 60)
+          const meetingEndMinute = (normalizedMyMinute + duration) % 60
+
+          if (
+            normalizedMyHour >= 9 &&
+            normalizedMyHour < 17 &&
+            (meetingEndHour < 17 || (meetingEndHour === 17 && meetingEndMinute === 0))
+          ) {
+            slots.push(timeString)
+          }
+        } catch (error) {
+          // Skip invalid times
+          continue
+        }
+      }
+    }
+
+    return slots
+  }, [selectedMeeting, selectedTimezone, formData.date])
 
   // Fetch geo-pricing data on mount
   useEffect(() => {
@@ -129,6 +212,44 @@ export default function ContactBookingPage() {
     const config = MEETING_TYPES_WITH_PRICING[meetingType]
     setSelectedMeeting(config)
   }
+
+  // Fetch and pre-select next available slot when meeting type is selected
+  useEffect(() => {
+    if (!selectedMeeting) return
+
+    const fetchNextAvailableSlot = async () => {
+      try {
+        const userTimezone = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
+
+        const response = await fetch('/api/availability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            duration: selectedMeeting.duration,
+            timezone: userTimezone,
+            daysToCheck: 14,
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && data.slot) {
+            // Pre-fill the date and time fields
+            setFormData((prev) => ({
+              ...prev,
+              date: data.slot.date,
+              time: data.slot.time,
+            }))
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch available slot:', error)
+        // Silently fail - user can still manually select date/time
+      }
+    }
+
+    fetchNextAvailableSlot()
+  }, [selectedMeeting, selectedTimezone])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -172,7 +293,7 @@ export default function ContactBookingPage() {
         email: formData.email,
         notes: formData.notes,
         category,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value,
         paymentId,
         paymentMethod: formData.paymentMethod,
       })
@@ -204,6 +325,15 @@ export default function ContactBookingPage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  // Helper function to format time string to 12-hour display format
+  const formatTimeDisplay = (timeString: string): string => {
+    if (!timeString) return ''
+    const [hour, minute] = timeString.split(':').map(Number)
+    const period = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
+    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
   }
 
   // Get geo-pricing for a specific meeting
@@ -524,33 +654,86 @@ export default function ContactBookingPage() {
                         </div>
                       </div>
 
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="date" className="text-white">
-                            Preferred Date *
-                          </Label>
-                          <Input
-                            id="date"
-                            type="date"
-                            required
-                            value={formData.date}
-                            min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => handleInputChange('date', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
-                          />
+                      <div className="space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <Label htmlFor="date" className="text-white">
+                              Preferred Date *
+                            </Label>
+                            <Input
+                              id="date"
+                              type="date"
+                              required
+                              value={formData.date}
+                              min={
+                                new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+                                  .toISOString()
+                                  .split('T')[0]
+                              }
+                              onChange={(e) => handleInputChange('date', e.target.value)}
+                              className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="time" className="text-white">
+                              Preferred Time *
+                            </Label>
+                            {!formData.date ? (
+                              <div className="bg-white/5 border border-white/10 rounded-md px-3 py-2.5 text-gray-400 text-sm">
+                                Please select a date first
+                              </div>
+                            ) : timeSlots.length === 0 ? (
+                              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md px-3 py-2.5 text-yellow-200 text-sm flex items-center gap-2">
+                                <Info className="h-4 w-4 flex-shrink-0" />
+                                <span>No available time slots for this date. Please choose another date.</span>
+                              </div>
+                            ) : (
+                              <Select
+                                value={formData.time}
+                                onValueChange={(value) => handleInputChange('time', value)}
+                                required
+                              >
+                                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                  <SelectValue placeholder="Select a time slot">
+                                    {formData.time ? formatTimeDisplay(formData.time) : 'Select a time slot'}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#0c1c36] border-white/10 text-white max-h-[300px]">
+                                  {timeSlots.map((time) => (
+                                    <SelectItem
+                                      key={time}
+                                      value={time}
+                                      className="text-white hover:bg-brand-teal/20 focus:bg-brand-teal/20"
+                                    >
+                                      {formatTimeDisplay(time)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                            <p className="text-xs text-gray-400">
+                              {formData.date && timeSlots.length > 0
+                                ? 'Times shown are in your timezone and available during business hours (9 AM - 5 PM Europe/London)'
+                                : formData.date
+                                  ? ''
+                                  : 'Select a date first to see available time slots'}
+                            </p>
+                          </div>
                         </div>
+
                         <div className="space-y-2">
-                          <Label htmlFor="time" className="text-white">
-                            Preferred Time *
+                          <Label htmlFor="timezone" className="text-white">
+                            Your Timezone *
                           </Label>
-                          <Input
-                            id="time"
-                            type="time"
-                            required
-                            value={formData.time}
-                            onChange={(e) => handleInputChange('time', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
+                          <TimezoneSelect
+                            value={selectedTimezone}
+                            onChange={setSelectedTimezone}
+                            className="timezone-select"
                           />
+                          <p className="text-xs text-gray-400 flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Auto-detected: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                          </p>
                         </div>
                       </div>
 

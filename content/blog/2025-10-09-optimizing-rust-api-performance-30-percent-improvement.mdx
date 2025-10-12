@@ -16,7 +16,7 @@ slug: 2025-10-09-optimizing-rust-api-performance-30-percent-improvement
 
 ## Executive Summary
 
-With just 2 hours of focused work, we improved our Rust API performance by 30% using the STAR approach: analyzing the **Situation**, defining clear **Tasks**, executing strategic **Actions**, and measuring **Results**. This case study demonstrates how targeted optimizations deliver maximum impact with minimal investment.
+With just 2 hours of focused work, we improved our Rust API performance by 30%. This case study demonstrates how targeted optimizations deliver maximum impact with minimal investment.
 
 **Key Results:**
 - ⚡ **30% faster** response times (500ms → 350ms)
@@ -74,19 +74,19 @@ We were preparing to deploy our Rust-based cryptocurrency portfolio management A
 ### Primary Objectives
 
 **Performance Goals**:
-1. ✅ Reduce average response time by 20-30%
-2. ✅ Lower memory usage by 10-15%
-3. ✅ Optimize database connection usage (stay within 20 connections)
+1. Reduce average response time by 20-30%
+2. Lower memory usage by 10-15%
+3. Optimize database connection usage (stay within 20 connections)
 
 **Observability Goals**:
-4. ✅ Implement structured JSON logging for production
-5. ✅ Enable request tracing with span context
-6. ✅ Make logs searchable by module, span, and error code
+1. Implement structured JSON logging for production
+2. Enable request tracing with span context
+3. Make logs searchable by module, span, and error code
 
 **User Experience Goals**:
-7. ✅ Reduce error discovery from 3+ calls to 1 call
-8. ✅ Provide clear, actionable error messages
-9. ✅ Eliminate confusing database warnings
+1. Reduce error discovery from 3+ calls to 1 call
+2. Provide clear, actionable error messages
+3. Eliminate confusing database warnings
 
 ### Constraints
 - ⏰ **Time**: Maximum 2 hours of development work
@@ -573,28 +573,6 @@ pub struct ApiError {
     pub status_code: u16,
 }
 ```
-
----
-
-## Next Steps
-
-### Immediate (Week 1)
-1. Deploy to Railway production
-2. Monitor performance metrics
-3. Verify JSON logs in Railway dashboard
-4. Collect baseline metrics
-
-### Short-term (Week 2-4)
-1. Update all POST/PUT handlers to use eserde
-2. Add request tracing across microservices
-3. Implement custom metrics (Prometheus/Grafana)
-4. A/B test performance improvements
-
-### Long-term (Month 2+)
-1. Explore Redis caching for hot paths
-2. Implement query result caching
-3. Optimize N+1 queries with DataLoader pattern
-4. Consider read replicas for high-traffic endpoints
 
 ---
 
