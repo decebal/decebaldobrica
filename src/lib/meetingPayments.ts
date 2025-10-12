@@ -53,6 +53,48 @@ export const MEETING_TYPES_WITH_PRICING: Record<string, MeetingPaymentConfig> = 
 }
 
 /**
+ * Service deposit amounts (refundable)
+ * Used to show serious interest and skip the queue
+ */
+export const SERVICE_DEPOSITS: Record<string, MeetingPaymentConfig> = {
+  'Fractional CTO Deposit': {
+    meetingType: 'Fractional CTO Deposit',
+    price: 2.3, // ~$500 at $215/SOL
+    priceUSD: 500,
+    duration: 0,
+    requiresPayment: true,
+    description:
+      'Refundable deposit for Fractional CTO services - shows serious interest and gets priority scheduling',
+  },
+  'Case Study Deposit': {
+    meetingType: 'Case Study Deposit',
+    price: 1.4, // ~$300 at $215/SOL
+    priceUSD: 300,
+    duration: 0,
+    requiresPayment: true,
+    description: 'Refundable deposit for case study projects - secures your spot in the queue',
+  },
+  'Technical Writing Deposit': {
+    meetingType: 'Technical Writing Deposit',
+    price: 0.9, // ~$200 at $215/SOL
+    priceUSD: 200,
+    duration: 0,
+    requiresPayment: true,
+    description:
+      'Refundable deposit for content creation projects - priority scheduling for articles and tutorials',
+  },
+  'Architecture Docs Deposit': {
+    meetingType: 'Architecture Docs Deposit',
+    price: 1.4, // ~$300 at $215/SOL
+    priceUSD: 300,
+    duration: 0,
+    requiresPayment: true,
+    description:
+      'Refundable deposit for documentation projects - get started faster with priority onboarding',
+  },
+}
+
+/**
  * Get meeting config by type
  */
 export function getMeetingConfig(meetingType: string): MeetingPaymentConfig | undefined {

@@ -104,29 +104,32 @@ const Footer = () => {
                   {config.contact.email}
                 </a>
               </li>
-              <li className="mt-4 pt-4 border-t border-white/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <Coffee className="h-5 w-5 text-brand-teal" />
-                  <span className="text-sm font-semibold text-white">
-                    <Highlighter color="#03c9a9" action="highlight">
-                      Buy me a coffee
-                    </Highlighter>
-                  </span>
+              <li className="mt-4 pt-4 border-t border-white/10 coffee-section">
+                <div className="flex items-center justify-between gap-3 bg-white/5 rounded-lg p-3 transition-all duration-300">
+                  <div className="flex items-center gap-2">
+                    <Coffee className="h-5 w-5 text-brand-teal" />
+                    <span className="text-sm font-semibold text-white">
+                      <Highlighter color="#03c9a9" action="highlight">
+                        Buy me a coffee
+                      </Highlighter>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-brand-darknavy/50 rounded px-3 py-2 border border-brand-teal/20">
+                    <code className="text-xs text-brand-teal font-mono">{ethAddress}</code>
+                    <button
+                      onClick={copyToClipboard}
+                      className="text-gray-400 hover:text-brand-teal transition-colors shrink-0"
+                      title="Copy address"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 bg-white/5 rounded-lg p-2 group">
-                  <code className="text-xs text-brand-teal font-mono flex-1">{ethAddress}</code>
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-gray-400 hover:text-brand-teal transition-colors shrink-0"
-                    title="Copy address"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </button>
-                </div>
-                {copied && <p className="text-xs text-brand-teal mt-1">✓ Address copied!</p>}
-                <p className="text-xs text-gray-500 mt-2">
-                  Send ETH or ERC-20 tokens to support my work ☕
-                </p>
+                {copied && (
+                  <p className="text-xs text-brand-teal mt-2 font-semibold animate-fade-in">
+                    ✓ Address copied!
+                  </p>
+                )}
               </li>
             </ul>
           </div>

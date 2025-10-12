@@ -179,6 +179,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
             contactName: name,
             contactEmail: email,
             notes,
+            category,
           },
           meetLink
         )

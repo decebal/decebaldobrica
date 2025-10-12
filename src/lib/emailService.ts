@@ -28,6 +28,7 @@ export interface Meeting {
   contactName?: string
   contactEmail?: string
   notes?: string
+  category?: string
 }
 
 /**
@@ -168,7 +169,7 @@ function generateMeetingConfirmationHTML(
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #e5e7eb; background: #0a1929; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 0 auto; background: #0f1d35; }
-    .header { background: linear-gradient(135deg, #03c9a9 0%, #02a88d 100%); color: white; padding: 40px 20px; text-align: center; }
+    .header { background: linear-gradient(135deg, #0c1c36 0%, #0a66c2 50%, #03c9a9 100%); color: white; padding: 40px 20px; text-align: center; }
     .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
     .content { padding: 40px 30px; background: #0f1d35; }
     .content p { color: #d1d5db; margin: 16px 0; }
@@ -238,11 +239,36 @@ function generateMeetingConfirmationHTML(
         <a href="${meetLink || 'https://decebaldobrica.com/contact'}" class="button">${meetLink ? 'Join Meeting' : 'Add to Calendar'}</a>
       </center>
 
+      ${
+        meeting.category
+          ? `
+      <div style="background: rgba(3, 201, 169, 0.08); border-left: 3px solid #03c9a9; padding: 16px; margin: 24px 0; border-radius: 6px;">
+        <p style="margin: 0; color: #d1d5db; font-size: 14px;">
+          <strong style="color: #03c9a9;">Context:</strong> You mentioned interest in <strong>${meeting.category}</strong>
+        </p>
+      </div>
+      `
+          : ''
+      }
+
       <p>Looking forward to speaking with you!</p>
+
+      <div style="background: rgba(255,255,255,0.03); border-radius: 8px; padding: 20px; margin: 24px 0;">
+        <p style="margin: 0 0 12px 0; color: #9ca3af; font-size: 14px;"><strong>About Me</strong></p>
+        <p style="margin: 0 0 12px 0; color: #d1d5db; font-size: 14px;">
+          I'm a Fractional CTO specializing in AI engineering and digital transformation for VC-backed startups.
+        </p>
+        <div style="margin-top: 12px;">
+          <a href="https://www.linkedin.com/in/decebaldobrica/" style="color: #03c9a9; text-decoration: none; margin-right: 16px; font-size: 14px;">LinkedIn</a>
+          <a href="https://github.com/decebal" style="color: #03c9a9; text-decoration: none; margin-right: 16px; font-size: 14px;">GitHub</a>
+          <a href="https://x.com/ddonprogramming" style="color: #03c9a9; text-decoration: none; font-size: 14px;">Twitter/X</a>
+        </div>
+      </div>
+
       <p style="margin-top: 30px;">Best regards,<br><strong style="color: #03c9a9;">Decebal Dobrica</strong></p>
     </div>
     <div class="footer">
-      <p>Need to reschedule? <a href="https://decebaldobrica.com/contact">Contact me</a></p>
+      <p style="color: #9ca3af; font-size: 13px;">Need to reschedule? Use the calendar invite or Google Calendar to propose a new time.</p>
       <p style="margin-top: 16px;">&copy; ${new Date().getFullYear()} Decebal Dobrica. All rights reserved.</p>
     </div>
   </div>
@@ -274,13 +300,25 @@ ${meeting.notes ? `Notes: ${meeting.notes}` : ''}
 
 ${meetLink ? `Join Video Call: ${meetLink}` : 'A calendar invitation with the meeting link has been sent separately.'}
 
+${meeting.category ? `\nContext: You mentioned interest in ${meeting.category}\n` : ''}
+
 Looking forward to speaking with you!
+
+---
+About Me:
+I'm a Fractional CTO specializing in AI engineering and digital transformation
+for VC-backed startups.
+
+Connect with me:
+- LinkedIn: https://www.linkedin.com/in/decebaldobrica/
+- GitHub: https://github.com/decebal
+- Twitter/X: https://x.com/ddonprogramming
 
 Best regards,
 Decebal Dobrica
 
 ---
-Need to reschedule? Visit: https://decebaldobrica.com/contact
+Need to reschedule? Use the calendar invite or Google Calendar to propose a new time.
   `.trim()
 }
 

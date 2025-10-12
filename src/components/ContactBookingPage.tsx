@@ -24,7 +24,7 @@ import { clearReferralData, formatReferralData, getReferralData } from '@/utils/
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
-  Calendar,
+  Calendar as CalendarIcon,
   CheckCircle2,
   Clock,
   CreditCard,
@@ -327,33 +327,36 @@ export default function ContactBookingPage() {
           )}
 
           {/* Geo-location and pricing info */}
-          {!loadingGeo && geoPricing && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="mt-4 space-y-2"
-            >
-              {/* Location indicator */}
-              <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-300">
-                <MapPin className="h-4 w-4 text-brand-teal" />
-                <span>
-                  Detected location:{' '}
-                  <span className="font-semibold text-white">
-                    {geoPricing.location.city}, {geoPricing.location.country}
+          {!loadingGeo &&
+            geoPricing &&
+            geoPricing.location.city !== 'Unknown' &&
+            geoPricing.location.country !== 'Unknown' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="mt-4 space-y-2"
+              >
+                {/* Location indicator */}
+                <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-gray-300">
+                  <MapPin className="h-4 w-4 text-brand-teal" />
+                  <span>
+                    Detected location:{' '}
+                    <span className="font-semibold text-white">
+                      {geoPricing.location.city}, {geoPricing.location.country}
+                    </span>
                   </span>
-                </span>
-              </div>
-
-              {/* Discount eligibility message */}
-              {geoPricing.discountMessage && (
-                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 text-sm text-yellow-200 flex items-start gap-2">
-                  <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <span>{geoPricing.discountMessage}</span>
                 </div>
-              )}
-            </motion.div>
-          )}
+
+                {/* Discount eligibility message */}
+                {geoPricing.discountMessage && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-4 py-3 text-sm text-yellow-200 flex items-start gap-2">
+                    <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{geoPricing.discountMessage}</span>
+                  </div>
+                )}
+              </motion.div>
+            )}
         </div>
 
         {/* Chat Section - Now First */}
@@ -533,7 +536,7 @@ export default function ContactBookingPage() {
                             value={formData.date}
                             min={new Date().toISOString().split('T')[0]}
                             onChange={(e) => handleInputChange('date', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white"
+                            className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
                           />
                         </div>
                         <div className="space-y-2">
@@ -546,7 +549,7 @@ export default function ContactBookingPage() {
                             required
                             value={formData.time}
                             onChange={(e) => handleInputChange('time', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white"
+                            className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
                           />
                         </div>
                       </div>
@@ -656,7 +659,7 @@ export default function ContactBookingPage() {
                           'Processing...'
                         ) : (
                           <>
-                            <Calendar className="mr-2 h-5 w-5" />
+                            <CalendarIcon className="mr-2 h-5 w-5" />
                             Confirm Booking
                           </>
                         )}

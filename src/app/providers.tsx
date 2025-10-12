@@ -3,6 +3,7 @@
 
 'use client'
 
+import { SolanaWalletProvider } from '@/components/wallet/WalletProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import posthog from 'posthog-js'
@@ -48,7 +49,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <PostHogProvider client={posthog}>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <SolanaWalletProvider>{children}</SolanaWalletProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </PostHogProvider>
   )

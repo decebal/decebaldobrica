@@ -7,6 +7,7 @@ import {
   Code,
   Compass,
   Database,
+  FileText,
   Lightbulb,
   MonitorSmartphone,
   PenTool,
@@ -20,28 +21,32 @@ const services = [
     icon: <Briefcase className="h-8 w-8" />,
     title: 'Fractional CTO Services',
     description:
-      'Strategic technical leadership for VC-backed startups. Accelerate portfolio velocity while keeping costs under control.',
+      'Strategic technical leadership for VC-backed startups. Technology strategy, architecture reviews, and team building.',
+    teaser: 'Retainer-based',
     featured: true,
   },
   {
-    icon: <Code className="h-8 w-8" />,
-    title: 'Blockchain Development',
+    icon: <PenTool className="h-8 w-8" />,
+    title: 'Technical Writing & Case Studies',
     description:
-      'Build secure, scalable Web3 applications with Rust and TypeScript. From smart contracts to full dApps.',
+      'Developer-focused content that drives SEO and leads. Blog posts, tutorials, and B2B case studies showcasing technical wins.',
+    teaser: 'Per article or retainer • Pricing on request',
     featured: true,
   },
   {
-    icon: <Database className="h-8 w-8" />,
-    title: 'Serverless Architecture',
+    icon: <FileText className="h-8 w-8" />,
+    title: 'Architecture Documentation',
     description:
-      'Design and implement cost-effective, scalable cloud-native systems that grow with your startup.',
+      'Clear, maintainable system documentation. Architecture diagrams, API docs, and decision records that accelerate onboarding.',
+    teaser: 'Project-based pricing',
     featured: false,
   },
   {
-    icon: <Users className="h-8 w-8" />,
-    title: 'Team Acceleration',
+    icon: <Code className="h-8 w-8" />,
+    title: 'Performance Optimization',
     description:
-      'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
+      'Proven track record of 30%+ API improvements. Database tuning, caching strategies, and infrastructure optimization.',
+    teaser: 'Custom engagement',
     featured: false,
   },
   {
@@ -49,13 +54,15 @@ const services = [
     title: 'Technical Due Diligence',
     description:
       'Comprehensive technical assessment for VC firms evaluating portfolio companies or new investments.',
+    teaser: 'For VC firms',
     featured: false,
   },
   {
-    icon: <Lightbulb className="h-8 w-8" />,
-    title: 'MVP to Production',
+    icon: <Users className="h-8 w-8" />,
+    title: 'Team Acceleration',
     description:
-      'Transform validated ideas and no-code prototypes into scalable, production-ready applications.',
+      'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
+    teaser: 'Included in retainer',
     featured: false,
   },
 ]
@@ -66,7 +73,8 @@ const ServicesSection = () => {
       <div className="section-container">
         <h2 className="section-title">How I Can Help</h2>
         <p className="section-subtitle">
-          Turn your capital into working, high-impact software—faster.
+          From fractional CTO services to technical content creation—strategic expertise that
+          accelerates your startup's growth.
         </p>
 
         {/* Featured Services */}
@@ -82,9 +90,10 @@ const ServicesSection = () => {
                   {service.icon}
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">{service.title}</h3>
-                <p className="text-gray-300 mb-6">{service.description}</p>
-                <Link href={`/contact?category=${encodeURIComponent(service.title)}`}>
-                  <ShimmerButton className="w-full">Book a Session</ShimmerButton>
+                <p className="text-gray-300 mb-4">{service.description}</p>
+                <p className="text-gray-400 text-sm mb-6 italic">{service.teaser}</p>
+                <Link href="/services">
+                  <ShimmerButton className="w-full">View Details & Pricing</ShimmerButton>
                 </Link>
               </div>
             ))}
@@ -103,7 +112,8 @@ const ServicesSection = () => {
                   {service.icon}
                 </div>
                 <h3 className="text-lg font-bold mb-2 text-white">{service.title}</h3>
-                <p className="text-gray-300 text-sm">{service.description}</p>
+                <p className="text-gray-300 text-sm mb-3">{service.description}</p>
+                <p className="text-gray-400 text-xs italic">{service.teaser}</p>
               </div>
             ))}
         </div>
@@ -114,14 +124,25 @@ const ServicesSection = () => {
             Ready to accelerate your portfolio velocity?
           </h3>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Whether you're a VC firm or a startup founder, let's discuss how fractional technical
-            leadership can help you ship faster, scale smarter, and build right.
+            Whether you need fractional CTO services, technical content, or architecture
+            documentation—let's discuss how I can help you ship faster and scale smarter.
           </p>
-          <Link href="/contact?category=General+Consultation">
-            <Button size="lg" className="bg-brand-teal hover:bg-brand-teal/90 text-white">
-              Schedule Your Consultation
-            </Button>
-          </Link>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/services">
+              <Button size="lg" className="bg-brand-teal hover:bg-brand-teal/90 text-white">
+                View All Services & Pricing
+              </Button>
+            </Link>
+            <Link href="/contact?category=General+Consultation">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-brand-teal/30 text-white hover:bg-brand-teal/10"
+              >
+                Schedule Consultation
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>
