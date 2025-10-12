@@ -54,16 +54,6 @@ AI chat uses Groq's fast LLM API with Llama 3.1 model. **Free tier available!**
 - Fast inference with Groq's custom LPU hardware
 - Requires `GROQ_API_KEY` environment variable
 
-### Database (SQLite)
-```bash
-task db:init            # Initialize database
-task db:stats           # View database statistics
-task db:backup          # Backup database
-task db:reset           # Reset database (destructive)
-```
-
-Database location: `./data/chat-history.db`
-
 ### Analytics & Payments
 ```bash
 task analytics:summary   # View analytics summary
@@ -80,7 +70,7 @@ task payment:test        # Test Solana Pay integration
 - **Tailwind CSS** + shadcn/ui components
 - **Groq** for AI chat (Llama 3.1 8B Instant)
 - **Solana Pay** for payments
-- **SQLite** (better-sqlite3) for data persistence
+- **PostHog** for analytics (client & server-side)
 - **MDX** for blog posts with frontmatter
 
 ### Personal Configuration
@@ -108,8 +98,8 @@ src/
 │   ├── meeting-action.ts  # Meeting scheduling
 │   └── payment-action.ts  # Payment processing
 ├── lib/                   # Core business logic
-│   ├── chatHistory.ts     # SQLite database layer
-│   ├── meetingPayments.ts # Payment configuration
+│   ├── analytics.ts       # PostHog analytics tracking
+│   ├── meetingPayments.ts # Payment configuration (in-memory)
 │   ├── googleCalendar.ts  # Google Calendar API
 │   ├── emailService.ts    # Email via Resend
 │   ├── blogPosts.ts       # Blog post utilities
@@ -128,9 +118,6 @@ src/
 content/
 └── blog/                 # Blog posts (MDX files)
     └── *.mdx             # 39 posts imported from decebalonprogramming.net
-
-data/
-└── chat-history.db       # SQLite database (created on init)
 
 docs/
 ├── CRYPTO_PAYMENTS.md    # Crypto payment integration guide
@@ -151,34 +138,38 @@ docs/
 - System prompt configured with portfolio context for accurate answers
 - Redirects scheduling requests to booking form below chat
 - Max tokens limited to 400 for concise responses
+- Chat history tracked via PostHog server-side (conversations, messages, tokens)
 
-**Database Layer:**
-- Single SQLite database with 4 tables: `conversations`, `messages`, `analytics_events`, `payments`
-- All DB operations in `chatHistory.ts` using better-sqlite3
-- WAL mode enabled for better concurrency
+**Analytics:**
+- PostHog for both client-side and server-side tracking
+- Client-side: `src/lib/analytics.ts` with helpers for chat, meetings, payments
+- Server-side: Chat API route tracks conversations, messages, and errors
+- No local database - all analytics in PostHog
 
 **Meeting System:**
 - Integrates with Google Calendar API for availability checks
 - Sends confirmation emails via Resend
 - Supports paid meetings via Solana Pay
-- Local meeting storage in SQLite + JSON backup
+- Meeting data stored in Google Calendar
 
 **Payment Integration:**
 - Solana Pay for crypto payments
 - Meeting types have different pricing (free, 0.05 SOL, 0.1 SOL, 0.15 SOL)
-- Payment status tracked in database
+- Payment status tracked in-memory (`src/lib/meetingPayments.ts`)
+- Service access payments stored in Supabase
 
 ### Important Configuration
 
 **next.config.ts:**
 - TypeScript and ESLint errors ignored during builds (use `task lint` and `task type-check` instead)
 - Uses Turbopack for fast dev mode (not webpack)
-- Native packages (better-sqlite3) externalized via `serverExternalPackages`
 - Server Actions body size limit: 2MB
 
 **Environment Variables:**
 See `.env.example` for all required variables. Key ones:
 - `GROQ_API_KEY` - Required for AI chat functionality
+- `NEXT_PUBLIC_POSTHOG_KEY` - Required for analytics tracking
+- `NEXT_PUBLIC_POSTHOG_HOST` - PostHog host (defaults to app.posthog.com)
 - `NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS` - Required for payments
 - `RESEND_API_KEY` - Required for emails
 - `GOOGLE_REFRESH_TOKEN` - Required for calendar integration
@@ -187,7 +178,6 @@ See `.env.example` for all required variables. Key ones:
 
 1. **Before starting development:**
    ```bash
-   task db:init      # Initialize database
    task test:install # Install Playwright browsers (first time only)
    ```
 
@@ -198,7 +188,7 @@ See `.env.example` for all required variables. Key ones:
 
 3. **Payment testing:** Use Solana devnet for testing. Set `NEXT_PUBLIC_SOLANA_NETWORK=devnet`.
 
-4. **Database changes:** The schema auto-initializes on first import of `chatHistory.ts`. For manual changes, use SQLite CLI or update the schema in that file.
+4. **Analytics tracking:** All events are tracked via PostHog. Use helpers in `src/lib/analytics.ts` for client-side tracking. Server-side tracking is automatic in the chat API route.
 
 5. **Adding new meeting types:** Edit `MEETING_TYPES_WITH_PRICING` in `src/lib/meetingPayments.ts` and `MEETING_TYPES` in `src/lib/portfolioContext.ts`.
 
@@ -224,7 +214,4 @@ See `.env.example` for all required variables. Key ones:
 Edit system prompt in `src/lib/portfolioContext.ts` (PORTFOLIO_CONTEXT constant) or adjust maxTokens in `src/app/api/chat/route.ts`
 
 ### Add new analytics events
-Use `trackEvent()` from `src/lib/chatHistory.ts` with custom event types
-
-### Update database schema
-Modify SQL in `src/lib/chatHistory.ts:25-72` (runs on initialization)
+Use `trackEvent()` from `src/lib/analytics.ts` with custom event types. Server-side tracking can be added to API routes using PostHog Node SDK.

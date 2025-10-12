@@ -3,7 +3,6 @@
 
 'use server'
 
-import { addMessage, trackEvent } from '@/lib/chatHistory'
 import { sendMeetingConfirmation } from '@/lib/emailService'
 import { getMeetingConfig } from '@/lib/meetingPayments'
 import { google } from 'googleapis'
@@ -194,29 +193,6 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         meetingType,
         date: startDateTime.toISOString(),
       })
-    }
-
-    // Track event
-    if (conversationId) {
-      trackEvent(
-        'meeting_booked',
-        {
-          meetingType,
-          duration: config.duration,
-          price: config.price,
-          paymentId,
-          category,
-        },
-        userId,
-        conversationId
-      )
-
-      // Add message to conversation
-      addMessage(
-        conversationId,
-        'assistant',
-        `Great! I've booked your ${meetingType} for ${startDateTime.toLocaleDateString()} at ${startDateTime.toLocaleTimeString()}. You should receive a calendar invitation and confirmation email shortly.${meetLink ? ` Join link: ${meetLink}` : ''}`
-      )
     }
 
     return {

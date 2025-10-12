@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
     },
   },
   // Externalize native packages for server-side use with Turbopack/Bun
-  serverExternalPackages: ['better-sqlite3', 'chromadb'],
+  serverExternalPackages: ['chromadb'],
 }
 
 export default nextConfig

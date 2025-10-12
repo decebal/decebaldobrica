@@ -3,7 +3,6 @@
 
 'use server'
 
-import { savePayment, updatePaymentStatus as updateDbPaymentStatus } from '@/lib/chatHistory'
 import {
   type PaymentTransaction,
   createPaymentTransaction,
@@ -73,15 +72,6 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
     // Create payment transaction in memory
     const paymentTransaction = createPaymentTransaction(meetingId, config.price, reference, userId)
 
-    // Save to database
-    const dbPaymentId = savePayment(
-      meetingId,
-      config.price,
-      reference.toString(),
-      conversationId,
-      userId
-    )
-
     // Create Solana Pay URL
     const recipient = getMerchantWallet()
     const amount = config.price
@@ -105,7 +95,6 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
       success: true,
       payment: {
         id: paymentTransaction.id,
-        dbPaymentId,
         reference: reference.toString(),
         amount: config.price,
         meetingType,
@@ -172,7 +161,6 @@ export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) 
 
       // Update payment status
       updatePaymentStatus(paymentId, 'confirmed', signatureInfo.signature)
-      updateDbPaymentStatus(payment.meetingId, 'confirmed', signatureInfo.signature)
 
       return {
         success: true,
@@ -254,7 +242,6 @@ export async function cancelPayment(paymentId: string) {
     }
 
     updatePaymentStatus(paymentId, 'failed')
-    updateDbPaymentStatus(payment.meetingId, 'failed')
 
     return {
       success: true,
@@ -269,16 +256,25 @@ export async function cancelPayment(paymentId: string) {
 
 /**
  * Get payment statistics
- * Returns analytics data for all payments
+ * Returns analytics data for all payments (from in-memory storage)
  */
 export async function getPaymentAnalytics() {
   try {
-    const { getPaymentStatistics } = await import('@/lib/chatHistory')
-    const stats = getPaymentStatistics()
+    const { getAllPayments } = await import('@/lib/meetingPayments')
+    const allPayments = getAllPayments()
+
+    const confirmed = allPayments.filter((p) => p.status === 'confirmed')
+    const pending = allPayments.filter((p) => p.status === 'pending')
+    const totalRevenue = confirmed.reduce((sum, p) => sum + p.amount, 0)
 
     return {
       success: true,
-      analytics: stats,
+      analytics: {
+        totalPayments: allPayments.length,
+        confirmedPayments: confirmed.length,
+        pendingPayments: pending.length,
+        totalRevenue,
+      },
     }
   } catch (error) {
     return {
