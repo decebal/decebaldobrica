@@ -26,6 +26,7 @@ import {
   ArrowLeft,
   Calendar as CalendarIcon,
   CheckCircle2,
+  ChevronDown,
   Clock,
   CreditCard,
   Info,
@@ -399,21 +400,75 @@ export default function ContactBookingPage() {
                 and confirmation email shortly.
               </motion.p>
               <motion.div
-                className="flex gap-4 justify-center"
+                className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
                 <Link href="/services">
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Services
                   </Button>
                 </Link>
                 <Link href="/">
-                  <Button>Go to Home</Button>
+                  <Button className="w-full sm:w-auto">Go to Home</Button>
                 </Link>
               </motion.div>
+            </motion.div>
+
+            {/* Scroll Indicator on Success Page - Matches hero section style */}
+            <motion.div
+              className="flex justify-center mt-16 mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+            >
+              <div className="animate-bounce">
+                <button
+                  onClick={() => {
+                    const chatSection = document.querySelector('[data-success-chat-section]')
+                    if (chatSection) {
+                      chatSection.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
+                  className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
+                >
+                  <ChevronDown className="text-brand-teal" />
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Chat Section on Success Page */}
+            <motion.div
+              className="max-w-4xl mx-auto mt-16"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+              data-success-chat-section
+            >
+              <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
+                  >
+                    <MessageSquare className="h-6 w-6 text-brand-teal" />
+                  </motion.div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Want to Learn More About Working Together?
+                  </h2>
+                </div>
+                <p className="text-gray-400">
+                  Chat with my AI assistant to explore how we can collaborate on your project
+                </p>
+              </div>
+
+              <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                <CardContent className="pt-6">
+                  <ChatInterfaceAI />
+                </CardContent>
+              </Card>
             </motion.div>
           </div>
         </main>
@@ -424,22 +479,19 @@ export default function ContactBookingPage() {
 
   return (
     <div className="min-h-screen relative">
-      <main className="pt-24 pb-16">
-        {/* Header */}
-        <div className="section-container py-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-            <Sparkles sparkleCount={15}>
-              <ComicText>Let's Connect</ComicText>
-            </Sparkles>
+      <main className="pt-14 md:pt-16 pb-12">
+        {/* Compact Header */}
+        <div className="px-4 md:px-8 py-1 md:py-2 max-w-7xl mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold mb-1 text-white">
+            Let's Connect
           </h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-xl text-gray-300 max-w-2xl mb-2"
+            className="text-sm text-gray-300 max-w-2xl"
           >
-            Schedule a consultation or ask me anything about my services, experience, and
-            availability.
+            Schedule a consultation below
           </motion.p>
 
           {/* Referral indicator */}
@@ -489,43 +541,13 @@ export default function ContactBookingPage() {
             )}
         </div>
 
-        {/* Chat Section - Now First */}
-        <div className="section-container py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="max-w-4xl mx-auto mb-12"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
-              >
-                <MessageSquare className="h-6 w-6 text-brand-teal" />
-              </motion.div>
-              <h2 className="text-2xl font-bold text-white">Ask My AI Assistant</h2>
-            </div>
-            <p className="text-gray-400 mb-6">
-              Have questions? Chat with my AI assistant for instant answers about services,
-              availability, and more.
-              <span className="text-brand-teal font-semibold">
-                {' '}
-                The booking form is available below
-              </span>{' '}
-              if you're ready to schedule a consultation.
-            </p>
-            <ChatInterfaceAI />
-          </motion.div>
-        </div>
-
-        {/* Booking Form Section - Now Below Chat */}
-        <div className="section-container py-8">
-          <div className="max-w-4xl mx-auto space-y-8">
+        {/* Booking Form Section - Now First */}
+        <div className="px-4 md:px-8 py-1 max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto space-y-3">
             {meetingTypes.length > 1 && (
               <div>
-                <h2 className="text-2xl font-bold mb-6 text-white">Available Consultations</h2>
-                <div className="grid md:grid-cols-2 gap-6">
+                <h2 className="text-lg font-bold mb-2 text-white">Available Consultations</h2>
+                <div className="grid md:grid-cols-2 gap-3">
                   {meetingTypes.map((config, index) => (
                     <motion.div
                       key={config.meetingType}
@@ -614,19 +636,16 @@ export default function ContactBookingPage() {
                 transition={{ type: 'spring', stiffness: 200 }}
               >
                 <Card className="bg-white/5 backdrop-blur-sm border-white/10">
-                  <CardHeader>
-                    <CardTitle className="text-white text-2xl">
-                      Book {selectedMeeting.meetingType}
+                  <CardHeader className="pb-2 pt-3 md:pt-6">
+                    <CardTitle className="text-white text-base md:text-lg">
+                      Book {selectedMeeting.meetingType.split('(')[0].trim()}
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Fill in your details to schedule the meeting
-                    </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="name" className="text-white">
+                  <CardContent className="pt-2 pb-3 md:pb-6">
+                    <form onSubmit={handleSubmit} className="space-y-2 md:space-y-3">
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="name" className="text-white text-sm">
                             Full Name *
                           </Label>
                           <Input
@@ -635,11 +654,11 @@ export default function ContactBookingPage() {
                             placeholder="Your Full Name"
                             value={formData.name}
                             onChange={(e) => handleInputChange('name', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 h-9"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email" className="text-white">
+                        <div className="space-y-1">
+                          <Label htmlFor="email" className="text-white text-sm">
                             Email Address *
                           </Label>
                           <Input
@@ -649,15 +668,15 @@ export default function ContactBookingPage() {
                             placeholder="your@email.com"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 h-9"
                           />
                         </div>
                       </div>
 
-                      <div className="space-y-6">
-                        <div className="grid md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <Label htmlFor="date" className="text-white">
+                      <div className="space-y-2 md:space-y-3">
+                        <div className="grid md:grid-cols-2 gap-2 md:gap-3">
+                          <div className="space-y-1">
+                            <Label htmlFor="date" className="text-white text-sm">
                               Preferred Date *
                             </Label>
                             <Input
@@ -671,21 +690,21 @@ export default function ContactBookingPage() {
                                   .split('T')[0]
                               }
                               onChange={(e) => handleInputChange('date', e.target.value)}
-                              className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer"
+                              className="bg-white/5 border-white/10 text-white [color-scheme:dark] cursor-pointer h-9"
                             />
                           </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="time" className="text-white">
+                          <div className="space-y-1">
+                            <Label htmlFor="time" className="text-white text-sm">
                               Preferred Time *
                             </Label>
                             {!formData.date ? (
-                              <div className="bg-white/5 border border-white/10 rounded-md px-3 py-2.5 text-gray-400 text-sm">
+                              <div className="bg-white/5 border border-white/10 rounded-md px-3 py-2 text-gray-400 text-xs h-9 flex items-center">
                                 Please select a date first
                               </div>
                             ) : timeSlots.length === 0 ? (
-                              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md px-3 py-2.5 text-yellow-200 text-sm flex items-center gap-2">
-                                <Info className="h-4 w-4 flex-shrink-0" />
-                                <span>No available time slots for this date. Please choose another date.</span>
+                              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md px-3 py-2 text-yellow-200 text-xs flex items-center gap-2">
+                                <Info className="h-3 w-3 flex-shrink-0" />
+                                <span>No slots for this date</span>
                               </div>
                             ) : (
                               <Select
@@ -693,7 +712,7 @@ export default function ContactBookingPage() {
                                 onValueChange={(value) => handleInputChange('time', value)}
                                 required
                               >
-                                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                <SelectTrigger className="bg-white/5 border-white/10 text-white h-9">
                                   <SelectValue placeholder="Select a time slot">
                                     {formData.time ? formatTimeDisplay(formData.time) : 'Select a time slot'}
                                   </SelectValue>
@@ -711,18 +730,11 @@ export default function ContactBookingPage() {
                                 </SelectContent>
                               </Select>
                             )}
-                            <p className="text-xs text-gray-400">
-                              {formData.date && timeSlots.length > 0
-                                ? 'Times shown are in your timezone and available during business hours (9 AM - 5 PM Europe/London)'
-                                : formData.date
-                                  ? ''
-                                  : 'Select a date first to see available time slots'}
-                            </p>
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="timezone" className="text-white">
+                        <div className="space-y-1">
+                          <Label htmlFor="timezone" className="text-white text-sm">
                             Your Timezone *
                           </Label>
                           <TimezoneSelect
@@ -730,23 +742,19 @@ export default function ContactBookingPage() {
                             onChange={setSelectedTimezone}
                             className="timezone-select"
                           />
-                          <p className="text-xs text-gray-400 flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            Auto-detected: {Intl.DateTimeFormat().resolvedOptions().timeZone}
-                          </p>
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="notes" className="text-white">
+                      <div className="space-y-1 hidden md:block">
+                        <Label htmlFor="notes" className="text-white text-sm">
                           Additional Notes (Optional)
                         </Label>
                         <Textarea
                           id="notes"
-                          placeholder="Tell me about your project, goals, or what you'd like to discuss..."
+                          placeholder="Tell me about your project..."
                           value={formData.notes}
                           onChange={(e) => handleInputChange('notes', e.target.value)}
-                          className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 min-h-[120px]"
+                          className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 min-h-[60px] text-sm"
                         />
                       </div>
 
@@ -835,14 +843,13 @@ export default function ContactBookingPage() {
                       <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full bg-brand-teal hover:bg-brand-teal/80 text-white"
-                        size="lg"
+                        className="w-full bg-brand-teal hover:bg-brand-teal/80 text-white h-10"
                       >
                         {isSubmitting ? (
                           'Processing...'
                         ) : (
                           <>
-                            <CalendarIcon className="mr-2 h-5 w-5" />
+                            <CalendarIcon className="mr-2 h-4 w-4" />
                             Confirm Booking
                           </>
                         )}
@@ -853,6 +860,55 @@ export default function ContactBookingPage() {
               </motion.div>
             )}
           </div>
+        </div>
+
+        {/* Scroll Indicator - Matches hero section style */}
+        <div className="px-4 md:px-8 py-20 md:py-32 max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.8 }}
+            className="max-w-4xl mx-auto flex justify-center"
+          >
+            <div className="animate-bounce">
+              <button
+                onClick={() => {
+                  const chatSection = document.querySelector('[data-chat-section]')
+                  if (chatSection) {
+                    chatSection.scrollIntoView({ behavior: 'smooth' })
+                  }
+                }}
+                className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
+              >
+                <ChevronDown className="text-brand-teal" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Chat Section - Well Below the Fold */}
+        <div className="px-4 md:px-8 py-16 md:py-24 max-w-7xl mx-auto" data-chat-section>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
+              >
+                <MessageSquare className="h-6 w-6 text-brand-teal" />
+              </motion.div>
+              <h2 className="text-2xl font-bold text-white">Questions? Ask My AI Assistant</h2>
+            </div>
+            <p className="text-gray-400 mb-6">
+              Have questions before booking? Chat with my AI assistant for instant answers about
+              services, availability, and more.
+            </p>
+            <ChatInterfaceAI />
+          </motion.div>
         </div>
       </main>
 
