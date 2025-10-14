@@ -10,7 +10,7 @@ const WorkSection = () => {
   const caseStudies = getAllCaseStudies()
 
   return (
-    <section id="work" className="py-20 overflow-hidden">
+    <section id="work" className="py-20">
       <div className="section-container">
         <div className="text-center mb-8">
           <h2 className="section-title">Case Studies</h2>
@@ -20,7 +20,7 @@ const WorkSection = () => {
         </div>
 
         {/* Compact Marquee Display */}
-        <div className="relative">
+        <div className="relative overflow-hidden -mx-4 md:-mx-8">
           <Marquee pauseOnHover className="[--duration:30s]">
             {caseStudies.map((study) => (
               <Link

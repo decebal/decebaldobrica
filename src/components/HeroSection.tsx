@@ -19,7 +19,7 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="min-h-screen pt-20 flex items-center relative">
+    <section className="min-h-screen pt-20 flex flex-col justify-center relative pb-20">
       <div className="section-container flex flex-col md:flex-row items-center">
         <div className="flex-1 md:pr-8 mb-10 md:mb-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in text-white">
@@ -86,7 +86,7 @@ const HeroSection = () => {
           </SpotlightCard>
         </div>
       </div>
-      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
         <button
           onClick={scrollToAbout}
           className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
