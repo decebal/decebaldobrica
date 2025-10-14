@@ -86,7 +86,7 @@ const HeroSection = () => {
           </SpotlightCard>
         </div>
       </div>
-      <div className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-8 md:bottom-12 left-0 right-0 flex justify-center animate-bounce">
         <button
           onClick={scrollToAbout}
           className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"

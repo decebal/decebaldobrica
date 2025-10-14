@@ -15,10 +15,7 @@ export async function POST(req: Request) {
     // Initialize Google Calendar
     const oauth = initGoogleCalendar()
     if (!oauth) {
-      return NextResponse.json(
-        { error: 'Google Calendar not configured' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Google Calendar not configured' }, { status: 500 })
     }
 
     // Calculate date range: start from 2 days from now
@@ -34,7 +31,14 @@ export async function POST(req: Request) {
 
     // Find the next available slot
     const myTimezone = config.contact.timezone // 'Europe/London'
-    const nextSlot = findNextAvailableSlot(startDate, endDate, busySlots, duration, myTimezone, timezone)
+    const nextSlot = findNextAvailableSlot(
+      startDate,
+      endDate,
+      busySlots,
+      duration,
+      myTimezone,
+      timezone
+    )
 
     if (!nextSlot) {
       return NextResponse.json(
@@ -49,10 +53,7 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error('Error finding available slot:', error)
-    return NextResponse.json(
-      { error: 'Failed to find available slot' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to find available slot' }, { status: 500 })
   }
 }
 

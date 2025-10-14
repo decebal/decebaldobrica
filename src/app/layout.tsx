@@ -5,6 +5,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
+import { PostHogErrorBoundary } from '@/components/PostHogErrorBoundary'
+import { PostHogErrorHandler } from '@/components/PostHogErrorHandler'
+import { PostHogPageView } from '@/components/PostHogPageView'
 import ScrollToTop from '@/components/ScrollToTop'
 import TexturedBackground from '@/components/TexturedBackground'
 import { Toaster as Sonner } from '@/components/ui/sonner'
@@ -58,12 +61,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          <ScrollToTop />
-          <TexturedBackground />
-          <Navbar />
-          {children}
-          <Toaster />
-          <Sonner />
+          <PostHogErrorBoundary>
+            <PostHogPageView />
+            <PostHogErrorHandler />
+            <ScrollToTop />
+            <TexturedBackground />
+            <Navbar />
+            {children}
+            <Toaster />
+            <Sonner />
+          </PostHogErrorBoundary>
         </Providers>
       </body>
     </html>

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Homepage Mobile Issues', () => {
   const mobileViewports = [
@@ -17,7 +17,10 @@ test.describe('Homepage Mobile Issues', () => {
         await page.waitForLoadState('networkidle')
 
         // Find the chevron button
-        const chevronButton = page.locator('button').filter({ has: page.locator('svg.lucide-chevron-down') }).first()
+        const chevronButton = page
+          .locator('button')
+          .filter({ has: page.locator('svg.lucide-chevron-down') })
+          .first()
         await chevronButton.waitFor({ state: 'visible', timeout: 5000 })
 
         // Get the chevron button position
@@ -63,9 +66,12 @@ test.describe('Homepage Mobile Issues', () => {
         await expect(testimonialsSection).toBeVisible()
 
         // Find testimonial cards
-        const testimonialCards = page.locator('[class*="testimonial"]').or(page.locator('blockquote')).first()
+        const testimonialCards = page
+          .locator('[class*="testimonial"]')
+          .or(page.locator('blockquote'))
+          .first()
 
-        if (await testimonialCards.count() > 0) {
+        if ((await testimonialCards.count()) > 0) {
           const cardBox = await testimonialCards.first().boundingBox()
 
           if (cardBox) {
@@ -83,13 +89,17 @@ test.describe('Homepage Mobile Issues', () => {
         }
 
         // Check navigation buttons are accessible on mobile
-        const prevButton = page.locator('button[aria-label*="Previous"]').or(page.locator('button').filter({ hasText: /previous/i }))
-        const nextButton = page.locator('button[aria-label*="Next"]').or(page.locator('button').filter({ hasText: /next/i }))
+        const prevButton = page
+          .locator('button[aria-label*="Previous"]')
+          .or(page.locator('button').filter({ hasText: /previous/i }))
+        const nextButton = page
+          .locator('button[aria-label*="Next"]')
+          .or(page.locator('button').filter({ hasText: /next/i }))
 
-        if (await prevButton.count() > 0) {
+        if ((await prevButton.count()) > 0) {
           await expect(prevButton.first()).toBeVisible()
         }
-        if (await nextButton.count() > 0) {
+        if ((await nextButton.count()) > 0) {
           await expect(nextButton.first()).toBeVisible()
         }
       })
@@ -162,7 +172,7 @@ test.describe('Homepage Mobile Issues', () => {
       for (const sectionName of sections) {
         const section = page.locator(`[id*="${sectionName.split(' ')[0]}"]`).first()
 
-        if (await section.count() > 0) {
+        if ((await section.count()) > 0) {
           const sectionBox = await section.boundingBox()
 
           if (sectionBox) {

@@ -153,7 +153,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           {children}
                         </ol>
                       ),
-                      li: ({ children }) => <li className="text-gray-300 leading-relaxed">{children}</li>,
+                      li: ({ children }) => (
+                        <li className="text-gray-300 leading-relaxed">{children}</li>
+                      ),
                       a: ({ href, children }) => (
                         <a
                           href={href}
@@ -201,7 +203,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           {children}
                         </thead>
                       ),
-                      tbody: ({ children }) => <tbody className="divide-y divide-white/10">{children}</tbody>,
+                      tbody: ({ children }) => (
+                        <tbody className="divide-y divide-white/10">{children}</tbody>
+                      ),
                       tr: ({ children }) => (
                         <tr className="hover:bg-white/5 transition-colors">{children}</tr>
                       ),
@@ -218,9 +222,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       strong: ({ children }) => (
                         <strong className="text-brand-teal font-bold">{children}</strong>
                       ),
-                      em: ({ children }) => (
-                        <em className="text-gray-200 italic">{children}</em>
-                      ),
+                      em: ({ children }) => <em className="text-gray-200 italic">{children}</em>,
                     }}
                   >
                     {post.content}

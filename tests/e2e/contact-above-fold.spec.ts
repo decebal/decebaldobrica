@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Contact Page - Above the Fold', () => {
   const viewports = [
@@ -58,7 +58,8 @@ test.describe('Contact Page - Above the Fold', () => {
 
         // Additional check: ensure the button is not just barely visible
         // At least 80% of the button should be visible
-        const visibleHeight = Math.min(buttonBox.y + buttonBox.height, viewport.height) - buttonBox.y
+        const visibleHeight =
+          Math.min(buttonBox.y + buttonBox.height, viewport.height) - buttonBox.y
         const visibilityPercentage = (visibleHeight / buttonBox.height) * 100
 
         expect(visibilityPercentage).toBeGreaterThanOrEqual(80)

@@ -51,6 +51,9 @@ export async function POST(req: Request) {
       })
     }
 
+    const startTime = Date.now()
+    const lastMessage = messages[messages.length - 1]
+
     const result = streamText({
       model: groq('llama-3.1-8b-instant'),
       system: PORTFOLIO_CONTEXT,
@@ -58,8 +61,34 @@ export async function POST(req: Request) {
       temperature: 0.7,
       maxTokens: 400,
       onFinish: async (result) => {
-        // Track assistant response
+        const endTime = Date.now()
+        const latency = endTime - startTime
+
+        // Track LLM generation event (PostHog LLM Analytics format)
         if (posthog) {
+          posthog.capture({
+            distinctId: conversationId,
+            event: '$ai_generation',
+            properties: {
+              // Required LLM Analytics properties
+              $ai_model: 'llama-3.1-8b-instant',
+              $ai_model_provider: 'groq',
+              $ai_input: lastMessage.content?.slice(0, 500) || '', // Truncate for privacy
+              $ai_output: result.text?.slice(0, 500) || '', // Truncate for storage
+              $ai_latency_ms: latency,
+              $ai_input_tokens: result.usage?.promptTokens || 0,
+              $ai_output_tokens: result.usage?.completionTokens || 0,
+              $ai_total_tokens: result.usage?.totalTokens || 0,
+              $ai_temperature: 0.7,
+              $ai_max_tokens: 400,
+
+              // Additional context
+              conversation_id: conversationId,
+              timestamp: new Date().toISOString(),
+            },
+          })
+
+          // Also track assistant message for chat analytics
           posthog.capture({
             distinctId: conversationId,
             event: 'chat_message_sent',
@@ -71,6 +100,7 @@ export async function POST(req: Request) {
               tokens_used: result.usage?.totalTokens || 0,
             },
           })
+
           await posthog.shutdown()
         }
       },

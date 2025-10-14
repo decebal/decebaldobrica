@@ -9,6 +9,13 @@ import { ComicText } from '@/components/ui/comic-text'
 import { Confetti } from '@/components/ui/confetti'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Sparkles } from '@/components/ui/sparkles'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/hooks/use-toast'
@@ -37,7 +44,6 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import TimezoneSelect, { type ITimezone } from 'react-timezone-select'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface GeoPricingData {
   success: boolean
@@ -105,7 +111,8 @@ export default function ContactBookingPage() {
     const interval = duration === 15 ? 15 : duration === 30 ? 30 : 60
 
     // Get user's timezone
-    const userTimezone = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
+    const userTimezone =
+      typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
     const myTimezone = 'Europe/London'
 
     // Helper to get timezone offset in minutes for a specific date/time
@@ -220,7 +227,8 @@ export default function ContactBookingPage() {
 
     const fetchNextAvailableSlot = async () => {
       try {
-        const userTimezone = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
+        const userTimezone =
+          typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value
 
         const response = await fetch('/api/availability', {
           method: 'POST',
@@ -482,9 +490,7 @@ export default function ContactBookingPage() {
       <main className="pt-14 md:pt-16 pb-12">
         {/* Compact Header */}
         <div className="px-4 md:px-8 py-1 md:py-2 max-w-7xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold mb-1 text-white">
-            Let's Connect
-          </h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1 text-white">Let's Connect</h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -714,7 +720,9 @@ export default function ContactBookingPage() {
                               >
                                 <SelectTrigger className="bg-white/5 border-white/10 text-white h-9">
                                   <SelectValue placeholder="Select a time slot">
-                                    {formData.time ? formatTimeDisplay(formData.time) : 'Select a time slot'}
+                                    {formData.time
+                                      ? formatTimeDisplay(formData.time)
+                                      : 'Select a time slot'}
                                   </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#0c1c36] border-white/10 text-white max-h-[300px]">

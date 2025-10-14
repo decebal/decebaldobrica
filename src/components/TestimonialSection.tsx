@@ -234,7 +234,7 @@ const TestimonialSection = () => {
                     <div className="flex items-start justify-between mb-6">
                       <div className="flex gap-4 flex-1">
                         {testimonial.avatar && (
-                          <div className="shrink-0">
+                          <div className="shrink-0 hidden md:block">
                             <img
                               src={testimonial.avatar}
                               alt={testimonial.name}
