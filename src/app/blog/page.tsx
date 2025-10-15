@@ -1,4 +1,5 @@
 import Footer from '@/components/Footer'
+import { NewsletterSignup } from '@/components/NewsletterSignup'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
@@ -109,52 +110,58 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
               </div>
             ) : (
               <div className="space-y-6">
-                {posts.map((post) => (
-                  <Card
-                    key={post.slug}
-                    className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]"
-                  >
-                    <CardHeader>
-                      <Link href={`/blog/${post.slug}`} className="cursor-pointer">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <CardTitle className="text-white text-2xl mb-2 hover:text-brand-teal transition-colors">
-                              {post.title}
-                            </CardTitle>
-                            <CardDescription className="text-gray-300 text-base">
-                              {post.description}
-                            </CardDescription>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mt-4">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{formatDate(post.date)}</span>
-                          </div>
-                          {post.readingTime && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{post.readingTime}</span>
+                {posts.map((post, index) => (
+                  <React.Fragment key={post.slug}>
+                    <Card
+                      className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]"
+                    >
+                      <CardHeader>
+                        <Link href={`/blog/${post.slug}`} className="cursor-pointer">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <CardTitle className="text-white text-2xl mb-2 hover:text-brand-teal transition-colors">
+                                {post.title}
+                              </CardTitle>
+                              <CardDescription className="text-gray-300 text-base">
+                                {post.description}
+                              </CardDescription>
                             </div>
-                          )}
-                        </div>
-                      </Link>
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-4">
-                          {post.tags.map((tag) => (
-                            <Link key={tag} href={`/blog/tag/${encodeURIComponent(tag)}`}>
-                              <Badge
-                                variant="outline"
-                                className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10 cursor-pointer transition-colors"
-                              >
-                                {tag}
-                              </Badge>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </CardHeader>
-                  </Card>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mt-4">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>{formatDate(post.date)}</span>
+                            </div>
+                            {post.readingTime && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{post.readingTime}</span>
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            {post.tags.map((tag) => (
+                              <Link key={tag} href={`/blog/tag/${encodeURIComponent(tag)}`}>
+                                <Badge
+                                  variant="outline"
+                                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10 cursor-pointer transition-colors"
+                                >
+                                  {tag}
+                                </Badge>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </CardHeader>
+                    </Card>
+
+                    {/* Newsletter signup after 3rd post on first page */}
+                    {currentPage === 1 && index === 2 && (
+                      <NewsletterSignup variant="inline" />
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             )}
@@ -227,6 +234,11 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                 posts
               </div>
             )}
+
+            {/* Featured Newsletter Signup */}
+            <div className="mt-16">
+              <NewsletterSignup variant="featured" showBenefits={true} />
+            </div>
           </div>
         </div>
       </main>

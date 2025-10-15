@@ -23,7 +23,9 @@
       "Bash(node:*)",
       "WebFetch(domain:www.linkedin.com)",
       "WebFetch(domain:www.shadcnblocks.com)",
-      "WebFetch(domain:magicui.design)"
+      "WebFetch(domain:magicui.design)",
+      "Bash(bun install:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
