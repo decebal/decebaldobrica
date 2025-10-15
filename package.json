@@ -1,0 +1,38 @@
+{
+  "name": "decebal-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Decebal Dobrica's Portfolio & Newsletter Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@decebal/web",
+    "dev:newsletter": "turbo dev --filter=@decebal/newsletter",
+    "build": "turbo build",
+    "build:web": "turbo build --filter=@decebal/web",
+    "build:newsletter": "turbo build --filter=@decebal/newsletter",
+    "lint": "turbo lint",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean && rm -rf node_modules .turbo",
+    "clean:all": "bun run clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "db:push": "bun run --cwd packages/database push",
+    "db:migrate": "bun run --cwd packages/database migrate",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18",
+    "bun": ">=1.0"
+  },
+  "packageManager": "bun@1.1.0"
+}

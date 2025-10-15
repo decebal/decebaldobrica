@@ -1,0 +1,22 @@
+{
+  "name": "@decebal/email",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.tsx"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "resend": "^4.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "typescript": "^5.7.3"
+  }
+}

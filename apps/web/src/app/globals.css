@@ -1,0 +1,365 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Updated color palette to work with the new textured background */
+    --background: 214 30% 95%;
+    --foreground: 0 0% 100%; /* Changed to white for better readability on dark bg */
+
+    --card: 0 0% 100%;
+    --card-foreground: 214 80% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 80% 10%;
+
+    --primary: 166 97% 40%; /* Brand teal color */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 77% 40%; /* Brand navy color */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 166 97% 40%;
+    --accent-foreground: 214 80% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 166 97% 40%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Brand Colors as CSS variables */
+    --color-brand-teal: #03c9a9;
+    --color-brand-navy: #0a66c2;
+    --color-brand-darknavy: #0c1c36;
+    --color-brand-lightgray: #f3f2ef;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 166 97% 40%; /* Brand teal color */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 77% 40%; /* Brand navy color */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 166 97% 40%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 166 97% 40%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+}
+
+.section-container {
+  @apply px-4 md:px-8 py-16 max-w-7xl mx-auto;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold mb-10 text-center text-white;
+}
+
+.section-subtitle {
+  @apply text-lg mb-12 text-center text-gray-200 max-w-3xl mx-auto;
+}
+
+.gradient-bg {
+  @apply bg-gradient-to-br from-brand-teal/20 to-brand-navy/20;
+}
+
+.nav-link {
+  @apply relative px-3 py-2 text-white hover:text-brand-teal transition-colors duration-300 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-brand-teal after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
+
+.btn-primary {
+  @apply bg-brand-teal hover:bg-brand-teal/90 text-white px-5 py-3 rounded-md transition-colors duration-200 font-medium;
+}
+
+.btn-secondary {
+  @apply bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white/20 px-5 py-3 rounded-md transition-colors duration-200 font-medium;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Timeline Animation Styles */
+.timeline-container {
+  @apply relative;
+}
+
+.timeline-item {
+  @apply opacity-0;
+}
+
+.timeline-item.animate-slide-up {
+  animation: slide-up 0.6s ease forwards;
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Additional Animation Utility Classes */
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+}
+
+.hover-glow {
+  @apply transition-all duration-300 hover:shadow-md hover:shadow-brand-teal/30;
+}
+
+.animate-on-scroll {
+  @apply opacity-0;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease forwards;
+}
+
+/* Brand-specific styles updated for better contrast on dark background */
+.brand-nav-link {
+  @apply relative px-3 py-2 text-white hover:text-brand-teal transition-colors duration-300 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-brand-teal after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+}
+
+.brand-btn-primary {
+  @apply bg-brand-teal hover:bg-brand-teal/90 text-white px-5 py-3 rounded-md transition-colors duration-200 font-medium;
+}
+
+.brand-btn-secondary {
+  @apply bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white/20 px-5 py-3 rounded-md transition-colors duration-200 font-medium;
+}
+
+.brand-card {
+  @apply bg-white/5 backdrop-blur-sm border border-brand-teal/20 rounded-lg transition-all duration-300 hover:border-brand-teal/40 hover:shadow-md hover:shadow-brand-teal/10;
+}
+
+/* Updated prose styles for better readability on dark background */
+.prose {
+  @apply max-w-none text-gray-100;
+}
+
+.prose p {
+  @apply mb-4 text-white;
+}
+
+/* Additional styles for better text readability on the textured background */
+.text-on-texture {
+  @apply text-white drop-shadow-md;
+}
+
+.text-subtitle-on-texture {
+  @apply text-gray-200;
+}
+
+.text-paragraph-on-texture {
+  @apply text-white;
+}
+
+.card-on-texture {
+  @apply bg-white/10 backdrop-blur-sm border border-white/20;
+}
+
+/* Add scrollbar styling for the chat interface */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* React Timezone Select Styling - Complete Dark Theme */
+.timezone-select > div {
+  @apply bg-white/5 border-white/10 rounded-md;
+}
+
+.timezone-select input {
+  @apply text-white bg-transparent;
+}
+
+/* Main control container */
+.timezone-select div[class*="control"] {
+  @apply bg-white/5 border border-white/10 text-white cursor-pointer transition-colors duration-200;
+  min-height: 42px;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="control"]:hover {
+  @apply border-brand-teal/50 bg-white/5;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="control--is-focused"],
+.timezone-select div[class*="control--menu-is-open"] {
+  @apply border-brand-teal/50 bg-white/5;
+  box-shadow: none !important;
+}
+
+/* Value container */
+.timezone-select div[class*="ValueContainer"] {
+  @apply bg-transparent;
+}
+
+/* Input field */
+.timezone-select div[class*="Input"] {
+  @apply text-white;
+}
+
+.timezone-select div[class*="Input"] input {
+  @apply text-white bg-transparent;
+  color: white !important;
+}
+
+/* Dropdown menu */
+.timezone-select div[class*="menu"] {
+  @apply bg-[#0c1c36] border border-white/10 rounded-md;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.timezone-select div[class*="MenuList"] {
+  @apply bg-transparent;
+}
+
+/* Options */
+.timezone-select div[class*="option"] {
+  @apply text-white cursor-pointer transition-colors duration-150;
+  background-color: transparent !important;
+}
+
+.timezone-select div[class*="option"]:hover {
+  @apply bg-brand-teal/20;
+  background-color: rgba(3, 201, 169, 0.2) !important;
+}
+
+.timezone-select div[class*="option--is-focused"] {
+  @apply bg-brand-teal/20;
+  background-color: rgba(3, 201, 169, 0.2) !important;
+}
+
+.timezone-select div[class*="option--is-selected"] {
+  @apply bg-brand-teal/30 text-white;
+  background-color: rgba(3, 201, 169, 0.3) !important;
+}
+
+/* Selected value and placeholder */
+.timezone-select div[class*="singleValue"],
+.timezone-select div[class*="placeholder"] {
+  @apply text-white;
+  color: white !important;
+}
+
+/* Indicator separator */
+.timezone-select div[class*="indicatorSeparator"] {
+  @apply bg-white/10;
+}
+
+/* Dropdown indicators */
+.timezone-select div[class*="indicatorContainer"] {
+  @apply text-white;
+}
+
+.timezone-select svg {
+  @apply text-white;
+}
+
+/* Clear indicator */
+.timezone-select div[class*="clearIndicator"] {
+  @apply text-white hover:text-brand-teal cursor-pointer;
+}
+
+/* Loading indicator */
+.timezone-select div[class*="loadingIndicator"] {
+  @apply text-white;
+}

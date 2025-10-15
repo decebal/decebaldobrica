@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(task:*)",
+      "Bash(bun run lint:*)",
+      "Bash(timeout:*)",
+      "Bash(bun add:*)",
+      "Bash(bun run:*)",
+      "Bash(tee:*)",
+      "Bash(pkill:*)",
+      "Read(//Users/decebaldobrica/Projects/personal/interactify-showcase/**)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:decebaldobrica.com)",
+      "Read(//Users/decebaldobrica/Projects/personal/decebalonprogramming/**)",
+      "Read(//Users/decebaldobrica/Projects/personal/**)",
+      "Bash(for dir in */)",
+      "Bash(do if [ -f \"$dirpost.js\" ])",
+      "Bash(then echo \"$dir\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(node:*)",
+      "WebFetch(domain:www.linkedin.com)",
+      "WebFetch(domain:www.shadcnblocks.com)",
+      "WebFetch(domain:magicui.design)",
+      "Bash(bun install:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

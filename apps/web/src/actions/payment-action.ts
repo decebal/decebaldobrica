@@ -1,0 +1,436 @@
+// src/actions/payment.ts
+// Server Action for Solana Pay integration
+
+'use server'
+
+import {
+  type PaymentTransaction,
+  createPaymentTransaction,
+  getMeetingConfig,
+  getPaymentTransaction,
+  updatePaymentStatus,
+} from '@/lib/meetingPayments'
+import {
+  FindReferenceError,
+  createQR,
+  encodeURL,
+  findReference,
+  validateTransfer,
+} from '@solana/pay'
+import { Connection, PublicKey } from '@solana/web3.js'
+import { Keypair } from '@solana/web3.js'
+import { z } from 'zod'
+
+const paymentInitSchema = z.object({
+  meetingType: z.string(),
+  meetingId: z.string(),
+  conversationId: z.string().optional(),
+  userId: z.string().optional(),
+})
+
+const paymentVerifySchema = z.object({
+  reference: z.string(),
+  paymentId: z.string(),
+})
+
+// Initialize Solana connection
+function getSolanaConnection(): Connection {
+  const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com'
+  return new Connection(rpcUrl, 'confirmed')
+}
+
+// Get merchant wallet from environment
+function getMerchantWallet(): PublicKey {
+  const walletAddress = process.env.NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS
+  if (!walletAddress) {
+    throw new Error('Merchant wallet address not configured')
+  }
+  return new PublicKey(walletAddress)
+}
+
+/**
+ * Initialize a payment for a meeting booking
+ * Creates payment transaction and generates QR code
+ */
+export async function initializePayment(input: z.infer<typeof paymentInitSchema>) {
+  try {
+    const { meetingType, meetingId, conversationId, userId } = paymentInitSchema.parse(input)
+
+    // Get meeting configuration
+    const config = getMeetingConfig(meetingType)
+
+    if (!config.requiresPayment) {
+      return {
+        success: false,
+        error: 'This meeting type does not require payment',
+      }
+    }
+
+    // Generate unique reference for this payment
+    const reference = Keypair.generate().publicKey
+
+    // Create payment transaction in memory
+    const paymentTransaction = createPaymentTransaction(meetingId, config.price, reference, userId)
+
+    // Create Solana Pay URL
+    const recipient = getMerchantWallet()
+    const amount = config.price
+    const label = `Meeting: ${meetingType}`
+    const message = `Payment for ${config.duration} minute meeting`
+
+    const url = encodeURL({
+      recipient,
+      amount,
+      reference,
+      label,
+      message,
+    })
+
+    // Generate QR code as base64
+    const qrCode = createQR(url, 512, 'transparent')
+    const qrBuffer = await qrCode.getRawData('png')
+    const qrBase64 = qrBuffer ? Buffer.from(qrBuffer).toString('base64') : null
+
+    return {
+      success: true,
+      payment: {
+        id: paymentTransaction.id,
+        reference: reference.toString(),
+        amount: config.price,
+        meetingType,
+        url: url.toString(),
+        qrCode: qrBase64 ? `data:image/png;base64,${qrBase64}` : null,
+      },
+    }
+  } catch (error) {
+    console.error('Payment initialization error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to initialize payment',
+    }
+  }
+}
+
+/**
+ * Verify a payment on the blockchain
+ * Checks if transaction with reference exists and has correct amount
+ */
+export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) {
+  try {
+    const { reference, paymentId } = paymentVerifySchema.parse(input)
+
+    // Get payment transaction
+    const payment = getPaymentTransaction(paymentId)
+    if (!payment) {
+      return {
+        success: false,
+        error: 'Payment not found',
+      }
+    }
+
+    if (payment.status === 'confirmed') {
+      return {
+        success: true,
+        status: 'confirmed',
+        signature: payment.signature,
+      }
+    }
+
+    // Connect to Solana
+    const connection = getSolanaConnection()
+    const referencePublicKey = new PublicKey(reference)
+    const recipient = getMerchantWallet()
+
+    try {
+      // Find transaction reference on blockchain
+      const signatureInfo = await findReference(connection, referencePublicKey, {
+        finality: 'confirmed',
+      })
+
+      // Validate the transaction
+      await validateTransfer(
+        connection,
+        signatureInfo.signature,
+        {
+          recipient,
+          amount: payment.amount,
+          reference: referencePublicKey,
+        },
+        { commitment: 'confirmed' }
+      )
+
+      // Update payment status
+      updatePaymentStatus(paymentId, 'confirmed', signatureInfo.signature)
+
+      return {
+        success: true,
+        status: 'confirmed',
+        signature: signatureInfo.signature,
+      }
+    } catch (error) {
+      if (error instanceof FindReferenceError) {
+        // Transaction not found yet - still pending
+        return {
+          success: true,
+          status: 'pending',
+        }
+      }
+      throw error
+    }
+  } catch (error) {
+    console.error('Payment verification error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to verify payment',
+    }
+  }
+}
+
+/**
+ * Get payment status
+ * Returns current status of a payment transaction
+ */
+export async function getPaymentStatus(paymentId: string) {
+  try {
+    const payment = getPaymentTransaction(paymentId)
+
+    if (!payment) {
+      return {
+        success: false,
+        error: 'Payment not found',
+      }
+    }
+
+    return {
+      success: true,
+      payment: {
+        id: payment.id,
+        status: payment.status,
+        amount: payment.amount,
+        timestamp: payment.timestamp,
+        signature: payment.signature,
+      },
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get payment status',
+    }
+  }
+}
+
+/**
+ * Cancel a pending payment
+ * Marks payment as failed if it's still pending
+ */
+export async function cancelPayment(paymentId: string) {
+  try {
+    const payment = getPaymentTransaction(paymentId)
+
+    if (!payment) {
+      return {
+        success: false,
+        error: 'Payment not found',
+      }
+    }
+
+    if (payment.status !== 'pending') {
+      return {
+        success: false,
+        error: 'Cannot cancel payment with status: ' + payment.status,
+      }
+    }
+
+    updatePaymentStatus(paymentId, 'failed')
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to cancel payment',
+    }
+  }
+}
+
+/**
+ * Get payment statistics
+ * Returns analytics data for all payments (from in-memory storage)
+ */
+export async function getPaymentAnalytics() {
+  try {
+    const { getAllPayments } = await import('@/lib/meetingPayments')
+    const allPayments = getAllPayments()
+
+    const confirmed = allPayments.filter((p) => p.status === 'confirmed')
+    const pending = allPayments.filter((p) => p.status === 'pending')
+    const totalRevenue = confirmed.reduce((sum, p) => sum + p.amount, 0)
+
+    return {
+      success: true,
+      analytics: {
+        totalPayments: allPayments.length,
+        confirmedPayments: confirmed.length,
+        pendingPayments: pending.length,
+        totalRevenue,
+      },
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get analytics',
+    }
+  }
+}
+
+// ============================================================================
+// SERVICE ACCESS PAYMENTS (for pricing unlocks)
+// ============================================================================
+
+const servicePaymentInitSchema = z.object({
+  walletAddress: z.string().min(32),
+  serviceSlug: z.string(),
+  amount: z.number().positive(),
+})
+
+const servicePaymentVerifySchema = z.object({
+  reference: z.string(),
+  dbPaymentId: z.string(),
+  walletAddress: z.string(),
+  serviceSlug: z.string(),
+})
+
+/**
+ * Initialize a service access payment
+ * Used for unlocking pricing and content
+ */
+export async function initializeServicePayment(input: z.infer<typeof servicePaymentInitSchema>) {
+  try {
+    const { walletAddress, serviceSlug, amount } = servicePaymentInitSchema.parse(input)
+
+    // Generate unique reference for this payment
+    const reference = Keypair.generate().publicKey
+
+    // Save to Supabase
+    const { savePaymentToSupabase } = await import('@/lib/supabase/payments')
+    const dbPaymentId = await savePaymentToSupabase(
+      walletAddress,
+      serviceSlug,
+      amount,
+      reference.toString()
+    )
+
+    // Create Solana Pay URL
+    const recipient = getMerchantWallet()
+    const label = `Unlock: ${serviceSlug}`
+    const message = `Payment to unlock ${serviceSlug} on decebaldobrica.com`
+
+    const url = encodeURL({
+      recipient,
+      amount,
+      reference,
+      label,
+      message,
+    })
+
+    // Generate QR code as base64
+    const qrCode = createQR(url, 512, 'transparent')
+    const qrBuffer = await qrCode.getRawData('png')
+    const qrBase64 = qrBuffer ? Buffer.from(qrBuffer).toString('base64') : null
+
+    return {
+      success: true,
+      payment: {
+        dbPaymentId,
+        reference: reference.toString(),
+        amount,
+        serviceSlug,
+        url: url.toString(),
+        qrCode: qrBase64 ? `data:image/png;base64,${qrBase64}` : null,
+      },
+    }
+  } catch (error) {
+    console.error('Service payment initialization error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to initialize payment',
+    }
+  }
+}
+
+/**
+ * Verify service payment and grant access
+ */
+export async function verifyServicePayment(input: z.infer<typeof servicePaymentVerifySchema>) {
+  try {
+    const { reference, dbPaymentId, walletAddress, serviceSlug } =
+      servicePaymentVerifySchema.parse(input)
+
+    // Connect to Solana
+    const connection = getSolanaConnection()
+    const referencePublicKey = new PublicKey(reference)
+    const recipient = getMerchantWallet()
+
+    // Import Supabase payment functions
+    const { confirmPayment, grantServiceAccess } = await import('@/lib/supabase/payments')
+
+    try {
+      // Find transaction reference on blockchain
+      const signatureInfo = await findReference(connection, referencePublicKey, {
+        finality: 'confirmed',
+      })
+
+      // Get expected amount from Supabase
+      const supabase = await (await import('@/lib/supabase/server')).createClient()
+      const { data: paymentData } = await supabase
+        .from('payment_transactions')
+        .select('amount')
+        .eq('id', dbPaymentId)
+        .single()
+
+      if (!paymentData) {
+        throw new Error('Payment record not found')
+      }
+
+      // Validate the transaction
+      await validateTransfer(
+        connection,
+        signatureInfo.signature,
+        {
+          recipient,
+          amount: paymentData.amount,
+          reference: referencePublicKey,
+        },
+        { commitment: 'confirmed' }
+      )
+
+      // Confirm payment in Supabase
+      await confirmPayment(dbPaymentId, signatureInfo.signature)
+
+      // Grant service access
+      await grantServiceAccess(walletAddress, serviceSlug, dbPaymentId)
+
+      return {
+        success: true,
+        status: 'confirmed',
+        signature: signatureInfo.signature,
+      }
+    } catch (error) {
+      if (error instanceof FindReferenceError) {
+        // Transaction not found yet - still pending
+        return {
+          success: true,
+          status: 'pending',
+        }
+      }
+      throw error
+    }
+  } catch (error) {
+    console.error('Service payment verification error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to verify payment',
+    }
+  }
+}

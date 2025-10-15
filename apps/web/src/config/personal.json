@@ -1,0 +1,48 @@
+{
+  "name": "Decebal Dobrica",
+  "tagline": "Fractional CTO specializing in AI engineering and digital transformation for VC-backed startups",
+  "email": "discovery@decebaldobrica.com",
+  "website": "https://decebaldobrica.com",
+  "domain": "decebaldobrica.com",
+  "oldBlog": "https://decebalonprogramming.net/",
+  "ethAddress": "decebaldobrica.eth",
+  "socialLinks": {
+    "github": "https://github.com/decebal",
+    "linkedin": "https://www.linkedin.com/in/decebaldobrica/",
+    "twitter": "https://x.com/ddonprogramming"
+  },
+  "contact": {
+    "email": "discovery@decebaldobrica.com",
+    "emailFrom": "noreply@decebaldobrica.com",
+    "location": "Remote / London",
+    "timezone": "Europe/London"
+  },
+  "professional": {
+    "title": "Fractional CTO & AI Engineering Leader",
+    "currentRole": "Senior Technical Leadership",
+    "currentCompany": "HedgeX Capital",
+    "yearsExperience": "15+",
+    "specialties": [
+      "AI Engineering & GenAI Integration",
+      "Cloud Architecture & SaaS",
+      "Technology Strategy & Leadership",
+      "Blockchain & Web Development"
+    ]
+  },
+  "achievements": {
+    "productivityIncrease": "3x",
+    "costReduction": "60-75%",
+    "teamSize": "25+",
+    "description": "Delivered 3x developer productivity gains and 60-75% infrastructure cost reductions through strategic technical leadership"
+  },
+  "education": {
+    "degree": "Software Engineering",
+    "institution": "Military Technical Academy",
+    "years": "2007-2011",
+    "certifications": [
+      "Linux/Unix System Administration",
+      "Zend Certified PHP 5.5 Engineer",
+      "Transaction Monitoring (Sumsub)"
+    ]
+  }
+}
