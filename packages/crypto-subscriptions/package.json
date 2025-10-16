@@ -1,0 +1,73 @@
+{
+  "name": "@decebal/crypto-subscriptions",
+  "version": "1.0.0",
+  "description": "Production-ready crypto subscription payments for Solana, Bitcoin Lightning, and Ethereum L2",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./react": {
+      "require": "./dist/react/index.js",
+      "import": "./dist/react/index.mjs",
+      "types": "./dist/react/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/react/index.tsx --format cjs,esm --dts",
+    "dev": "tsup src/index.ts src/react/index.tsx --format cjs,esm --dts --watch",
+    "lint": "biome check .",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "crypto",
+    "payments",
+    "subscriptions",
+    "solana",
+    "bitcoin",
+    "lightning",
+    "ethereum",
+    "web3",
+    "blockchain",
+    "saas"
+  ],
+  "author": "Decebal Dobrica",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decebaldobrica/crypto-subscriptions"
+  },
+  "dependencies": {
+    "@solana/pay": "^0.2.5",
+    "@solana/web3.js": "^1.95.8",
+    "bignumber.js": "^9.1.2",
+    "viem": "^2.21.53",
+    "wagmi": "^2.12.31"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^18",
+    "react": "^19",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

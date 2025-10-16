@@ -1,0 +1,108 @@
+version: '3'
+
+# Main Taskfile for Portfolio Monorepo
+# Organized into modular task files in tooling/tasks/
+
+vars:
+  PKG_MANAGER: bun
+  PROJECT_DIR: '{{.USER_WORKING_DIR}}'
+  DATA_DIR: ./data
+  DB_FILE: '{{.DATA_DIR}}/chat-history.db'
+
+includes:
+  dev:
+    taskfile: ./tooling/tasks/development.yml
+    aliases: [development]
+  build:
+    taskfile: ./tooling/tasks/build.yml
+  quality:
+    taskfile: ./tooling/tasks/quality.yml
+    aliases: [q]
+  test:
+    taskfile: ./tooling/tasks/testing.yml
+    aliases: [t]
+  db:
+    taskfile: ./tooling/tasks/database.yml
+    aliases: [database]
+  analytics:
+    taskfile: ./tooling/tasks/analytics.yml
+    aliases: [a]
+  pkg:
+    taskfile: ./tooling/tasks/packages.yml
+    aliases: [packages, p]
+  deploy:
+    taskfile: ./tooling/tasks/deployment.yml
+
+tasks:
+  # === QUICK ACTIONS ===
+
+  quick:setup:
+    desc: Quick setup - install deps and initialize DB
+    cmds:
+      - task: dev:install
+      - task: db:init
+
+  quick:check:
+    desc: Quick health check - all checks + tests
+    cmds:
+      - task: quality:check:all
+      - task: test:test
+
+  quick:build:
+    desc: Quick build - packages + app
+    cmds:
+      - task: pkg:packages:build
+      - task: build:build
+
+  # === UTILITIES ===
+
+  info:
+    desc: Show project information
+    cmds:
+      - cmd: |
+          echo "📦 Portfolio Monorepo"
+          echo ""
+          echo "Node: $(node --version)"
+          echo "Bun: $(bun --version)"
+          echo ""
+          echo "Packages:"
+          echo "  - @decebal/crypto-subscriptions"
+          echo "  - @decebal/email"
+          echo "  - @decebal/newsletter"
+          echo ""
+          echo "Project: {{.PROJECT_DIR}}"
+          echo "Database: {{.DB_FILE}}"
+          echo ""
+          echo "Quick Commands:"
+          echo "  task dev:dev              - Start dev server"
+          echo "  task pkg:crypto:test      - Test crypto-subscriptions"
+          echo "  task quality:check:all    - Run all quality checks"
+          echo "  task help                 - Show all available tasks"
+
+  help:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # === AI Services (for development) ===
+
+  ai:status:
+    desc: Check AI service status (Groq)
+    cmds:
+      - cmd: |
+          echo "🤖 AI Services Status:"
+          echo ""
+          if [ -n "$GROQ_API_KEY" ]; then
+            echo "✅ Groq API Key: configured"
+          else
+            echo "❌ Groq API Key: not set"
+          fi
+          echo ""
+          echo "Model: llama-3.1-8b-instant"
+
+  # === DEFAULT TASK ===
+
+  default:
+    desc: Show project info (runs when you type 'task')
+    cmds:
+      - task: info

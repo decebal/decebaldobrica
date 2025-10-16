@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   confirmed_at TIMESTAMPTZ,
   unsubscribed_at TIMESTAMPTZ,
 
+  -- Email confirmation
+  confirmation_token TEXT,
+  confirmation_token_expires_at TIMESTAMPTZ,
+
   -- Payment info
   stripe_customer_id TEXT,
   stripe_subscription_id TEXT,
@@ -46,6 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_email ON newsletter_subscr
 CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_tier ON newsletter_subscribers(tier);
 CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_status ON newsletter_subscribers(status);
 CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_stripe_customer ON newsletter_subscribers(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_confirmation_token ON newsletter_subscribers(confirmation_token);
 
 -- Auto-update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

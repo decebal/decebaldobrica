@@ -1,0 +1,30 @@
+version: '3'
+
+# Code quality tasks
+tasks:
+  lint:
+    desc: Run Biome linter
+    cmds:
+      - '{{.PKG_MANAGER}} run lint'
+
+  lint:fix:
+    desc: Fix linting issues automatically
+    cmds:
+      - '{{.PKG_MANAGER}} run lint:fix'
+
+  format:
+    desc: Format code with Biome
+    cmds:
+      - '{{.PKG_MANAGER}} run format'
+
+  type-check:
+    desc: Run TypeScript type checking
+    cmds:
+      - '{{.PKG_MANAGER}} run type-check'
+
+  check:all:
+    desc: Run all checks (lint, format, type-check)
+    cmds:
+      - task: lint
+      - task: format
+      - task: type-check

@@ -1,0 +1,13 @@
+version: '3'
+
+# Deployment tasks
+tasks:
+  deploy:vercel:
+    desc: Deploy to Vercel
+    cmds:
+      - vercel
+
+  deploy:vercel:prod:
+    desc: Deploy to Vercel production
+    cmds:
+      - vercel --prod

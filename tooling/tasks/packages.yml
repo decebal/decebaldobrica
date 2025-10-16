@@ -1,0 +1,144 @@
+version: '3'
+
+# Package-specific tasks
+# Tasks for managing individual packages in the monorepo
+tasks:
+  # === Crypto Subscriptions Package ===
+
+  crypto:build:
+    desc: Build crypto-subscriptions package
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun run build
+
+  crypto:dev:
+    desc: Build crypto-subscriptions in watch mode
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun run dev
+
+  crypto:test:
+    desc: Run all crypto-subscriptions tests
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test
+
+  crypto:test:unit:
+    desc: Run crypto-subscriptions unit tests
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test:unit
+
+  crypto:test:integration:
+    desc: Run crypto-subscriptions integration tests
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test:integration
+
+  crypto:test:e2e:
+    desc: Run crypto-subscriptions E2E tests
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test:e2e
+
+  crypto:test:watch:
+    desc: Run crypto-subscriptions tests in watch mode
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test:watch
+
+  crypto:test:coverage:
+    desc: Generate test coverage report for crypto-subscriptions
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun test:coverage
+      - cmd: |
+          echo ""
+          echo "📊 Coverage report generated"
+          echo "Open: packages/crypto-subscriptions/coverage/index.html"
+
+  crypto:lint:
+    desc: Lint crypto-subscriptions package
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun run lint
+
+  crypto:type-check:
+    desc: Type-check crypto-subscriptions package
+    dir: packages/crypto-subscriptions
+    cmds:
+      - bun run type-check
+
+  crypto:check:
+    desc: Run all checks for crypto-subscriptions (lint + type-check + test)
+    dir: packages/crypto-subscriptions
+    cmds:
+      - task: crypto:lint
+      - task: crypto:type-check
+      - task: crypto:test
+
+  crypto:publish:
+    desc: Publish crypto-subscriptions to NPM
+    dir: packages/crypto-subscriptions
+    prompt: This will publish to NPM. Are you sure?
+    cmds:
+      - task: crypto:check
+      - task: crypto:build
+      - npm publish --access public
+
+  crypto:publish:dry:
+    desc: Dry run NPM publish for crypto-subscriptions
+    dir: packages/crypto-subscriptions
+    cmds:
+      - npm publish --dry-run
+
+  # === Email Package ===
+
+  email:build:
+    desc: Build email package
+    dir: packages/email
+    cmds:
+      - bun run build
+
+  email:dev:
+    desc: Build email package in watch mode
+    dir: packages/email
+    cmds:
+      - bun run dev
+
+  # === Newsletter Package ===
+
+  newsletter:build:
+    desc: Build newsletter package
+    dir: packages/newsletter
+    cmds:
+      - bun run build
+
+  newsletter:test:
+    desc: Run newsletter package tests
+    dir: packages/newsletter
+    cmds:
+      - bun test
+
+  # === All Packages ===
+
+  packages:build:
+    desc: Build all packages
+    cmds:
+      - task: crypto:build
+      - task: email:build
+      - task: newsletter:build
+
+  packages:test:
+    desc: Test all packages
+    cmds:
+      - task: crypto:test
+      - task: newsletter:test
+
+  packages:clean:
+    desc: Clean all package build artifacts
+    cmds:
+      - rm -rf packages/*/dist
+      - rm -rf packages/*/.turbo
+      - rm -rf packages/*/coverage
+      - echo "✅ Cleaned all package artifacts"

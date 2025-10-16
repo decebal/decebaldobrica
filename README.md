@@ -147,28 +147,96 @@ bun run clean:all             # Clean everything including node_modules
 
 ## 🎯 Tech Stack
 
-**Framework:** Next.js 15 with App Router
-**UI:** React 19, TailwindCSS, shadcn/ui
-**Database:** Supabase (PostgreSQL)
-**Email:** Resend + React Email
-**Analytics:** PostHog
-**Payments:** Stripe + Solana Pay
-**AI:** Groq (Llama 3.1)
-**Build:** Turborepo + Bun
-**Linting:** Biome
+<div align="center">
+
+### Frontend & Framework
+**[Next.js 15](https://nextjs.org)** • **[React 19](https://react.dev)** • **[TypeScript](https://www.typescriptlang.org)**
+App Router • Server Components • Server Actions • Streaming
+
+### Styling & UI
+**[TailwindCSS](https://tailwindcss.com)** • **[shadcn/ui](https://ui.shadcn.com)** • **[Radix UI](https://www.radix-ui.com)**
+Responsive Design • Dark Mode • Accessible Components
+
+### Backend & Database
+**[Supabase](https://supabase.com)** (PostgreSQL) • Edge Functions • Row Level Security
+Real-time Subscriptions • Authentication • Storage
+
+### Email & Communication
+**[Resend](https://resend.com)** • **[React Email](https://react.email)**
+Transactional Emails • Newsletter System • Email Templates
+
+### Payments & Monetization
+**[Stripe](https://stripe.com)** (Subscriptions & One-time) • **[Solana Pay](https://solanapay.com)**
+Crypto Payments • Webhooks • Payment Analytics
+
+### AI & Automation
+**[Groq](https://groq.com)** (Llama 3.1 8B) • **[Vercel AI SDK](https://sdk.vercel.ai)**
+Fast AI Chat • Streaming Responses • Context-aware Assistance
+
+### Analytics & Monitoring
+**[PostHog](https://posthog.com)** (Product Analytics)
+Event Tracking • Session Recording • Feature Flags
+
+### DevOps & Tooling
+**[Turborepo](https://turbo.build)** • **[Bun](https://bun.sh)** • **[Biome](https://biomejs.dev)**
+Monorepo Management • Fast Package Manager • Unified Linting
+
+### Social Media Integration
+**[LinkedIn API](https://developer.linkedin.com)** • **[Twitter API](https://developer.twitter.com)**
+Auto-posting • Content Distribution • Engagement Tracking
+
+</div>
 
 ## 📖 Documentation
 
-### Getting Started
-- [Migration Complete Summary](./MIGRATION_COMPLETE.md) - Monorepo migration summary
-- [Newsletter Remaining Work](./NEWSLETTER_REMAINING_WORK.md) - **What's left to build**
+### 🚀 Getting Started
+- **[Quick Start Guide](./docs/QUICK_START.md)** - Get up and running in 5 minutes
+- **[Newsletter Remaining Work](./docs/NEWSLETTER_REMAINING_WORK.md)** - What's left to build for newsletter system
 
-### Detailed Guides
-- [Monorepo Migration Plan](./docs/MONOREPO_MIGRATION_PLAN.md)
-- [Newsletter Implementation](./docs/NEWSLETTER_IMPLEMENTATION_PLAN.md)
-- [Newsletter Progress](./docs/NEWSLETTER_PROGRESS.md)
-- [Supabase Setup](./docs/NEWSLETTER_SUPABASE_SETUP.md)
-- [Deployment Guide](./docs/DEPLOYMENT.md)
+### 📦 Migration & Setup
+- [Migration Complete Summary](./docs/MIGRATION_COMPLETE.md) - Monorepo migration overview
+- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Step-by-step migration instructions
+- [GIT Migration Guide](./docs/GIT_MIGRATION_GUIDE.md) - Git-specific migration details
+- [Monorepo Migration Plan](./docs/MONOREPO_MIGRATION_PLAN.md) - Full migration strategy
+
+### 📧 Newsletter System
+- [Newsletter Implementation Plan](./docs/NEWSLETTER_IMPLEMENTATION_PLAN.md) - Complete 14-page roadmap
+- [Newsletter Progress](./docs/NEWSLETTER_PROGRESS.md) - Current implementation status
+- [Newsletter Supabase Setup](./docs/NEWSLETTER_SUPABASE_SETUP.md) - Database configuration
+
+### 💰 Payments & Services
+- [Crypto Payments Guide](./docs/CRYPTO_PAYMENTS.md) - Solana Pay integration
+- [Global Payment System Plan](./docs/GLOBAL_PAYMENT_SYSTEM_PLAN.md) - Multi-currency strategy
+- [Geo Pricing Implementation](./docs/GEO_PRICING_IMPLEMENTATION.md) - Location-based pricing
+- [Pricing Research](./docs/PRICING_RESEARCH.md) - Market analysis
+- [Pricing Gate Strategy](./docs/PRICING_GATE_STRATEGY.md) - Content gating approach
+- [Wallet Payment Setup](./docs/WALLET_PAYMENT_SETUP.md) - Wallet integration
+- [Wallet Auth Architecture](./docs/WALLET_AUTH_ARCHITECTURE.md) - Authentication flow
+
+### 🎨 Portfolio & Content
+- [Service Offerings Study](./docs/SERVICE_OFFERINGS_STUDY.md) - Service market research
+- [Services Implementation Summary](./docs/SERVICES_IMPLEMENTATION_SUMMARY.md) - Services feature status
+- [Case Study Examples](./docs/CASE_STUDY_EXAMPLES.md) - Portfolio case study templates
+- [Homepage Video Script](./docs/HOMEPAGE_VIDEO_SCRIPT.md) - Video content plan
+- [Video Recording Software](./docs/VIDEO_RECORDING_SOFTWARE.md) - Production tools
+
+### 📊 Analytics & Monitoring
+- [PostHog Setup](./docs/POSTHOG_SETUP.md) - Analytics configuration
+- [PostHog Troubleshooting](./docs/POSTHOG_TROUBLESHOOTING.md) - Common issues & fixes
+
+### 🚀 Deployment
+- [Deployment Guide](./docs/DEPLOYMENT.md) - Production deployment
+- [Production Deployment Changes](./docs/PRODUCTION_DEPLOYMENT_CHANGES.md) - Environment-specific changes
+- [Quick Start Deployment](./docs/QUICK-START-DEPLOYMENT.md) - Fast deployment guide
+- [Web App Deployment](./docs/WEB_DEPLOYMENT.md) - Web-specific deployment
+- [Web App README](./docs/WEB_APP_README.md) - Web app documentation
+
+### 🛠️ Development
+- [Development Standards](./docs/DEVELOPMENT_STANDARDS.md) - Code quality guidelines
+- [Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md) - Feature implementation status
+- [Testing Summary](./docs/TESTING_SUMMARY.md) - Test coverage & strategy
+- [NPM Package Strategy](./docs/NPM_PACKAGE_STRATEGY.md) - Package publishing plan
+- [Personal Config](./docs/PERSONAL_CONFIG.md) - Configuration management
 
 ## 🚀 Deployment
 

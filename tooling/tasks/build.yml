@@ -1,0 +1,18 @@
+version: '3'
+
+# Build & production tasks
+tasks:
+  build:
+    desc: Build Next.js application for production
+    cmds:
+      - '{{.PKG_MANAGER}} run build'
+
+  build:analyze:
+    desc: Build and analyze bundle size
+    cmds:
+      - ANALYZE=true {{.PKG_MANAGER}} run build
+
+  start:
+    desc: Start production server
+    cmds:
+      - '{{.PKG_MANAGER}} run start'

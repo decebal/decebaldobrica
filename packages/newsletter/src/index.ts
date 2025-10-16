@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { randomBytes } from 'crypto'
 
 // Types matching our Supabase schema
 export interface NewsletterSubscriber {
@@ -10,6 +11,8 @@ export interface NewsletterSubscriber {
   subscribed_at: string
   confirmed_at?: string
   unsubscribed_at?: string
+  confirmation_token?: string
+  confirmation_token_expires_at?: string
   stripe_customer_id?: string
   stripe_subscription_id?: string
   solana_wallet_address?: string
@@ -96,8 +99,50 @@ function getSupabaseAdmin() {
 }
 
 /**
+ * Generate a secure confirmation token
+ * Returns a URL-safe random token
+ */
+export function generateConfirmationToken(): string {
+  return randomBytes(32).toString('base64url')
+}
+
+/**
+ * Store confirmation token for a subscriber
+ * Token expires in 24 hours
+ */
+async function storeConfirmationToken(
+  email: string,
+  token: string
+): Promise<boolean> {
+  try {
+    const supabase = getSupabaseAdmin()
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 24) // 24 hour expiry
+
+    const { error } = await supabase
+      .from('newsletter_subscribers')
+      .update({
+        confirmation_token: token,
+        confirmation_token_expires_at: expiresAt.toISOString(),
+      })
+      .eq('email', email)
+
+    if (error) {
+      console.error('Error storing confirmation token:', error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error('Store confirmation token error:', error)
+    return false
+  }
+}
+
+/**
  * Subscribe a new user to the newsletter
- * Sends double opt-in email via Resend
+ * Generates confirmation token for double opt-in flow
+ * The caller should send the confirmation email using the returned token
  */
 export async function subscribeToNewsletter(data: {
   email: string
@@ -105,7 +150,12 @@ export async function subscribeToNewsletter(data: {
   utm_source?: string
   utm_medium?: string
   utm_campaign?: string
-}): Promise<{ success: boolean; subscriberId?: string; error?: string }> {
+}): Promise<{
+  success: boolean
+  subscriberId?: string
+  confirmationToken?: string
+  error?: string
+}> {
   try {
     const supabase = getSupabaseAdmin()
 
@@ -151,10 +201,25 @@ export async function subscribeToNewsletter(data: {
       return { success: false, error: 'Failed to subscribe. Please try again.' }
     }
 
-    // TODO: Send confirmation email via Resend
-    console.log('Subscriber created:', subscriber.id)
+    // Generate and store confirmation token
+    const confirmationToken = generateConfirmationToken()
+    const tokenStored = await storeConfirmationToken(data.email, confirmationToken)
 
-    return { success: true, subscriberId: subscriber.id }
+    if (!tokenStored) {
+      console.error('Failed to store confirmation token for:', data.email)
+      return {
+        success: false,
+        error: 'Failed to send confirmation email. Please try again.',
+      }
+    }
+
+    // Return success with token
+    // The caller (API route) will send the confirmation email
+    return {
+      success: true,
+      subscriberId: subscriber.id,
+      confirmationToken,
+    }
   } catch (error) {
     console.error('Newsletter subscription error:', error)
     return { success: false, error: 'An unexpected error occurred.' }
@@ -162,29 +227,76 @@ export async function subscribeToNewsletter(data: {
 }
 
 /**
- * Confirm a subscriber's email address
+ * Confirm a subscriber's email address using confirmation token
  */
-export async function confirmSubscription(subscriberId: string): Promise<boolean> {
+export async function confirmSubscription(
+  token: string
+): Promise<{ success: boolean; error?: string; subscriber?: NewsletterSubscriber }> {
   try {
     const supabase = getSupabaseAdmin()
 
-    const { error } = await supabase
+    // Find subscriber by confirmation token
+    const { data: subscriber, error: fetchError } = await supabase
+      .from('newsletter_subscribers')
+      .select('*')
+      .eq('confirmation_token', token)
+      .single()
+
+    if (fetchError || !subscriber) {
+      return {
+        success: false,
+        error: 'Invalid confirmation link. Please try subscribing again.',
+      }
+    }
+
+    // Check if token is expired
+    if (subscriber.confirmation_token_expires_at) {
+      const expiresAt = new Date(subscriber.confirmation_token_expires_at)
+      if (expiresAt < new Date()) {
+        return {
+          success: false,
+          error: 'This confirmation link has expired. Please subscribe again.',
+        }
+      }
+    }
+
+    // Check if already confirmed
+    if (subscriber.status === 'active' && subscriber.confirmed_at) {
+      return {
+        success: true,
+        subscriber,
+      }
+    }
+
+    // Confirm the subscription
+    const { error: updateError } = await supabase
       .from('newsletter_subscribers')
       .update({
         status: 'active',
         confirmed_at: new Date().toISOString(),
+        confirmation_token: null, // Clear the token after use
+        confirmation_token_expires_at: null,
       })
-      .eq('id', subscriberId)
+      .eq('id', subscriber.id)
 
-    if (error) {
-      console.error('Error confirming subscription:', error)
-      return false
+    if (updateError) {
+      console.error('Error confirming subscription:', updateError)
+      return {
+        success: false,
+        error: 'Failed to confirm subscription. Please try again.',
+      }
     }
 
-    return true
+    return {
+      success: true,
+      subscriber,
+    }
   } catch (error) {
     console.error('Subscription confirmation error:', error)
-    return false
+    return {
+      success: false,
+      error: 'An unexpected error occurred.',
+    }
   }
 }
 

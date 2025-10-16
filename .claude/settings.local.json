@@ -25,7 +25,10 @@
       "WebFetch(domain:www.shadcnblocks.com)",
       "WebFetch(domain:magicui.design)",
       "Bash(bun install:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "Bash(bun test:unit:*)",
+      "Bash(bun test:*)"
     ],
     "deny": [],
     "ask": []

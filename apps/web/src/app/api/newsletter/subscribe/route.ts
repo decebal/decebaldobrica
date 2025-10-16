@@ -1,4 +1,5 @@
 import { subscribeToNewsletter } from '@decebal/newsletter'
+import { sendNewsletterConfirmation } from '@decebal/email'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -40,13 +41,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Send confirmation email via Resend
-    console.log(`Subscriber created with ID: ${subscriptionResult.subscriberId}`)
-    console.log(`Would send confirmation email to: ${email}`)
+    // Send confirmation email if we have a token
+    if (subscriptionResult.confirmationToken) {
+      const emailResult = await sendNewsletterConfirmation(
+        email,
+        name || 'there',
+        subscriptionResult.confirmationToken
+      )
+
+      if (!emailResult.success) {
+        console.error('Failed to send confirmation email:', emailResult.error)
+        // Don't fail the subscription if email fails, just log it
+      } else {
+        console.log(`Confirmation email sent to ${email}`)
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Subscription successful! Check your email to confirm.',
+      message: 'Please check your email to confirm your subscription.',
     })
   } catch (error) {
     console.error('Newsletter subscription error:', error)
