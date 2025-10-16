@@ -22,9 +22,7 @@ interface LinkedInPostResult {
  * Post content to LinkedIn
  * Requires LinkedIn access token with w_member_social scope
  */
-export async function postToLinkedIn(
-  content: LinkedInPost
-): Promise<LinkedInPostResult> {
+export async function postToLinkedIn(content: LinkedInPost): Promise<LinkedInPostResult> {
   try {
     const accessToken = process.env.LINKEDIN_ACCESS_TOKEN
     const personUrn = process.env.LINKEDIN_PERSON_URN
@@ -32,24 +30,24 @@ export async function postToLinkedIn(
     if (!accessToken || !personUrn) {
       return {
         success: false,
-        error: "LinkedIn credentials not configured",
+        error: 'LinkedIn credentials not configured',
       }
     }
 
     // Prepare the post content
     const shareContent: any = {
       author: personUrn,
-      lifecycleState: "PUBLISHED",
+      lifecycleState: 'PUBLISHED',
       specificContent: {
-        "com.linkedin.ugc.ShareContent": {
+        'com.linkedin.ugc.ShareContent': {
           shareCommentary: {
             text: content.text,
           },
-          shareMediaCategory: content.imageUrl ? "IMAGE" : content.link ? "ARTICLE" : "NONE",
+          shareMediaCategory: content.imageUrl ? 'IMAGE' : content.link ? 'ARTICLE' : 'NONE',
         },
       },
       visibility: {
-        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
       },
     }
 
@@ -58,35 +56,35 @@ export async function postToLinkedIn(
       // First upload the image
       const imageUrn = await uploadImageToLinkedIn(content.imageUrl, accessToken)
       if (imageUrn) {
-        shareContent.specificContent["com.linkedin.ugc.ShareContent"].media = [
+        shareContent.specificContent['com.linkedin.ugc.ShareContent'].media = [
           {
-            status: "READY",
+            status: 'READY',
             media: imageUrn,
           },
         ]
       }
     } else if (content.link) {
-      shareContent.specificContent["com.linkedin.ugc.ShareContent"].media = [
+      shareContent.specificContent['com.linkedin.ugc.ShareContent'].media = [
         {
-          status: "READY",
+          status: 'READY',
           originalUrl: content.link,
           title: {
-            text: content.linkTitle || "",
+            text: content.linkTitle || '',
           },
           description: {
-            text: content.linkDescription || "",
+            text: content.linkDescription || '',
           },
         },
       ]
     }
 
     // Post to LinkedIn
-    const response = await fetch("https://api.linkedin.com/v2/ugcPosts", {
-      method: "POST",
+    const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-        "X-Restli-Protocol-Version": "2.0.0",
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0',
       },
       body: JSON.stringify(shareContent),
     })
@@ -94,10 +92,10 @@ export async function postToLinkedIn(
     const data = await response.json()
 
     if (!response.ok) {
-      console.error("LinkedIn API error:", data)
+      console.error('LinkedIn API error:', data)
       return {
         success: false,
-        error: data.message || "Failed to post to LinkedIn",
+        error: data.message || 'Failed to post to LinkedIn',
       }
     }
 
@@ -110,10 +108,10 @@ export async function postToLinkedIn(
       postUrl,
     }
   } catch (error) {
-    console.error("LinkedIn posting error:", error)
+    console.error('LinkedIn posting error:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 }
@@ -131,21 +129,21 @@ async function uploadImageToLinkedIn(
 
     // Step 1: Register the upload
     const registerResponse = await fetch(
-      "https://api.linkedin.com/v2/assets?action=registerUpload",
+      'https://api.linkedin.com/v2/assets?action=registerUpload',
       {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           registerUploadRequest: {
-            recipes: ["urn:li:digitalmediaRecipe:feedshare-image"],
+            recipes: ['urn:li:digitalmediaRecipe:feedshare-image'],
             owner: personUrn,
             serviceRelationships: [
               {
-                relationshipType: "OWNER",
-                identifier: "urn:li:userGeneratedContent",
+                relationshipType: 'OWNER',
+                identifier: 'urn:li:userGeneratedContent',
               },
             ],
           },
@@ -154,13 +152,14 @@ async function uploadImageToLinkedIn(
     )
 
     const registerData = await registerResponse.json()
-    const uploadUrl = registerData.value?.uploadMechanism?.[
-      "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
-    ]?.uploadUrl
+    const uploadUrl =
+      registerData.value?.uploadMechanism?.[
+        'com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest'
+      ]?.uploadUrl
     const asset = registerData.value?.asset
 
     if (!uploadUrl || !asset) {
-      console.error("Failed to get upload URL from LinkedIn")
+      console.error('Failed to get upload URL from LinkedIn')
       return null
     }
 
@@ -170,22 +169,22 @@ async function uploadImageToLinkedIn(
 
     // Step 3: Upload the image
     const uploadResponse = await fetch(uploadUrl, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/octet-stream",
+        'Content-Type': 'application/octet-stream',
       },
       body: imageBuffer,
     })
 
     if (!uploadResponse.ok) {
-      console.error("Failed to upload image to LinkedIn")
+      console.error('Failed to upload image to LinkedIn')
       return null
     }
 
     return asset
   } catch (error) {
-    console.error("LinkedIn image upload error:", error)
+    console.error('LinkedIn image upload error:', error)
     return null
   }
 }
@@ -201,8 +200,8 @@ export function generateLinkedInPost(blogPost: {
   tags?: string[]
 }): string {
   const hashtags = blogPost.tags
-    ? blogPost.tags.map((tag) => `#${tag.replace(/\s+/g, "")}`).join(" ")
-    : ""
+    ? blogPost.tags.map((tag) => `#${tag.replace(/\s+/g, '')}`).join(' ')
+    : ''
 
   return `🚀 New post: ${blogPost.title}
 
@@ -227,16 +226,16 @@ export async function refreshLinkedInToken(
     const clientSecret = process.env.LINKEDIN_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      return { error: "LinkedIn credentials not configured" }
+      return { error: 'LinkedIn credentials not configured' }
     }
 
-    const response = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
-      method: "POST",
+    const response = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        grant_type: "refresh_token",
+        grant_type: 'refresh_token',
         refresh_token: refreshToken,
         client_id: clientId,
         client_secret: clientSecret,
@@ -246,13 +245,13 @@ export async function refreshLinkedInToken(
     const data = await response.json()
 
     if (!response.ok) {
-      return { error: data.error_description || "Failed to refresh token" }
+      return { error: data.error_description || 'Failed to refresh token' }
     }
 
     return { accessToken: data.access_token }
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 }

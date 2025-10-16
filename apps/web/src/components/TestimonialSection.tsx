@@ -211,6 +211,7 @@ const TestimonialSection = () => {
         <div className="relative max-w-4xl mx-auto mt-16">
           {/* Navigation Buttons */}
           <button
+            type="button"
             onClick={goToPrevious}
             className="absolute left-0 top-1/2 -translate-y-1/2 bg-brand-teal/20 hover:bg-brand-teal/30 text-white backdrop-blur-sm p-3 rounded-full shadow-md z-10 -ml-6 md:-ml-8 transition-colors"
             aria-label="Previous testimonial"
@@ -283,6 +284,7 @@ const TestimonialSection = () => {
                       {/* Expand/Collapse Button - Only show if content is clamped */}
                       {needsExpand.has(testimonial.id) && (
                         <button
+                          type="button"
                           onClick={() => toggleExpand(testimonial.id)}
                           className="mt-3 inline-flex items-center gap-1 text-brand-teal hover:text-brand-teal/80 text-sm font-medium transition-colors self-start"
                         >
@@ -307,6 +309,7 @@ const TestimonialSection = () => {
           </div>
 
           <button
+            type="button"
             onClick={goToNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 bg-brand-teal/20 hover:bg-brand-teal/30 text-white backdrop-blur-sm p-3 rounded-full shadow-md z-10 -mr-6 md:-mr-8 transition-colors"
             aria-label="Next testimonial"
@@ -316,9 +319,10 @@ const TestimonialSection = () => {
 
           {/* Pagination Dots */}
           <div className="flex justify-center mt-8 space-x-2">
-            {testimonials.map((_, index) => (
+            {testimonials.map((testimonial, index) => (
               <button
-                key={index}
+                type="button"
+                key={testimonial.id}
                 onClick={() => setActiveIndex(index)}
                 className={`w-3 h-3 rounded-full transition-colors ${
                   index === activeIndex ? 'bg-brand-teal' : 'bg-white/20'

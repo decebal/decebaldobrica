@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test'
 
+interface Meeting {
+  meetingType: string
+  duration: number
+  requiresPayment: boolean
+  description?: string
+  basePrice: number
+  geoPrice: number
+  formattedPrice: string
+  priceCrypto: number
+}
+
 test.describe('Geo-Pricing API', () => {
   test('should return geo-pricing data from API endpoint', async ({ page }) => {
     const response = await page.goto('/api/geo-pricing')
@@ -47,7 +58,7 @@ test.describe('Geo-Pricing API', () => {
     const data = await response?.json()
 
     // Find a paid meeting
-    const paidMeeting = data.meetings.find((m: any) => m.requiresPayment)
+    const paidMeeting = data.meetings.find((m: Meeting) => m.requiresPayment)
 
     if (paidMeeting) {
       const expectedGeoPrice = Math.round(paidMeeting.basePrice * data.pricing.multiplier)
@@ -166,7 +177,7 @@ test.describe('Geo-Pricing UI on Contact Page', () => {
 
     if (cardCount > 0 && geoData?.meetings) {
       // Find a paid meeting in the data
-      const paidMeeting = geoData.meetings.find((m: any) => m.requiresPayment)
+      const paidMeeting = geoData.meetings.find((m: Meeting) => m.requiresPayment)
 
       if (paidMeeting) {
         // Look for the formatted price on the page
@@ -186,7 +197,7 @@ test.describe('Geo-Pricing UI on Contact Page', () => {
 
     // Find a meeting where geo price differs from base
     const meetingWithDiff = geoData?.meetings?.find(
-      (m: any) => m.requiresPayment && m.geoPrice !== m.basePrice
+      (m: Meeting) => m.requiresPayment && m.geoPrice !== m.basePrice
     )
 
     if (meetingWithDiff) {
@@ -220,7 +231,7 @@ test.describe('Geo-Pricing UI on Contact Page', () => {
 
       // Find the selected meeting in geo data
       const meetingText = await firstMeetingCard.textContent()
-      const selectedMeeting = geoData.meetings.find((m: any) =>
+      const selectedMeeting = geoData.meetings.find((m: Meeting) =>
         meetingText?.includes(m.duration.toString())
       )
 

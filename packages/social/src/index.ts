@@ -8,7 +8,7 @@ export {
   postToLinkedIn,
   generateLinkedInPost,
   refreshLinkedInToken,
-} from "./linkedin"
+} from './linkedin'
 
 // Twitter
 export {
@@ -16,14 +16,14 @@ export {
   generateTwitterThread,
   generateSingleTweet,
   scheduleTweet,
-} from "./twitter"
+} from './twitter'
 
 // OG Images
 export {
   generateOGImageHTML,
   generateOGImageUrl,
   generateAIImagePrompt,
-} from "./og-image"
+} from './og-image'
 
 // Types
 export interface SocialPost {
@@ -52,11 +52,9 @@ export interface SocialPostResult {
 /**
  * Post to all social media platforms at once
  */
-export async function postToAllPlatforms(
-  post: SocialPost
-): Promise<SocialPostResult> {
-  const { postToLinkedIn, generateLinkedInPost } = await import("./linkedin")
-  const { postToTwitter, generateTwitterThread } = await import("./twitter")
+export async function postToAllPlatforms(post: SocialPost): Promise<SocialPostResult> {
+  const { postToLinkedIn, generateLinkedInPost } = await import('./linkedin')
+  const { postToTwitter, generateTwitterThread } = await import('./twitter')
 
   const results: SocialPostResult = {}
 
@@ -74,7 +72,7 @@ export async function postToAllPlatforms(
   } catch (error) {
     results.linkedin = {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 
@@ -90,7 +88,7 @@ export async function postToAllPlatforms(
   } catch (error) {
     results.twitter = {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 

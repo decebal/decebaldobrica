@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, List } from 'lucide-react'
 import { Button } from '@decebal/ui/button'
+import { ArrowUp, List } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 interface TOCSection {
   id: string
@@ -52,12 +52,14 @@ export function BlogTOC({ content }: BlogTOCProps) {
       const headings = document.querySelectorAll('h2, h3')
       let currentSection = ''
 
-      headings.forEach((heading, index) => {
+      let index = 0
+      for (const heading of headings) {
         const element = heading as HTMLElement
         if (element.offsetTop <= scrollPosition) {
           currentSection = `section-${index}`
         }
-      })
+        index++
+      }
 
       setActiveSection(currentSection)
     }
@@ -66,14 +68,16 @@ export function BlogTOC({ content }: BlogTOCProps) {
     handleScroll() // Initial check
 
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [sections])
+  }, [])
 
   // Add IDs to headings for navigation
   useEffect(() => {
     const headings = document.querySelectorAll('h2, h3')
-    headings.forEach((heading, index) => {
+    let index = 0
+    for (const heading of headings) {
       heading.id = `section-${index}`
-    })
+      index++
+    }
   }, [])
 
   const scrollToSection = (id: string) => {
@@ -152,11 +156,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                       className={`
                       block transition-colors
                       ${isH3 ? 'text-sm' : 'text-base font-medium'}
-                      ${
-                        isActive
-                          ? 'text-brand-teal'
-                          : 'text-gray-400 group-hover:text-brand-teal'
-                      }
+                      ${isActive ? 'text-brand-teal' : 'text-gray-400 group-hover:text-brand-teal'}
                     `}
                     >
                       {section.title}
@@ -172,11 +172,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                   <span
                     className={`
                     text-xs font-mono transition-colors
-                    ${
-                      isActive
-                        ? 'text-brand-teal'
-                        : 'text-gray-600 group-hover:text-brand-teal/70'
-                    }
+                    ${isActive ? 'text-brand-teal' : 'text-gray-600 group-hover:text-brand-teal/70'}
                   `}
                   >
                     {index + 1}
@@ -234,7 +230,8 @@ export function BlogTOC({ content }: BlogTOCProps) {
           </div>
 
           {/* Tooltip */}
-          <div className="
+          <div
+            className="
             absolute bottom-full right-0 mb-2
             px-3 py-1.5 rounded-lg
             bg-gray-900 border border-brand-teal/30
@@ -242,7 +239,8 @@ export function BlogTOC({ content }: BlogTOCProps) {
             opacity-0 group-hover:opacity-100
             transition-opacity duration-200
             pointer-events-none
-          ">
+          "
+          >
             Back to top
           </div>
         </button>

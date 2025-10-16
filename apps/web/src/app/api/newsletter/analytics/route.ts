@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { getNewsletterStats } from "@decebal/newsletter"
+import { getNewsletterStats } from '@decebal/newsletter'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
@@ -23,10 +23,7 @@ export async function GET() {
 
     return NextResponse.json(analytics)
   } catch (error) {
-    console.error("Newsletter analytics error:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch analytics" },
-      { status: 500 }
-    )
+    console.error('Newsletter analytics error:', error)
+    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
   }
 }

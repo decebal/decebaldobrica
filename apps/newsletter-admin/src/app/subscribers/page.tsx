@@ -1,39 +1,39 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { newsletterApi } from "@/lib/api"
+import { newsletterApi } from '@/lib/api'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface Subscriber {
   id: string
   email: string
   name?: string
-  tier: "free" | "premium" | "founding"
-  status: "pending" | "active" | "unsubscribed" | "bounced"
+  tier: 'free' | 'premium' | 'founding'
+  status: 'pending' | 'active' | 'unsubscribed' | 'bounced'
   confirmed_at?: string
   created_at: string
 }
 
-type FilterTier = "all" | "free" | "premium" | "founding"
-type FilterStatus = "all" | "pending" | "active" | "unsubscribed" | "bounced"
+type FilterTier = 'all' | 'free' | 'premium' | 'founding'
+type FilterStatus = 'all' | 'pending' | 'active' | 'unsubscribed' | 'bounced'
 
 export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
   const [loading, setLoading] = useState(true)
-  const [filterTier, setFilterTier] = useState<FilterTier>("all")
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all")
-  const [search, setSearch] = useState("")
+  const [filterTier, setFilterTier] = useState<FilterTier>('all')
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     async function loadSubscribers() {
       try {
         const data = await newsletterApi.getSubscribers({
-          tier: filterTier !== "all" ? filterTier : undefined,
-          status: filterStatus !== "all" ? filterStatus : undefined,
+          tier: filterTier !== 'all' ? filterTier : undefined,
+          status: filterStatus !== 'all' ? filterStatus : undefined,
         })
         setSubscribers(data.subscribers || [])
       } catch (error) {
-        console.error("Failed to load subscribers:", error)
+        console.error('Failed to load subscribers:', error)
       } finally {
         setLoading(false)
       }
@@ -42,34 +42,35 @@ export default function SubscribersPage() {
     loadSubscribers()
   }, [filterTier, filterStatus])
 
-  const filteredSubscribers = subscribers.filter((sub) =>
-    sub.email.toLowerCase().includes(search.toLowerCase()) ||
-    sub.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredSubscribers = subscribers.filter(
+    (sub) =>
+      sub.email.toLowerCase().includes(search.toLowerCase()) ||
+      sub.name?.toLowerCase().includes(search.toLowerCase())
   )
 
   const getTierBadgeColor = (tier: string) => {
     switch (tier) {
-      case "premium":
-        return "bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-      case "founding":
-        return "bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
+      case 'premium':
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+      case 'founding':
+        return 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
     }
   }
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "active":
-        return "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
-      case "pending":
-        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300"
-      case "unsubscribed":
-        return "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-      case "bounced":
-        return "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300"
+      case 'active':
+        return 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+      case 'pending':
+        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300'
+      case 'unsubscribed':
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+      case 'bounced':
+        return 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300'
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
     }
   }
 
@@ -105,10 +106,14 @@ export default function SubscribersPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="search-input"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Search
               </label>
               <input
+                id="search-input"
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -119,10 +124,14 @@ export default function SubscribersPage() {
 
             {/* Tier Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="tier-filter"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Tier
               </label>
               <select
+                id="tier-filter"
                 value={filterTier}
                 onChange={(e) => setFilterTier(e.target.value as FilterTier)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -136,10 +145,14 @@ export default function SubscribersPage() {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="status-filter"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Status
               </label>
               <select
+                id="status-filter"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -190,7 +203,7 @@ export default function SubscribersPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {subscriber.name || "—"}
+                            {subscriber.name || '—'}
                           </span>
                           <span className="text-sm text-gray-500 dark:text-gray-400">
                             {subscriber.email}
@@ -229,24 +242,25 @@ export default function SubscribersPage() {
         {/* Export Button */}
         <div className="mt-6">
           <button
+            type="button"
             onClick={() => {
               // Export to CSV
               const csv = [
-                ["Email", "Name", "Tier", "Status", "Joined"].join(","),
+                ['Email', 'Name', 'Tier', 'Status', 'Joined'].join(','),
                 ...filteredSubscribers.map((sub) =>
                   [
                     sub.email,
-                    sub.name || "",
+                    sub.name || '',
                     sub.tier,
                     sub.status,
                     new Date(sub.created_at).toLocaleDateString(),
-                  ].join(",")
+                  ].join(',')
                 ),
-              ].join("\n")
+              ].join('\n')
 
-              const blob = new Blob([csv], { type: "text/csv" })
+              const blob = new Blob([csv], { type: 'text/csv' })
               const url = URL.createObjectURL(blob)
-              const a = document.createElement("a")
+              const a = document.createElement('a')
               a.href = url
               a.download = `subscribers-${new Date().toISOString()}.csv`
               a.click()

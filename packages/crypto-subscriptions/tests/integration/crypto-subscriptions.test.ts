@@ -2,11 +2,11 @@
  * CryptoSubscriptions Integration Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CryptoSubscriptions } from '../../src/core/CryptoSubscriptions'
-import { MockDatabaseAdapter } from '../mocks/database'
 import { TEST_CONFIG, TEST_PRICING } from '../fixtures/config'
 import { createTestPaymentRequest } from '../fixtures/requests'
+import { MockDatabaseAdapter } from '../mocks/database'
 
 describe('CryptoSubscriptions Integration', () => {
   let subscriptions: CryptoSubscriptions
@@ -65,10 +65,7 @@ describe('CryptoSubscriptions Integration', () => {
   describe('createSubscriptionPayment', () => {
     it('should create Solana payment with USD conversion', async () => {
       const request = createTestPaymentRequest({ chain: 'solana' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('solana')
@@ -103,10 +100,7 @@ describe('CryptoSubscriptions Integration', () => {
       })
 
       const request = createTestPaymentRequest({ chain: 'lightning' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('lightning')
@@ -116,10 +110,7 @@ describe('CryptoSubscriptions Integration', () => {
 
     it('should create Ethereum payment with USD conversion', async () => {
       const request = createTestPaymentRequest({ chain: 'ethereum' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('ethereum')
@@ -131,10 +122,7 @@ describe('CryptoSubscriptions Integration', () => {
 
     it('should store payment in database if adapter provided', async () => {
       const request = createTestPaymentRequest({ chain: 'solana' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const storedPayment = await database.getPayment(payment.paymentId)
       expect(storedPayment).toBeDefined()
@@ -146,10 +134,7 @@ describe('CryptoSubscriptions Integration', () => {
         chain: 'solana',
         interval: 'yearly',
       })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       expect(payment).toBeDefined()
       // $99.90 / $100 = 0.999 SOL
@@ -161,10 +146,7 @@ describe('CryptoSubscriptions Integration', () => {
         chain: 'solana',
         interval: 'lifetime',
       })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.pro
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.pro)
 
       expect(payment).toBeDefined()
       // $999 / $100 = 9.99 SOL
@@ -195,10 +177,7 @@ describe('CryptoSubscriptions Integration', () => {
   describe('activateSubscription', () => {
     it('should create subscription after payment verification', async () => {
       const request = createTestPaymentRequest({ chain: 'solana' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const mockVerification = {
         verified: true,
@@ -230,10 +209,7 @@ describe('CryptoSubscriptions Integration', () => {
         chain: 'solana',
         interval: 'monthly',
       })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const mockVerification = {
         verified: true,
@@ -254,7 +230,7 @@ describe('CryptoSubscriptions Integration', () => {
       expectedExpiry.setMonth(expectedExpiry.getMonth() + 1)
 
       expect(subscription.expiresAt).toBeDefined()
-      expect(subscription.expiresAt!.getMonth()).toBe(expectedExpiry.getMonth())
+      expect(subscription.expiresAt?.getMonth()).toBe(expectedExpiry.getMonth())
     })
 
     it('should set correct expiry for yearly subscription', async () => {
@@ -262,10 +238,7 @@ describe('CryptoSubscriptions Integration', () => {
         chain: 'solana',
         interval: 'yearly',
       })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const mockVerification = {
         verified: true,
@@ -286,7 +259,7 @@ describe('CryptoSubscriptions Integration', () => {
       expectedExpiry.setFullYear(expectedExpiry.getFullYear() + 1)
 
       expect(subscription.expiresAt).toBeDefined()
-      expect(subscription.expiresAt!.getFullYear()).toBe(expectedExpiry.getFullYear())
+      expect(subscription.expiresAt?.getFullYear()).toBe(expectedExpiry.getFullYear())
     })
 
     it('should handle lifetime subscription correctly', async () => {
@@ -294,10 +267,7 @@ describe('CryptoSubscriptions Integration', () => {
         chain: 'solana',
         interval: 'lifetime',
       })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.pro
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.pro)
 
       const mockVerification = {
         verified: true,
@@ -342,10 +312,7 @@ describe('CryptoSubscriptions Integration', () => {
 
     beforeEach(async () => {
       const request = createTestPaymentRequest({ chain: 'solana' })
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const mockVerification = {
         verified: true,

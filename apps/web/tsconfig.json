@@ -3,27 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@decebal/ui": [
-        "../../packages/ui/src"
-      ],
-      "@decebal/database": [
-        "../../packages/database/src"
-      ],
-      "@decebal/newsletter": [
-        "../../packages/newsletter/src"
-      ],
-      "@decebal/analytics": [
-        "../../packages/analytics/src"
-      ],
-      "@decebal/email": [
-        "../../packages/email/src"
-      ],
-      "@decebal/payments": [
-        "../../packages/payments/src"
-      ]
+      "@/*": ["./src/*"],
+      "@decebal/ui": ["../../packages/ui/src"],
+      "@decebal/database": ["../../packages/database/src"],
+      "@decebal/newsletter": ["../../packages/newsletter/src"],
+      "@decebal/analytics": ["../../packages/analytics/src"],
+      "@decebal/email": ["../../packages/email/src"],
+      "@decebal/payments": ["../../packages/payments/src"]
     },
     "plugins": [
       {
@@ -32,13 +18,6 @@
     ],
     "allowJs": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -36,7 +36,11 @@ const HeroSection = () => {
             style={{ animationDelay: '0.4s' }}
           >
             <GlowButton onClick={scrollToAbout}>Learn More About Me</GlowButton>
-            <NeonButton onClick={() => (window.location.href = '/contact?category=Homepage+Hero')}>
+            <NeonButton
+              onClick={() => {
+                window.location.href = '/contact?category=Homepage+Hero'
+              }}
+            >
               Get in Touch
             </NeonButton>
           </div>
@@ -53,6 +57,7 @@ const HeroSection = () => {
                     className="w-full h-full object-cover rounded-lg"
                   />
                   <button
+                    type="button"
                     onClick={() => setShowVideo(true)}
                     className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors rounded-lg group"
                   >
@@ -69,6 +74,7 @@ const HeroSection = () => {
                     className="w-full h-full rounded-lg"
                     src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
                   >
+                    <track kind="captions" label="English" />
                     Your browser does not support the video tag.
                   </video>
                 </div>
@@ -88,8 +94,10 @@ const HeroSection = () => {
       </div>
       <div className="absolute bottom-8 md:bottom-12 left-0 right-0 flex justify-center animate-bounce">
         <button
+          type="button"
           onClick={scrollToAbout}
           className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
+          aria-label="Scroll to about section"
         >
           <ChevronDown className="text-brand-teal" />
         </button>

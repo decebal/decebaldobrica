@@ -115,10 +115,12 @@ export async function getFreeBusy(
 
     const busy = response.data.calendars?.primary?.busy || []
 
-    return busy.map((slot) => ({
-      start: new Date(slot.start!),
-      end: new Date(slot.end!),
-    }))
+    return busy
+      .filter((slot) => slot.start && slot.end)
+      .map((slot) => ({
+        start: new Date(slot.start as string),
+        end: new Date(slot.end as string),
+      }))
   } catch (error) {
     console.error('Error getting free/busy:', error)
     return []

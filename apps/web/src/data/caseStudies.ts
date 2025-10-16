@@ -224,7 +224,7 @@ export const caseStudies: CaseStudy[] = [
     lesson:
       '**Speed wins.** The right tools and collaborators can get you to market fast — with a product that looks great, feels premium, and delivers results.',
     prescriptions: [
-      'Don\'t customize early — constrain scope and build what users will pay for now',
+      "Don't customize early — constrain scope and build what users will pay for now",
       'Use **Base44 and lovable.dev** to design a brand and UX that converts — without hiring a full team',
       'Build on **ShadCN UI** to avoid reinventing UI from scratch',
       '**Prototype and iterate with Claude Code** to reduce engineering drag',

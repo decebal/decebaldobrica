@@ -4,11 +4,7 @@
  * Supports LNBits and BTCPay Server
  */
 
-import type {
-  CreatePaymentRequest,
-  PaymentResponse,
-  PaymentVerification,
-} from '../core/types'
+import type { CreatePaymentRequest, PaymentResponse, PaymentVerification } from '../core/types'
 
 export interface LightningConfig {
   network: 'mainnet' | 'testnet'
@@ -68,7 +64,10 @@ export class LightningHandler {
     if (config.provider === 'lnbits' && (!config.lnbitsUrl || !config.lnbitsApiKey)) {
       throw new Error('LNBits URL and API key are required for LNBits provider')
     }
-    if (config.provider === 'btcpay' && (!config.btcpayUrl || !config.btcpayApiKey || !config.btcpayStoreId)) {
+    if (
+      config.provider === 'btcpay' &&
+      (!config.btcpayUrl || !config.btcpayApiKey || !config.btcpayStoreId)
+    ) {
       throw new Error('BTCPay URL, API key, and Store ID are required for BTCPay provider')
     }
   }
@@ -76,15 +75,11 @@ export class LightningHandler {
   /**
    * Create a Lightning Network payment invoice
    */
-  async createPayment(
-    request: CreatePaymentRequest,
-    amountSats: number
-  ): Promise<PaymentResponse> {
+  async createPayment(request: CreatePaymentRequest, amountSats: number): Promise<PaymentResponse> {
     if (this.config.provider === 'lnbits') {
       return this.createLNBitsPayment(request, amountSats)
-    } else {
-      return this.createBTCPayPayment(request, amountSats)
     }
+    return this.createBTCPayPayment(request, amountSats)
   }
 
   /**
@@ -93,9 +88,8 @@ export class LightningHandler {
   async verifyPayment(paymentHash: string): Promise<PaymentVerification> {
     if (this.config.provider === 'lnbits') {
       return this.verifyLNBitsPayment(paymentHash)
-    } else {
-      return this.verifyBTCPayPayment(paymentHash)
     }
+    return this.verifyBTCPayPayment(paymentHash)
   }
 
   /**
@@ -104,8 +98,8 @@ export class LightningHandler {
   async pollPayment(
     paymentHash: string,
     expectedAmount: number,
-    timeoutMs: number = 300000, // 5 minutes for Lightning
-    intervalMs: number = 3000
+    timeoutMs = 300000, // 5 minutes for Lightning
+    intervalMs = 3000
   ): Promise<PaymentVerification> {
     const startTime = Date.now()
 
@@ -116,7 +110,7 @@ export class LightningHandler {
         return verification
       }
 
-      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
 
     return {
@@ -161,22 +155,22 @@ export class LightningHandler {
     amountSats: number
   ): Promise<PaymentResponse> {
     try {
-      const response = await fetch(
-        `${this.config.lnbitsUrl}/api/v1/payments`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Api-Key': this.config.lnbitsApiKey!,
-          },
-          body: JSON.stringify({
-            out: false,
-            amount: amountSats,
-            memo: `${request.tier} subscription - ${request.interval}`,
-            expiry: 900, // 15 minutes
-          }),
-        }
-      )
+      const apiKey = this.config.lnbitsApiKey
+      if (!apiKey) throw new Error('LNBits API key is required')
+
+      const response = await fetch(`${this.config.lnbitsUrl}/api/v1/payments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': apiKey,
+        },
+        body: JSON.stringify({
+          out: false,
+          amount: amountSats,
+          memo: `${request.tier} subscription - ${request.interval}`,
+          expiry: 900, // 15 minutes
+        }),
+      })
 
       if (!response.ok) {
         throw new Error(`LNBits API error: ${response.statusText}`)
@@ -204,18 +198,16 @@ export class LightningHandler {
     }
   }
 
-  private async verifyLNBitsPayment(
-    paymentHash: string
-  ): Promise<PaymentVerification> {
+  private async verifyLNBitsPayment(paymentHash: string): Promise<PaymentVerification> {
     try {
-      const response = await fetch(
-        `${this.config.lnbitsUrl}/api/v1/payments/${paymentHash}`,
-        {
-          headers: {
-            'X-Api-Key': this.config.lnbitsApiKey!,
-          },
-        }
-      )
+      const apiKey = this.config.lnbitsApiKey
+      if (!apiKey) throw new Error('LNBits API key is required')
+
+      const response = await fetch(`${this.config.lnbitsUrl}/api/v1/payments/${paymentHash}`, {
+        headers: {
+          'X-Api-Key': apiKey,
+        },
+      })
 
       if (!response.ok) {
         throw new Error(`LNBits API error: ${response.statusText}`)
@@ -261,7 +253,7 @@ export class LightningHandler {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `token ${this.config.btcpayApiKey}`,
+            Authorization: `token ${this.config.btcpayApiKey}`,
           },
           body: JSON.stringify({
             amount: btcAmount.toString(),
@@ -315,15 +307,13 @@ export class LightningHandler {
     }
   }
 
-  private async verifyBTCPayPayment(
-    invoiceId: string
-  ): Promise<PaymentVerification> {
+  private async verifyBTCPayPayment(invoiceId: string): Promise<PaymentVerification> {
     try {
       const response = await fetch(
         `${this.config.btcpayUrl}/api/v1/stores/${this.config.btcpayStoreId}/invoices/${invoiceId}`,
         {
           headers: {
-            'Authorization': `token ${this.config.btcpayApiKey}`,
+            Authorization: `token ${this.config.btcpayApiKey}`,
           },
         }
       )
@@ -337,7 +327,7 @@ export class LightningHandler {
       return {
         verified: invoice.status === 'Settled',
         paymentId: invoiceId,
-        amount: parseFloat(invoice.amount),
+        amount: Number.parseFloat(invoice.amount),
         currency: 'BTC',
         chain: 'lightning',
         timestamp: new Date(invoice.createdTime),

@@ -17,7 +17,7 @@ const FullCaseStudiesSection = () => {
         </p>
 
         <div className="mt-16 space-y-16">
-          {caseStudies.map((study, index) => (
+          {caseStudies.map((study) => (
             <Link key={study.id} href={`/work/${study.slug}`} className="block group">
               <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-brand-teal/50 transition-all duration-500 hover:shadow-2xl hover:shadow-brand-teal/20 hover:scale-[1.02]">
                 {/* Header */}
@@ -33,9 +33,9 @@ const FullCaseStudiesSection = () => {
                       <p className="text-xl text-gray-100">{study.tagline}</p>
                     </div>
                     <div className="hidden md:flex gap-2">
-                      {study.metrics.map((metric, i) => (
+                      {study.metrics.map((metric) => (
                         <div
-                          key={i}
+                          key={metric.label}
                           className="bg-white/10 backdrop-blur-sm rounded-lg p-3 min-w-[100px] text-center"
                         >
                           <div className="text-2xl font-bold text-brand-teal">{metric.value}</div>
@@ -82,8 +82,11 @@ const FullCaseStudiesSection = () => {
                         <h4 className="text-lg font-bold">Fix</h4>
                       </div>
                       <div className="space-y-2">
-                        {study.outcomes.slice(0, 3).map((outcome, i) => (
-                          <div key={i} className="flex items-start gap-2 bg-white/5 rounded-lg p-2">
+                        {study.outcomes.slice(0, 3).map((outcome) => (
+                          <div
+                            key={outcome}
+                            className="flex items-start gap-2 bg-white/5 rounded-lg p-2"
+                          >
                             <CheckCircle2 className="h-4 w-4 text-brand-teal shrink-0 mt-0.5" />
                             <p className="text-white text-sm line-clamp-2">
                               {outcome.replace(/\*\*/g, '')}
@@ -120,9 +123,9 @@ const FullCaseStudiesSection = () => {
                 {/* Mobile Metrics */}
                 <div className="md:hidden px-8 pb-8">
                   <div className="flex gap-2 flex-wrap">
-                    {study.metrics.map((metric, i) => (
+                    {study.metrics.map((metric) => (
                       <div
-                        key={i}
+                        key={metric.label}
                         className="bg-white/10 backdrop-blur-sm rounded-lg p-3 flex-1 min-w-[100px] text-center"
                       >
                         <div className="text-xl font-bold text-brand-teal">{metric.value}</div>

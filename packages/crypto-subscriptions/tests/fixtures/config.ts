@@ -68,7 +68,7 @@ export const TEST_PRICING: Record<string, TierPricing> = {
     features: ['Everything in Free', 'Feature 3', 'Feature 4'],
     prices: {
       monthly: { usd: 9.99 },
-      yearly: { usd: 99.90 },
+      yearly: { usd: 99.9 },
     },
   },
   pro: {
@@ -78,8 +78,8 @@ export const TEST_PRICING: Record<string, TierPricing> = {
     features: ['Everything in Premium', 'Feature 5', 'Priority support'],
     prices: {
       monthly: { usd: 29.99 },
-      yearly: { usd: 299.90 },
-      lifetime: { usd: 999.00 },
+      yearly: { usd: 299.9 },
+      lifetime: { usd: 999.0 },
     },
   },
 }

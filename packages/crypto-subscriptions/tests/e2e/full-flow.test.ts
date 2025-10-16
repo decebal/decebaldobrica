@@ -3,11 +3,11 @@
  * These tests simulate complete user journeys through the subscription system
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { CryptoSubscriptions } from '../../src/core/CryptoSubscriptions'
-import { MockDatabaseAdapter } from '../mocks/database'
 import { TEST_CONFIG, TEST_PRICING } from '../fixtures/config'
 import { createTestPaymentRequest } from '../fixtures/requests'
+import { MockDatabaseAdapter } from '../mocks/database'
 
 describe('E2E: Complete Subscription Flows', () => {
   let subscriptions: CryptoSubscriptions
@@ -68,10 +68,7 @@ describe('E2E: Complete Subscription Flows', () => {
       })
 
       // Step 2: Create payment
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('solana')
@@ -125,10 +122,7 @@ describe('E2E: Complete Subscription Flows', () => {
       })
 
       // Create payment
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.pro
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.pro)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('lightning')
@@ -161,7 +155,7 @@ describe('E2E: Complete Subscription Flows', () => {
       oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1)
 
       expect(subscription.expiresAt).toBeDefined()
-      expect(subscription.expiresAt!.getFullYear()).toBe(oneYearFromNow.getFullYear())
+      expect(subscription.expiresAt?.getFullYear()).toBe(oneYearFromNow.getFullYear())
     })
   })
 
@@ -177,10 +171,7 @@ describe('E2E: Complete Subscription Flows', () => {
       })
 
       // Create payment
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.pro
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.pro)
 
       expect(payment).toBeDefined()
       expect(payment.chain).toBe('ethereum')
@@ -251,16 +242,9 @@ describe('E2E: Complete Subscription Flows', () => {
         subscriberId: 'dave-999',
       })
 
-      const proPayment = await subscriptions.createSubscriptionPayment(
-        proRequest,
-        TEST_PRICING.pro
-      )
+      const proPayment = await subscriptions.createSubscriptionPayment(proRequest, TEST_PRICING.pro)
 
-      await subscriptions.upgradeSubscription(
-        premiumSub.id,
-        'pro',
-        proPayment.paymentId
-      )
+      await subscriptions.upgradeSubscription(premiumSub.id, 'pro', proPayment.paymentId)
 
       const upgradedSub = await subscriptions.getSubscription('dave-999')
       expect(upgradedSub?.tier).toBe('pro')
@@ -278,10 +262,7 @@ describe('E2E: Complete Subscription Flows', () => {
         subscriberId: 'eve-111',
       })
 
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       const verification = {
         verified: true,
@@ -326,18 +307,14 @@ describe('E2E: Complete Subscription Flows', () => {
         TEST_PRICING.premium
       )
 
-      await subscriptions.activateSubscription(
-        'user-1',
-        user1Request,
-        {
-          verified: true,
-          paymentId: user1Payment.paymentId,
-          amount: user1Payment.amount,
-          currency: user1Payment.currency,
-          chain: user1Payment.chain,
-          timestamp: new Date(),
-        }
-      )
+      await subscriptions.activateSubscription('user-1', user1Request, {
+        verified: true,
+        paymentId: user1Payment.paymentId,
+        amount: user1Payment.amount,
+        currency: user1Payment.currency,
+        chain: user1Payment.chain,
+        timestamp: new Date(),
+      })
 
       // User 2: Lightning Pro
       const user2Request = createTestPaymentRequest({
@@ -353,18 +330,14 @@ describe('E2E: Complete Subscription Flows', () => {
         TEST_PRICING.pro
       )
 
-      await subscriptions.activateSubscription(
-        'user-2',
-        user2Request,
-        {
-          verified: true,
-          paymentId: user2Payment.paymentId,
-          amount: user2Payment.amount,
-          currency: user2Payment.currency,
-          chain: user2Payment.chain,
-          timestamp: new Date(),
-        }
-      )
+      await subscriptions.activateSubscription('user-2', user2Request, {
+        verified: true,
+        paymentId: user2Payment.paymentId,
+        amount: user2Payment.amount,
+        currency: user2Payment.currency,
+        chain: user2Payment.chain,
+        timestamp: new Date(),
+      })
 
       // User 3: Ethereum Lifetime
       const user3Request = createTestPaymentRequest({
@@ -380,18 +353,14 @@ describe('E2E: Complete Subscription Flows', () => {
         TEST_PRICING.pro
       )
 
-      await subscriptions.activateSubscription(
-        'user-3',
-        user3Request,
-        {
-          verified: true,
-          paymentId: user3Payment.paymentId,
-          amount: user3Payment.amount,
-          currency: user3Payment.currency,
-          chain: user3Payment.chain,
-          timestamp: new Date(),
-        }
-      )
+      await subscriptions.activateSubscription('user-3', user3Request, {
+        verified: true,
+        paymentId: user3Payment.paymentId,
+        amount: user3Payment.amount,
+        currency: user3Payment.currency,
+        chain: user3Payment.chain,
+        timestamp: new Date(),
+      })
 
       // Verify all subscriptions
       const allSubs = database.getAllSubscriptions()
@@ -420,10 +389,7 @@ describe('E2E: Complete Subscription Flows', () => {
         subscriberId: 'failed-user',
       })
 
-      const payment = await subscriptions.createSubscriptionPayment(
-        request,
-        TEST_PRICING.premium
-      )
+      const payment = await subscriptions.createSubscriptionPayment(request, TEST_PRICING.premium)
 
       // Attempt to activate with failed verification
       const failedVerification = {
@@ -437,11 +403,7 @@ describe('E2E: Complete Subscription Flows', () => {
       }
 
       await expect(
-        subscriptions.activateSubscription(
-          request.subscriberId,
-          request,
-          failedVerification
-        )
+        subscriptions.activateSubscription(request.subscriberId, request, failedVerification)
       ).rejects.toThrow('Payment not verified')
 
       // Subscription should not exist

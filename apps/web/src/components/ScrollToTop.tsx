@@ -1,13 +1,17 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export default function ScrollToTop() {
   const pathname = usePathname()
+  const prevPathnameRef = useRef(pathname)
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    if (prevPathnameRef.current !== pathname) {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      prevPathnameRef.current = pathname
+    }
   }, [pathname])
 
   return null

@@ -28,7 +28,7 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const animationFrameRef = useRef<number>()
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLButtonElement>(null)
 
   // Cleanup function to stop visualization and close audio context
   const cleanup = () => {
@@ -41,18 +41,19 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
   }
 
   // Cleanup on unmount
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cleanup function is stable and doesn't need to be in deps
   useEffect(() => {
     return cleanup
   }, [])
 
   // Start or stop visualization based on recording state
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startVisualization and cleanup are stable functions
   useEffect(() => {
     if (stream && isRecording) {
       startVisualization()
     } else {
       cleanup()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stream, isRecording])
 
   // Handle window resize
@@ -93,7 +94,8 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
       analyser.smoothingTimeConstant = AUDIO_CONFIG.SMOOTHING
       analyserRef.current = analyser
 
-      const source = audioContext.createMediaStreamSource(stream!)
+      if (!stream) return
+      const source = audioContext.createMediaStreamSource(stream)
       source.connect(analyser)
 
       draw()
@@ -172,13 +174,22 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
     drawFrame()
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onClick()
+    }
+  }
+
   return (
-    <div
+    <button
+      type="button"
       ref={containerRef}
       className="h-full w-full cursor-pointer rounded-lg bg-background/80 backdrop-blur"
       onClick={onClick}
+      onKeyDown={handleKeyDown}
     >
-      <canvas ref={canvasRef} className="h-full w-full" />
-    </div>
+      <canvas ref={canvasRef} className="h-full w-full pointer-events-none" />
+    </button>
   )
 }

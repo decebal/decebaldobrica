@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 import matter from 'gray-matter'
 import readingTime from 'reading-time'
 
@@ -102,7 +102,11 @@ export async function getAllTags(): Promise<string[]> {
   const tags = new Set<string>()
 
   for (const post of posts) {
-    post.tags?.forEach((tag) => tags.add(tag))
+    if (post.tags) {
+      for (const tag of post.tags) {
+        tags.add(tag)
+      }
+    }
   }
 
   return Array.from(tags).sort()

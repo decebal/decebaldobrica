@@ -1,14 +1,14 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
-  { href: "/", label: "Dashboard" },
-  { href: "/subscribers", label: "Subscribers" },
-  { href: "/compose", label: "Compose" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/settings", label: "Settings" },
+  { href: '/', label: 'Dashboard' },
+  { href: '/subscribers', label: 'Subscribers' },
+  { href: '/compose', label: 'Compose' },
+  { href: '/analytics', label: 'Analytics' },
+  { href: '/settings', label: 'Settings' },
 ]
 
 export function AdminNav() {
@@ -33,9 +33,7 @@ export function AdminNav() {
                     key={item.href}
                     href={item.href}
                     className={`text-sm font-medium transition-colors hover:text-primary ${
-                      isActive
-                        ? "text-foreground"
-                        : "text-muted-foreground"
+                      isActive ? 'text-foreground' : 'text-muted-foreground'
                     }`}
                   >
                     {item.label}

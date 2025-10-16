@@ -22,25 +22,19 @@ export type {
   SubscriptionInterval,
   PaymentStatus,
   SubscriptionStatus,
-
   // Configuration
   CryptoSubscriptionsConfig,
   TierPricing,
-
   // Payment types
   CreatePaymentRequest,
   PaymentResponse,
   PaymentVerification,
-
   // Subscription types
   Subscription,
-
   // Database adapter
   DatabaseAdapter,
-
   // Webhook types
   WebhookEvent,
-
   // Error types
   CryptoSubscriptionError,
 } from './core/types'

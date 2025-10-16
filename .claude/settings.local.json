@@ -31,7 +31,10 @@
       "Bash(bun test:*)",
       "Bash(env)",
       "Bash(cat:*)",
-      "WebFetch(domain:jantegze.gumroad.com)"
+      "WebFetch(domain:jantegze.gumroad.com)",
+      "Bash(tsc:*)",
+      "Bash(bunx @biomejs/biome format:*)",
+      "Bash(bunx @biomejs/biome check:*)"
     ],
     "deny": [],
     "ask": []

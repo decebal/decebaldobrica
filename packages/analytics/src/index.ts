@@ -401,9 +401,9 @@ export const recordingControls = {
   maskElement: (selector: string) => {
     if (typeof window !== 'undefined') {
       const elements = document.querySelectorAll(selector)
-      elements.forEach((el) => {
+      for (const el of elements) {
         el.setAttribute('data-private', 'true')
-      })
+      }
     }
   },
 }

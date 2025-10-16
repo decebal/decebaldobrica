@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 // Configuration constants for the audio analyzer
 const AUDIO_CONFIG = {
@@ -31,19 +31,19 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Cleanup function to stop visualization and close audio context
-  const cleanup = () => {
+  const cleanup = useCallback(() => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current)
     }
     if (audioContextRef.current) {
       audioContextRef.current.close()
     }
-  }
+  }, [])
 
   // Cleanup on unmount
   useEffect(() => {
     return cleanup
-  }, [])
+  }, [cleanup])
 
   // Start or stop visualization based on recording state
   useEffect(() => {
@@ -53,7 +53,7 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
       cleanup()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stream, isRecording])
+  }, [stream, isRecording, cleanup])
 
   // Handle window resize
   useEffect(() => {
@@ -84,6 +84,8 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
 
   // Initialize audio context and start visualization
   const startVisualization = async () => {
+    if (!stream) return
+
     try {
       const audioContext = new AudioContext()
       audioContextRef.current = audioContext
@@ -93,7 +95,7 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
       analyser.smoothingTimeConstant = AUDIO_CONFIG.SMOOTHING
       analyserRef.current = analyser
 
-      const source = audioContext.createMediaStreamSource(stream!)
+      const source = audioContext.createMediaStreamSource(stream)
       source.connect(analyser)
 
       draw()
@@ -173,12 +175,13 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
   }
 
   return (
-    <div
+    <button
+      type="button"
       ref={containerRef}
-      className="h-full w-full cursor-pointer rounded-lg bg-background/80 backdrop-blur"
+      className="h-full w-full cursor-pointer rounded-lg bg-background/80 backdrop-blur border-0 p-0"
       onClick={onClick}
     >
       <canvas ref={canvasRef} className="h-full w-full" />
-    </div>
+    </button>
   )
 }

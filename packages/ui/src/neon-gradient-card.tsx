@@ -52,6 +52,7 @@ export function NeonGradientCard({
         {children}
       </div>
 
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Safe use of inline CSS for animation keyframes */}
       <style
         dangerouslySetInnerHTML={{
           __html: `

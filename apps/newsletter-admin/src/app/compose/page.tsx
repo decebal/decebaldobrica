@@ -1,18 +1,18 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Link from "next/link"
-import { newsletterApi } from "@/lib/api"
+import { newsletterApi } from '@/lib/api'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function ComposeNewsletterPage() {
-  const [subject, setSubject] = useState("")
-  const [content, setContent] = useState("")
-  const [tier, setTier] = useState<"all" | "free" | "premium" | "founding">("all")
+  const [subject, setSubject] = useState('')
+  const [content, setContent] = useState('')
+  const [tier, setTier] = useState<'all' | 'free' | 'premium' | 'founding'>('all')
   const [sending, setSending] = useState(false)
 
   const handleSend = async () => {
     if (!subject || !content) {
-      alert("Please fill in subject and content")
+      alert('Please fill in subject and content')
       return
     }
 
@@ -27,14 +27,14 @@ export default function ComposeNewsletterPage() {
 
       if (result.success) {
         alert(`Newsletter sent to ${result.sent} subscribers!`)
-        setSubject("")
-        setContent("")
+        setSubject('')
+        setContent('')
       } else {
         alert(`Failed to send newsletter: ${result.error}`)
       }
     } catch (error) {
-      console.error("Send error:", error)
-      alert("An error occurred while sending")
+      console.error('Send error:', error)
+      alert('An error occurred while sending')
     } finally {
       setSending(false)
     }
@@ -54,19 +54,21 @@ export default function ComposeNewsletterPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Compose Newsletter
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Send newsletters to your subscribers
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">Send newsletters to your subscribers</p>
         </div>
 
         {/* Composer */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
           {/* Tier Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="tier-select"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Send To
             </label>
             <select
+              id="tier-select"
               value={tier}
               onChange={(e) => setTier(e.target.value as typeof tier)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -80,10 +82,14 @@ export default function ComposeNewsletterPage() {
 
           {/* Subject */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="subject-input"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Subject Line
             </label>
             <input
+              id="subject-input"
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -94,10 +100,14 @@ export default function ComposeNewsletterPage() {
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label
+              htmlFor="content-textarea"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
               Content
             </label>
             <textarea
+              id="content-textarea"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your newsletter content here... (HTML and Markdown supported)"
@@ -105,21 +115,20 @@ export default function ComposeNewsletterPage() {
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
             />
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Tip: Use HTML or Markdown for formatting. Links, bold, italic, code blocks are supported.
+              Tip: Use HTML or Markdown for formatting. Links, bold, italic, code blocks are
+              supported.
             </p>
           </div>
 
           {/* Preview */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Preview
-            </h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</h3>
             <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900">
               <p className="text-sm font-bold text-gray-900 dark:text-white mb-2">
-                Subject: {subject || "(No subject)"}
+                Subject: {subject || '(No subject)'}
               </p>
               <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                {content || "(No content)"}
+                {content || '(No content)'}
               </div>
             </div>
           </div>
@@ -127,20 +136,22 @@ export default function ComposeNewsletterPage() {
           {/* Actions */}
           <div className="flex gap-4">
             <button
+              type="button"
               onClick={handleSend}
               disabled={sending}
               className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                 sending
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100'
               }`}
             >
-              {sending ? "Sending..." : "Send Newsletter"}
+              {sending ? 'Sending...' : 'Send Newsletter'}
             </button>
             <button
+              type="button"
               onClick={() => {
-                setSubject("")
-                setContent("")
+                setSubject('')
+                setContent('')
               }}
               className="px-6 py-3 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
@@ -151,9 +162,7 @@ export default function ComposeNewsletterPage() {
 
         {/* Tips */}
         <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">
-            💡 Pro Tips
-          </h3>
+          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">💡 Pro Tips</h3>
           <ul className="text-sm text-blue-800 dark:text-blue-400 space-y-1">
             <li>• Keep subject lines under 50 characters for better open rates</li>
             <li>• Include a clear call-to-action in your content</li>

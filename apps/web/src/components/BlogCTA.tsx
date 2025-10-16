@@ -1,8 +1,8 @@
 'use client'
 
+import { setReferralData } from '@/utils/referralTracking'
 import { Button } from '@decebal/ui/button'
 import { NeonGradientCard } from '@decebal/ui/neon-gradient-card'
-import { setReferralData } from '@/utils/referralTracking'
 import { motion } from 'framer-motion'
 import { Github, Linkedin, MessageCircle, Twitter } from 'lucide-react'
 import Image from 'next/image'

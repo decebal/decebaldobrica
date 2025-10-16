@@ -48,7 +48,7 @@ const PricingGate: React.FC<PricingGateProps> = ({ serviceName, children }) => {
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (email && email.includes('@')) {
+    if (email?.includes('@')) {
       // Store in localStorage
       localStorage.setItem('pricing_unlocked', 'true')
       localStorage.setItem('pricing_email', email)

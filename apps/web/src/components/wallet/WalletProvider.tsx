@@ -22,7 +22,7 @@ export function SolanaWalletProvider({ children }: { children: React.ReactNode }
   // Initialize wallets
   // Empty array = use only Wallet Standard wallets (auto-detected)
   // This prevents duplicate wallet errors
-  const wallets = useMemo(() => [], [network])
+  const wallets = useMemo(() => [], [])
 
   return (
     <ConnectionProvider endpoint={endpoint}>

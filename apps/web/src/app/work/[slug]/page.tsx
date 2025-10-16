@@ -74,9 +74,9 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-              {study.metrics.map((metric, i) => (
+              {study.metrics.map((metric) => (
                 <div
-                  key={i}
+                  key={metric.label}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10"
                 >
                   <div className="text-3xl font-bold text-brand-teal mb-1">{metric.value}</div>
@@ -167,8 +167,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   <span className="text-brand-teal">⚡</span> Actions Taken
                 </h3>
                 <ul className="space-y-3">
-                  {study.actions.map((action, i) => (
-                    <li key={i} className="flex items-start gap-3">
+                  {study.actions.map((action) => (
+                    <li key={action} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-brand-teal shrink-0 mt-0.5" />
                       <div className="text-white prose prose-invert max-w-none">
                         <ReactMarkdown>{action}</ReactMarkdown>
@@ -184,8 +184,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                   <span className="text-brand-teal">🎯</span> Outcomes
                 </h3>
                 <ul className="space-y-3">
-                  {study.outcomes.map((outcome, i) => (
-                    <li key={i} className="flex items-start gap-3">
+                  {study.outcomes.map((outcome) => (
+                    <li key={outcome} className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-brand-teal shrink-0 mt-0.5" />
                       <div className="text-white prose prose-invert max-w-none">
                         <ReactMarkdown>{outcome}</ReactMarkdown>
@@ -220,8 +220,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                 <span className="text-yellow-400">📋</span> Prescriptions
               </h3>
               <ul className="space-y-3">
-                {study.prescriptions.map((prescription, i) => (
-                  <li key={i} className="flex items-start gap-3">
+                {study.prescriptions.map((prescription) => (
+                  <li key={prescription} className="flex items-start gap-3">
                     <div className="bg-yellow-400/20 rounded-full p-1 shrink-0 mt-0.5">
                       <Lightbulb className="h-4 w-4 text-yellow-400" />
                     </div>
@@ -246,7 +246,14 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               className="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Schedule a Tactical Briefing
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                role="img"
+              >
+                <title>Arrow Right Icon</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

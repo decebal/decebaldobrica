@@ -109,9 +109,9 @@ const ArchitectureDocsPage = () => {
                 Pricing & Packages
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {packages.map((pkg, index) => (
+                {packages.map((pkg) => (
                   <div
-                    key={index}
+                    key={pkg.name}
                     className={`brand-card p-8 rounded-lg relative ${
                       pkg.popular ? 'ring-2 ring-brand-teal' : ''
                     }`}
@@ -127,8 +127,8 @@ const ArchitectureDocsPage = () => {
                     <div className="text-3xl font-bold text-brand-teal mb-2">{pkg.price}</div>
                     <div className="text-sm text-brand-teal mb-6">Ideal for: {pkg.ideal}</div>
                     <ul className="space-y-3 mb-8">
-                      {pkg.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start">
+                      {pkg.features.map((feature) => (
+                        <li key={feature} className="flex items-start">
                           <Check className="h-5 w-5 text-brand-teal mr-2 flex-shrink-0 mt-0.5" />
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </li>

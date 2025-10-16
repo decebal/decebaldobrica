@@ -314,8 +314,9 @@ export async function getAvailableSlots(date: string, timezone = 'America/New_Yo
 
         // Check if slot overlaps with busy times
         const isAvailable = !busySlots.some((busy) => {
-          const busyStart = new Date(busy.start!)
-          const busyEnd = new Date(busy.end!)
+          if (!busy.start || !busy.end) return false
+          const busyStart = new Date(busy.start)
+          const busyEnd = new Date(busy.end)
           return slotStart < busyEnd && slotEnd > busyStart
         })
 
@@ -365,8 +366,15 @@ export async function rescheduleMeeting(
     })
 
     // Calculate duration from original event
-    const originalStart = new Date(event.data.start?.dateTime!)
-    const originalEnd = new Date(event.data.end?.dateTime!)
+    const startDateTime = event.data.start?.dateTime
+    const endDateTime = event.data.end?.dateTime
+
+    if (!startDateTime || !endDateTime) {
+      throw new Error('Event start or end time not found')
+    }
+
+    const originalStart = new Date(startDateTime)
+    const originalEnd = new Date(endDateTime)
     const durationMs = originalEnd.getTime() - originalStart.getTime()
 
     // Calculate new times

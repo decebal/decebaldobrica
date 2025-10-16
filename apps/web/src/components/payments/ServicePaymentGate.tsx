@@ -101,8 +101,8 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
             <div className="bg-white/5 border border-white/10 rounded-lg p-6 mb-8 text-left">
               <h3 className="text-xl font-bold text-white mb-4">What You'll Get:</h3>
               <ul className="space-y-3">
-                {tier.benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start">
+                {tier.benefits.map((benefit) => (
+                  <li key={benefit} className="flex items-start">
                     <Check className="h-5 w-5 text-brand-teal mr-3 flex-shrink-0 mt-0.5" />
                     <span className="text-gray-300">{benefit}</span>
                   </li>

@@ -12,7 +12,7 @@ interface NewsletterSignupProps {
 
 export function NewsletterSignup({
   variant = 'featured',
-  showBenefits = true
+  showBenefits = true,
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -75,12 +75,8 @@ export function NewsletterSignup({
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </Button>
         </form>
-        {status === 'success' && (
-          <p className="text-sm text-brand-teal mt-3">{message}</p>
-        )}
-        {status === 'error' && (
-          <p className="text-sm text-red-400 mt-3">{message}</p>
-        )}
+        {status === 'success' && <p className="text-sm text-brand-teal mt-3">{message}</p>}
+        {status === 'error' && <p className="text-sm text-red-400 mt-3">{message}</p>}
       </div>
     )
   }
@@ -93,13 +89,15 @@ export function NewsletterSignup({
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/20 mb-4">
             <Mail className="h-8 w-8 text-brand-teal" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">
-            Don't Miss New Posts
-          </h3>
+          <h3 className="text-2xl font-bold text-white mb-3">Don't Miss New Posts</h3>
           <p className="text-gray-300 mb-6">
-            Join 2,000+ developers getting weekly insights on AI engineering, Rust, and serverless architecture.
+            Join 2,000+ developers getting weekly insights on AI engineering, Rust, and serverless
+            architecture.
           </p>
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <form
+            onSubmit={handleSubscribe}
+            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+          >
             <Input
               type="email"
               placeholder="Enter your email"
@@ -122,12 +120,8 @@ export function NewsletterSignup({
               {message}
             </p>
           )}
-          {status === 'error' && (
-            <p className="text-red-400 mt-4">{message}</p>
-          )}
-          <p className="text-xs text-gray-400 mt-4">
-            No spam. Unsubscribe anytime.
-          </p>
+          {status === 'error' && <p className="text-red-400 mt-4">{message}</p>}
+          <p className="text-xs text-gray-400 mt-4">No spam. Unsubscribe anytime.</p>
         </div>
       </div>
     )
@@ -142,12 +136,10 @@ export function NewsletterSignup({
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-teal/20 mb-6">
             <Mail className="h-10 w-10 text-brand-teal" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Join the Newsletter
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join the Newsletter</h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Get weekly insights on AI engineering, Rust, serverless architecture, and technical leadership.
-            Join 2,000+ developers building the future.
+            Get weekly insights on AI engineering, Rust, serverless architecture, and technical
+            leadership. Join 2,000+ developers building the future.
           </p>
         </div>
 
@@ -253,13 +245,10 @@ export function NewsletterSignup({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+              <title>Arrow Right Icon</title>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </a>
         </div>

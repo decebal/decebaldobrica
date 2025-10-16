@@ -5,8 +5,8 @@
  * Converts post.js + document.mdx to frontmatter MDX files
  */
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const SOURCE_DIR = path.join(__dirname, '../../decebalonprogramming/src/routes/posts')
 const DEST_DIR = path.join(__dirname, '../content/blog')
@@ -79,7 +79,7 @@ function importBlogPosts() {
   let importedCount = 0
   let skippedCount = 0
 
-  postDirs.forEach((dir) => {
+  for (const dir of postDirs) {
     const postJsPath = path.join(SOURCE_DIR, dir, 'post.js')
     const documentPath = path.join(SOURCE_DIR, dir, 'document.mdx')
 
@@ -87,7 +87,7 @@ function importBlogPosts() {
     if (!fs.existsSync(postJsPath) || !fs.existsSync(documentPath)) {
       console.log(`Skipping ${dir} - missing required files`)
       skippedCount++
-      return
+      continue
     }
 
     try {
@@ -98,7 +98,7 @@ function importBlogPosts() {
       if (!metadata) {
         console.error(`Failed to parse metadata for ${dir}`)
         skippedCount++
-        return
+        continue
       }
 
       // Read content
@@ -120,9 +120,9 @@ function importBlogPosts() {
       console.error(`Error importing ${dir}:`, error.message)
       skippedCount++
     }
-  })
+  }
 
-  console.log(`\nImport complete!`)
+  console.log('\nImport complete!')
   console.log(`Imported: ${importedCount} posts`)
   console.log(`Skipped: ${skippedCount} posts`)
 }

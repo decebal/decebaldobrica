@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
-import Link from "next/link"
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
 
-type ConfirmationStatus = "loading" | "success" | "error"
+type ConfirmationStatus = 'loading' | 'success' | 'error'
 
 interface ConfirmationResult {
   success: boolean
@@ -13,53 +13,50 @@ interface ConfirmationResult {
   subscriber?: {
     email: string
     name?: string
-    tier: "free" | "premium" | "founding"
+    tier: 'free' | 'premium' | 'founding'
   }
 }
 
-export default function NewsletterConfirmPage() {
+function NewsletterConfirmContent() {
   const searchParams = useSearchParams()
-  const token = searchParams.get("token")
-  const [status, setStatus] = useState<ConfirmationStatus>("loading")
+  const token = searchParams.get('token')
+  const [status, setStatus] = useState<ConfirmationStatus>('loading')
   const [result, setResult] = useState<ConfirmationResult | null>(null)
 
   useEffect(() => {
     async function confirmSubscription() {
       if (!token) {
-        setStatus("error")
+        setStatus('error')
         setResult({
           success: false,
-          error: "Missing confirmation token. Please check your email link.",
+          error: 'Missing confirmation token. Please check your email link.',
         })
         return
       }
 
       try {
-        const response = await fetch(
-          `/api/newsletter/confirm?token=${token}`,
-          {
-            method: "GET",
-          }
-        )
+        const response = await fetch(`/api/newsletter/confirm?token=${token}`, {
+          method: 'GET',
+        })
 
         const data = await response.json()
 
         if (data.success) {
-          setStatus("success")
+          setStatus('success')
           setResult(data)
         } else {
-          setStatus("error")
+          setStatus('error')
           setResult({
             success: false,
-            error: data.error || "Failed to confirm subscription.",
+            error: data.error || 'Failed to confirm subscription.',
           })
         }
       } catch (error) {
-        console.error("Confirmation error:", error)
-        setStatus("error")
+        console.error('Confirmation error:', error)
+        setStatus('error')
         setResult({
           success: false,
-          error: "An unexpected error occurred. Please try again.",
+          error: 'An unexpected error occurred. Please try again.',
         })
       }
     }
@@ -70,7 +67,7 @@ export default function NewsletterConfirmPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-        {status === "loading" && (
+        {status === 'loading' && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white" />
@@ -78,13 +75,11 @@ export default function NewsletterConfirmPage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Confirming your subscription...
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Please wait a moment
-            </p>
+            <p className="text-gray-600 dark:text-gray-400">Please wait a moment</p>
           </div>
         )}
 
-        {status === "success" && (
+        {status === 'success' && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
               <div className="rounded-full bg-green-100 dark:bg-green-900/20 p-3">
@@ -93,7 +88,10 @@ export default function NewsletterConfirmPage() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="Success"
                 >
+                  <title>Success</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -107,28 +105,21 @@ export default function NewsletterConfirmPage() {
               You're all set! 🎉
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {result?.message ||
-                "Your newsletter subscription has been confirmed."}
+              {result?.message || 'Your newsletter subscription has been confirmed.'}
             </p>
             {result?.subscriber && (
               <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  Subscribed as:
-                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Subscribed as:</p>
                 <p className="font-medium text-gray-900 dark:text-white">
                   {result.subscriber.email}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                  Tier:{" "}
-                  <span className="capitalize font-medium">
-                    {result.subscriber.tier}
-                  </span>
+                  Tier: <span className="capitalize font-medium">{result.subscriber.tier}</span>
                 </p>
               </div>
             )}
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              You'll receive a welcome email shortly. Newsletters will arrive in
-              your inbox weekly.
+              You'll receive a welcome email shortly. Newsletters will arrive in your inbox weekly.
             </p>
             <div className="space-y-3">
               <Link
@@ -147,7 +138,7 @@ export default function NewsletterConfirmPage() {
           </div>
         )}
 
-        {status === "error" && (
+        {status === 'error' && (
           <div className="text-center">
             <div className="mb-4 flex justify-center">
               <div className="rounded-full bg-red-100 dark:bg-red-900/20 p-3">
@@ -156,7 +147,10 @@ export default function NewsletterConfirmPage() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  role="img"
+                  aria-label="Error"
                 >
+                  <title>Error</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -190,5 +184,26 @@ export default function NewsletterConfirmPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function NewsletterConfirmPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
+          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+            <div className="text-center">
+              <div className="mb-4 flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Loading...</h1>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <NewsletterConfirmContent />
+    </Suspense>
   )
 }

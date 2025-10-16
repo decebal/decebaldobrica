@@ -13,19 +13,10 @@ export type SubscriptionTier = 'free' | 'premium' | 'pro' | 'enterprise' | strin
 export type SubscriptionInterval = 'monthly' | 'yearly' | 'lifetime'
 
 // Payment status
-export type PaymentStatus =
-  | 'pending'
-  | 'confirming'
-  | 'confirmed'
-  | 'failed'
-  | 'expired'
+export type PaymentStatus = 'pending' | 'confirming' | 'confirmed' | 'failed' | 'expired'
 
 // Subscription status
-export type SubscriptionStatus =
-  | 'active'
-  | 'cancelled'
-  | 'expired'
-  | 'pending'
+export type SubscriptionStatus = 'active' | 'cancelled' | 'expired' | 'pending'
 
 /**
  * Pricing configuration for a subscription tier
@@ -203,7 +194,9 @@ export interface DatabaseAdapter {
   updatePaymentStatus(paymentId: string, status: PaymentStatus): Promise<void>
 
   // Subscription operations
-  createSubscription(subscription: Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<Subscription>
+  createSubscription(
+    subscription: Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Subscription>
   getSubscription(subscriberId: string): Promise<Subscription | null>
   updateSubscription(subscriptionId: string, updates: Partial<Subscription>): Promise<void>
   cancelSubscription(subscriptionId: string): Promise<void>

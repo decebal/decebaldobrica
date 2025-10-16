@@ -33,7 +33,7 @@ export const recordAudio = ((): RecordAudioType => {
       })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      throw new Error('Failed to start recording: ' + errorMessage)
+      throw new Error(`Failed to start recording: ${errorMessage}`)
     }
   }
   ;(func as RecordAudioType).stop = () => {
@@ -41,7 +41,7 @@ export const recordAudio = ((): RecordAudioType => {
     if (recorder && recorder.state !== 'inactive') {
       recorder.stop()
     }
-    delete (func as RecordAudioType).currentRecorder
+    ;(func as RecordAudioType).currentRecorder = undefined
   }
 
   return func as RecordAudioType

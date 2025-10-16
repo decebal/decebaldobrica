@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { newsletterApi } from "@/lib/api"
+import { newsletterApi } from '@/lib/api'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface AnalyticsData {
   totalSubscribers: number
@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
         const data = await newsletterApi.getAnalytics()
         setAnalytics(data)
       } catch (error) {
-        console.error("Failed to load analytics:", error)
+        console.error('Failed to load analytics:', error)
       } finally {
         setLoading(false)
       }
@@ -85,21 +85,9 @@ export default function AnalyticsPage() {
             change={`+${data.monthlyGrowth}% this month`}
             changeType="positive"
           />
-          <MetricCard
-            title="Open Rate"
-            value={`${data.avgOpenRate}%`}
-            subtitle="Average"
-          />
-          <MetricCard
-            title="Click Rate"
-            value={`${data.avgClickRate}%`}
-            subtitle="Average"
-          />
-          <MetricCard
-            title="Issues Sent"
-            value={data.totalIssues}
-            subtitle="Total newsletters"
-          />
+          <MetricCard title="Open Rate" value={`${data.avgOpenRate}%`} subtitle="Average" />
+          <MetricCard title="Click Rate" value={`${data.avgClickRate}%`} subtitle="Average" />
+          <MetricCard title="Issues Sent" value={data.totalIssues} subtitle="Total newsletters" />
         </div>
 
         {/* Subscriber Breakdown */}
@@ -112,9 +100,7 @@ export default function AnalyticsPage() {
               tier="Free"
               count={data.freeSubscribers}
               percentage={
-                data.totalSubscribers > 0
-                  ? (data.freeSubscribers / data.totalSubscribers) * 100
-                  : 0
+                data.totalSubscribers > 0 ? (data.freeSubscribers / data.totalSubscribers) * 100 : 0
               }
               color="gray"
             />
@@ -143,9 +129,7 @@ export default function AnalyticsPage() {
 
         {/* Revenue */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-            Revenue Metrics
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Revenue Metrics</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
@@ -181,25 +165,19 @@ function MetricCard({
   value: string | number
   subtitle?: string
   change?: string
-  changeType?: "positive" | "negative"
+  changeType?: 'positive' | 'negative'
 }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-        {title}
-      </h3>
-      <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-        {value}
-      </p>
-      {subtitle && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
-      )}
+      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{title}</h3>
+      <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</p>
+      {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
       {change && (
         <p
           className={`text-sm ${
-            changeType === "positive"
-              ? "text-green-600 dark:text-green-400"
-              : "text-red-600 dark:text-red-400"
+            changeType === 'positive'
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-red-600 dark:text-red-400'
           }`}
         >
           {change}
@@ -218,25 +196,19 @@ function TierCard({
   tier: string
   count: number
   percentage: number
-  color: "gray" | "blue" | "purple"
+  color: 'gray' | 'blue' | 'purple'
 }) {
   const colorClasses = {
-    gray: "bg-gray-100 dark:bg-gray-700",
-    blue: "bg-blue-100 dark:bg-blue-900/20",
-    purple: "bg-purple-100 dark:bg-purple-900/20",
+    gray: 'bg-gray-100 dark:bg-gray-700',
+    blue: 'bg-blue-100 dark:bg-blue-900/20',
+    purple: 'bg-purple-100 dark:bg-purple-900/20',
   }
 
   return (
     <div className={`rounded-lg p-4 ${colorClasses[color]}`}>
-      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-        {tier}
-      </p>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-        {count}
-      </p>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {percentage.toFixed(1)}% of total
-      </p>
+      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{tier}</p>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{count}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{percentage.toFixed(1)}% of total</p>
     </div>
   )
 }

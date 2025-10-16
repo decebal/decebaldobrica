@@ -1,9 +1,9 @@
 import Footer from '@/components/Footer'
 import { NewsletterSignup } from '@/components/NewsletterSignup'
-import { Badge } from '@decebal/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
 import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
 import { config } from '@/lib/personalConfig'
+import { Badge } from '@decebal/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
 import { Calendar, ChevronLeft, ChevronRight, Clock, ExternalLink, Tag } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
@@ -31,9 +31,11 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
   // Count posts per tag
   const tagCounts = new Map<string, number>()
   for (const post of allPosts) {
-    post.tags?.forEach((tag) => {
-      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
-    })
+    if (post.tags) {
+      for (const tag of post.tags) {
+        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
+      }
+    }
   }
 
   return (
@@ -58,10 +60,11 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  <path d="M4 11a9 9 0 0 1 9 9"></path>
-                  <path d="M4 4a16 16 0 0 1 16 16"></path>
-                  <circle cx="5" cy="19" r="1"></circle>
+                  <path d="M4 11a9 9 0 0 1 9 9" />
+                  <path d="M4 4a16 16 0 0 1 16 16" />
+                  <circle cx="5" cy="19" r="1" />
                 </svg>
                 RSS Feed
               </Link>
@@ -112,9 +115,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
               <div className="space-y-6">
                 {posts.map((post, index) => (
                   <React.Fragment key={post.slug}>
-                    <Card
-                      className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]"
-                    >
+                    <Card className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-brand-teal/50 transition-all hover:scale-[1.02]">
                       <CardHeader>
                         <Link href={`/blog/${post.slug}`} className="cursor-pointer">
                           <div className="flex items-start justify-between gap-4">
@@ -158,9 +159,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                     </Card>
 
                     {/* Newsletter signup after 3rd post on first page */}
-                    {currentPage === 1 && index === 2 && (
-                      <NewsletterSignup variant="inline" />
-                    )}
+                    {currentPage === 1 && index === 2 && <NewsletterSignup variant="inline" />}
                   </React.Fragment>
                 ))}
               </div>

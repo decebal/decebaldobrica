@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface NewsletterStats {
   totalSubscribers: number
@@ -20,12 +20,12 @@ export default function NewsletterAdminPage() {
   useEffect(() => {
     async function loadStats() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
         const response = await fetch(`${baseUrl}/api/newsletter/stats`)
         const data = await response.json()
         setStats(data)
       } catch (error) {
-        console.error("Failed to load stats:", error)
+        console.error('Failed to load stats:', error)
       } finally {
         setLoading(false)
       }
@@ -107,9 +107,7 @@ export default function NewsletterAdminPage() {
 
         {/* Recent Activity */}
         <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Recent Activity
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
           <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
               <span>New subscriber: john@example.com</span>
@@ -157,37 +155,25 @@ function StatCard({
   value: string | number
   subtitle?: string
   trend?: string
-  color: "blue" | "green" | "purple" | "orange"
+  color: 'blue' | 'green' | 'purple' | 'orange'
 }) {
   const colorClasses = {
-    blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-    green: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
-    purple:
-      "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400",
-    orange:
-      "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400",
+    blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+    green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+    purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+    orange: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
   }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-        {title}
-      </h3>
+      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{title}</h3>
       <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-          {value}
-        </p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
         {trend && (
-          <span className={`text-sm px-2 py-1 rounded ${colorClasses[color]}`}>
-            {trend}
-          </span>
+          <span className={`text-sm px-2 py-1 rounded ${colorClasses[color]}`}>{trend}</span>
         )}
       </div>
-      {subtitle && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {subtitle}
-        </p>
-      )}
+      {subtitle && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
     </div>
   )
 }
@@ -209,9 +195,7 @@ function ActionCard({
       className="block bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
     >
       <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-        {title}
-      </h3>
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{title}</h3>
       <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
     </Link>
   )

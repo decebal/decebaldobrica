@@ -3,14 +3,14 @@ import { type VariantProps, cva } from 'class-variance-authority'
 import { PanelLeft } from 'lucide-react'
 import * as React from 'react'
 
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Button } from '@decebal/ui/button'
 import { Input } from '@decebal/ui/input'
+import { cn } from '@decebal/ui/lib/utils'
 import { Separator } from '@decebal/ui/separator'
 import { Sheet, SheetContent } from '@decebal/ui/sheet'
 import { Skeleton } from '@decebal/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@decebal/ui/tooltip'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { cn } from '@decebal/ui/lib/utils'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -85,7 +85,7 @@ const SidebarProvider = React.forwardRef<
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
       return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-    }, [isMobile, setOpen, setOpenMobile])
+    }, [isMobile, setOpen])
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -114,7 +114,7 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobile, openMobile, toggleSidebar]
     )
 
     return (

@@ -2,7 +2,7 @@
  * Ethereum L2 Handler Unit Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { EthereumHandler } from '../../src/ethereum'
 import { TEST_ETHEREUM_CONFIG } from '../fixtures/config'
 import { createTestPaymentRequest } from '../fixtures/requests'
@@ -131,8 +131,8 @@ describe('EthereumHandler', () => {
       const usdcEstimate = await handler.estimateGasFees('USDC')
 
       // USDC (ERC-20) should have higher gas estimate than native ETH
-      const ethFee = parseFloat(ethEstimate.estimatedFee.replace(' ETH', ''))
-      const usdcFee = parseFloat(usdcEstimate.estimatedFee.replace(' ETH', ''))
+      const ethFee = Number.parseFloat(ethEstimate.estimatedFee.replace(' ETH', ''))
+      const usdcFee = Number.parseFloat(usdcEstimate.estimatedFee.replace(' ETH', ''))
 
       expect(usdcFee).toBeGreaterThan(ethFee)
     })
@@ -156,7 +156,8 @@ describe('EthereumHandler', () => {
 
   describe('verifyPayment', () => {
     it('should return unverified for non-existent transaction', async () => {
-      const fakeTxHash = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef' as const
+      const fakeTxHash =
+        '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef' as const
 
       const verification = await handler.verifyPayment(fakeTxHash, 0.01, 'ETH')
 
@@ -174,7 +175,7 @@ describe('EthereumHandler', () => {
         0.01,
         'ETH',
         3000, // 3 second timeout
-        1000  // 1 second interval
+        1000 // 1 second interval
       )
 
       expect(verification.verified).toBe(false)

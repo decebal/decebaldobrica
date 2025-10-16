@@ -19,9 +19,10 @@ const Gallery = ({ images }: GalleryProps) => {
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {images.map((image, index) => (
-          <div
-            key={index}
+        {images.map((image) => (
+          <button
+            key={image.src}
+            type="button"
             className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
             onClick={() => setSelectedImage(image)}
           >
@@ -37,29 +38,34 @@ const Gallery = ({ images }: GalleryProps) => {
                 </div>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
       {/* Lightbox Modal */}
       {selectedImage && (
-        <div
+        <button
+          type="button"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setSelectedImage(null)}
         >
           <button
+            type="button"
             onClick={() => setSelectedImage(null)}
             className="absolute top-4 right-4 text-white hover:text-brand-teal transition-colors p-2"
             aria-label="Close"
           >
             <X size={32} />
           </button>
-          <div className="max-w-6xl max-h-[90vh] relative">
+          <button
+            type="button"
+            className="max-w-6xl max-h-[90vh] relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={selectedImage.src}
               alt={selectedImage.alt}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
             />
             {selectedImage.caption && (
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
@@ -68,8 +74,8 @@ const Gallery = ({ images }: GalleryProps) => {
                 </p>
               </div>
             )}
-          </div>
-        </div>
+          </button>
+        </button>
       )}
     </>
   )

@@ -220,9 +220,7 @@ export async function unsubscribeFromNewsletter(
 /**
  * Get subscriber by email
  */
-export async function getSubscriberByEmail(
-  email: string
-): Promise<NewsletterSubscriber | null> {
+export async function getSubscriberByEmail(email: string): Promise<NewsletterSubscriber | null> {
   try {
     const supabase = getSupabaseAdmin()
 
@@ -276,9 +274,7 @@ export async function getActiveSubscribers(
 /**
  * Get subscriber count by tier
  */
-export async function getSubscriberCount(
-  tier?: 'free' | 'premium' | 'founding'
-): Promise<number> {
+export async function getSubscriberCount(tier?: 'free' | 'premium' | 'founding'): Promise<number> {
   try {
     const supabase = getSupabaseAdmin()
 
@@ -402,7 +398,10 @@ export async function getNewsletterStats(): Promise<{
     ])
 
     // Get average engagement rates
-    const { data: stats } = await supabase.from('newsletter_subscribers').select('open_rate, click_rate').eq('status', 'active')
+    const { data: stats } = await supabase
+      .from('newsletter_subscribers')
+      .select('open_rate, click_rate')
+      .eq('status', 'active')
 
     const avgOpenRate =
       stats && stats.length > 0

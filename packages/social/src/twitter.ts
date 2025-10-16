@@ -3,7 +3,7 @@
  * Uses Twitter API v2
  */
 
-import { TwitterApi } from "twitter-api-v2"
+import { TwitterApi } from 'twitter-api-v2'
 
 interface TwitterPost {
   text: string
@@ -22,9 +22,7 @@ interface TwitterPostResult {
 /**
  * Post a tweet or thread to Twitter
  */
-export async function postToTwitter(
-  content: TwitterPost
-): Promise<TwitterPostResult> {
+export async function postToTwitter(content: TwitterPost): Promise<TwitterPostResult> {
   try {
     const appKey = process.env.TWITTER_API_KEY
     const appSecret = process.env.TWITTER_API_SECRET
@@ -34,7 +32,7 @@ export async function postToTwitter(
     if (!appKey || !appSecret || !accessToken || !accessSecret) {
       return {
         success: false,
-        error: "Twitter credentials not configured",
+        error: 'Twitter credentials not configured',
       }
     }
 
@@ -80,11 +78,11 @@ export async function postToTwitter(
         const imageResponse = await fetch(content.imageUrl)
         const imageBuffer = await imageResponse.arrayBuffer()
         const mediaId = await client.v1.uploadMedia(Buffer.from(imageBuffer), {
-          mimeType: "image/png",
+          mimeType: 'image/png',
         })
         mediaIds = [mediaId]
       } catch (error) {
-        console.error("Failed to upload image to Twitter:", error)
+        console.error('Failed to upload image to Twitter:', error)
         // Continue without image
       }
     }
@@ -102,10 +100,10 @@ export async function postToTwitter(
       tweetUrl,
     }
   } catch (error) {
-    console.error("Twitter posting error:", error)
+    console.error('Twitter posting error:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
 }
@@ -126,17 +124,17 @@ export function generateTwitterThread(blogPost: {
   thread.push(`🧵 New post: ${blogPost.title}\n\n${blogPost.excerpt}`)
 
   // Main content (if excerpt is long, split it)
-  const sentences = blogPost.excerpt.split(". ")
-  let currentTweet = ""
+  const sentences = blogPost.excerpt.split('. ')
+  let currentTweet = ''
 
   for (const sentence of sentences) {
     if ((currentTweet + sentence).length > 250) {
       if (currentTweet) {
         thread.push(currentTweet.trim())
       }
-      currentTweet = sentence + ". "
+      currentTweet = `${sentence}. `
     } else {
-      currentTweet += sentence + ". "
+      currentTweet += `${sentence}. `
     }
   }
 
@@ -146,8 +144,11 @@ export function generateTwitterThread(blogPost: {
 
   // Final tweet with link and hashtags
   const hashtags = blogPost.tags
-    ? blogPost.tags.slice(0, 3).map((tag) => `#${tag.replace(/\s+/g, "")}`).join(" ")
-    : "#SoftwareEngineering #WebDev"
+    ? blogPost.tags
+        .slice(0, 3)
+        .map((tag) => `#${tag.replace(/\s+/g, '')}`)
+        .join(' ')
+    : '#SoftwareEngineering #WebDev'
 
   thread.push(`Read the full article:\n${blogPost.url}\n\n${hashtags}`)
 
@@ -167,14 +168,17 @@ export function generateSingleTweet(blogPost: {
   const maxLength = 280
   const urlLength = 23 // Twitter's t.co URL length
   const hashtags = blogPost.tags
-    ? blogPost.tags.slice(0, 2).map((tag) => `#${tag.replace(/\s+/g, "")}`).join(" ")
-    : "#DevTools"
+    ? blogPost.tags
+        .slice(0, 2)
+        .map((tag) => `#${tag.replace(/\s+/g, '')}`)
+        .join(' ')
+    : '#DevTools'
 
   const availableLength = maxLength - urlLength - hashtags.length - 6 // 6 for spacing and emoji
 
   let excerpt = blogPost.excerpt
   if (excerpt.length > availableLength) {
-    excerpt = excerpt.slice(0, availableLength - 3) + "..."
+    excerpt = `${excerpt.slice(0, availableLength - 3)}...`
   }
 
   return `🚀 ${blogPost.title}\n\n${excerpt}\n\n${blogPost.url}\n\n${hashtags}`
@@ -184,14 +188,11 @@ export function generateSingleTweet(blogPost: {
  * Schedule a tweet for later posting
  * Note: This requires Twitter API Premium or Enterprise
  */
-export async function scheduleTweet(
-  text: string,
-  scheduledAt: Date
-): Promise<TwitterPostResult> {
+export async function scheduleTweet(text: string, scheduledAt: Date): Promise<TwitterPostResult> {
   // Note: Basic Twitter API doesn't support scheduling
   // This would need to be implemented with a job queue
   return {
     success: false,
-    error: "Tweet scheduling requires premium API access or external scheduler",
+    error: 'Tweet scheduling requires premium API access or external scheduler',
   }
 }

@@ -353,9 +353,9 @@ const ServicesPage = () => {
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {getPackages().map((pkg, index) => (
+                  {getPackages().map((pkg) => (
                     <div
-                      key={index}
+                      key={pkg.name}
                       className={`brand-card p-8 rounded-lg relative ${
                         pkg.popular ? 'ring-2 ring-brand-teal' : ''
                       }`}
@@ -373,8 +373,8 @@ const ServicesPage = () => {
                       <p className="text-gray-400 mb-6">{pkg.description}</p>
 
                       <ul className="space-y-3 mb-8">
-                        {pkg.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start">
+                        {pkg.features.map((feature) => (
+                          <li key={feature} className="flex items-start">
                             <Check className="h-5 w-5 text-brand-teal mr-2 flex-shrink-0 mt-0.5" />
                             <span className="text-gray-300 text-sm">{feature}</span>
                           </li>

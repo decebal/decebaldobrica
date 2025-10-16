@@ -70,6 +70,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Required for dynamic CSS generation in chart styling
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

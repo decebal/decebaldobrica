@@ -51,11 +51,11 @@ export function useAutoScroll(dependencies: React.DependencyList) {
     }
   }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scrollToBottom and shouldAutoScroll are stable, dependencies passed from caller
   useEffect(() => {
     if (shouldAutoScroll) {
       scrollToBottom()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 
   return {

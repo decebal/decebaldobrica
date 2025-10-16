@@ -2,6 +2,7 @@
 
 import PaymentMethodSelector from '@/components/PaymentMethodSelector'
 import SolanaPaymentModal from '@/components/SolanaPaymentModal'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@decebal/ui/button'
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 } from '@decebal/ui/dialog'
 import { GlowButton } from '@decebal/ui/glow-button'
 import { Input } from '@decebal/ui/input'
-import { useToast } from '@/hooks/use-toast'
 import { Coffee, DollarSign, Heart } from 'lucide-react'
 import type React from 'react'
 import { useState } from 'react'
@@ -33,7 +33,7 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = 'the author' }) => {
 
   const handleTipAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number.parseFloat(e.target.value)
-    setTipAmount(isNaN(value) ? 0 : value)
+    setTipAmount(Number.isNaN(value) ? 0 : value)
   }
 
   const handlePaymentMethodChange = (method: string) => {
@@ -105,7 +105,9 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = 'the author' }) => {
 
           <div className="py-4">
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Amount</label>
+              <label htmlFor="tip-amount" className="block text-sm font-medium text-gray-300 mb-2">
+                Amount
+              </label>
               <div className="grid grid-cols-4 gap-2 mb-3">
                 {predefinedAmounts.map((amount) => (
                   <Button
@@ -122,6 +124,7 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = 'the author' }) => {
               <div className="flex items-center">
                 <DollarSign className="h-5 w-5 text-gray-400 mr-2" />
                 <Input
+                  id="tip-amount"
                   type="number"
                   value={tipAmount}
                   onChange={handleTipAmountChange}
@@ -133,7 +136,7 @@ const TipJar: React.FC<TipJarProps> = ({ title, author = 'the author' }) => {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Payment Method</label>
+              <div className="block text-sm font-medium text-gray-300 mb-2">Payment Method</div>
               <PaymentMethodSelector
                 selectedMethod={paymentMethod}
                 onSelectMethod={handlePaymentMethodChange}

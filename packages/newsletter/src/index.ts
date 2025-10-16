@@ -1,5 +1,5 @@
+import { randomBytes } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
-import { randomBytes } from 'crypto'
 
 // Types matching our Supabase schema
 export interface NewsletterSubscriber {
@@ -110,10 +110,7 @@ export function generateConfirmationToken(): string {
  * Store confirmation token for a subscriber
  * Token expires in 24 hours
  */
-async function storeConfirmationToken(
-  email: string,
-  token: string
-): Promise<boolean> {
+async function storeConfirmationToken(email: string, token: string): Promise<boolean> {
   try {
     const supabase = getSupabaseAdmin()
     const expiresAt = new Date()
@@ -332,9 +329,7 @@ export async function unsubscribeFromNewsletter(
 /**
  * Get subscriber by email
  */
-export async function getSubscriberByEmail(
-  email: string
-): Promise<NewsletterSubscriber | null> {
+export async function getSubscriberByEmail(email: string): Promise<NewsletterSubscriber | null> {
   try {
     const supabase = getSupabaseAdmin()
 
@@ -388,9 +383,7 @@ export async function getActiveSubscribers(
 /**
  * Get subscriber count by tier
  */
-export async function getSubscriberCount(
-  tier?: 'free' | 'premium' | 'founding'
-): Promise<number> {
+export async function getSubscriberCount(tier?: 'free' | 'premium' | 'founding'): Promise<number> {
   try {
     const supabase = getSupabaseAdmin()
 
@@ -514,7 +507,10 @@ export async function getNewsletterStats(): Promise<{
     ])
 
     // Get average engagement rates
-    const { data: stats } = await supabase.from('newsletter_subscribers').select('open_rate, click_rate').eq('status', 'active')
+    const { data: stats } = await supabase
+      .from('newsletter_subscribers')
+      .select('open_rate, click_rate')
+      .eq('status', 'active')
 
     const avgOpenRate =
       stats && stats.length > 0

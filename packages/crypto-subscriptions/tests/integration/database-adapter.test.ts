@@ -2,9 +2,9 @@
  * Database Adapter Tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
-import { MockDatabaseAdapter } from '../mocks/database'
+import { beforeEach, describe, expect, it } from 'vitest'
 import type { PaymentResponse, Subscription } from '../../src/core/types'
+import { MockDatabaseAdapter } from '../mocks/database'
 
 describe('DatabaseAdapter', () => {
   let adapter: MockDatabaseAdapter
@@ -208,8 +208,8 @@ describe('DatabaseAdapter', () => {
 
       const allPayments = adapter.getAllPayments()
       expect(allPayments).toHaveLength(2)
-      expect(allPayments.map(p => p.paymentId)).toContain('payment-1')
-      expect(allPayments.map(p => p.paymentId)).toContain('payment-2')
+      expect(allPayments.map((p) => p.paymentId)).toContain('payment-1')
+      expect(allPayments.map((p) => p.paymentId)).toContain('payment-2')
     })
   })
 })

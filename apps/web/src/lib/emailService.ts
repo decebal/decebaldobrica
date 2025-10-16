@@ -69,7 +69,7 @@ export async function sendMeetingConfirmation(
       replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
     })
 
-    console.log(`   Full response:`, JSON.stringify(result, null, 2))
+    console.log('   Full response:', JSON.stringify(result, null, 2))
     console.log(`✅ Meeting confirmation sent to ${meeting.contactEmail}`)
     console.log(`   Email ID: ${result.data?.id || result.id || 'unknown'}`)
 

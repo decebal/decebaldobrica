@@ -1,7 +1,7 @@
 'use client'
 
-import Marquee from '@decebal/ui/marquee'
 import { getAllCaseStudies } from '@/data/caseStudies'
+import Marquee from '@decebal/ui/marquee'
 import { ArrowRight, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
@@ -43,9 +43,9 @@ const WorkSection = () => {
 
                 {/* Compact Metrics */}
                 <div className="flex gap-2 mb-4">
-                  {study.metrics.slice(0, 2).map((metric, i) => (
+                  {study.metrics.slice(0, 2).map((metric) => (
                     <div
-                      key={i}
+                      key={metric.label}
                       className="flex-1 bg-white/5 backdrop-blur-sm rounded-lg p-2 text-center"
                     >
                       <div className="text-lg font-bold text-brand-teal">{metric.value}</div>
@@ -64,8 +64,8 @@ const WorkSection = () => {
           </Marquee>
 
           {/* Gradient Overlays */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/12 bg-gradient-to-r from-brand-darknavy"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/12 bg-gradient-to-l from-brand-darknavy"></div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/12 bg-gradient-to-r from-brand-darknavy" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/12 bg-gradient-to-l from-brand-darknavy" />
         </div>
 
         {/* View All CTA */}

@@ -1,15 +1,5 @@
 'use client'
 
-import { Badge } from '@decebal/ui/badge'
-import { Button } from '@decebal/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@decebal/ui/select'
 import {
   CRYPTO_PAYMENT_METHODS,
   type CryptoPaymentMethod,
@@ -18,6 +8,10 @@ import {
   estimateTransactionFee,
   recommendPaymentMethod,
 } from '@/lib/cryptoPayments'
+import { Badge } from '@decebal/ui/badge'
+import { Button } from '@decebal/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@decebal/ui/select'
 import { CheckCircle2, Info, Shield, Zap } from 'lucide-react'
 import { useState } from 'react'
 
@@ -241,16 +235,16 @@ export default function CryptoPaymentSelector({
                       <div>
                         <p className="text-green-500 font-semibold mb-1">Pros:</p>
                         <ul className="text-gray-400 space-y-0.5">
-                          {gateway.pros.slice(0, 2).map((pro, i) => (
-                            <li key={i}>• {pro}</li>
+                          {gateway.pros.slice(0, 2).map((pro) => (
+                            <li key={pro}>• {pro}</li>
                           ))}
                         </ul>
                       </div>
                       <div>
                         <p className="text-yellow-500 font-semibold mb-1">Cons:</p>
                         <ul className="text-gray-400 space-y-0.5">
-                          {gateway.cons.slice(0, 2).map((con, i) => (
-                            <li key={i}>• {con}</li>
+                          {gateway.cons.slice(0, 2).map((con) => (
+                            <li key={con}>• {con}</li>
                           ))}
                         </ul>
                       </div>

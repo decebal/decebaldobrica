@@ -1,8 +1,8 @@
 'use client'
 
+import { config } from '@/lib/personalConfig'
 import { Highlighter } from '@decebal/ui/highlighter'
 import NumberTicker from '@decebal/ui/number-ticker'
-import { config } from '@/lib/personalConfig'
 import { motion } from 'framer-motion'
 import { Award, Briefcase, GraduationCap, Heart, TrendingUp, Users, Zap } from 'lucide-react'
 import React, { useEffect, useRef } from 'react'
@@ -13,16 +13,18 @@ const AboutSection = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             const elements = entry.target.querySelectorAll('.animate-on-scroll')
-            elements.forEach((el, i) => {
+            let i = 0
+            for (const el of elements) {
               setTimeout(() => {
                 el.classList.add('animate-slide-up', 'opacity-100')
               }, 150 * i)
-            })
+              i++
+            }
           }
-        })
+        }
       },
       { threshold: 0.1 }
     )
@@ -152,8 +154,8 @@ const AboutSection = () => {
 
           <div className="order-1 md:order-2">
             <div className="relative animate-on-scroll opacity-0 transition-all duration-500">
-              <div className="absolute -top-5 -left-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse"></div>
-              <div className="absolute -bottom-5 -right-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse"></div>
+              <div className="absolute -top-5 -left-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse" />
+              <div className="absolute -bottom-5 -right-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse" />
               <img
                 src="/images/gallery/img-07.jpg"
                 alt="Professional portrait"

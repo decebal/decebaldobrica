@@ -572,7 +572,7 @@ export function getDiscountMessage(geoConfig: GeoPricingConfig): string | null {
   }
 
   if (geoConfig.tier === 4) {
-    return `Special pricing may be available for your region. Please contact us.`
+    return 'Special pricing may be available for your region. Please contact us.'
   }
 
   return null

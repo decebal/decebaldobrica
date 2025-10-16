@@ -4,27 +4,27 @@
  */
 
 import {
-  Connection,
-  PublicKey,
-  Keypair,
-  Transaction,
-  SystemProgram,
-  LAMPORTS_PER_SOL,
-} from '@solana/web3.js'
-import {
-  encodeURL,
-  createQR,
-  parseURL,
-  validateTransfer,
   FindReferenceError,
   ValidateTransferError,
+  createQR,
+  encodeURL,
+  parseURL,
+  validateTransfer,
 } from '@solana/pay'
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js'
 import BigNumber from 'bignumber.js'
 import type {
   CreatePaymentRequest,
+  CryptoSubscriptionError,
   PaymentResponse,
   PaymentVerification,
-  CryptoSubscriptionError,
 } from '../core/types'
 
 export interface SolanaPayConfig {
@@ -93,10 +93,7 @@ export class SolanaPayHandler {
   /**
    * Verify a Solana Pay payment by reference
    */
-  async verifyPayment(
-    referenceId: string,
-    expectedAmount: number
-  ): Promise<PaymentVerification> {
+  async verifyPayment(referenceId: string, expectedAmount: number): Promise<PaymentVerification> {
     try {
       const reference = new PublicKey(referenceId)
 
@@ -181,8 +178,8 @@ export class SolanaPayHandler {
   async pollPayment(
     referenceId: string,
     expectedAmount: number,
-    timeoutMs: number = 60000,
-    intervalMs: number = 2000
+    timeoutMs = 60000,
+    intervalMs = 2000
   ): Promise<PaymentVerification> {
     const startTime = Date.now()
 
@@ -194,7 +191,7 @@ export class SolanaPayHandler {
       }
 
       // Wait before next poll
-      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
 
     return {

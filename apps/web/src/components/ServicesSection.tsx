@@ -81,9 +81,9 @@ const ServicesSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {services
             .filter((service) => service.featured)
-            .map((service, index) => (
+            .map((service) => (
               <div
-                key={index}
+                key={service.title}
                 className="brand-card p-8 rounded-lg hover-glow transition-all duration-300"
               >
                 <div className="bg-brand-teal/20 rounded-lg p-4 inline-block mb-6 text-brand-teal">
@@ -103,9 +103,9 @@ const ServicesSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services
             .filter((service) => !service.featured)
-            .map((service, index) => (
+            .map((service) => (
               <div
-                key={index}
+                key={service.title}
                 className="brand-card p-6 rounded-lg hover-lift transition-all duration-300"
               >
                 <div className="bg-brand-teal/10 rounded-lg p-3 inline-block mb-4 text-brand-teal">

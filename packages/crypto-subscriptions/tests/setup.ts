@@ -2,7 +2,7 @@
  * Global test setup
  */
 
-import { beforeAll, afterAll, afterEach, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, vi } from 'vitest'
 
 // Set test environment variables
 beforeAll(() => {

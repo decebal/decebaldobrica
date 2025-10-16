@@ -1,5 +1,6 @@
 'use client'
 
+import { checkSolanaPayment, createSolanaPayment, generateUniqueReference } from '@/utils/solanaPay'
 import { Button } from '@decebal/ui/button'
 import {
   Dialog,
@@ -9,7 +10,6 @@ import {
   DialogTitle,
 } from '@decebal/ui/dialog'
 import { useToast } from '@decebal/ui/use-toast'
-import { checkSolanaPayment, createSolanaPayment, generateUniqueReference } from '@/utils/solanaPay'
 import type { PublicKey } from '@solana/web3.js'
 import React, { useEffect, useRef, useState } from 'react'
 import SolanaIcon from './icons/SolanaIcon'
@@ -133,11 +133,11 @@ const SolanaPaymentModal = ({
         <div className="py-6">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-teal"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-teal" />
             </div>
           ) : (
             <>
-              <div ref={qrCodeRef} className="flex justify-center mb-4"></div>
+              <div ref={qrCodeRef} className="flex justify-center mb-4" />
 
               {paymentUrl && (
                 <div className="text-center mb-4">

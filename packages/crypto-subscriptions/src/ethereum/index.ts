@@ -5,22 +5,18 @@
  */
 
 import {
-  createPublicClient,
-  createWalletClient,
   http,
-  parseEther,
-  parseUnits,
   type Address,
   type Hash,
   type PublicClient,
   type TransactionReceipt,
+  createPublicClient,
+  createWalletClient,
+  parseEther,
+  parseUnits,
 } from 'viem'
-import { base, arbitrum, optimism } from 'viem/chains'
-import type {
-  CreatePaymentRequest,
-  PaymentResponse,
-  PaymentVerification,
-} from '../core/types'
+import { arbitrum, base, optimism } from 'viem/chains'
+import type { CreatePaymentRequest, PaymentResponse, PaymentVerification } from '../core/types'
 
 export type L2Network = 'base' | 'arbitrum' | 'optimism'
 
@@ -100,11 +96,7 @@ export class EthereumHandler {
           recipient: this.config.merchantWallet,
           chainId: this.chain.id,
           token: currency === 'USDC' ? this.usdcAddress : undefined,
-          qrCode: this.generatePaymentQR(
-            this.config.merchantWallet,
-            amount,
-            currency
-          ),
+          qrCode: this.generatePaymentQR(this.config.merchantWallet, amount, currency),
         },
         metadata: {
           ...request.metadata,
@@ -165,8 +157,8 @@ export class EthereumHandler {
       })
 
       // Verify recipient and amount
-      const isCorrectRecipient = transaction.to?.toLowerCase() ===
-        this.config.merchantWallet.toLowerCase()
+      const isCorrectRecipient =
+        transaction.to?.toLowerCase() === this.config.merchantWallet.toLowerCase()
 
       let isCorrectAmount = false
 
@@ -225,20 +217,16 @@ export class EthereumHandler {
     initialBalance: bigint,
     expectedAmount: number,
     currency: 'ETH' | 'USDC' = 'ETH',
-    timeoutMs: number = 300000, // 5 minutes
-    intervalMs: number = 5000 // 5 seconds
+    timeoutMs = 300000, // 5 minutes
+    intervalMs = 5000 // 5 seconds
   ): Promise<PaymentVerification> {
     const startTime = Date.now()
 
     while (Date.now() - startTime < timeoutMs) {
       try {
-        const currentBalance = await this.getBalance(
-          this.config.merchantWallet,
-          currency
-        )
+        const currentBalance = await this.getBalance(this.config.merchantWallet, currency)
 
-        const received = Number(currentBalance - initialBalance) /
-          (currency === 'ETH' ? 1e18 : 1e6)
+        const received = Number(currentBalance - initialBalance) / (currency === 'ETH' ? 1e18 : 1e6)
 
         if (Math.abs(received - expectedAmount) < 0.0001) {
           return {
@@ -254,7 +242,7 @@ export class EthereumHandler {
         console.error('Error polling balance:', error)
       }
 
-      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      await new Promise((resolve) => setTimeout(resolve, intervalMs))
     }
 
     return {
@@ -274,14 +262,13 @@ export class EthereumHandler {
   async getBalance(address: Address, currency: 'ETH' | 'USDC' = 'ETH'): Promise<bigint> {
     if (currency === 'ETH') {
       return await this.publicClient.getBalance({ address })
-    } else {
-      return await this.publicClient.readContract({
-        address: this.usdcAddress,
-        abi: ERC20_ABI,
-        functionName: 'balanceOf',
-        args: [address],
-      }) as bigint
     }
+    return (await this.publicClient.readContract({
+      address: this.usdcAddress,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf',
+      args: [address],
+    })) as bigint
   }
 
   /**
@@ -350,16 +337,10 @@ export class EthereumHandler {
     }
   }
 
-  private generatePaymentQR(
-    recipient: Address,
-    amount: number,
-    currency: 'ETH' | 'USDC'
-  ): string {
+  private generatePaymentQR(recipient: Address, amount: number, currency: 'ETH' | 'USDC'): string {
     // Generate EIP-681 payment URL
     const tokenParam = currency === 'USDC' ? `/transfer?address=${this.usdcAddress}&` : '?'
-    const amountParam = currency === 'ETH'
-      ? `value=${amount}e18`
-      : `uint256=${amount}e6`
+    const amountParam = currency === 'ETH' ? `value=${amount}e18` : `uint256=${amount}e6`
 
     const url = `ethereum:${recipient}${tokenParam}${amountParam}`
 
@@ -376,8 +357,9 @@ export class EthereumHandler {
     const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
     const transferLog = receipt.logs.find(
-      log => log.topics[0] === transferTopic &&
-             log.address.toLowerCase() === this.usdcAddress.toLowerCase()
+      (log) =>
+        log.topics[0] === transferTopic &&
+        log.address.toLowerCase() === this.usdcAddress.toLowerCase()
     )
 
     if (!transferLog || !transferLog.data) {

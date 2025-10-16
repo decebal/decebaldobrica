@@ -1,14 +1,14 @@
 'use client'
 
-import { Highlighter } from '@decebal/ui/highlighter'
 import { config } from '@/lib/personalConfig'
+import { Highlighter } from '@decebal/ui/highlighter'
 import { Coffee, Copy, Github, Linkedin, Mail, MapPin, Twitter } from 'lucide-react'
 import React, { useState } from 'react'
 
 const Footer = () => {
   const [copied, setCopied] = useState(false)
 
-  const ethAddress = (config as any).ethAddress || 'decebaldobrica.eth'
+  const ethAddress = (config as { ethAddress?: string }).ethAddress || 'decebaldobrica.eth'
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(ethAddress)
@@ -117,6 +117,7 @@ const Footer = () => {
                   <div className="flex items-center gap-2 bg-brand-darknavy/50 rounded px-3 py-2 border border-brand-teal/20">
                     <code className="text-xs text-brand-teal font-mono">{ethAddress}</code>
                     <button
+                      type="button"
                       onClick={copyToClipboard}
                       className="text-gray-400 hover:text-brand-teal transition-colors shrink-0"
                       title="Copy address"

@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from 'next/link'
 
 export default function NewsletterSuccessPage() {
   return (
@@ -12,7 +12,10 @@ export default function NewsletterSuccessPage() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              role="img"
+              aria-label="Success"
             >
+              <title>Success</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -29,14 +32,13 @@ export default function NewsletterSuccessPage() {
         </h1>
 
         <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-          Your subscription has been activated successfully. You now have access to all premium content.
+          Your subscription has been activated successfully. You now have access to all premium
+          content.
         </p>
 
         {/* What's Next */}
         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-8 text-left">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            What's next?
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">What's next?</h2>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <svg
@@ -44,6 +46,7 @@ export default function NewsletterSuccessPage() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -62,6 +65,7 @@ export default function NewsletterSuccessPage() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -80,6 +84,7 @@ export default function NewsletterSuccessPage() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -98,6 +103,7 @@ export default function NewsletterSuccessPage() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -131,7 +137,7 @@ export default function NewsletterSuccessPage() {
 
         {/* Support */}
         <p className="mt-8 text-sm text-gray-500 dark:text-gray-400">
-          Questions or issues?{" "}
+          Questions or issues?{' '}
           <a
             href="mailto:decebal@dobrica.dev"
             className="text-blue-600 dark:text-blue-400 hover:underline"

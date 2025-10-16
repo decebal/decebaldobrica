@@ -27,6 +27,7 @@ const ChatInterfaceAI = () => {
   })
 
   // Auto-scroll to bottom when new messages arrive
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages.length is intentional to track message count changes
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -34,7 +35,7 @@ const ChatInterfaceAI = () => {
         behavior: 'smooth',
       })
     }
-  }, [messages])
+  }, [messages.length])
 
   return (
     <div
@@ -43,7 +44,7 @@ const ChatInterfaceAI = () => {
     >
       {/* Chat header */}
       <div className="bg-gradient-to-r from-brand-teal to-brand-teal/80 text-white px-6 py-3 flex items-center justify-between relative overflow-hidden flex-shrink-0">
-        <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-white/10 to-transparent opacity-20" />
         <div className="flex items-center relative z-10">
           <Bot className="w-5 h-5 mr-2" />
           <div>
@@ -93,15 +94,15 @@ const ChatInterfaceAI = () => {
                   <span
                     className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
                     style={{ animationDelay: '0s' }}
-                  ></span>
+                  />
                   <span
                     className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
                     style={{ animationDelay: '0.2s' }}
-                  ></span>
+                  />
                   <span
                     className="w-2 h-2 bg-brand-teal rounded-full animate-bounce"
                     style={{ animationDelay: '0.4s' }}
-                  ></span>
+                  />
                 </div>
                 <span className="text-sm text-gray-300">Thinking...</span>
               </div>

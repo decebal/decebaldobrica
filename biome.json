@@ -39,6 +39,9 @@
       },
       "style": {
         "useImportType": "error"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "warn"
       }
     }
   },

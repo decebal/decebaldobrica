@@ -1,7 +1,7 @@
 import Footer from '@/components/Footer'
+import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
 import { Badge } from '@decebal/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
-import { formatDate, getAllBlogPosts, getAllTags } from '@/lib/blogPosts'
 import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Clock, Tag } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -59,9 +59,11 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
   // Count posts per tag
   const tagCounts = new Map<string, number>()
   for (const post of allPosts) {
-    post.tags?.forEach((t) => {
-      tagCounts.set(t, (tagCounts.get(t) || 0) + 1)
-    })
+    if (post.tags) {
+      for (const t of post.tags) {
+        tagCounts.set(t, (tagCounts.get(t) || 0) + 1)
+      }
+    }
   }
 
   return (

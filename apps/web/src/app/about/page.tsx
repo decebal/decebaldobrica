@@ -1,10 +1,10 @@
 'use client'
 
 import Footer from '@/components/Footer'
+import { config } from '@/lib/personalConfig'
 import { GlowButton } from '@decebal/ui/glow-button'
 import { NeonButton } from '@decebal/ui/neon-button'
 import { ShimmerButton } from '@decebal/ui/shimmer-button'
-import { config } from '@/lib/personalConfig'
 import { FileText, Github, Linkedin, Mail } from 'lucide-react'
 import React, { useEffect } from 'react'
 
@@ -80,7 +80,9 @@ const AboutPage = () => {
 
                   <NeonButton
                     className="w-full group"
-                    onClick={() => (window.location.href = '/contact?category=About+Page')}
+                    onClick={() => {
+                      window.location.href = '/contact?category=About+Page'
+                    }}
                   >
                     <Mail className="w-5 h-5 transition-transform group-hover:scale-110" />
                     <span>Contact Me</span>
@@ -183,7 +185,7 @@ const AboutPage = () => {
                   <div className="relative pl-8 before:absolute before:left-[7px] before:top-2 before:h-[calc(100%-2rem)] before:w-0.5 before:bg-gradient-to-b before:from-brand-teal before:to-brand-teal/20">
                     {/* Timeline items */}
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">Engineering Manager</h3>
                         <p className="text-brand-teal mb-2">
@@ -214,7 +216,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">
                           Part-time Smart Contract Engineer
@@ -247,7 +249,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">
                           {config.professional.currentRole}
@@ -269,7 +271,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">Technical Lead</h3>
                         <p className="text-brand-teal mb-2">Breakout Clips</p>
@@ -289,7 +291,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">Software Architect</h3>
                         <p className="text-brand-teal mb-2">Tellimer</p>
@@ -307,7 +309,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="relative mb-12">
-                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm"></div>
+                      <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
                         <h3 className="text-xl font-semibold text-white">Previous Roles</h3>
                         <p className="text-brand-teal mb-2">Flyt, Funeral Zone, eMag & Others</p>
@@ -330,7 +332,7 @@ const AboutPage = () => {
                 <div className="relative before:absolute before:inset-y-0 before:left-[17px] before:w-0.5 before:bg-brand-teal/70 ml-[18px]">
                   <div className="timeline-item relative pl-8 pb-10 opacity-0 transition-all duration-500">
                     <div className="absolute w-8 h-8 bg-gradient-to-b from-brand-teal to-brand-teal/80 rounded-full -left-[17px] top-0 z-10 shadow-md shadow-brand-teal/20 flex items-center justify-center">
-                      <div className="w-4 h-4 bg-brand-darknavy rounded-full"></div>
+                      <div className="w-4 h-4 bg-brand-darknavy rounded-full" />
                     </div>
                     <h3 className="text-xl font-semibold text-white">{config.education.degree}</h3>
                     <p className="text-brand-teal mb-2">
@@ -344,7 +346,7 @@ const AboutPage = () => {
 
                   <div className="timeline-item relative pl-8 opacity-0 transition-all duration-500">
                     <div className="absolute w-8 h-8 bg-gradient-to-b from-brand-teal to-brand-teal/80 rounded-full -left-[17px] top-0 z-10 shadow-md shadow-brand-teal/20 flex items-center justify-center">
-                      <div className="w-4 h-4 bg-brand-darknavy rounded-full"></div>
+                      <div className="w-4 h-4 bg-brand-darknavy rounded-full" />
                     </div>
                     <h3 className="text-xl font-semibold text-white">
                       Professional Certifications
@@ -355,8 +357,8 @@ const AboutPage = () => {
                       training.
                     </p>
                     <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
-                      {config.education.certifications.map((cert, index) => (
-                        <li key={index}>{cert}</li>
+                      {config.education.certifications.map((cert) => (
+                        <li key={cert}>{cert}</li>
                       ))}
                     </ul>
                   </div>

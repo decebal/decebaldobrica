@@ -17,7 +17,7 @@ export function ComicText({ children, className, delay = 0 }: ComicTextProps) {
     <div className={cn('inline-block', className)}>
       {letters.map((letter, index) => (
         <motion.span
-          key={index}
+          key={`${letter}-${index}-${delay}`}
           initial={{ y: -20, opacity: 0, rotate: -10 }}
           animate={{ y: 0, opacity: 1, rotate: 0 }}
           transition={{

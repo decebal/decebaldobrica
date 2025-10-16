@@ -185,8 +185,8 @@ const FractionalCTOPage = () => {
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl font-bold text-white text-center mb-12">Proven Track Record</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {results.map((result, idx) => (
-                <div key={idx} className="text-center">
+              {results.map((result) => (
+                <div key={result.label} className="text-center">
                   <div className="text-4xl md:text-5xl font-bold text-brand-teal mb-2">
                     {result.metric}
                   </div>
@@ -202,8 +202,8 @@ const FractionalCTOPage = () => {
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl font-bold text-white text-center mb-12">Why Fractional CTO?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {benefits.map((benefit, idx) => (
-                <div key={idx} className="brand-card p-8 rounded-lg">
+              {benefits.map((benefit) => (
+                <div key={benefit.title} className="brand-card p-8 rounded-lg">
                   <div className="bg-brand-teal/10 rounded-lg p-4 inline-block mb-4 text-brand-teal">
                     {benefit.icon}
                   </div>
@@ -238,9 +238,9 @@ const FractionalCTOPage = () => {
                 start, no long-term contracts, and month-to-month flexibility.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {packages.map((pkg, index) => (
+                {packages.map((pkg) => (
                   <div
-                    key={index}
+                    key={pkg.name}
                     className={`brand-card p-8 rounded-lg relative ${
                       pkg.popular ? 'ring-2 ring-brand-teal' : ''
                     }`}
@@ -259,8 +259,8 @@ const FractionalCTOPage = () => {
                     <div className="text-sm text-brand-teal mb-6">Ideal for: {pkg.ideal}</div>
 
                     <ul className="space-y-3 mb-8">
-                      {pkg.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start">
+                      {pkg.features.map((feature) => (
+                        <li key={feature} className="flex items-start">
                           <Check className="h-5 w-5 text-brand-teal mr-2 flex-shrink-0 mt-0.5" />
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </li>
@@ -291,8 +291,8 @@ const FractionalCTOPage = () => {
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl font-bold text-white text-center mb-12">How It Works</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {processSteps.map((step, idx) => (
-                <div key={idx} className="text-center">
+              {processSteps.map((step) => (
+                <div key={step.step} className="text-center">
                   <div className="bg-brand-teal/10 border-2 border-brand-teal rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl font-bold text-brand-teal">{step.step}</span>
                   </div>
@@ -326,8 +326,8 @@ const FractionalCTOPage = () => {
                 'Investor & board communication',
                 'Crisis management & technical escalation',
                 'Knowledge transfer & documentation',
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-start">
+              ].map((item) => (
+                <div key={item} className="flex items-start">
                   <Check className="h-5 w-5 text-brand-teal mr-3 flex-shrink-0 mt-0.5" />
                   <span className="text-gray-300">{item}</span>
                 </div>

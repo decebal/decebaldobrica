@@ -63,7 +63,7 @@ export function initAnalytics() {
 /**
  * Track a custom event
  */
-export function trackEvent(eventName: string, properties?: Record<string, any>) {
+export function trackEvent(eventName: string, properties?: Record<string, unknown>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
     return
   }
@@ -74,7 +74,7 @@ export function trackEvent(eventName: string, properties?: Record<string, any>) 
 /**
  * Identify a user
  */
-export function identifyUser(userId: string, properties?: Record<string, any>) {
+export function identifyUser(userId: string, properties?: Record<string, unknown>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
     return
   }
@@ -109,7 +109,7 @@ export function resetAnalytics() {
 /**
  * Set user properties
  */
-export function setUserProperties(properties: Record<string, any>) {
+export function setUserProperties(properties: Record<string, unknown>) {
   if (!analyticsInitialized || typeof window === 'undefined') {
     return
   }
@@ -351,7 +351,7 @@ export const errorAnalytics = {
   /**
    * Track JavaScript errors
    */
-  trackError: (error: Error, context?: Record<string, any>) => {
+  trackError: (error: Error, context?: Record<string, unknown>) => {
     trackEvent('javascript_error', {
       error_name: error.name,
       error_message: error.message,
@@ -401,9 +401,9 @@ export const recordingControls = {
   maskElement: (selector: string) => {
     if (typeof window !== 'undefined') {
       const elements = document.querySelectorAll(selector)
-      elements.forEach((el) => {
+      for (const el of elements) {
         el.setAttribute('data-private', 'true')
-      })
+      }
     }
   },
 }

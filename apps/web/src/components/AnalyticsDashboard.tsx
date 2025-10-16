@@ -36,7 +36,7 @@ interface AnalyticsEvent {
   userId?: string
   conversationId?: string
   timestamp: number
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 }
 
 const COLORS = ['#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
@@ -79,7 +79,7 @@ export default function AnalyticsDashboard() {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
           <p className="mt-4 text-muted-foreground">Loading analytics...</p>
         </div>
       </div>
@@ -126,7 +126,9 @@ export default function AnalyticsDashboard() {
               strokeLinejoin="round"
               strokeWidth="2"
               className="h-4 w-4 text-muted-foreground"
+              role="img"
             >
+              <title>Conversations Icon</title>
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </CardHeader>
@@ -148,7 +150,9 @@ export default function AnalyticsDashboard() {
               strokeLinejoin="round"
               strokeWidth="2"
               className="h-4 w-4 text-muted-foreground"
+              role="img"
             >
+              <title>Messages Icon</title>
               <path d="M4 4h16v12H5.5L4 17.5V4z" />
             </svg>
           </CardHeader>
@@ -170,7 +174,9 @@ export default function AnalyticsDashboard() {
               strokeLinejoin="round"
               strokeWidth="2"
               className="h-4 w-4 text-muted-foreground"
+              role="img"
             >
+              <title>Events Icon</title>
               <path d="M12 2v20M2 12h20" />
             </svg>
           </CardHeader>
@@ -236,8 +242,11 @@ export default function AnalyticsDashboard() {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {summary.messagesByRole.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {summary.messagesByRole.map((entry) => (
+                      <Cell
+                        key={entry.role}
+                        fill={COLORS[summary.messagesByRole.indexOf(entry) % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -301,6 +310,7 @@ export default function AnalyticsDashboard() {
       {/* Refresh Button */}
       <div className="flex justify-end">
         <button
+          type="button"
           onClick={fetchAnalytics}
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
         >

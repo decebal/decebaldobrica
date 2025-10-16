@@ -3,21 +3,6 @@
 import { bookMeeting } from '@/actions/meeting-action'
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
 import Footer from '@/components/Footer'
-import { Button } from '@decebal/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
-import { ComicText } from '@decebal/ui/comic-text'
-import { Confetti } from '@decebal/ui/confetti'
-import { Input } from '@decebal/ui/input'
-import { Label } from '@decebal/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@decebal/ui/select'
-import { Sparkles } from '@decebal/ui/sparkles'
-import { Textarea } from '@decebal/ui/textarea'
 import { toast } from '@/hooks/use-toast'
 import { featureFlags } from '@/lib/featureFlags'
 import {
@@ -28,6 +13,15 @@ import {
   formatUSDEquivalent,
 } from '@/lib/meetingPayments'
 import { clearReferralData, formatReferralData, getReferralData } from '@/utils/referralTracking'
+import { Button } from '@decebal/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
+import { ComicText } from '@decebal/ui/comic-text'
+import { Confetti } from '@decebal/ui/confetti'
+import { Input } from '@decebal/ui/input'
+import { Label } from '@decebal/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@decebal/ui/select'
+import { Sparkles } from '@decebal/ui/sparkles'
+import { Textarea } from '@decebal/ui/textarea'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
@@ -170,10 +164,7 @@ export default function ContactBookingPage() {
           ) {
             slots.push(timeString)
           }
-        } catch (error) {
-          // Skip invalid times
-          continue
-        }
+        } catch (error) {}
       }
     }
 
@@ -434,6 +425,7 @@ export default function ContactBookingPage() {
             >
               <div className="animate-bounce">
                 <button
+                  type="button"
                   onClick={() => {
                     const chatSection = document.querySelector('[data-success-chat-section]')
                     if (chatSection) {
@@ -880,6 +872,7 @@ export default function ContactBookingPage() {
           >
             <div className="animate-bounce">
               <button
+                type="button"
                 onClick={() => {
                   const chatSection = document.querySelector('[data-chat-section]')
                   if (chatSection) {

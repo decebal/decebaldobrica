@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Link from "next/link"
-import { CryptoPaymentSelector } from "@/components/CryptoPaymentSelector"
+import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
+import Link from 'next/link'
+import { useState } from 'react'
 
 interface PricingTier {
-  id: "free" | "premium" | "founding"
+  id: 'free' | 'premium' | 'founding'
   name: string
   price: string
   priceUsd: number
@@ -18,54 +18,54 @@ interface PricingTier {
 
 const PRICING_TIERS: PricingTier[] = [
   {
-    id: "free",
-    name: "Free",
-    price: "$0",
+    id: 'free',
+    name: 'Free',
+    price: '$0',
     priceUsd: 0,
-    interval: "/forever",
-    description: "Get weekly insights delivered to your inbox",
+    interval: '/forever',
+    description: 'Get weekly insights delivered to your inbox',
     features: [
-      "Weekly newsletter with latest articles",
-      "Curated tech insights and tips",
-      "Access to free content",
-      "No spam, unsubscribe anytime",
+      'Weekly newsletter with latest articles',
+      'Curated tech insights and tips',
+      'Access to free content',
+      'No spam, unsubscribe anytime',
     ],
-    cta: "Subscribe for Free",
+    cta: 'Subscribe for Free',
   },
   {
-    id: "premium",
-    name: "Premium",
-    price: "$14.99",
+    id: 'premium',
+    name: 'Premium',
+    price: '$14.99',
     priceUsd: 14.99,
-    interval: "/month",
-    description: "Unlock exclusive content and deep dives",
+    interval: '/month',
+    description: 'Unlock exclusive content and deep dives',
     features: [
-      "All free benefits",
-      "Exclusive premium content and tutorials",
-      "In-depth technical deep dives",
-      "Code examples and projects",
-      "Early access to new articles",
-      "Priority email support",
+      'All free benefits',
+      'Exclusive premium content and tutorials',
+      'In-depth technical deep dives',
+      'Code examples and projects',
+      'Early access to new articles',
+      'Priority email support',
     ],
-    cta: "Upgrade to Premium",
+    cta: 'Upgrade to Premium',
     highlighted: true,
   },
   {
-    id: "founding",
-    name: "Founding Member",
-    price: "$300",
+    id: 'founding',
+    name: 'Founding Member',
+    price: '$300',
     priceUsd: 300,
-    interval: "/lifetime",
-    description: "One-time payment for lifetime access",
+    interval: '/lifetime',
+    description: 'One-time payment for lifetime access',
     features: [
-      "All premium benefits",
-      "Lifetime access - pay once, access forever",
-      "Direct access for questions",
-      "Founding member community",
-      "Your name in supporters list (optional)",
-      "1:1 consultation call (60 min)",
+      'All premium benefits',
+      'Lifetime access - pay once, access forever',
+      'Direct access for questions',
+      'Founding member community',
+      'Your name in supporters list (optional)',
+      '1:1 consultation call (60 min)',
     ],
-    cta: "Become a Founding Member",
+    cta: 'Become a Founding Member',
   },
 ]
 
@@ -73,20 +73,24 @@ export default function NewsletterPricingPage() {
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null)
 
   const handleSelectTier = (tier: PricingTier) => {
-    if (tier.id === "free") {
+    if (tier.id === 'free') {
       // Redirect to free signup
-      window.location.href = "/blog#newsletter"
+      window.location.href = '/blog#newsletter'
     } else {
       setSelectedTier(tier)
     }
   }
 
-  const handlePaymentSuccess = async (paymentData: any) => {
+  const handlePaymentSuccess = async (paymentData: {
+    paymentId: string
+    chain: string
+    amount: number
+  }) => {
     // After payment is confirmed, upgrade the subscriber
     try {
-      const response = await fetch("/api/newsletter/upgrade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/newsletter/upgrade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tier: selectedTier?.id,
           paymentId: paymentData.paymentId,
@@ -99,13 +103,13 @@ export default function NewsletterPricingPage() {
 
       if (result.success) {
         // Redirect to success page
-        window.location.href = "/newsletter/success"
+        window.location.href = '/newsletter/success'
       } else {
-        alert("Payment verified but upgrade failed. Please contact support.")
+        alert('Payment verified but upgrade failed. Please contact support.')
       }
     } catch (error) {
-      console.error("Upgrade error:", error)
-      alert("An error occurred. Please contact support.")
+      console.error('Upgrade error:', error)
+      alert('An error occurred. Please contact support.')
     }
   }
 
@@ -118,8 +122,8 @@ export default function NewsletterPricingPage() {
             Choose Your Plan
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Get insights on software engineering, web development, and building products.
-            Pay with crypto or fiat.
+            Get insights on software engineering, web development, and building products. Pay with
+            crypto or fiat.
           </p>
         </div>
 
@@ -127,6 +131,7 @@ export default function NewsletterPricingPage() {
           /* Payment Modal */
           <div className="max-w-2xl mx-auto">
             <button
+              type="button"
               onClick={() => setSelectedTier(null)}
               className="mb-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
             >
@@ -137,9 +142,7 @@ export default function NewsletterPricingPage() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {selectedTier.name} Subscription
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {selectedTier.description}
-              </p>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">{selectedTier.description}</p>
 
               <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -154,7 +157,7 @@ export default function NewsletterPricingPage() {
                 amount={selectedTier.priceUsd}
                 onSuccess={handlePaymentSuccess}
                 metadata={{
-                  type: "newsletter_subscription",
+                  type: 'newsletter_subscription',
                   tier: selectedTier.id,
                 }}
               />
@@ -167,9 +170,7 @@ export default function NewsletterPricingPage() {
               <div
                 key={tier.id}
                 className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ${
-                  tier.highlighted
-                    ? "ring-4 ring-black dark:ring-white scale-105 md:scale-110"
-                    : ""
+                  tier.highlighted ? 'ring-4 ring-black dark:ring-white scale-105 md:scale-110' : ''
                 }`}
               >
                 {tier.highlighted && (
@@ -190,26 +191,25 @@ export default function NewsletterPricingPage() {
                     <span className="text-4xl font-bold text-gray-900 dark:text-white">
                       {tier.price}
                     </span>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      {tier.interval}
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">{tier.interval}</span>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => handleSelectTier(tier)}
                     className={`w-full py-3 px-6 rounded-lg font-medium transition-colors mb-6 ${
                       tier.highlighted
-                        ? "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
-                        : "border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                        ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100'
+                        : 'border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
                     {tier.cta}
                   </button>
 
                   <ul className="space-y-3">
-                    {tier.features.map((feature, index) => (
+                    {tier.features.map((feature) => (
                       <li
-                        key={index}
+                        key={feature}
                         className="flex items-start gap-3 text-gray-600 dark:text-gray-400"
                       >
                         <svg
@@ -217,7 +217,10 @@ export default function NewsletterPricingPage() {
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          role="img"
+                          aria-label="Checkmark"
                         >
+                          <title>Checkmark</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -247,8 +250,8 @@ export default function NewsletterPricingPage() {
                   What payment methods do you accept?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  We accept cryptocurrency (SOL, BTC, ETH, USDC) with ultra-low fees,
-                  as well as traditional fiat payments (USD, EUR, GBP).
+                  We accept cryptocurrency (SOL, BTC, ETH, USDC) with ultra-low fees, as well as
+                  traditional fiat payments (USD, EUR, GBP).
                 </p>
               </div>
 
@@ -257,8 +260,8 @@ export default function NewsletterPricingPage() {
                   Can I cancel anytime?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Yes! Premium subscriptions can be cancelled anytime. Founding members
-                  get lifetime access with a one-time payment.
+                  Yes! Premium subscriptions can be cancelled anytime. Founding members get lifetime
+                  access with a one-time payment.
                 </p>
               </div>
 
@@ -267,8 +270,8 @@ export default function NewsletterPricingPage() {
                   Is my email address safe?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Absolutely. We never share your email with third parties. You can
-                  unsubscribe anytime with a single click.
+                  Absolutely. We never share your email with third parties. You can unsubscribe
+                  anytime with a single click.
                 </p>
               </div>
             </div>

@@ -237,7 +237,7 @@ export async function cancelPayment(paymentId: string) {
     if (payment.status !== 'pending') {
       return {
         success: false,
-        error: 'Cannot cancel payment with status: ' + payment.status,
+        error: `Cannot cancel payment with status: ${payment.status}`,
       }
     }
 

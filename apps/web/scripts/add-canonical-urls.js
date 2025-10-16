@@ -3,8 +3,8 @@
  * Run with: node scripts/add-canonical-urls.js
  */
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const matter = require('gray-matter')
 
 const BLOG_CONTENT_DIR = path.join(__dirname, '..', 'content', 'blog')
@@ -18,7 +18,7 @@ console.log(`Found ${files.length} blog posts`)
 let updated = 0
 let skipped = 0
 
-files.forEach((file) => {
+for (const file of files) {
   const filePath = path.join(BLOG_CONTENT_DIR, file)
   const fileContent = fs.readFileSync(filePath, 'utf-8')
   const { data, content } = matter(fileContent)
@@ -27,7 +27,7 @@ files.forEach((file) => {
   if (data.canonicalUrl) {
     console.log(`⏭️  Skipping ${file} - already has canonicalUrl`)
     skipped++
-    return
+    continue
   }
 
   // Construct canonical URL using the slug
@@ -45,9 +45,9 @@ files.forEach((file) => {
 
   console.log(`✅ Updated ${file} - added canonical URL: ${canonicalUrl}`)
   updated++
-})
+}
 
-console.log(`\n📊 Summary:`)
+console.log('\n📊 Summary:')
 console.log(`   Updated: ${updated}`)
 console.log(`   Skipped: ${skipped}`)
 console.log(`   Total: ${files.length}`)

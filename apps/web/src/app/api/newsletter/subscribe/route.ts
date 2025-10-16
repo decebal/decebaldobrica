@@ -1,6 +1,6 @@
-import { subscribeToNewsletter } from '@decebal/newsletter'
 import { sendNewsletterConfirmation } from '@decebal/email'
-import { NextRequest, NextResponse } from 'next/server'
+import { subscribeToNewsletter } from '@decebal/newsletter'
+import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const subscribeSchema = z.object({
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
     const result = subscribeSchema.safeParse(body)
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.errors[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 })
     }
 
     const { email, name, utm_source, utm_medium, utm_campaign } = result.data
@@ -63,9 +60,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Newsletter subscription error:', error)
-    return NextResponse.json(
-      { error: 'Something went wrong. Please try again.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }

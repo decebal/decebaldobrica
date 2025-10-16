@@ -3,18 +3,18 @@
  * Main class for managing multi-chain crypto subscription payments
  */
 
-import { SolanaPayHandler } from '../solana'
-import { LightningHandler } from '../lightning'
 import { EthereumHandler } from '../ethereum'
+import { LightningHandler } from '../lightning'
+import { SolanaPayHandler } from '../solana'
 import type {
-  CryptoSubscriptionsConfig,
   CreatePaymentRequest,
+  CryptoSubscriptionsConfig,
+  PaymentChain,
   PaymentResponse,
   PaymentVerification,
   Subscription,
-  PaymentChain,
-  TierPricing,
   SubscriptionInterval,
+  TierPricing,
 } from './types'
 
 export class CryptoSubscriptions {
@@ -62,7 +62,7 @@ export class CryptoSubscriptions {
           throw new Error('Solana not configured')
         }
 
-        const amount = priceData.sol || await this.solanaHandler.convertUSDToSOL(priceData.usd)
+        const amount = priceData.sol || (await this.solanaHandler.convertUSDToSOL(priceData.usd))
         payment = await this.solanaHandler.createPayment(request, amount)
         break
       }
@@ -85,7 +85,7 @@ export class CryptoSubscriptions {
           throw new Error('Ethereum not configured')
         }
 
-        const amount = priceData.eth || await this.ethereumHandler.convertUSDToETH(priceData.usd)
+        const amount = priceData.eth || (await this.ethereumHandler.convertUSDToETH(priceData.usd))
         payment = await this.ethereumHandler.createPayment(request, amount, 'ETH')
         break
       }
@@ -158,9 +158,7 @@ export class CryptoSubscriptions {
 
     const now = new Date()
     const expiresAt = this.calculateExpiryDate(request.interval, now)
-    const nextBillingDate = request.interval !== 'lifetime'
-      ? expiresAt
-      : undefined
+    const nextBillingDate = request.interval !== 'lifetime' ? expiresAt : undefined
 
     const subscription: Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'> = {
       subscriberId,
@@ -255,7 +253,7 @@ export class CryptoSubscriptions {
   }> {
     const [sol, btc, eth] = await Promise.all([
       this.solanaHandler?.convertUSDToSOL(usdAmount),
-      this.lightningHandler?.convertUSDToSats(usdAmount).then(sats => sats / 100000000),
+      this.lightningHandler?.convertUSDToSats(usdAmount).then((sats) => sats / 100000000),
       this.ethereumHandler?.convertUSDToETH(usdAmount),
     ])
 
@@ -269,10 +267,7 @@ export class CryptoSubscriptions {
 
   // ============= Private Helper Methods =============
 
-  private calculateExpiryDate(
-    interval: SubscriptionInterval,
-    startDate: Date
-  ): Date {
+  private calculateExpiryDate(interval: SubscriptionInterval, startDate: Date): Date {
     const expiry = new Date(startDate)
 
     switch (interval) {

@@ -238,8 +238,8 @@ const CaseStudiesPage = () => {
               pricing ($6k-$10k) because they deliver results.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {examples.map((example, idx) => (
-                <div key={idx} className="brand-card p-6 rounded-lg">
+              {examples.map((example) => (
+                <div key={example.company} className="brand-card p-6 rounded-lg">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-white mb-1">{example.company}</h3>
@@ -252,9 +252,9 @@ const CaseStudiesPage = () => {
                   </div>
                   <p className="text-gray-300 mb-4">{example.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {example.tags.map((tag, tagIdx) => (
+                    {example.tags.map((tag) => (
                       <span
-                        key={tagIdx}
+                        key={tag}
                         className="px-3 py-1 bg-brand-teal/10 text-brand-teal text-xs rounded-full"
                       >
                         {tag}
@@ -288,8 +288,8 @@ const CaseStudiesPage = () => {
               Why Invest in Case Studies?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {benefits.map((benefit, idx) => (
-                <div key={idx} className="brand-card p-8 rounded-lg">
+              {benefits.map((benefit) => (
+                <div key={benefit.title} className="brand-card p-8 rounded-lg">
                   <div className="bg-brand-teal/10 rounded-lg p-4 inline-block mb-4 text-brand-teal">
                     {benefit.icon}
                   </div>
@@ -323,9 +323,9 @@ const CaseStudiesPage = () => {
                 customer interviews, metrics analysis, and compelling narratives.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {packages.map((pkg, index) => (
+                {packages.map((pkg) => (
                   <div
-                    key={index}
+                    key={pkg.name}
                     className={`brand-card p-8 rounded-lg relative ${
                       pkg.popular ? 'ring-2 ring-brand-teal' : ''
                     }`}
@@ -344,8 +344,8 @@ const CaseStudiesPage = () => {
                     <div className="text-sm text-brand-teal mb-6">Ideal for: {pkg.ideal}</div>
 
                     <ul className="space-y-3 mb-8">
-                      {pkg.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start">
+                      {pkg.features.map((feature) => (
+                        <li key={feature} className="flex items-start">
                           <Check className="h-5 w-5 text-brand-teal mr-2 flex-shrink-0 mt-0.5" />
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </li>
@@ -378,8 +378,8 @@ const CaseStudiesPage = () => {
               The Case Study Process
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {process.map((step, idx) => (
-                <div key={idx} className="brand-card p-6 rounded-lg">
+              {process.map((step) => (
+                <div key={step.step} className="brand-card p-6 rounded-lg">
                   <div className="bg-brand-teal/10 border-2 border-brand-teal rounded-full w-12 h-12 flex items-center justify-center mb-4">
                     <span className="text-xl font-bold text-brand-teal">{step.step}</span>
                   </div>
@@ -475,8 +475,8 @@ const CaseStudiesPage = () => {
                 'Legal review coordination',
                 'Multiple revision rounds',
                 'Distribution strategy recommendations',
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-start">
+              ].map((item) => (
+                <div key={item} className="flex items-start">
                   <Check className="h-5 w-5 text-brand-teal mr-3 flex-shrink-0 mt-0.5" />
                   <span className="text-gray-300">{item}</span>
                 </div>

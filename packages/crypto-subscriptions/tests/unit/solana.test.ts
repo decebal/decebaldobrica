@@ -2,7 +2,7 @@
  * Solana Pay Handler Unit Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SolanaPayHandler } from '../../src/solana'
 import { TEST_SOLANA_CONFIG } from '../fixtures/config'
 import { createTestPaymentRequest } from '../fixtures/requests'
@@ -139,7 +139,7 @@ describe('SolanaPayHandler', () => {
         fakeReference,
         0.1,
         5000, // 5 second timeout
-        1000  // 1 second interval
+        1000 // 1 second interval
       )
 
       expect(verification.verified).toBe(false)
