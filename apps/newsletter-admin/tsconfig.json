@@ -1,14 +1,21 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tooling/typescript/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@decebal/ui": ["../../packages/ui/src"],
+      "@decebal/database": ["../../packages/database/src"],
+      "@decebal/newsletter": ["../../packages/newsletter/src"],
+      "@decebal/analytics": ["../../packages/analytics/src"],
+      "@decebal/email": ["../../packages/email/src"]
+    },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "allowJs": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

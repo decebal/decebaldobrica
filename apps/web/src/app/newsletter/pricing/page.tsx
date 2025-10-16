@@ -1,8 +1,11 @@
 'use client'
 
 import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
+import { InterestModal } from '@/components/InterestModal'
+import { isFeatureEnabled } from '@/lib/featureFlags'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useRef, useState } from 'react'
 
 interface PricingTier {
   id: 'free' | 'premium' | 'founding'
@@ -69,15 +72,44 @@ const PRICING_TIERS: PricingTier[] = [
   },
 ]
 
-export default function NewsletterPricingPage() {
+function PricingContent() {
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null)
+  const [highlightedTier, setHighlightedTier] = useState<string | null>(null)
+  const [showInterestModal, setShowInterestModal] = useState(false)
+  const [interestPlan, setInterestPlan] = useState<{ id: 'premium' | 'founding'; name: string }>()
+  const searchParams = useSearchParams()
+  const freeTierRef = useRef<HTMLDivElement>(null)
+
+  // Auto-highlight and scroll to free tier if coming from welcome email
+  useEffect(() => {
+    const tier = searchParams.get('tier')
+    if (tier === 'free') {
+      setHighlightedTier('free')
+      // Scroll to free tier after a brief delay
+      setTimeout(() => {
+        freeTierRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 300)
+    }
+  }, [searchParams])
 
   const handleSelectTier = (tier: PricingTier) => {
     if (tier.id === 'free') {
       // Redirect to free signup
       window.location.href = '/blog#newsletter'
-    } else {
+      return
+    }
+
+    // Check if the plan is enabled via feature flags
+    const isPremiumEnabled = tier.id === 'premium' && isFeatureEnabled('premiumSubscriptionsEnabled')
+    const isFoundingEnabled = tier.id === 'founding' && isFeatureEnabled('foundingMemberEnabled')
+
+    if (isPremiumEnabled || isFoundingEnabled) {
+      // Plan is enabled, proceed with payment
       setSelectedTier(tier)
+    } else {
+      // Plan is coming soon, show interest modal
+      setInterestPlan({ id: tier.id as 'premium' | 'founding', name: tier.name })
+      setShowInterestModal(true)
     }
   }
 
@@ -114,7 +146,7 @@ export default function NewsletterPricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24 md:pt-32 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -169,8 +201,13 @@ export default function NewsletterPricingPage() {
             {PRICING_TIERS.map((tier) => (
               <div
                 key={tier.id}
-                className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden ${
+                ref={tier.id === 'free' ? freeTierRef : null}
+                className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
                   tier.highlighted ? 'ring-4 ring-black dark:ring-white scale-105 md:scale-110' : ''
+                } ${
+                  highlightedTier === tier.id
+                    ? 'ring-4 ring-brand-teal dark:ring-brand-teal animate-pulse'
+                    : ''
                 }`}
               >
                 {tier.highlighted && (
@@ -193,6 +230,17 @@ export default function NewsletterPricingPage() {
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">{tier.interval}</span>
                   </div>
+
+                  {/* Coming Soon Badge */}
+                  {tier.id !== 'free' &&
+                    ((tier.id === 'premium' && !isFeatureEnabled('premiumSubscriptionsEnabled')) ||
+                      (tier.id === 'founding' && !isFeatureEnabled('foundingMemberEnabled'))) && (
+                      <div className="flex justify-center mb-3">
+                        <span className="inline-block bg-brand-teal text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                          Coming Soon
+                        </span>
+                      </div>
+                    )}
 
                   <button
                     type="button"
@@ -290,6 +338,36 @@ export default function NewsletterPricingPage() {
           </div>
         )}
       </div>
+
+      {/* Interest Modal */}
+      {interestPlan && (
+        <InterestModal
+          isOpen={showInterestModal}
+          onClose={() => {
+            setShowInterestModal(false)
+            setInterestPlan(undefined)
+          }}
+          planName={interestPlan.name}
+          planId={interestPlan.id}
+        />
+      )}
     </div>
+  )
+}
+
+export default function NewsletterPricingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-24 md:pt-32 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-teal border-r-transparent" />
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading pricing...</p>
+          </div>
+        </div>
+      }
+    >
+      <PricingContent />
+    </Suspense>
   )
 }

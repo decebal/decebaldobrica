@@ -34,7 +34,8 @@
       "WebFetch(domain:jantegze.gumroad.com)",
       "Bash(tsc:*)",
       "Bash(bunx @biomejs/biome format:*)",
-      "Bash(bunx @biomejs/biome check:*)"
+      "Bash(bunx @biomejs/biome check:*)",
+      "Bash(bun pm:*)"
     ],
     "deny": [],
     "ask": []

@@ -16,14 +16,29 @@ import { CheckCircle2, Info, Shield, Zap } from 'lucide-react'
 import { useState } from 'react'
 
 interface CryptoPaymentSelectorProps {
-  amountUsd: number
-  onPaymentMethodSelected: (method: CryptoPaymentMethod, network?: string) => void
+  amount: number
+  onSuccess: (paymentData: {
+    paymentId: string
+    chain: string
+    amount: number
+  }) => Promise<void>
+  metadata?: {
+    type: string
+    tier: string
+  }
 }
 
-export default function CryptoPaymentSelector({
-  amountUsd,
-  onPaymentMethodSelected,
+export function CryptoPaymentSelector({
+  amount,
+  onSuccess,
+  metadata,
 }: CryptoPaymentSelectorProps) {
+  const amountUsd = amount
+  const onPaymentMethodSelected = (method: CryptoPaymentMethod, network?: string) => {
+    // For now, simulate a payment
+    // In production, this would integrate with actual payment gateways
+    console.log('Payment method selected:', method, network, metadata)
+  }
   const [selectedMethod, setSelectedMethod] = useState<CryptoPaymentMethod | null>(null)
   const [selectedNetwork, setSelectedNetwork] = useState<string>('mainnet')
 

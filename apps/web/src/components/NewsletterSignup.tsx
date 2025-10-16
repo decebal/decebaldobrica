@@ -175,7 +175,12 @@ export function NewsletterSignup({
                 <Users className="h-5 w-5 text-brand-teal" />
               </div>
               <div>
-                <h3 className="font-semibold text-white mb-1">Join Community</h3>
+                <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
+                  Join Community
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-brand-teal/20 text-brand-teal border border-brand-teal/30">
+                    Coming Soon
+                  </span>
+                </h3>
                 <p className="text-sm text-gray-300">
                   Connect with developers, CTOs, and tech leaders
                 </p>
@@ -236,7 +241,7 @@ export function NewsletterSignup({
             Want exclusive deep dives, case studies, and code templates?
           </p>
           <a
-            href="/newsletter#premium"
+            href="/newsletter/pricing"
             className="inline-flex items-center gap-2 text-brand-teal hover:text-brand-teal/80 font-semibold"
           >
             Learn about Premium
