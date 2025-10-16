@@ -36,7 +36,7 @@ export function Confetti({ particleCount = 50 }: ConfettiProps) {
         rotation: Math.random() * 360,
         color: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'][
           Math.floor(Math.random() * 5)
-        ],
+        ] || '#10b981',
       }))
     )
   }, [particleCount])

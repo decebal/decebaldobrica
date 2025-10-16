@@ -160,7 +160,7 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
 
       // Draw each frequency bar
       for (let i = 0; i < bufferLength; i++) {
-        const normalizedHeight = frequencyData[i] / 255 // Convert to 0-1 range
+        const normalizedHeight = (frequencyData[i] ?? 0) / 255 // Convert to 0-1 range
         const barHeight = Math.max(AUDIO_CONFIG.MIN_BAR_HEIGHT, normalizedHeight * centerY)
 
         drawBar(ctx, x, centerY, barWidth, barHeight, getBarColor(normalizedHeight))

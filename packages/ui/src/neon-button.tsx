@@ -33,7 +33,7 @@ export function NeonButton({
       )}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      {...props}
+      {...(props as any)}
     >
       <span className="relative z-10 inline-flex items-center justify-center gap-2">
         {children}

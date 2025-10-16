@@ -28,7 +28,10 @@
       "Bash(find:*)",
       "Bash(mv:*)",
       "Bash(bun test:unit:*)",
-      "Bash(bun test:*)"
+      "Bash(bun test:*)",
+      "Bash(env)",
+      "Bash(cat:*)",
+      "WebFetch(domain:jantegze.gumroad.com)"
     ],
     "deny": [],
     "ask": []

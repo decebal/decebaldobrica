@@ -52,7 +52,9 @@ export function NeonGradientCard({
         {children}
       </div>
 
-      <style jsx>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes neon-pulse {
           0%,
           100% {
@@ -66,7 +68,9 @@ export function NeonGradientCard({
               drop-shadow(0 0 30px var(--neon-second-color));
           }
         }
-      `}</style>
+      `,
+        }}
+      />
     </div>
   )
 }

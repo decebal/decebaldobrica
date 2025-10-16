@@ -4,39 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-This project uses both **Taskfile** and **Bun** for development. Prefer Taskfile commands when available.
+This project uses **Taskfile** for common development tasks. Run `task` to see all available commands.
 
 ### Development
 ```bash
-task dev                 # Start dev server with Turbopack
-bun run dev             # Alternative: start dev server
-task build              # Build for production
-task start              # Start production server
+task dev                 # Start dev server (web app)
+task dev:admin           # Start admin dashboard (port 3001)
+task install             # Install all dependencies
+task clean               # Clean build artifacts
 ```
 
-### Testing
+### Build & Deploy
 ```bash
-task test                # Run all tests
-task test:e2e            # Run E2E tests with Playwright
-task test:e2e:ui         # Run E2E tests with Playwright UI
-task test:e2e:debug      # Debug E2E tests
-task test:e2e:headed     # Run tests in headed mode (see browser)
-task test:install        # Install Playwright browsers
+task build               # Build web app for production
+task build:admin         # Build admin dashboard
+task build:packages      # Build all packages
+task deploy              # Deploy to Vercel production
 ```
-
-**E2E Tests:** Located in `tests/e2e/`, tests catch runtime issues like:
-- Missing "use client" directives
-- React hydration errors
-- Console errors
-- Navigation issues
 
 ### Code Quality
 ```bash
-task lint               # Run Biome linter
-task lint:fix           # Auto-fix linting issues
-task format             # Format code with Biome
-task type-check         # TypeScript type checking
-task check:all          # Run all checks
+task lint                # Run Biome linter
+task lint:fix            # Fix linting issues
+task format              # Format code with Biome
+task type-check          # TypeScript type checking
+task check               # Run all checks (lint + format + types)
 ```
 
 **Important:** This project uses **Biome** (not ESLint/Prettier). The configuration in `biome.json` specifies:
@@ -46,6 +38,35 @@ task check:all          # Run all checks
 - Semicolons as needed (not always)
 - Import type enforcement (`import type` required for types)
 
+### Testing
+```bash
+task test                # Run E2E tests
+task test:ui             # Run E2E tests with UI
+task test:debug          # Debug E2E tests
+task test:install        # Install Playwright browsers
+```
+
+**E2E Tests:** Located in `tests/e2e/`, tests catch runtime issues like:
+- Missing "use client" directives
+- React hydration errors
+- Console errors
+- Navigation issues
+
+### Packages
+```bash
+task pkg:crypto          # Build & test crypto-subscriptions
+task pkg:crypto:test     # Test crypto-subscriptions
+task pkg:crypto:coverage # Test coverage
+task pkg:newsletter:test # Test newsletter package
+```
+
+### Content
+```bash
+task publish -- slug     # Publish blog post (sends newsletter, posts to social)
+task case-study          # Add new case study (interactive)
+task list:posts          # List all blog posts
+```
+
 ### AI Services (Groq)
 
 AI chat uses Groq's fast LLM API with Llama 3.1 model. **Free tier available!**
@@ -53,13 +74,6 @@ AI chat uses Groq's fast LLM API with Llama 3.1 model. **Free tier available!**
 - Model: llama-3.1-8b-instant
 - Fast inference with Groq's custom LPU hardware
 - Requires `GROQ_API_KEY` environment variable
-
-### Analytics & Payments
-```bash
-task analytics:summary   # View analytics summary
-task payment:stats       # View payment statistics
-task payment:test        # Test Solana Pay integration
-```
 
 ## Architecture
 
