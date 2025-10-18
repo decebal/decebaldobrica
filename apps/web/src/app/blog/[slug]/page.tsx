@@ -1,4 +1,5 @@
 import { BlogCTA } from '@/components/BlogCTA'
+import { BlogTOC } from '@/components/BlogTOC'
 import Footer from '@/components/Footer'
 import { Terminal, TerminalCommand, TerminalOutput, TerminalLine } from '@/components/blog/Terminal'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
@@ -126,6 +127,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </p>
                 </div>
               )}
+
+              {/* Table of Contents */}
+              <BlogTOC content={post.content} />
 
               {/* Post content */}
               <div className="prose prose-invert prose-lg max-w-none">
