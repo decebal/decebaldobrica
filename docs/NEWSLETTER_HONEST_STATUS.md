@@ -439,7 +439,7 @@ EOF
 
 # 3. Test signup
 task dev:dev
-# Visit http://localhost:3000/blog
+# Visit http://localhost:3100/blog
 # Enter email in newsletter form
 # Check email for confirmation
 # Click confirmation link

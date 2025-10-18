@@ -1,5 +1,6 @@
 import { BlogCTA } from '@/components/BlogCTA'
 import Footer from '@/components/Footer'
+import { Terminal, TerminalCommand, TerminalOutput, TerminalLine } from '@/components/blog/Terminal'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
 import { Badge } from '@decebal/ui/badge'
@@ -175,13 +176,89 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             </code>
                           )
                         }
+
+                        // Check if this is a terminal code block
+                        const isTerminal = className?.includes('language-terminal') ||
+                                         className?.includes('language-bash') ||
+                                         className?.includes('language-shell') ||
+                                         className?.includes('language-console')
+
+                        if (isTerminal) {
+                          // Parse terminal content
+                          const content = String(children).trim()
+                          const lines = content.split('\n')
+
+                          // Extract title from first line if it's a comment
+                          let title = 'Terminal'
+                          let contentLines = lines
+                          if (lines[0]?.startsWith('#')) {
+                            title = lines[0].replace(/^#\s*/, '')
+                            contentLines = lines.slice(1)
+                          }
+
+                          return (
+                            <Terminal title={title} user="user" host="localhost" path="~">
+                              {contentLines.map((line, idx) => {
+                                // Detect command lines (start with $ or >)
+                                if (line.startsWith('$ ') || line.startsWith('> ')) {
+                                  return (
+                                    <TerminalCommand key={idx}>
+                                      {line.replace(/^[$>]\s*/, '')}
+                                    </TerminalCommand>
+                                  )
+                                }
+                                // Detect output variants
+                                if (line.startsWith('✓') || line.startsWith('✅') || line.includes('success')) {
+                                  return (
+                                    <TerminalOutput key={idx} variant="success">
+                                      {line}
+                                    </TerminalOutput>
+                                  )
+                                }
+                                if (line.startsWith('✗') || line.startsWith('❌') || line.includes('error')) {
+                                  return (
+                                    <TerminalOutput key={idx} variant="error">
+                                      {line}
+                                    </TerminalOutput>
+                                  )
+                                }
+                                if (line.startsWith('⚠') || line.includes('warning')) {
+                                  return (
+                                    <TerminalOutput key={idx} variant="warning">
+                                      {line}
+                                    </TerminalOutput>
+                                  )
+                                }
+                                // Default output
+                                return (
+                                  <TerminalLine key={idx}>
+                                    {line}
+                                  </TerminalLine>
+                                )
+                              })}
+                            </Terminal>
+                          )
+                        }
+
                         return <code className={className}>{children}</code>
                       },
-                      pre: ({ children }) => (
-                        <pre className="bg-gray-900 rounded-lg p-4 overflow-x-auto mb-4">
-                          {children}
-                        </pre>
-                      ),
+                      pre: ({ children }) => {
+                        // Skip pre wrapper if Terminal component is already rendered
+                        const isTerminalBlock = children &&
+                          typeof children === 'object' &&
+                          'props' in children &&
+                          children.props?.className?.includes('language-terminal')
+
+                        if (isTerminalBlock) {
+                          return <>{children}</>
+                        }
+
+                        return (
+                          <pre className="bg-gray-900 rounded-lg p-4 overflow-x-auto mb-4">
+                            {children}
+                          </pre>
+                        )
+                      },
                       blockquote: ({ children }) => (
                         <blockquote className="border-l-4 border-brand-teal pl-4 italic text-gray-400 my-4">
                           {children}

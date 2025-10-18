@@ -72,7 +72,7 @@ bun install
 cp apps/newsletter-admin/.env.example apps/newsletter-admin/.env.local
 
 # Edit .env.local:
-NEXT_PUBLIC_API_URL=http://localhost:3000  # Points to main web app
+NEXT_PUBLIC_API_URL=http://localhost:3100  # Points to main web app
 ```
 
 ### 3. Start Both Apps
@@ -87,7 +87,7 @@ task dev:admin:dev
 
 ### 4. Access Admin Dashboard
 
-Open **http://localhost:3001**
+Open **http://localhost:3101**
 
 ---
 
@@ -131,7 +131,7 @@ The admin app communicates with the main web app via HTTP:
 ```typescript
 // apps/newsletter-admin/src/lib/api.ts
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3100"
 
 export const newsletterApi = {
   getStats: () => apiClient("/api/newsletter/stats"),
@@ -289,7 +289,7 @@ export const config = {
 ### 5. Add Environment Variables
 
 ```bash
-NEXTAUTH_URL=http://localhost:3001
+NEXTAUTH_URL=http://localhost:3101
 NEXTAUTH_SECRET=your_secret_here
 ADMIN_EMAIL=your@email.com
 GOOGLE_CLIENT_ID=...
@@ -394,7 +394,7 @@ Response:
 
 2. Check `NEXT_PUBLIC_API_URL` in `.env.local`:
    ```bash
-   NEXT_PUBLIC_API_URL=http://localhost:3000
+   NEXT_PUBLIC_API_URL=http://localhost:3100
    ```
 
 3. Check browser console for CORS errors

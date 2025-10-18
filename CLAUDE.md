@@ -9,7 +9,7 @@ This project uses **Taskfile** for common development tasks. Run `task` to see a
 ### Development
 ```bash
 task dev                 # Start dev server (web app)
-task dev:admin           # Start admin dashboard (port 3001)
+task dev:admin           # Start admin dashboard (port 3101)
 task install             # Install all dependencies
 task clean               # Clean build artifacts
 ```

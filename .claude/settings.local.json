@@ -35,7 +35,10 @@
       "Bash(tsc:*)",
       "Bash(bunx @biomejs/biome format:*)",
       "Bash(bunx @biomejs/biome check:*)",
-      "Bash(bun pm:*)"
+      "Bash(bun pm:*)",
+      "Bash(chmod:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker rm:*)"
     ],
     "deny": [],
     "ask": []

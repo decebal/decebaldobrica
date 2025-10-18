@@ -545,7 +545,7 @@ code apps/web/content/blog/YYYY-MM-DD-slug-name.mdx
 ### 3. Test Locally
 ```bash
 task dev
-# Visit http://localhost:3000/blog/YYYY-MM-DD-slug-name
+# Visit http://localhost:3100/blog/YYYY-MM-DD-slug-name
 ```
 
 ### 4. Publish

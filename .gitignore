@@ -65,3 +65,7 @@ playwright/.cache/
 *.sqlite
 *.sqlite3
 data/chat-history.db
+
+# AnythingLLM
+anythingllm-storage/
+.env.anythingllm

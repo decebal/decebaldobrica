@@ -18,7 +18,7 @@ tasks:
       - '{{.PKG_MANAGER}} run dev'
 
   dev:admin:
-    desc: Start admin dashboard (port 3001)
+    desc: Start admin dashboard (port 3101)
     dir: apps/newsletter-admin
     cmds:
       - '{{.PKG_MANAGER}} run dev'
@@ -161,3 +161,46 @@ tasks:
     desc: List all blog posts
     cmds:
       - ls -1 content/blog/*.mdx | sed 's/.*\///;s/\.mdx$//' | nl
+
+  # === ANYTHINGLLM ===
+  llm:start:
+    desc: Start AnythingLLM RAG service (port 3102)
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} start'
+
+  llm:stop:
+    desc: Stop AnythingLLM service
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run stop'
+
+  llm:status:
+    desc: Check AnythingLLM service status
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run status'
+
+  llm:logs:
+    desc: View AnythingLLM logs (Ctrl+C to exit)
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run logs'
+
+  llm:restart:
+    desc: Restart AnythingLLM service
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run restart'
+
+  llm:shell:
+    desc: Access AnythingLLM container shell
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run shell'
+
+  llm:clean:
+    desc: Stop and remove all AnythingLLM data (⚠️  WARNING)
+    dir: apps/anything-llm
+    cmds:
+      - '{{.PKG_MANAGER}} run clean'

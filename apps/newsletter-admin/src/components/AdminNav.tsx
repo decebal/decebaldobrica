@@ -7,7 +7,8 @@ const navItems = [
   { href: '/', label: 'Dashboard' },
   { href: '/subscribers', label: 'Subscribers' },
   { href: '/interests', label: 'Plan Interests' },
-  { href: '/compose', label: 'Compose' },
+  { href: '/compose', label: 'Compose Newsletter' },
+  { href: '/compose/blog', label: '🤖 AI Blog' },
   { href: '/analytics', label: 'Analytics' },
   { href: '/settings', label: 'Settings' },
 ]
