@@ -4,7 +4,7 @@
 'use server'
 
 import { sendMeetingConfirmation } from '@/lib/emailService'
-import { getMeetingConfig } from '@/lib/meetingPayments'
+import { getPaymentConfig } from '@/lib/payments'
 import { google } from 'googleapis'
 import { z } from 'zod'
 
@@ -90,11 +90,19 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
       paymentMethod,
     } = bookMeetingSchema.parse(input)
 
-    // Get meeting configuration
-    const config = getMeetingConfig(meetingType)
+    // Get meeting configuration from unified config
+    const config = getPaymentConfig('meeting_type', meetingType)
+
+    if (!config) {
+      return {
+        success: false,
+        error: 'Invalid meeting type',
+      }
+    }
 
     // Validate payment if required
-    if (config.requiresPayment && !paymentId) {
+    const requiresPayment = (config.priceSol ?? 0) > 0
+    if (requiresPayment && !paymentId) {
       return {
         success: false,
         error: 'Payment required for this meeting type',
@@ -103,7 +111,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
 
     // Parse date and time
     const startDateTime = new Date(`${date}T${time}:00`)
-    const endDateTime = new Date(startDateTime.getTime() + config.duration * 60000)
+    const endDateTime = new Date(startDateTime.getTime() + (config.durationMinutes || 30) * 60000)
 
     let eventId: string | undefined
     let meetLink: string | undefined
@@ -115,8 +123,8 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
         const calendar = getCalendarClient()
 
         const event = {
-          summary: `${meetingType} with ${name}`,
-          description: `Meeting Type: ${meetingType}\nDuration: ${config.duration} minutes\n${category ? `Source: ${category}\n` : ''}\nNotes: ${notes || 'None'}\n\nPayment: ${paymentId ? `${paymentMethod || 'SOL'} - ${paymentId}` : 'Free'}`,
+          summary: `${config.name} with ${name}`,
+          description: `Meeting Type: ${config.name}\nDuration: ${config.durationMinutes || 30} minutes\n${category ? `Source: ${category}\n` : ''}\nNotes: ${notes || 'None'}\n\nPayment: ${paymentId ? `${paymentMethod || 'SOL'} - ${paymentId}` : 'Free'}`,
           start: {
             dateTime: startDateTime.toISOString(),
             timeZone: timezone,
@@ -174,7 +182,7 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
             id: eventId || `booking-${Date.now()}`,
             type: meetingType,
             date: startDateTime,
-            duration: config.duration,
+            duration: config.durationMinutes || 30,
             contactName: name,
             contactEmail: email,
             notes,

@@ -6,12 +6,21 @@ import Footer from '@/components/Footer'
 import { toast } from '@/hooks/use-toast'
 import { featureFlags } from '@/lib/featureFlags'
 import {
-  MEETING_TYPES_WITH_PRICING,
-  type MeetingPaymentConfig,
-  formatSOL,
-  formatUSD,
-  formatUSDEquivalent,
-} from '@/lib/meetingPayments'
+  MEETING_TYPES,
+  type PaymentConfig,
+  formatPrice,
+} from '@/lib/payments/config'
+
+type MeetingPaymentConfig = PaymentConfig & {
+  meetingType: string
+  duration: number
+  price: number
+  priceUSD: number
+  requiresPayment: boolean
+}
+
+const formatSOL = (amount: number) => formatPrice(amount, 'SOL')
+const formatUSD = (amount: number) => formatPrice(amount, 'USD')
 import { clearReferralData, formatReferralData, getReferralData } from '@/utils/referralTracking'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
@@ -91,7 +100,14 @@ export default function ContactBookingPage() {
     website: '',
   })
 
-  const meetingTypes = Object.values(MEETING_TYPES_WITH_PRICING).filter(
+  const meetingTypes = Object.entries(MEETING_TYPES).map(([key, config]) => ({
+    ...config,
+    meetingType: config.name,
+    duration: config.durationMinutes || 30,
+    price: config.priceSol || 0,
+    priceUSD: config.priceUsd || 0,
+    requiresPayment: (config.priceSol || 0) > 0,
+  } as MeetingPaymentConfig)).filter(
     (config) => featureFlags.enablePaidMeetings || !config.requiresPayment
   )
 
@@ -208,8 +224,10 @@ export default function ContactBookingPage() {
   }, [meetingTypes, selectedMeeting])
 
   const handleSelectMeeting = (meetingType: string) => {
-    const config = MEETING_TYPES_WITH_PRICING[meetingType]
-    setSelectedMeeting(config)
+    const config = meetingTypes.find((m) => m.meetingType === meetingType)
+    if (config) {
+      setSelectedMeeting(config)
+    }
   }
 
   // Fetch and pre-select next available slot when meeting type is selected

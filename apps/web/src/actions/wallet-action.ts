@@ -1,6 +1,6 @@
 'use server'
 
-import { checkAccess, ensureUserProfile, grantServiceAccess } from '@/lib/supabase/payments'
+import { ensureUserProfile, hasServiceAccess, grantServiceAccess } from '@/lib/payments'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
@@ -41,8 +41,8 @@ export async function authenticateWallet(input: z.infer<typeof walletAuthSchema>
     if (error) throw error
     if (!user) throw new Error('Failed to authenticate')
 
-    // Ensure user profile exists
-    await ensureUserProfile(walletAddress, user.id)
+    // Ensure user profile exists (unified payment system)
+    await ensureUserProfile(walletAddress, 'solana')
 
     return {
       success: true,
@@ -65,12 +65,12 @@ export async function checkWalletAccess(input: z.infer<typeof checkAccessSchema>
   try {
     const { walletAddress, serviceSlug } = checkAccessSchema.parse(input)
 
-    const { hasAccess, access } = await checkAccess(walletAddress, serviceSlug)
+    // Use unified payment system
+    const hasAccess = await hasServiceAccess(walletAddress, serviceSlug)
 
     return {
       success: true,
       hasAccess,
-      access,
     }
   } catch (error) {
     console.error('Check access error:', error)
@@ -89,7 +89,14 @@ export async function grantWalletAccess(input: z.infer<typeof grantAccessSchema>
   try {
     const { walletAddress, serviceSlug, paymentId } = grantAccessSchema.parse(input)
 
-    await grantServiceAccess(walletAddress, serviceSlug, paymentId)
+    // Use unified payment system
+    await grantServiceAccess({
+      walletAddress,
+      serviceSlug,
+      paymentId,
+      serviceType: 'one_time', // Lifetime access
+      expiresAt: null, // Never expires
+    })
 
     return {
       success: true,

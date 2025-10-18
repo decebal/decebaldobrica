@@ -38,7 +38,8 @@
       "Bash(bun pm:*)",
       "Bash(chmod:*)",
       "Bash(docker compose:*)",
-      "Bash(docker rm:*)"
+      "Bash(docker rm:*)",
+      "Bash(bunx tsc:*)"
     ],
     "deny": [],
     "ask": []
