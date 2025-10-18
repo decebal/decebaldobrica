@@ -1,0 +1,224 @@
+# AI Assistant Instructions - BUN FIRST
+
+## Package Manager: BUN ONLY
+
+**CRITICAL**: This project uses Bun as its package manager and runtime.
+
+### ✅ Required Commands:
+- `bun install` (NOT npm install)
+- `bun add <package>` (NOT npm install)
+- `bun remove <package>` (NOT npm uninstall)
+- `bunx <command>` (NOT npx)
+- `bun run <script>` (NOT npm run)
+- `bun test` (NOT npm test)
+- `bun <file.ts>` (direct TypeScript execution)
+
+### ❌ NEVER Use:
+- npm install / npm i / npm run / npx
+- yarn / pnpm
+
+### When suggesting installations:
+- Always use: `bun add <package>`
+- Dev dependencies: `bun add -D <package>`
+- Global tools: `bunx <tool>` (no installation needed!)
+
+## Project Stack
+
+### Runtime & Tools:
+- Runtime: Bun >= 1.1.0
+- TypeScript strict mode enabled
+- Task runner: Taskfile (use `task` commands)
+- Code quality: Biome (NOT ESLint/Prettier)
+- Testing: Playwright for E2E
+
+### Framework & Architecture:
+- Framework: Next.js 15 with App Router
+- Styling: Tailwind CSS + shadcn/ui
+- AI: Groq (Llama 3.1), AnythingLLM (RAG)
+- Payments: Solana Pay
+- Analytics: PostHog (client + server)
+- Email: Resend
+- Database: Supabase (PostgreSQL)
+
+### Monorepo Structure:
+- `apps/web` - Main portfolio site (port 3100)
+- `apps/newsletter-admin` - Admin dashboard (port 3101)
+- `apps/anything-llm` - RAG service manager (port 3102)
+- `packages/*` - Shared packages
+- Use `workspace:*` for internal dependencies
+
+## Project-Specific Commands
+
+### Common Tasks (use Taskfile):
+```bash
+task                    # Show all available tasks
+task dev               # Start web app (port 3100)
+task dev:admin         # Start admin dashboard (port 3101)
+task install           # Install all dependencies
+task clean             # Clean build artifacts
+```
+
+### Build & Deploy:
+```bash
+task build             # Build web app
+task build:admin       # Build admin dashboard
+task build:packages    # Build all packages
+task deploy            # Deploy to Vercel
+```
+
+### Code Quality:
+```bash
+task lint              # Run Biome linter
+task lint:fix          # Fix linting issues
+task format            # Format code with Biome
+task type-check        # TypeScript checking
+task check             # All checks (lint + format + types)
+```
+
+### Testing:
+```bash
+task test              # Run E2E tests
+task test:ui           # Run E2E tests with UI
+task test:debug        # Debug E2E tests
+task test:install      # Install Playwright browsers
+```
+
+### Content:
+```bash
+task publish -- slug   # Publish blog post + newsletter
+task case-study        # Add new case study
+task list:posts        # List all blog posts
+```
+
+### AnythingLLM RAG Service:
+```bash
+task llm:start         # Start AnythingLLM (port 3102)
+task llm:stop          # Stop service
+task llm:status        # Check status
+task llm:logs          # View logs
+task llm:restart       # Restart service
+task llm:shell         # Access container shell
+task llm:clean         # Remove all data
+```
+
+### Package Testing:
+```bash
+task pkg:crypto        # Build & test crypto-subscriptions
+task pkg:crypto:test   # Test crypto-subscriptions
+task pkg:newsletter:test # Test newsletter package
+```
+
+## Code Style (Biome)
+
+**IMPORTANT**: Use Biome, NOT ESLint or Prettier
+
+### Configuration (`biome.json`):
+- Single quotes for JS, double for JSX
+- 2-space indentation
+- 100 character line width
+- Semicolons as needed (not always)
+- Import type enforcement (`import type` required for types)
+
+### Commands:
+```bash
+bunx @biomejs/biome format --write .   # Format
+bunx @biomejs/biome check --write .    # Lint + fix
+```
+
+## Port Configuration
+
+All development ports are in the 3100+ range:
+- **3100**: Main web app (`apps/web`)
+- **3101**: Admin dashboard (`apps/newsletter-admin`)
+- **3102**: AnythingLLM service (`apps/anything-llm`)
+- **3002**: Anvil (external, not managed by monorepo)
+
+## Architecture Patterns
+
+### Server Actions Flow:
+1. UI components call Server Actions in `src/actions/`
+2. Server Actions validate input with Zod schemas
+3. Actions delegate to business logic in `src/lib/`
+4. Results return to client components
+
+### AI Chat System:
+- Groq API with Llama 3.1 8B Instant (main chat)
+- AnythingLLM RAG for personalized content generation
+- Dual-mode: Groq (fast, generic) vs AnythingLLM (slower, personalized)
+- PostHog analytics for tracking
+
+### Client vs Server Components:
+- Components with React hooks (`useState`, `useEffect`, etc.) MUST have `'use client'` directive
+- Server components are default in Next.js 15 App Router
+- E2E tests catch missing directives
+
+### Personal Configuration:
+- All personal info centralized in `src/config/personal.json`
+- See `docs/PERSONAL_CONFIG.md` for details
+
+### Blog System:
+- MDX files in `content/blog/`
+- 41+ posts imported from decebalonprogramming.net
+- Auto-generated RSS feed at `/rss.xml`
+- Terminal component for code blocks (auto-detects bash/shell/console)
+
+## Environment Variables
+
+Key variables (see `.env.example`):
+- `GROQ_API_KEY` - Required for AI chat
+- `NEXT_PUBLIC_POSTHOG_KEY` - Required for analytics
+- `NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS` - Required for payments
+- `RESEND_API_KEY` - Required for emails
+- `GOOGLE_REFRESH_TOKEN` - Required for calendar
+- `ANYTHINGLLM_API_KEY` - For RAG content generation
+- `ANYTHINGLLM_API_URL` - Default: http://localhost:3102
+
+## Development Workflow
+
+### Before Starting:
+```bash
+bun install              # Install dependencies
+task test:install        # Install Playwright (first time)
+```
+
+### Development:
+```bash
+task dev                 # Start web app
+task dev:admin          # Start admin (separate terminal)
+task llm:start          # Start AnythingLLM (if needed)
+```
+
+### Before Committing:
+```bash
+task check              # Run all checks
+task test               # Run E2E tests
+task build              # Ensure build succeeds
+```
+
+## Common Pitfalls to Avoid
+
+1. **Don't use npm/npx** - Always use bun/bunx
+2. **Don't use ESLint/Prettier** - Use Biome
+3. **Don't skip 'use client'** - E2E tests will fail
+4. **Don't guess env vars** - Check .env.example
+5. **Don't commit without checks** - Run `task check` first
+6. **Don't create markdown files proactively** - Only when explicitly requested
+7. **Don't use emojis** - Unless explicitly requested by user
+
+## Git Workflow
+
+### Commits:
+- Use git via Bash tool
+- NEVER use --no-verify or skip hooks
+- Always add Co-Authored-By: Claude
+- Format: `<type>: <description>`
+- Include link to Claude Code
+
+### Pull Requests:
+- Use `gh pr create` via Bash tool
+- Include summary, test plan, and Claude Code link
+- Check full commit history from base branch
+
+---
+
+🔥 Bun-powered, Biome-formatted, AI-optimized monorepo!

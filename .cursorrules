@@ -1,0 +1,71 @@
+# Portfolio Monorepo - AI Assistant Rules
+
+## Package Manager: BUN ONLY
+- Always use Bun: `bun install`, `bun add`, `bunx`
+- Never suggest npm, yarn, or pnpm
+- Direct TypeScript execution: `bun <file.ts>`
+
+## Task Runner: Taskfile
+- Use `task` commands for common operations
+- Run `task` to see all available commands
+- Examples: `task dev`, `task lint:fix`, `task llm:start`
+
+## Code Quality: Biome (NOT ESLint/Prettier)
+- Format: `bunx @biomejs/biome format --write .`
+- Lint: `bunx @biomejs/biome check --write .`
+- All-in-one: `task check`
+
+## Project Structure
+- Monorepo with apps/ and packages/
+- Internal deps use `workspace:*`
+- Ports: 3100 (web), 3101 (admin), 3102 (anythingllm)
+
+## Next.js 15 Patterns
+- Server Components by default
+- Client Components need `'use client'` directive
+- Server Actions in src/actions/
+- Zod for validation
+
+## AI Integration
+- Groq API (Llama 3.1) for chat
+- AnythingLLM for RAG content generation
+- Dual-mode: fast/generic vs slow/personalized
+
+## Testing
+- E2E with Playwright
+- Run before committing: `task test`
+- Install browsers: `task test:install`
+
+## Git Commits
+- Format: `<type>: <description>`
+- Include: Co-Authored-By: Claude
+- Never use --no-verify
+
+## Key Files
+- Personal config: src/config/personal.json
+- Blog posts: content/blog/*.mdx
+- Docs: docs/*.md
+- Environment: .env.example
+
+## Common Commands
+```bash
+# Development
+task dev              # Start web (3100)
+task dev:admin        # Start admin (3101)
+task llm:start        # Start RAG service (3102)
+
+# Code Quality
+task check            # Run all checks
+task lint:fix         # Fix issues
+task format           # Format code
+
+# Testing
+task test             # E2E tests
+task build            # Production build
+
+# Content
+task publish -- slug  # Publish blog + newsletter
+```
+
+---
+For full details, see .clauderc
