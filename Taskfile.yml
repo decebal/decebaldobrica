@@ -229,9 +229,3 @@ tasks:
     dir: apps/services-admin
     cmds:
       - '{{.PKG_MANAGER}} run build'
-
-  admin:
-    desc: Start both admin dashboards (newsletter & services)
-    cmds:
-      - task: newsletter-admin
-      - task: services-admin
