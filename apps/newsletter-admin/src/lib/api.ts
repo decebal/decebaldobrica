@@ -1,14 +1,10 @@
 /**
  * API client for newsletter admin
- * Makes requests to the main web app's API
+ * Makes requests to local API routes
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-
 export async function apiClient(endpoint: string, options?: RequestInit) {
-  const url = `${API_BASE_URL}${endpoint}`
-
-  const response = await fetch(url, {
+  const response = await fetch(endpoint, {
     ...options,
     headers: {
       'Content-Type': 'application/json',

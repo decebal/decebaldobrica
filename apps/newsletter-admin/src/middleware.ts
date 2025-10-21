@@ -29,6 +29,11 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // Allow auth callback route without authentication
+  if (request.nextUrl.pathname.startsWith('/auth/callback')) {
+    return supabaseResponse
+  }
+
   // Refresh session if expired
   const {
     data: { user },

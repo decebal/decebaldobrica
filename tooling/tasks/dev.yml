@@ -1,0 +1,8 @@
+# Development Tasks
+# Purpose: Local development workflow - All dev commands in one place
+version: '3'
+
+tasks:
+  # ==========================================
+  # Service Management
+  # ==========================================

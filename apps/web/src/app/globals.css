@@ -49,6 +49,13 @@
     --color-brand-navy: #0a66c2;
     --color-brand-darknavy: #0c1c36;
     --color-brand-lightgray: #f3f2ef;
+
+    /* Chart Colors */
+    --chart-1: 166 97% 40%; /* Teal */
+    --chart-2: 210 77% 40%; /* Navy */
+    --chart-3: 48 96% 53%; /* Yellow */
+    --chart-4: 142 76% 36%; /* Green */
+    --chart-5: 0 84% 60%; /* Red */
   }
 
   .dark {
@@ -88,6 +95,13 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Chart Colors */
+    --chart-1: 166 97% 40%; /* Teal */
+    --chart-2: 210 77% 40%; /* Navy */
+    --chart-3: 48 96% 53%; /* Yellow */
+    --chart-4: 142 76% 36%; /* Green */
+    --chart-5: 0 84% 60%; /* Red */
   }
 }
 

@@ -152,45 +152,47 @@ ${markdown}`
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-violet-100 via-fuchsia-100 to-pink-100 dark:from-violet-950 dark:via-fuchsia-950 dark:to-pink-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Brain className="h-8 w-8 text-brand-teal" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              AI Blog Post Composer
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500 text-white shadow-lg">
+              <Brain className="h-6 w-6" />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+              AI Blog Post Composer 🤖
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-foreground/70 text-lg">
             Generate blog posts using AI with STAR methodology + Golden Nuggets structure
           </p>
         </div>
 
         {/* Setup Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <div className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6 border border-border">
           <div className="space-y-4">
             {/* AI Mode Toggle */}
             <div>
-              <Label htmlFor="aiMode">AI Generation Mode</Label>
+              <Label htmlFor="aiMode" className="text-foreground font-bold">AI Generation Mode</Label>
               <div className="flex gap-3 mt-2">
                 <button
                   type="button"
                   onClick={() => setAiMode('anythingllm')}
                   className={`flex-1 px-4 py-3 rounded-lg border-2 text-left transition-all ${
                     aiMode === 'anythingllm'
-                      ? 'border-brand-teal bg-brand-teal/10'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-brand-teal/50'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-border hover:border-purple-500/50'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <Brain className="h-5 w-5 text-brand-teal" />
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <Brain className="h-5 w-5 text-purple-500" />
+                    <span className="font-semibold text-foreground">
                       AnythingLLM (RAG)
                     </span>
-                    <Badge className="bg-green-500 text-white">Recommended</Badge>
+                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">Recommended</Badge>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Uses your knowledge base for personalized content with your style and experiences
                   </p>
                 </button>
@@ -200,17 +202,17 @@ ${markdown}`
                   onClick={() => setAiMode('groq')}
                   className={`flex-1 px-4 py-3 rounded-lg border-2 text-left transition-all ${
                     aiMode === 'groq'
-                      ? 'border-brand-teal bg-brand-teal/10'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-brand-teal/50'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-border hover:border-purple-500/50'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="h-5 w-5 text-purple-500" />
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                    <span className="font-semibold text-foreground">
                       Groq (Basic)
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Direct LLM generation without knowledge base
                   </p>
                 </button>
@@ -252,12 +254,12 @@ ${markdown}`
               </div>
 
               <div>
-                <Label htmlFor="tone">Tone</Label>
+                <Label htmlFor="tone" className="text-foreground font-bold">Tone</Label>
                 <select
                   id="tone"
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="mt-1 w-full px-3 py-2 border-2 border-input rounded-lg bg-background text-foreground focus:border-ring focus:outline-none transition-colors"
                 >
                   <option value="professional">Professional</option>
                   <option value="casual">Casual</option>
@@ -270,7 +272,7 @@ ${markdown}`
             <Button
               onClick={generateFullPost}
               disabled={generating || !topic}
-              className="w-full bg-brand-teal hover:bg-brand-teal/80"
+              className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold shadow-lg"
               size="lg"
             >
               {generating ? (
@@ -290,9 +292,9 @@ ${markdown}`
 
         {/* Progress Log */}
         {progressLog.length > 0 && (
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6 font-mono text-sm">
+          <div className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-6 font-mono text-sm border border-border">
             {progressLog.map((log, idx) => (
-              <div key={idx} className="text-gray-700 dark:text-gray-300">
+              <div key={idx} className="text-foreground">
                 {log}
               </div>
             ))}
@@ -303,10 +305,14 @@ ${markdown}`
         {sections.length > 0 && (
           <>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Generated Content
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
+                Generated Content 📝
               </h2>
-              <Button onClick={exportMarkdown} variant="outline">
+              <Button
+                onClick={exportMarkdown}
+                variant="outline"
+                className="font-semibold border-2"
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Export MDX
               </Button>
@@ -316,15 +322,15 @@ ${markdown}`
               {sections.map((section) => (
                 <div
                   key={section.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+                  className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-border"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-lg font-bold text-foreground">
                         {section.title}
                       </h3>
                       {section.aiGenerated && (
-                        <Badge className="bg-brand-teal/20 text-brand-teal border-0">
+                        <Badge className="bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-300 dark:border-purple-700">
                           <Sparkles className="mr-1 h-3 w-3" />
                           AI Generated
                         </Badge>
@@ -335,6 +341,7 @@ ${markdown}`
                       disabled={currentSection === section.id}
                       variant="outline"
                       size="sm"
+                      className="font-semibold border-2"
                     >
                       {currentSection === section.id ? (
                         <>
@@ -354,7 +361,7 @@ ${markdown}`
                     value={section.content}
                     onChange={(e) => updateSectionContent(section.id, e.target.value)}
                     rows={8}
-                    className="font-mono text-sm"
+                    className="font-mono text-sm bg-background text-foreground border-2 border-input"
                   />
                 </div>
               ))}

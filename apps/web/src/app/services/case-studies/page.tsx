@@ -1,7 +1,7 @@
 'use client'
 
 import Footer from '@/components/Footer'
-import PricingGate from '@/components/PricingGate'
+import ServicePaymentGate from '@/components/payments/ServicePaymentGate'
 import { Button } from '@decebal/ui/button'
 import { ShimmerButton } from '@decebal/ui/shimmer-button'
 import {
@@ -302,7 +302,7 @@ const CaseStudiesPage = () => {
         </div>
 
         {/* Packages Section */}
-        <PricingGate serviceName="case studies">
+        <ServicePaymentGate serviceSlug="all-pricing">
           <div className="section-container py-16 bg-white/5">
             <div className="max-w-6xl mx-auto">
               {/* Thanks for coffee banner */}
@@ -369,7 +369,7 @@ const CaseStudiesPage = () => {
               </div>
             </div>
           </div>
-        </PricingGate>
+        </ServicePaymentGate>
 
         {/* Process Section */}
         <div className="section-container py-16">

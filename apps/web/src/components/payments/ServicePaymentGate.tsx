@@ -1,7 +1,7 @@
 'use client'
 
 import { checkWalletAccess } from '@/actions/wallet-action'
-import { getPaymentConfig } from '@/lib/payments'
+import { getPaymentConfig } from '@/lib/payments/config'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { Check, Lock, Unlock, Wallet } from 'lucide-react'
@@ -101,8 +101,8 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
 
             {/* Price */}
             <div className="text-4xl font-bold text-brand-teal mb-8">
-              {tier.price.toFixed(3)} SOL{' '}
-              <span className="text-xl text-gray-400">(~${tier.priceUSD})</span>
+              ${tier.priceUSD}{' '}
+              <span className="text-xl text-gray-400">({tier.price.toFixed(3)} SOL)</span>
             </div>
 
             {/* Benefits */}
@@ -121,7 +121,7 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
             {/* Wallet Connection / Payment */}
             {!connected ? (
               <div>
-                <p className="text-gray-300 mb-6">Connect your Solana wallet to unlock access</p>
+                <p className="text-gray-300 mb-6">Connect your wallet to unlock content</p>
                 <div className="flex justify-center">
                   <WalletMultiButton className="!bg-brand-teal hover:!bg-brand-teal/90 !text-white !font-semibold !px-8 !py-4 !rounded-lg !text-lg" />
                 </div>

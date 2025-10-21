@@ -1,6 +1,6 @@
 'use client'
 
-import { featureFlags } from '@/lib/featureFlags'
+import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
 import { config } from '@/lib/personalConfig'
 import { ChevronDown, Play } from 'lucide-react'
 import React, { useState } from 'react'
@@ -10,6 +10,9 @@ import { SpotlightCard } from './ui/spotlight-card'
 
 const HeroSection = () => {
   const [showVideo, setShowVideo] = useState(false)
+
+  // Use PostHog feature flag for homepage video
+  const isHomepageVideoEnabled = useFeatureFlag(FEATURE_FLAGS.ENABLE_HOMEPAGE_VIDEO)
 
   const scrollToAbout = () => {
     const aboutSection = document.getElementById('about')
@@ -47,7 +50,7 @@ const HeroSection = () => {
         </div>
         <div className="flex-1 animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <SpotlightCard className="max-w-sm md:max-w-md mx-auto">
-            {featureFlags.enableHomepageVideo ? (
+            {isHomepageVideoEnabled ? (
               // Video feature enabled - show video player
               !showVideo ? (
                 <div className="relative aspect-video">

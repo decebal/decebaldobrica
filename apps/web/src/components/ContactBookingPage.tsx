@@ -4,7 +4,7 @@ import { bookMeeting } from '@/actions/meeting-action'
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
 import Footer from '@/components/Footer'
 import { toast } from '@/hooks/use-toast'
-import { featureFlags } from '@/lib/featureFlags'
+import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
 import {
   MEETING_TYPES,
   type PaymentConfig,
@@ -80,6 +80,9 @@ export default function ContactBookingPage() {
   const searchParams = useSearchParams()
   const urlCategory = searchParams.get('category') || undefined
 
+  // Use PostHog feature flags
+  const isPaidMeetingsEnabled = useFeatureFlag(FEATURE_FLAGS.ENABLE_PAID_MEETINGS)
+
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingPaymentConfig | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [bookingSuccess, setBookingSuccess] = useState(false)
@@ -108,7 +111,7 @@ export default function ContactBookingPage() {
     priceUSD: config.priceUsd || 0,
     requiresPayment: (config.priceSol || 0) > 0,
   } as MeetingPaymentConfig)).filter(
-    (config) => featureFlags.enablePaidMeetings || !config.requiresPayment
+    (config) => isPaidMeetingsEnabled || !config.requiresPayment
   )
 
   // Generate time slots based on meeting duration, filtered by timezone

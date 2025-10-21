@@ -2,8 +2,8 @@
 
 import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
 import { InterestModal } from '@/components/InterestModal'
-import { isFeatureEnabled } from '@/lib/featureFlags'
-import { NEWSLETTER_TIERS } from '@/lib/payments'
+import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
+import { NEWSLETTER_TIERS } from '@/lib/payments/config'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'
@@ -44,6 +44,10 @@ function PricingContent() {
   const searchParams = useSearchParams()
   const freeTierRef = useRef<HTMLDivElement>(null)
 
+  // Use PostHog feature flags for newsletter tiers
+  const isPremiumEnabled = useFeatureFlag(FEATURE_FLAGS.PREMIUM_SUBSCRIPTIONS)
+  const isFoundingEnabled = useFeatureFlag(FEATURE_FLAGS.FOUNDING_MEMBER)
+
   // Auto-highlight and scroll to free tier if coming from welcome email
   useEffect(() => {
     const tier = searchParams.get('tier')
@@ -64,10 +68,11 @@ function PricingContent() {
     }
 
     // Check if the plan is enabled via feature flags
-    const isPremiumEnabled = tier.id === 'premium' && isFeatureEnabled('premiumSubscriptionsEnabled')
-    const isFoundingEnabled = tier.id === 'founding' && isFeatureEnabled('foundingMemberEnabled')
+    const isPlanEnabled =
+      (tier.id === 'premium' && isPremiumEnabled) ||
+      (tier.id === 'founding' && isFoundingEnabled)
 
-    if (isPremiumEnabled || isFoundingEnabled) {
+    if (isPlanEnabled) {
       // Plan is enabled, proceed with payment
       setSelectedTier(tier)
     } else {
@@ -197,8 +202,8 @@ function PricingContent() {
 
                   {/* Coming Soon Badge */}
                   {tier.id !== 'free' &&
-                    ((tier.id === 'premium' && !isFeatureEnabled('premiumSubscriptionsEnabled')) ||
-                      (tier.id === 'founding' && !isFeatureEnabled('foundingMemberEnabled'))) && (
+                    ((tier.id === 'premium' && !isPremiumEnabled) ||
+                      (tier.id === 'founding' && !isFoundingEnabled)) && (
                       <div className="flex justify-center mb-3">
                         <span className="inline-block bg-brand-teal text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                           Coming Soon

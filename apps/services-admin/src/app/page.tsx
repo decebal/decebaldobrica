@@ -33,20 +33,20 @@ export default function ServicesAdminHome() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 via-teal-100 to-emerald-100 dark:from-cyan-950 dark:via-teal-950 dark:to-emerald-950">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 dark:border-slate-800" />
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-blue-600 dark:border-t-blue-400 absolute top-0 left-0" />
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-cyan-200 dark:border-cyan-800" />
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-teal-600 dark:border-t-teal-400 absolute top-0 left-0" />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-100 via-teal-100 to-emerald-100 dark:from-cyan-950 dark:via-teal-950 dark:to-emerald-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Hero Header with Gradient */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-700 dark:via-indigo-700 dark:to-purple-700 p-8 md:p-12 shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 dark:from-teal-700 dark:via-cyan-700 dark:to-blue-700 p-8 md:p-12 shadow-2xl">
           <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,black)]" />
           <div className="relative">
             <div className="inline-flex items-center gap-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
@@ -201,11 +201,39 @@ export default function ServicesAdminHome() {
           </div>
         </div>
 
+        {/* Recent Activity */}
+        <div className="rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <span className="text-xl">⚡</span>
+            Recent Pricing Updates
+          </h3>
+          <div className="space-y-2">
+            <ActivityItem
+              icon="💰"
+              text='Updated meeting pricing: "Strategy Session" to $150/hr'
+              time="3 hours ago"
+              color="blue"
+            />
+            <ActivityItem
+              icon="🔓"
+              text='New service tier added: "Enterprise Access"'
+              time="1 day ago"
+              color="green"
+            />
+            <ActivityItem
+              icon="📰"
+              text='Newsletter tier updated: Premium tier price adjusted'
+              time="2 days ago"
+              color="purple"
+            />
+          </div>
+        </div>
+
         {/* Tips & Best Practices */}
         <div className="rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700 p-6 shadow-lg">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <span className="text-xl">💡</span>
-            Tips & Best Practices
+            Pricing Best Practices
           </h3>
           <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <li className="flex items-start gap-2">
@@ -219,6 +247,10 @@ export default function ServicesAdminHome() {
             <li className="flex items-start gap-2">
               <span className="text-green-500 mt-0.5">✓</span>
               <span>Monitor conversion rates across different pricing tiers</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-green-500 mt-0.5">✓</span>
+              <span>A/B test pricing changes to optimize revenue without losing customers</span>
             </li>
           </ul>
         </div>
@@ -313,5 +345,33 @@ function QuickLinkCard({
         </div>
       </div>
     </Link>
+  )
+}
+
+function ActivityItem({
+  icon,
+  text,
+  time,
+  color,
+}: {
+  icon: string
+  text: string
+  time: string
+  color: 'blue' | 'purple' | 'green'
+}) {
+  const colorClasses = {
+    blue: 'bg-blue-100 dark:bg-blue-900/30',
+    purple: 'bg-purple-100 dark:bg-purple-900/30',
+    green: 'bg-green-100 dark:bg-green-900/30',
+  }
+
+  return (
+    <div className={`flex items-center justify-between p-3 rounded-lg ${colorClasses[color]} transition-all hover:scale-[1.01]`}>
+      <div className="flex items-center gap-3">
+        <span className="text-lg">{icon}</span>
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{text}</span>
+      </div>
+      <span className="text-xs text-slate-500 dark:text-slate-400">{time}</span>
+    </div>
   )
 }
