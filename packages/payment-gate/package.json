@@ -1,0 +1,86 @@
+{
+  "name": "@decebal/payment-gate",
+  "version": "0.1.0",
+  "description": "Multi-chain HTTP 402 payment protocol for API monetization - Solana, Bitcoin Lightning, and Ethereum L2 support",
+  "author": "Decebal Dobrica <decebal@decebaldobrica.com>",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./middleware/nextjs": {
+      "types": "./dist/middleware/nextjs.d.ts",
+      "import": "./dist/middleware/nextjs.js",
+      "require": "./dist/middleware/nextjs.cjs"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js",
+      "require": "./dist/client/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome lint src/",
+    "format": "biome format --write src/",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "http-402",
+    "payment-protocol",
+    "solana",
+    "solana-pay",
+    "bitcoin-lightning",
+    "ethereum",
+    "l2",
+    "crypto-payments",
+    "api-monetization",
+    "micropayments",
+    "web3",
+    "pay-per-use"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decebaldobrica/payment-gate"
+  },
+  "bugs": {
+    "url": "https://github.com/decebaldobrica/payment-gate/issues"
+  },
+  "homepage": "https://github.com/decebaldobrica/payment-gate#readme",
+  "dependencies": {
+    "@solana/pay": "^0.2.5",
+    "@solana/web3.js": "^1.95.8",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.10.5",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "next": ">=14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  }
+}

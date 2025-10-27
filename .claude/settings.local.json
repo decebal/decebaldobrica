@@ -56,7 +56,10 @@
       "WebFetch(domain:goodelearning.com)",
       "WebFetch(domain:fortune.com)",
       "WebFetch(domain:www.gartner.com)",
-      "WebFetch(domain:posthog.com)"
+      "WebFetch(domain:posthog.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.magicpath.ai)",
+      "WebFetch(domain:www.x402.org)"
     ],
     "deny": [],
     "ask": []
