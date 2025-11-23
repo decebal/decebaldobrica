@@ -4,12 +4,9 @@ import { bookMeeting } from '@/actions/meeting-action'
 import ChatInterfaceAI from '@/components/ChatInterfaceAI'
 import Footer from '@/components/Footer'
 import { toast } from '@/hooks/use-toast'
-import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
-import {
-  MEETING_TYPES,
-  type PaymentConfig,
-  formatPrice,
-} from '@/lib/payments/config'
+import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
+import { MEETING_TYPES, type PaymentConfig, formatPrice } from '@/lib/payments/config'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 type MeetingPaymentConfig = PaymentConfig & {
   meetingType: string
@@ -102,17 +99,22 @@ export default function ContactBookingPage() {
     // Honeypot field for spam prevention
     website: '',
   })
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [formStartTime, setFormStartTime] = useState<number>(0)
 
-  const meetingTypes = Object.entries(MEETING_TYPES).map(([key, config]) => ({
-    ...config,
-    meetingType: config.name,
-    duration: config.durationMinutes || 30,
-    price: config.priceSol || 0,
-    priceUSD: config.priceUsd || 0,
-    requiresPayment: (config.priceSol || 0) > 0,
-  } as MeetingPaymentConfig)).filter(
-    (config) => isPaidMeetingsEnabled || !config.requiresPayment
-  )
+  const meetingTypes = Object.entries(MEETING_TYPES)
+    .map(
+      ([key, config]) =>
+        ({
+          ...config,
+          meetingType: config.name,
+          duration: config.durationMinutes || 30,
+          price: config.priceSol || 0,
+          priceUSD: config.priceUsd || 0,
+          requiresPayment: (config.priceSol || 0) > 0,
+        }) as MeetingPaymentConfig
+    )
+    .filter((config) => isPaidMeetingsEnabled || !config.requiresPayment)
 
   // Generate time slots based on meeting duration, filtered by timezone
   const timeSlots = useMemo(() => {
@@ -226,6 +228,13 @@ export default function ContactBookingPage() {
     }
   }, [meetingTypes, selectedMeeting])
 
+  // Track when form becomes visible for timing analysis
+  useEffect(() => {
+    if (selectedMeeting && formStartTime === 0) {
+      setFormStartTime(Date.now())
+    }
+  }, [selectedMeeting, formStartTime])
+
   const handleSelectMeeting = (meetingType: string) => {
     const config = meetingTypes.find((m) => m.meetingType === meetingType)
     if (config) {
@@ -286,6 +295,18 @@ export default function ContactBookingPage() {
         return
       }
 
+      // Check if Turnstile is required but not completed
+      const turnstileEnabled = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+      if (turnstileEnabled && !turnstileToken) {
+        toast({
+          title: 'Verification Required',
+          description: 'Please complete the security verification',
+          variant: 'destructive',
+        })
+        setIsSubmitting(false)
+        return
+      }
+
       // Spam check: honeypot field should be empty
       if (formData.website) {
         // Bot detected - silently fail without notification
@@ -317,6 +338,10 @@ export default function ContactBookingPage() {
         timezone: typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value,
         paymentId,
         paymentMethod: formData.paymentMethod,
+        // Bot protection fields
+        turnstileToken: turnstileToken || undefined,
+        formStartTime,
+        honeypot: formData.website,
       })
 
       if (result.success) {
@@ -846,6 +871,29 @@ export default function ContactBookingPage() {
                         </div>
                       )}
 
+                      {/* Cloudflare Turnstile CAPTCHA */}
+                      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+                        <div className="flex justify-center">
+                          <Turnstile
+                            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                            onSuccess={setTurnstileToken}
+                            onError={() => {
+                              setTurnstileToken(null)
+                              toast({
+                                title: 'Verification Error',
+                                description: 'Security verification failed. Please try again.',
+                                variant: 'destructive',
+                              })
+                            }}
+                            onExpire={() => setTurnstileToken(null)}
+                            options={{
+                              theme: 'dark',
+                              size: 'normal',
+                            }}
+                          />
+                        </div>
+                      )}
+
                       {/* Honeypot field for spam prevention - hidden from humans, visible to bots */}
                       <div className="absolute opacity-0 pointer-events-none" aria-hidden="true">
                         <Label htmlFor="website">Website</Label>
@@ -863,7 +911,10 @@ export default function ContactBookingPage() {
 
                       <Button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={
+                          isSubmitting ||
+                          (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken)
+                        }
                         className="w-full bg-brand-teal hover:bg-brand-teal/80 text-white h-10"
                       >
                         {isSubmitting ? (

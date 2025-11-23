@@ -4,8 +4,11 @@
 'use server'
 
 import { sendMeetingConfirmation } from '@/lib/emailService'
+import { validateBookingData } from '@/lib/emailValidation'
 import { getPaymentConfig } from '@/lib/payments'
+import { RATE_LIMITS, getClientIP, rateLimiter } from '@/lib/rateLimit'
 import { google } from 'googleapis'
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 const bookMeetingSchema = z.object({
@@ -21,6 +24,10 @@ const bookMeetingSchema = z.object({
   userId: z.string().optional(),
   paymentId: z.string().optional(),
   paymentMethod: z.enum(['SOL', 'BTC', 'ETH', 'USDC']).optional(),
+  // Bot protection fields
+  turnstileToken: z.string().optional(), // Cloudflare Turnstile token
+  formStartTime: z.number().optional(), // Timestamp when form was displayed
+  honeypot: z.string().optional(), // Honeypot field
 })
 
 const cancelMeetingSchema = z.object({
@@ -70,6 +77,35 @@ function isEmailConfigured() {
 }
 
 /**
+ * Verify Cloudflare Turnstile token
+ */
+async function verifyTurnstileToken(token: string, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) {
+    console.warn('⚠️ Turnstile secret key not configured - skipping verification')
+    return true // Don't block if not configured
+  }
+
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret,
+        response: token,
+        remoteip: ip,
+      }),
+    })
+
+    const data = await response.json()
+    return data.success === true
+  } catch (error) {
+    console.error('Turnstile verification error:', error)
+    return false
+  }
+}
+
+/**
  * Book a meeting with Google Calendar integration
  * Creates calendar event and sends confirmation email
  */
@@ -88,7 +124,107 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
       userId,
       paymentId,
       paymentMethod,
+      turnstileToken,
+      formStartTime,
+      honeypot,
     } = bookMeetingSchema.parse(input)
+
+    // Get client IP for rate limiting
+    const headersList = await headers()
+    const clientIP = getClientIP(headersList)
+
+    // ===================
+    // BOT PROTECTION CHECKS
+    // ===================
+
+    // 1. Honeypot check - should be empty
+    if (honeypot && honeypot.trim() !== '') {
+      console.log(`🛡️ Bot detected via honeypot from IP: ${clientIP}`)
+      // Silently fail - don't reveal we detected them
+      await new Promise((resolve) => setTimeout(resolve, 2000)) // Add delay to waste bot time
+      return {
+        success: false,
+        error: 'Unable to process request at this time',
+      }
+    }
+
+    // 2. Form timing check - humans take at least 5 seconds to fill a form
+    if (formStartTime) {
+      const timeTaken = Date.now() - formStartTime
+      const minTimeMs = 5000 // 5 seconds minimum
+      if (timeTaken < minTimeMs) {
+        console.log(`🛡️ Bot detected - form filled too fast (${timeTaken}ms) from IP: ${clientIP}`)
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        return {
+          success: false,
+          error: 'Please take your time filling out the form',
+        }
+      }
+    }
+
+    // 3. Validate email and name for suspicious patterns
+    const validation = validateBookingData({ name, email, notes })
+    if (!validation.isValid) {
+      console.log(`🛡️ Suspicious data detected from IP: ${clientIP} - ${validation.reason}`)
+      return {
+        success: false,
+        error: validation.reason || 'Invalid booking data',
+      }
+    }
+
+    // 4. Rate limiting by IP
+    const ipRateLimit = RATE_LIMITS.MEETING_BOOKINGS_PER_HOUR
+    if (rateLimiter.isRateLimited(clientIP, ipRateLimit.maxRequests, ipRateLimit.windowMs)) {
+      const resetTime = rateLimiter.getResetTime(clientIP)
+      console.log(`🛡️ Rate limit exceeded for IP: ${clientIP}`)
+      return {
+        success: false,
+        error: `Too many booking attempts. Please try again in ${resetTime} seconds`,
+      }
+    }
+
+    // 5. Rate limiting by email
+    const emailRateLimit = RATE_LIMITS.MEETING_BOOKINGS_PER_EMAIL_PER_DAY
+    const emailIdentifier = `email:${email.toLowerCase()}`
+    if (
+      rateLimiter.isRateLimited(
+        emailIdentifier,
+        emailRateLimit.maxRequests,
+        emailRateLimit.windowMs
+      )
+    ) {
+      const resetTime = rateLimiter.getResetTime(emailIdentifier)
+      console.log(`🛡️ Rate limit exceeded for email: ${email}`)
+      return {
+        success: false,
+        error: `This email has too many pending bookings. Please try again in ${Math.ceil(resetTime / 3600)} hours`,
+      }
+    }
+
+    // 6. Check submission frequency (too fast = bot)
+    if (rateLimiter.isTooFast(clientIP, RATE_LIMITS.MIN_SUBMISSION_INTERVAL)) {
+      console.log(`🛡️ Submissions too frequent from IP: ${clientIP}`)
+      return {
+        success: false,
+        error: 'Please wait a few minutes before submitting another booking',
+      }
+    }
+
+    // 7. Verify Turnstile CAPTCHA token (if provided and configured)
+    if (turnstileToken && process.env.TURNSTILE_SECRET_KEY) {
+      const isValidToken = await verifyTurnstileToken(turnstileToken, clientIP)
+      if (!isValidToken) {
+        console.log(`🛡️ Invalid Turnstile token from IP: ${clientIP}`)
+        return {
+          success: false,
+          error: 'CAPTCHA verification failed. Please try again',
+        }
+      }
+    }
+
+    // ===================
+    // END BOT PROTECTION
+    // ===================
 
     // Get meeting configuration from unified config
     const config = getPaymentConfig('meeting_type', meetingType)
@@ -159,9 +295,9 @@ export async function bookMeeting(input: z.infer<typeof bookMeetingSchema>) {
           sendUpdates: 'all',
         })
 
-        eventId = calendarResponse.data.id
-        meetLink = calendarResponse.data.conferenceData?.entryPoints?.[0]?.uri
-        calendarLink = calendarResponse.data.htmlLink
+        eventId = calendarResponse.data.id || undefined
+        meetLink = calendarResponse.data.conferenceData?.entryPoints?.[0]?.uri || undefined
+        calendarLink = calendarResponse.data.htmlLink || undefined
 
         console.log('✅ Google Calendar event created:', eventId)
       } catch (calendarError) {
@@ -251,9 +387,10 @@ export async function cancelMeeting(input: z.infer<typeof cancelMeetingSchema>) 
     })
 
     // Send cancellation email
-    if (attendeeEmail) {
+    if (attendeeEmail && isEmailConfigured()) {
       try {
-        const resend = getEmailClient()
+        const { Resend } = await import('resend')
+        const resend = new Resend(process.env.RESEND_API_KEY)
         await resend.emails.send({
           from: process.env.EMAIL_FROM || 'noreply@example.com',
           to: attendeeEmail,
