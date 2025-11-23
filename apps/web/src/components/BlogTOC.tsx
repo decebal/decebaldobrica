@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@decebal/ui/button'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'motion/react'
 import {
   ArrowUp,
   BookOpen,

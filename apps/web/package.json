@@ -19,6 +19,7 @@
     "publish-post": "bun ./scripts/publish-blog-post.ts"
   },
   "dependencies": {
+    "@decebal/analytics": "workspace:*",
     "@decebal/payment-gate": "workspace:*",
     "@decebal/ui": "workspace:*",
     "@ai-sdk/groq": "^2.0.22",
@@ -51,7 +52,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "11",
     "googleapis": "^144.0.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
