@@ -5,41 +5,17 @@
   "author": "Decebal Dobrica <decebal@decebaldobrica.com>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./middleware/nextjs": {
-      "types": "./dist/middleware/nextjs.d.ts",
-      "import": "./dist/middleware/nextjs.js",
-      "require": "./dist/middleware/nextjs.cjs"
-    },
-    "./client": {
-      "types": "./dist/client/index.d.ts",
-      "import": "./dist/client/index.js",
-      "require": "./dist/client/index.cjs"
-    }
+    ".": "./src/index.ts",
+    "./middleware/nextjs": "./src/middleware/nextjs.ts",
+    "./client": "./src/client/index.ts"
   },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "biome lint src/",
-    "format": "biome format --write src/",
-    "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "lint": "biome check .",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "http-402",
@@ -71,7 +47,6 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.10.5",
-    "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
