@@ -6,7 +6,7 @@ import {
   getGeoPricingConfig,
   getPricingTierDescription,
 } from '@/lib/geoPricing'
-import { MEETING_TYPES_WITH_PRICING, getMeetingPriceUSD } from '@/lib/meetingPayments'
+import { MEETING_TYPES } from '@/lib/payments/config'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -26,19 +26,19 @@ export async function GET() {
     const geoConfig = getGeoPricingConfig(location)
 
     // Calculate prices for all meeting types with geo multiplier
-    const meetingPrices = Object.entries(MEETING_TYPES_WITH_PRICING).map(([key, config]) => {
-      const basePrice = config.priceUSD
+    const meetingPrices = Object.entries(MEETING_TYPES).map(([key, config]) => {
+      const basePrice = config.priceUsd || 0
       const geoPrice = calculateGeoPrice(basePrice, geoConfig)
 
       return {
-        meetingType: config.meetingType,
-        duration: config.duration,
-        requiresPayment: config.requiresPayment,
+        meetingType: config.name,
+        duration: config.durationMinutes || 30,
+        requiresPayment: (config.priceSol || 0) > 0,
         description: config.description,
         basePrice: basePrice, // Original USD price
         geoPrice: geoPrice, // Adjusted price based on location
         formattedPrice: formatPriceWithCurrency(geoPrice, geoConfig.currency),
-        priceCrypto: config.price, // SOL price
+        priceCrypto: config.priceSol || 0, // SOL price
       }
     })
 

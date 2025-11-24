@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo --port 3100",
+    "dev": "next dev --turbo --port 4100",
     "build": "next build",
-    "start": "next start --port 3100",
+    "start": "next start --port 4100",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
@@ -19,6 +19,9 @@
     "publish-post": "bun ./scripts/publish-blog-post.ts"
   },
   "dependencies": {
+    "@decebal/analytics": "workspace:*",
+    "@decebal/payment-gate": "workspace:*",
+    "@decebal/ui": "workspace:*",
     "@ai-sdk/groq": "^2.0.22",
     "@ai-sdk/react": "^2.0.60",
     "@mdx-js/loader": "^3.1.1",
@@ -49,7 +52,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "11",
     "googleapis": "^144.0.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
@@ -66,6 +68,7 @@
     "react-markdown": "10",
     "react-timezone-select": "^3.2.8",
     "reading-time": "^1.5.0",
+    "recharts": "^3.3.0",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "4",

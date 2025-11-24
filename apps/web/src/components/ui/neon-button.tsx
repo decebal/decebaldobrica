@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@decebal/ui/lib/utils'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import type React from 'react'
 
 interface NeonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

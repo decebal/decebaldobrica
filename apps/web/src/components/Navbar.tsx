@@ -5,6 +5,7 @@ import { cn } from '@decebal/ui/lib/utils'
 import { ChevronRight, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
+import UserMenu from './UserMenu'
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -63,6 +64,7 @@ const Navbar = () => {
           <Link href="/blog" className="brand-nav-link">
             Blog
           </Link>
+          <UserMenu />
           <Link href="/contact" className="brand-btn-primary flex items-center">
             <span>Talk With Me</span>
             <ChevronRight className="ml-1 h-4 w-4" />
@@ -126,6 +128,9 @@ const Navbar = () => {
             >
               Blog
             </Link>
+            <div onClick={closeMobileMenu}>
+              <UserMenu />
+            </div>
             <Link href="/contact" onClick={closeMobileMenu} className="w-full">
               <Button className="w-full bg-brand-teal hover:bg-brand-teal/90">Talk With Me</Button>
             </Link>

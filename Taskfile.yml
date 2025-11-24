@@ -204,3 +204,28 @@ tasks:
     dir: apps/anything-llm
     cmds:
       - '{{.PKG_MANAGER}} run clean'
+
+  # === ADMIN ===
+  newsletter-admin:
+    desc: Start newsletter admin dashboard (port 4101)
+    dir: apps/newsletter-admin
+    cmds:
+      - '{{.PKG_MANAGER}} run dev'
+
+  newsletter-admin:build:
+    desc: Build newsletter admin dashboard for production
+    dir: apps/newsletter-admin
+    cmds:
+      - '{{.PKG_MANAGER}} run build'
+
+  services-admin:
+    desc: Start services & pricing admin dashboard (port 4102)
+    dir: apps/services-admin
+    cmds:
+      - '{{.PKG_MANAGER}} run dev'
+
+  services-admin:build:
+    desc: Build services admin dashboard for production
+    dir: apps/services-admin
+    cmds:
+      - '{{.PKG_MANAGER}} run build'

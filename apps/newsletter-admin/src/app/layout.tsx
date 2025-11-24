@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AdminNav } from '@/components/AdminNav'
+import { AdminHeader } from '@/components/AdminHeader'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,6 +27,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="min-h-screen bg-background">
+            <AdminHeader />
             <AdminNav />
             <main>{children}</main>
           </div>

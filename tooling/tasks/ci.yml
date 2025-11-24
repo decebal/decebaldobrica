@@ -1,0 +1,6 @@
+# CI/CD Tasks
+# Purpose: CI pipeline tasks for GitHub Actions and local testing
+version: '3'
+
+tasks:
+  #

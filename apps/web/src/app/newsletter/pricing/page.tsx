@@ -2,7 +2,8 @@
 
 import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
 import { InterestModal } from '@/components/InterestModal'
-import { isFeatureEnabled } from '@/lib/featureFlags'
+import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
+import { NEWSLETTER_TIERS } from '@/lib/payments/config'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'
@@ -19,58 +20,21 @@ interface PricingTier {
   highlighted?: boolean
 }
 
-const PRICING_TIERS: PricingTier[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    priceUsd: 0,
-    interval: '/forever',
-    description: 'Get weekly insights delivered to your inbox',
-    features: [
-      'Weekly newsletter with latest articles',
-      'Curated tech insights and tips',
-      'Access to free content',
-      'No spam, unsubscribe anytime',
-    ],
-    cta: 'Subscribe for Free',
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: '$14.99',
-    priceUsd: 14.99,
-    interval: '/month',
-    description: 'Unlock exclusive content and deep dives',
-    features: [
-      'All free benefits',
-      'Exclusive premium content and tutorials',
-      'In-depth technical deep dives',
-      'Code examples and projects',
-      'Early access to new articles',
-      'Priority email support',
-    ],
-    cta: 'Upgrade to Premium',
-    highlighted: true,
-  },
-  {
-    id: 'founding',
-    name: 'Founding Member',
-    price: '$300',
-    priceUsd: 300,
-    interval: '/lifetime',
-    description: 'One-time payment for lifetime access',
-    features: [
-      'All premium benefits',
-      'Lifetime access - pay once, access forever',
-      'Direct access for questions',
-      'Founding member community',
-      'Your name in supporters list (optional)',
-      '1:1 consultation call (60 min)',
-    ],
-    cta: 'Become a Founding Member',
-  },
-]
+// Transform unified config to UI format
+const PRICING_TIERS: PricingTier[] = Object.values(NEWSLETTER_TIERS).map(tier => ({
+  id: tier.slug as 'free' | 'premium' | 'founding',
+  name: tier.name,
+  price: tier.priceUsd ? `$${tier.priceUsd.toFixed(2)}` : '$0',
+  priceUsd: tier.priceUsd || 0,
+  interval: tier.metadata?.interval === 'lifetime' ? '/lifetime' :
+            tier.metadata?.interval === 'month' ? '/month' : '/forever',
+  description: tier.description,
+  features: tier.benefits || [],
+  cta: tier.slug === 'free' ? 'Subscribe for Free' :
+       tier.slug === 'premium' ? 'Upgrade to Premium' :
+       'Become a Founding Member',
+  highlighted: tier.isPopular || false,
+}))
 
 function PricingContent() {
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null)
@@ -79,6 +43,10 @@ function PricingContent() {
   const [interestPlan, setInterestPlan] = useState<{ id: 'premium' | 'founding'; name: string }>()
   const searchParams = useSearchParams()
   const freeTierRef = useRef<HTMLDivElement>(null)
+
+  // Use PostHog feature flags for newsletter tiers
+  const isPremiumEnabled = useFeatureFlag(FEATURE_FLAGS.PREMIUM_SUBSCRIPTIONS)
+  const isFoundingEnabled = useFeatureFlag(FEATURE_FLAGS.FOUNDING_MEMBER)
 
   // Auto-highlight and scroll to free tier if coming from welcome email
   useEffect(() => {
@@ -100,10 +68,11 @@ function PricingContent() {
     }
 
     // Check if the plan is enabled via feature flags
-    const isPremiumEnabled = tier.id === 'premium' && isFeatureEnabled('premiumSubscriptionsEnabled')
-    const isFoundingEnabled = tier.id === 'founding' && isFeatureEnabled('foundingMemberEnabled')
+    const isPlanEnabled =
+      (tier.id === 'premium' && isPremiumEnabled) ||
+      (tier.id === 'founding' && isFoundingEnabled)
 
-    if (isPremiumEnabled || isFoundingEnabled) {
+    if (isPlanEnabled) {
       // Plan is enabled, proceed with payment
       setSelectedTier(tier)
     } else {
@@ -233,8 +202,8 @@ function PricingContent() {
 
                   {/* Coming Soon Badge */}
                   {tier.id !== 'free' &&
-                    ((tier.id === 'premium' && !isFeatureEnabled('premiumSubscriptionsEnabled')) ||
-                      (tier.id === 'founding' && !isFeatureEnabled('foundingMemberEnabled'))) && (
+                    ((tier.id === 'premium' && !isPremiumEnabled) ||
+                      (tier.id === 'founding' && !isFoundingEnabled)) && (
                       <div className="flex justify-center mb-3">
                         <span className="inline-block bg-brand-teal text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                           Coming Soon

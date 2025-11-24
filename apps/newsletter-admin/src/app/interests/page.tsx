@@ -79,100 +79,102 @@ export default function InterestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-violet-100 via-fuchsia-100 to-pink-100 dark:from-violet-950 dark:via-fuchsia-950 dark:to-pink-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Plan Interest Tracker
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent mb-3">
+            Plan Interest Tracker 🎯
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-foreground/70 text-lg">
             Users interested in premium newsletter plans
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Interests
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats.total}
-                </p>
+          <div className="group bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-border hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500 text-white shadow-lg">
+                <Users className="h-6 w-6" />
               </div>
-              <Users className="h-12 w-12 text-brand-teal" />
             </div>
+            <p className="text-muted-foreground text-sm font-semibold mb-1">
+              Total Interests
+            </p>
+            <p className="text-4xl font-bold bg-gradient-to-br from-purple-500 to-violet-500 bg-clip-text text-transparent">
+              {stats.total}
+            </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Premium</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats.premium}
-                </p>
+          <div className="group bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-border hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg">
+                <Mail className="h-6 w-6" />
               </div>
-              <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                Premium
-              </Badge>
             </div>
+            <p className="text-muted-foreground text-sm font-semibold mb-1">Premium</p>
+            <p className="text-4xl font-bold bg-gradient-to-br from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+              {stats.premium}
+            </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Founding</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats.founding}
-                </p>
+          <div className="group bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-border hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-3 rounded-lg bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white shadow-lg">
+                <Badge className="bg-white/20 text-white border-white/30">★</Badge>
               </div>
-              <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                Founding
-              </Badge>
             </div>
+            <p className="text-muted-foreground text-sm font-semibold mb-1">Founding</p>
+            <p className="text-4xl font-bold bg-gradient-to-br from-fuchsia-500 to-pink-500 bg-clip-text text-transparent">
+              {stats.founding}
+            </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Notified</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats.notified}
-                </p>
+          <div className="group bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-border hover:scale-105 transition-all duration-300">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-3 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 text-white shadow-lg">
+                <Mail className="h-6 w-6" />
               </div>
-              <Mail className="h-12 w-12 text-green-500" />
             </div>
+            <p className="text-muted-foreground text-sm font-semibold mb-1">Notified</p>
+            <p className="text-4xl font-bold bg-gradient-to-br from-green-500 to-emerald-500 bg-clip-text text-transparent">
+              {stats.notified}
+            </p>
           </div>
         </div>
 
         {/* Filters and Actions */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <div className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-6 border border-border">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex gap-2">
               <Button
                 variant={filter === 'all' ? 'default' : 'outline'}
                 onClick={() => setFilter('all')}
+                className="font-semibold"
               >
                 All ({stats.total})
               </Button>
               <Button
                 variant={filter === 'premium' ? 'default' : 'outline'}
                 onClick={() => setFilter('premium')}
+                className="font-semibold"
               >
-                Premium ({stats.premium})
+                💎 Premium ({stats.premium})
               </Button>
               <Button
                 variant={filter === 'founding' ? 'default' : 'outline'}
                 onClick={() => setFilter('founding')}
+                className="font-semibold"
               >
-                Founding ({stats.founding})
+                ⭐ Founding ({stats.founding})
               </Button>
             </div>
 
-            <Button onClick={exportToCSV} className="bg-brand-teal hover:bg-brand-teal/80">
+            <Button
+              onClick={exportToCSV}
+              className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold shadow-lg"
+            >
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
@@ -180,43 +182,43 @@ export default function InterestsPage() {
         </div>
 
         {/* Interests Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-border">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-teal border-r-transparent" />
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading interests...</p>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-500 border-r-transparent" />
+              <p className="mt-4 text-muted-foreground font-medium">Loading interests...</p>
             </div>
           ) : filteredInterests.length === 0 ? (
             <div className="p-12 text-center">
-              <Users className="mx-auto h-12 w-12 text-gray-400" />
-              <p className="mt-4 text-gray-600 dark:text-gray-400">No interests registered yet</p>
+              <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+              <p className="mt-4 text-muted-foreground font-medium">No interests registered yet</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Registered</TableHead>
-                  <TableHead>Status</TableHead>
+                <TableRow className="bg-gradient-to-r from-purple-500/10 via-violet-500/10 to-fuchsia-500/10 border-b border-border">
+                  <TableHead className="text-foreground font-bold">Email</TableHead>
+                  <TableHead className="text-foreground font-bold">Plan</TableHead>
+                  <TableHead className="text-foreground font-bold">Registered</TableHead>
+                  <TableHead className="text-foreground font-bold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredInterests.map((interest) => (
-                  <TableRow key={interest.id}>
-                    <TableCell className="font-medium">{interest.email}</TableCell>
+                  <TableRow key={interest.id} className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors border-b border-border">
+                    <TableCell className="font-semibold text-foreground">{interest.email}</TableCell>
                     <TableCell>
                       <Badge
                         className={
                           interest.plan_id === 'premium'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                            : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 font-semibold'
+                            : 'bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white border-0 font-semibold'
                         }
                       >
                         {interest.plan_name}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600 dark:text-gray-400">
+                    <TableCell className="text-sm text-muted-foreground font-medium">
                       {new Date(interest.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -227,12 +229,12 @@ export default function InterestsPage() {
                     </TableCell>
                     <TableCell>
                       {interest.notified_at ? (
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                          Notified
+                        <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 font-semibold">
+                          ✓ Notified
                         </Badge>
                       ) : (
-                        <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                          Pending
+                        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700 font-semibold">
+                          ⏳ Pending
                         </Badge>
                       )}
                     </TableCell>

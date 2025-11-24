@@ -2,6 +2,7 @@
 
 import Footer from '@/components/Footer'
 import EthereumIcon from '@/components/icons/EthereumIcon'
+import ServicesNavigation from '@/components/ServicesNavigation'
 import SolanaIcon from '@/components/icons/SolanaIcon'
 import ServicePaymentGate from '@/components/payments/ServicePaymentGate'
 import { Button } from '@decebal/ui/button'
@@ -310,6 +311,9 @@ const ServicesPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Services Navigation */}
+        <ServicesNavigation currentPath="/services" />
 
         {/* Service Category Selector */}
         <div className="section-container mb-16">

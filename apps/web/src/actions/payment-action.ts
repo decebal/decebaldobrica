@@ -1,15 +1,17 @@
-// src/actions/payment.ts
-// Server Action for Solana Pay integration
+// src/actions/payment-action.ts
+// Server Action for Unified Payment System with Solana Pay integration
 
 'use server'
 
 import {
-  type PaymentTransaction,
-  createPaymentTransaction,
-  getMeetingConfig,
-  getPaymentTransaction,
+  createPayment,
+  getPayment,
+  getPaymentByReference,
+  grantServiceAccess,
   updatePaymentStatus,
-} from '@/lib/meetingPayments'
+  getPaymentConfig,
+  requiresPayment as checkRequiresPayment,
+} from '@/lib/payments'
 import {
   FindReferenceError,
   createQR,
@@ -17,29 +19,18 @@ import {
   findReference,
   validateTransfer,
 } from '@solana/pay'
-import { Connection, PublicKey } from '@solana/web3.js'
-import { Keypair } from '@solana/web3.js'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import { z } from 'zod'
 
-const paymentInitSchema = z.object({
-  meetingType: z.string(),
-  meetingId: z.string(),
-  conversationId: z.string().optional(),
-  userId: z.string().optional(),
-})
+// ============================================================================
+// SOLANA CONNECTION & UTILITIES
+// ============================================================================
 
-const paymentVerifySchema = z.object({
-  reference: z.string(),
-  paymentId: z.string(),
-})
-
-// Initialize Solana connection
 function getSolanaConnection(): Connection {
   const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com'
   return new Connection(rpcUrl, 'confirmed')
 }
 
-// Get merchant wallet from environment
 function getMerchantWallet(): PublicKey {
   const walletAddress = process.env.NEXT_PUBLIC_SOLANA_MERCHANT_ADDRESS
   if (!walletAddress) {
@@ -48,18 +39,42 @@ function getMerchantWallet(): PublicKey {
   return new PublicKey(walletAddress)
 }
 
+// ============================================================================
+// MEETING PAYMENT ACTIONS
+// ============================================================================
+
+const paymentInitSchema = z.object({
+  meetingType: z.string(),
+  meetingId: z.string(),
+  walletAddress: z.string().optional(),
+  conversationId: z.string().optional(),
+})
+
+const paymentVerifySchema = z.object({
+  reference: z.string(),
+  paymentId: z.string(),
+})
+
 /**
  * Initialize a payment for a meeting booking
- * Creates payment transaction and generates QR code
+ * Creates payment transaction in Supabase and generates QR code
  */
 export async function initializePayment(input: z.infer<typeof paymentInitSchema>) {
   try {
-    const { meetingType, meetingId, conversationId, userId } = paymentInitSchema.parse(input)
+    const { meetingType, meetingId, walletAddress, conversationId } = paymentInitSchema.parse(input)
 
-    // Get meeting configuration
-    const config = getMeetingConfig(meetingType)
+    // Get meeting configuration from unified config
+    const config = getPaymentConfig('meeting_type', meetingType)
 
-    if (!config.requiresPayment) {
+    if (!config) {
+      return {
+        success: false,
+        error: 'Meeting type not found',
+      }
+    }
+
+    // Check if payment is required
+    if (!checkRequiresPayment('meeting_type', meetingType)) {
       return {
         success: false,
         error: 'This meeting type does not require payment',
@@ -69,14 +84,30 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
     // Generate unique reference for this payment
     const reference = Keypair.generate().publicKey
 
-    // Create payment transaction in memory
-    const paymentTransaction = createPaymentTransaction(meetingId, config.price, reference, userId)
+    // Create payment in Supabase (replaces in-memory storage)
+    const payment = await createPayment({
+      walletAddress: walletAddress || 'pending', // Will be updated when user connects wallet
+      paymentType: 'meeting',
+      entityType: 'meeting',
+      entityId: meetingId,
+      amount: config.priceSol || 0,
+      currency: 'SOL',
+      chain: 'solana',
+      reference: reference.toString(),
+      description: `Payment for ${config.name}`,
+      metadata: {
+        meetingType,
+        meetingId,
+        conversationId,
+        durationMinutes: config.durationMinutes,
+      },
+    })
 
     // Create Solana Pay URL
     const recipient = getMerchantWallet()
-    const amount = config.price
-    const label = `Meeting: ${meetingType}`
-    const message = `Payment for ${config.duration} minute meeting`
+    const amount = config.priceSol || 0
+    const label = `Meeting: ${config.name}`
+    const message = `Payment for ${config.durationMinutes} minute meeting`
 
     const url = encodeURL({
       recipient,
@@ -94,9 +125,9 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
     return {
       success: true,
       payment: {
-        id: paymentTransaction.id,
+        id: payment.id,
         reference: reference.toString(),
-        amount: config.price,
+        amount: config.priceSol || 0,
         meetingType,
         url: url.toString(),
         qrCode: qrBase64 ? `data:image/png;base64,${qrBase64}` : null,
@@ -119,8 +150,8 @@ export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) 
   try {
     const { reference, paymentId } = paymentVerifySchema.parse(input)
 
-    // Get payment transaction
-    const payment = getPaymentTransaction(paymentId)
+    // Get payment from Supabase (not in-memory)
+    const payment = await getPayment(paymentId)
     if (!payment) {
       return {
         success: false,
@@ -159,8 +190,8 @@ export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) 
         { commitment: 'confirmed' }
       )
 
-      // Update payment status
-      updatePaymentStatus(paymentId, 'confirmed', signatureInfo.signature)
+      // Update payment status in Supabase
+      await updatePaymentStatus(paymentId, 'confirmed', signatureInfo.signature)
 
       return {
         success: true,
@@ -188,11 +219,11 @@ export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) 
 
 /**
  * Get payment status
- * Returns current status of a payment transaction
+ * Returns current status of a payment transaction from Supabase
  */
 export async function getPaymentStatus(paymentId: string) {
   try {
-    const payment = getPaymentTransaction(paymentId)
+    const payment = await getPayment(paymentId)
 
     if (!payment) {
       return {
@@ -207,7 +238,7 @@ export async function getPaymentStatus(paymentId: string) {
         id: payment.id,
         status: payment.status,
         amount: payment.amount,
-        timestamp: payment.timestamp,
+        timestamp: payment.createdAt,
         signature: payment.signature,
       },
     }
@@ -225,7 +256,7 @@ export async function getPaymentStatus(paymentId: string) {
  */
 export async function cancelPayment(paymentId: string) {
   try {
-    const payment = getPaymentTransaction(paymentId)
+    const payment = await getPayment(paymentId)
 
     if (!payment) {
       return {
@@ -241,7 +272,7 @@ export async function cancelPayment(paymentId: string) {
       }
     }
 
-    updatePaymentStatus(paymentId, 'failed')
+    await updatePaymentStatus(paymentId, 'failed')
 
     return {
       success: true,
@@ -255,28 +286,32 @@ export async function cancelPayment(paymentId: string) {
 }
 
 /**
- * Get payment statistics
- * Returns analytics data for all payments (from in-memory storage)
+ * Get payment statistics from Supabase
+ * Returns analytics data for all payments
  */
 export async function getPaymentAnalytics() {
   try {
-    const { getAllPayments } = await import('@/lib/meetingPayments')
-    const allPayments = getAllPayments()
+    // Use Supabase function for stats
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
 
-    const confirmed = allPayments.filter((p) => p.status === 'confirmed')
-    const pending = allPayments.filter((p) => p.status === 'pending')
-    const totalRevenue = confirmed.reduce((sum, p) => sum + p.amount, 0)
+    const { data, error } = await supabase.rpc('get_payment_stats', {
+      p_payment_type: 'meeting',
+    })
+
+    if (error) throw error
 
     return {
       success: true,
       analytics: {
-        totalPayments: allPayments.length,
-        confirmedPayments: confirmed.length,
-        pendingPayments: pending.length,
-        totalRevenue,
+        totalPayments: Number(data[0]?.total_payments || 0),
+        confirmedPayments: Number(data[0]?.confirmed_payments || 0),
+        pendingPayments: Number(data[0]?.pending_payments || 0),
+        totalRevenue: Number(data[0]?.total_revenue_sol || 0),
       },
     }
   } catch (error) {
+    console.error('Analytics error:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get analytics',
@@ -285,7 +320,7 @@ export async function getPaymentAnalytics() {
 }
 
 // ============================================================================
-// SERVICE ACCESS PAYMENTS (for pricing unlocks)
+// SERVICE ACCESS PAYMENT ACTIONS
 // ============================================================================
 
 const servicePaymentInitSchema = z.object({
@@ -312,14 +347,21 @@ export async function initializeServicePayment(input: z.infer<typeof servicePaym
     // Generate unique reference for this payment
     const reference = Keypair.generate().publicKey
 
-    // Save to Supabase
-    const { savePaymentToSupabase } = await import('@/lib/supabase/payments')
-    const dbPaymentId = await savePaymentToSupabase(
+    // Create payment in unified Supabase table
+    const payment = await createPayment({
       walletAddress,
-      serviceSlug,
+      paymentType: 'service_access',
+      entityType: 'service',
+      entityId: serviceSlug,
       amount,
-      reference.toString()
-    )
+      currency: 'SOL',
+      chain: 'solana',
+      reference: reference.toString(),
+      description: `Unlock service: ${serviceSlug}`,
+      metadata: {
+        serviceSlug,
+      },
+    })
 
     // Create Solana Pay URL
     const recipient = getMerchantWallet()
@@ -342,7 +384,7 @@ export async function initializeServicePayment(input: z.infer<typeof servicePaym
     return {
       success: true,
       payment: {
-        dbPaymentId,
+        dbPaymentId: payment.id,
         reference: reference.toString(),
         amount,
         serviceSlug,
@@ -372,24 +414,15 @@ export async function verifyServicePayment(input: z.infer<typeof servicePaymentV
     const referencePublicKey = new PublicKey(reference)
     const recipient = getMerchantWallet()
 
-    // Import Supabase payment functions
-    const { confirmPayment, grantServiceAccess } = await import('@/lib/supabase/payments')
-
     try {
       // Find transaction reference on blockchain
       const signatureInfo = await findReference(connection, referencePublicKey, {
         finality: 'confirmed',
       })
 
-      // Get expected amount from Supabase
-      const supabase = await (await import('@/lib/supabase/server')).createClient()
-      const { data: paymentData } = await supabase
-        .from('payment_transactions')
-        .select('amount')
-        .eq('id', dbPaymentId)
-        .single()
-
-      if (!paymentData) {
+      // Get payment from unified table
+      const payment = await getPayment(dbPaymentId)
+      if (!payment) {
         throw new Error('Payment record not found')
       }
 
@@ -399,17 +432,23 @@ export async function verifyServicePayment(input: z.infer<typeof servicePaymentV
         signatureInfo.signature,
         {
           recipient,
-          amount: paymentData.amount,
+          amount: payment.amount,
           reference: referencePublicKey,
         },
         { commitment: 'confirmed' }
       )
 
-      // Confirm payment in Supabase
-      await confirmPayment(dbPaymentId, signatureInfo.signature)
+      // Update payment status in unified table
+      await updatePaymentStatus(dbPaymentId, 'confirmed', signatureInfo.signature)
 
-      // Grant service access
-      await grantServiceAccess(walletAddress, serviceSlug, dbPaymentId)
+      // Grant service access using unified function
+      await grantServiceAccess({
+        walletAddress,
+        serviceSlug,
+        paymentId: dbPaymentId,
+        serviceType: 'one_time', // Lifetime access
+        expiresAt: null, // Never expires
+      })
 
       return {
         success: true,

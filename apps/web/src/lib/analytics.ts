@@ -4,6 +4,8 @@ let analyticsInitialized = false
 
 /**
  * Initialize PostHog analytics (client-side only)
+ * Note: This is a legacy function. PostHog is now initialized in providers.tsx with cookieless mode.
+ * Keeping this for backward compatibility, but it uses cookieless tracking.
  */
 export function initAnalytics() {
   if (typeof window === 'undefined') {
@@ -26,6 +28,9 @@ export function initAnalytics() {
     posthog.init(apiKey, {
       api_host: apiHost,
 
+      // Cookieless tracking - privacy-preserving hash mode
+      cookieless_mode: 'always',
+
       // Page tracking
       autocapture: true,
       capture_pageview: true,
@@ -42,9 +47,6 @@ export function initAnalytics() {
       // Performance
       capture_performance: true,
 
-      // Storage
-      persistence: 'localStorage+cookie',
-
       loaded: (posthog) => {
         if (process.env.NODE_ENV === 'development') {
           posthog.debug() // Enable debug mode in development
@@ -57,7 +59,7 @@ export function initAnalytics() {
   }
 
   analyticsInitialized = true
-  console.log('✅ PostHog analytics initialized')
+  console.log('✅ PostHog analytics initialized with cookieless tracking')
 }
 
 /**
@@ -73,13 +75,19 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
 
 /**
  * Identify a user
+ * ⚠️ WARNING: This function is disabled in cookieless mode to comply with GDPR.
+ * In cookieless mode, distinct IDs are considered Personal Data and cannot be used.
+ * User tracking is done via privacy-preserving server-side hash instead.
  */
 export function identifyUser(userId: string, properties?: Record<string, unknown>) {
-  if (!analyticsInitialized || typeof window === 'undefined') {
-    return
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(
+      '⚠️  identifyUser() is disabled in cookieless mode. User identification happens via privacy-preserving hash.'
+    )
   }
-
-  posthog.identify(userId, properties)
+  // This function is intentionally disabled in cookieless mode
+  // posthog.identify() is not allowed with cookieless tracking
+  return
 }
 
 /**

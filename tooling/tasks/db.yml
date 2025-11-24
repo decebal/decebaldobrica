@@ -1,0 +1,11 @@
+# Database Tasks
+# Purpose: Database management through Supabase - All database operations
+version: '3'
+
+vars:
+  DB_MANAGER_DIR: apps/database-manager
+
+tasks:
+  # ==========================================
+  # Service Management
+  # ==========================================
