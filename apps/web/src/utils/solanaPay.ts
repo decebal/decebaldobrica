@@ -63,7 +63,7 @@ export const checkSolanaPayment = async (
       onError('Payment not found. Please complete the payment.')
     } else {
       // Another error
-      onError(`Error validating payment: ${e.message}`)
+      onError(`Error validating payment: ${e instanceof Error ? e.message : 'Unknown error'}`)
     }
   }
 }

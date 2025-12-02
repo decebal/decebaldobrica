@@ -169,10 +169,13 @@ export default function LoginPage() {
               }`}
             >
               {!loading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-fuchsia-600 via-pink-600 via-violet-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-rainbow-shimmer" style={{
-                  backgroundSize: '200% 100%',
-                  animation: 'rainbow-shimmer 3s linear infinite'
-                }} />
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-purple-600 via-fuchsia-600 via-pink-600 via-violet-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-rainbow-shimmer"
+                  style={{
+                    backgroundSize: '200% 100%',
+                    animation: 'rainbow-shimmer 3s linear infinite',
+                  }}
+                />
               )}
               <div className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (
@@ -193,9 +196,13 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-              <div className="w-full border-t-2 border-gradient-to-r from-transparent via-purple-200 to-transparent dark:via-purple-800/50" style={{
-                borderImage: 'linear-gradient(to right, transparent, rgb(216 180 254), transparent) 1'
-              }} />
+              <div
+                className="w-full border-t-2 border-gradient-to-r from-transparent via-purple-200 to-transparent dark:via-purple-800/50"
+                style={{
+                  borderImage:
+                    'linear-gradient(to right, transparent, rgb(216 180 254), transparent) 1',
+                }}
+              />
             </div>
             <div className="relative flex justify-center">
               <span className="px-6 py-2 bg-gradient-to-br from-purple-50/90 to-fuchsia-50/90 dark:from-purple-950/90 dark:to-fuchsia-950/90 backdrop-blur-sm text-sm font-semibold text-purple-700 dark:text-purple-300 rounded-full border-2 border-purple-200/50 dark:border-purple-800/50 shadow-lg shadow-purple-500/10">
@@ -211,10 +218,13 @@ export default function LoginPage() {
             disabled={loading}
             className="group relative w-full px-6 py-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg bg-white dark:bg-gray-900 border-2 border-purple-200 dark:border-purple-800/50 text-gray-700 dark:text-gray-200 hover:border-purple-400 dark:hover:border-purple-600 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-100 via-fuchsia-100 via-pink-100 to-purple-100 dark:from-purple-950 dark:via-fuchsia-950 dark:to-purple-950 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
-              backgroundSize: '200% 100%',
-              animation: 'rainbow-shimmer 3s linear infinite'
-            }} />
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-purple-100 via-fuchsia-100 via-pink-100 to-purple-100 dark:from-purple-950 dark:via-fuchsia-950 dark:to-purple-950 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{
+                backgroundSize: '200% 100%',
+                animation: 'rainbow-shimmer 3s linear infinite',
+              }}
+            />
             <div className="relative z-10 flex items-center justify-center gap-3">
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path

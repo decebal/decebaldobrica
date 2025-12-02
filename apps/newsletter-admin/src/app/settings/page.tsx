@@ -83,9 +83,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setEmailNotifications(!emailNotifications)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    emailNotifications
-                      ? 'bg-purple-600'
-                      : 'bg-gray-300 dark:bg-gray-700'
+                    emailNotifications ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-700'
                   }`}
                 >
                   <span
@@ -106,9 +104,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setPushNotifications(!pushNotifications)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    pushNotifications
-                      ? 'bg-purple-600'
-                      : 'bg-gray-300 dark:bg-gray-700'
+                    pushNotifications ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-700'
                   }`}
                 >
                   <span

@@ -55,9 +55,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
           // Advanced options - sanitize sensitive data before sending
           before_send: (event) => {
+            if (!event) return event
             // Remove sensitive data if needed
             if (event.properties?.email) {
-              event.properties.email = event.properties.email.replace(/@.*$/, '@***')
+              event.properties.email = (event.properties.email as string).replace(/@.*$/, '@***')
             }
             return event
           },

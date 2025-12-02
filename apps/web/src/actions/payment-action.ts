@@ -4,13 +4,13 @@
 'use server'
 
 import {
+  requiresPayment as checkRequiresPayment,
   createPayment,
   getPayment,
   getPaymentByReference,
+  getPaymentConfig,
   grantServiceAccess,
   updatePaymentStatus,
-  getPaymentConfig,
-  requiresPayment as checkRequiresPayment,
 } from '@/lib/payments'
 import {
   FindReferenceError,
@@ -20,6 +20,7 @@ import {
   validateTransfer,
 } from '@solana/pay'
 import { Connection, Keypair, PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
 import { z } from 'zod'
 
 // ============================================================================
@@ -111,7 +112,7 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
 
     const url = encodeURL({
       recipient,
-      amount,
+      amount: new BigNumber(amount),
       reference,
       label,
       message,
@@ -120,7 +121,7 @@ export async function initializePayment(input: z.infer<typeof paymentInitSchema>
     // Generate QR code as base64
     const qrCode = createQR(url, 512, 'transparent')
     const qrBuffer = await qrCode.getRawData('png')
-    const qrBase64 = qrBuffer ? Buffer.from(qrBuffer).toString('base64') : null
+    const qrBase64 = qrBuffer ? Buffer.from(await qrBuffer.arrayBuffer()).toString('base64') : null
 
     return {
       success: true,
@@ -184,7 +185,7 @@ export async function verifyPayment(input: z.infer<typeof paymentVerifySchema>) 
         signatureInfo.signature,
         {
           recipient,
-          amount: payment.amount,
+          amount: new BigNumber(payment.amount),
           reference: referencePublicKey,
         },
         { commitment: 'confirmed' }
@@ -370,7 +371,7 @@ export async function initializeServicePayment(input: z.infer<typeof servicePaym
 
     const url = encodeURL({
       recipient,
-      amount,
+      amount: new BigNumber(amount),
       reference,
       label,
       message,
@@ -379,7 +380,7 @@ export async function initializeServicePayment(input: z.infer<typeof servicePaym
     // Generate QR code as base64
     const qrCode = createQR(url, 512, 'transparent')
     const qrBuffer = await qrCode.getRawData('png')
-    const qrBase64 = qrBuffer ? Buffer.from(qrBuffer).toString('base64') : null
+    const qrBase64 = qrBuffer ? Buffer.from(await qrBuffer.arrayBuffer()).toString('base64') : null
 
     return {
       success: true,
@@ -432,7 +433,7 @@ export async function verifyServicePayment(input: z.infer<typeof servicePaymentV
         signatureInfo.signature,
         {
           recipient,
-          amount: payment.amount,
+          amount: new BigNumber(payment.amount),
           reference: referencePublicKey,
         },
         { commitment: 'confirmed' }

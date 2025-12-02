@@ -70,7 +70,7 @@ export async function postToTwitter(content: TwitterPost): Promise<TwitterPostRe
     }
 
     // Single tweet
-    let mediaIds: string[] | undefined
+    let mediaIds: [string] | undefined
 
     // Upload image if provided
     if (content.imageUrl) {

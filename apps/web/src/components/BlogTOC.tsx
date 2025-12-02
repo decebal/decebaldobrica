@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@decebal/ui/button'
-import { AnimatePresence, motion } from 'motion/react'
 import {
   ArrowUp,
   BookOpen,
@@ -16,6 +15,7 @@ import {
   X,
   Zap,
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 
 interface TOCSection {
@@ -68,21 +68,61 @@ function detectSectionType(title: string): TOCSection['type'] {
 function getSectionStyle(type: TOCSection['type']) {
   switch (type) {
     case 'situation':
-      return { icon: Target, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/30' }
+      return {
+        icon: Target,
+        color: 'text-blue-400',
+        bg: 'bg-blue-400/10',
+        border: 'border-blue-400/30',
+      }
     case 'task':
-      return { icon: Target, color: 'text-cyan-400', bg: 'bg-cyan-400/10', border: 'border-cyan-400/30' }
+      return {
+        icon: Target,
+        color: 'text-cyan-400',
+        bg: 'bg-cyan-400/10',
+        border: 'border-cyan-400/30',
+      }
     case 'action':
-      return { icon: Zap, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/30' }
+      return {
+        icon: Zap,
+        color: 'text-purple-400',
+        bg: 'bg-purple-400/10',
+        border: 'border-purple-400/30',
+      }
     case 'result':
-      return { icon: TrendingUp, color: 'text-green-400', bg: 'bg-green-400/10', border: 'border-green-400/30' }
+      return {
+        icon: TrendingUp,
+        color: 'text-green-400',
+        bg: 'bg-green-400/10',
+        border: 'border-green-400/30',
+      }
     case 'nugget':
-      return { icon: Lightbulb, color: 'text-yellow-400', bg: 'bg-yellow-400/10', border: 'border-yellow-400/30' }
+      return {
+        icon: Lightbulb,
+        color: 'text-yellow-400',
+        bg: 'bg-yellow-400/10',
+        border: 'border-yellow-400/30',
+      }
     case 'tool':
-      return { icon: Wrench, color: 'text-gray-400', bg: 'bg-gray-400/10', border: 'border-gray-400/30' }
+      return {
+        icon: Wrench,
+        color: 'text-gray-400',
+        bg: 'bg-gray-400/10',
+        border: 'border-gray-400/30',
+      }
     case 'conclusion':
-      return { icon: BookOpen, color: 'text-brand-teal', bg: 'bg-brand-teal/10', border: 'border-brand-teal/30' }
+      return {
+        icon: BookOpen,
+        color: 'text-brand-teal',
+        bg: 'bg-brand-teal/10',
+        border: 'border-brand-teal/30',
+      }
     default:
-      return { icon: List, color: 'text-gray-400', bg: 'bg-gray-400/10', border: 'border-gray-400/30' }
+      return {
+        icon: List,
+        color: 'text-gray-400',
+        bg: 'bg-gray-400/10',
+        border: 'border-gray-400/30',
+      }
   }
 }
 
@@ -185,7 +225,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
 
         // Calculate time remaining
         // Handle both H2 and H3 sections
-        let currentSectionIndex = sections.findIndex(s => s.id === activeId)
+        let currentSectionIndex = sections.findIndex((s) => s.id === activeId)
 
         // If not found in H2s, check if it's an H3
         if (currentSectionIndex < 0) {
@@ -253,7 +293,11 @@ export function BlogTOC({ content }: BlogTOCProps) {
     const element = document.getElementById(id)
 
     if (element) {
-      console.log('[BlogTOC] Element found:', element.tagName, element.textContent?.substring(0, 50))
+      console.log(
+        '[BlogTOC] Element found:',
+        element.tagName,
+        element.textContent?.substring(0, 50)
+      )
 
       // Get element's absolute position from top of page
       const elementTop = element.getBoundingClientRect().top + window.scrollY
@@ -444,15 +488,23 @@ export function BlogTOC({ content }: BlogTOCProps) {
                         >
                           <Icon className={`h-5 w-5 flex-shrink-0 ${style.color}`} />
                           <div className="flex-1 text-left">
-                            <div className={`font-medium ${isActive ? style.color : 'text-gray-300'}`}>
+                            <div
+                              className={`font-medium ${isActive ? style.color : 'text-gray-300'}`}
+                            >
                               {section.title}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">{formatTime(section.readingTime)}</span>
+                            <span className="text-xs text-gray-500">
+                              {formatTime(section.readingTime)}
+                            </span>
                             {hasChildren && (
                               <div className="text-gray-400">
-                                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                {isExpanded ? (
+                                  <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                  <ChevronRight className="h-4 w-4" />
+                                )}
                               </div>
                             )}
                           </div>
@@ -566,11 +618,15 @@ export function BlogTOC({ content }: BlogTOCProps) {
                     >
                       <Icon className={`h-4 w-4 flex-shrink-0 ${style.color}`} />
                       <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-medium truncate ${isActive ? style.color : 'text-gray-300'}`}>
+                        <div
+                          className={`text-sm font-medium truncate ${isActive ? style.color : 'text-gray-300'}`}
+                        >
                           {section.title}
                         </div>
                       </div>
-                      <span className="text-xs text-gray-500 flex-shrink-0">{formatTime(section.readingTime)}</span>
+                      <span className="text-xs text-gray-500 flex-shrink-0">
+                        {formatTime(section.readingTime)}
+                      </span>
                     </button>
 
                     {/* Subsections */}

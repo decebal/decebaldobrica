@@ -76,7 +76,7 @@ async function promptMultiline(question: string): Promise<string> {
   }
 
   // Remove trailing empty lines
-  while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
+  while (lines.length > 0 && (lines[lines.length - 1] ?? '').trim() === '') {
     lines.pop()
   }
 

@@ -4,7 +4,11 @@ import { cn } from '@decebal/ui/lib/utils'
 import { motion } from 'motion/react'
 import type React from 'react'
 
-interface NeonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Omit props that conflict with framer-motion's types
+type NeonButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd'
+> & {
   children: React.ReactNode
   variant?: 'primary' | 'secondary'
 }

@@ -16,10 +16,7 @@ export async function GET() {
     return NextResponse.json(data || [])
   } catch (error) {
     console.error('Failed to fetch service tiers:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch service tiers' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch service tiers' }, { status: 500 })
   }
 }
 
@@ -42,9 +39,6 @@ export async function POST(request: Request) {
     return NextResponse.json(data)
   } catch (error) {
     console.error('Failed to create service tier:', error)
-    return NextResponse.json(
-      { error: 'Failed to create service tier' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create service tier' }, { status: 500 })
   }
 }

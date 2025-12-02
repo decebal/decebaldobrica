@@ -2,8 +2,8 @@
  * PaymentGate - Main orchestrator for multi-chain HTTP 402 payments
  */
 
-import { Connection, PublicKey } from '@solana/web3.js'
 import { findReference, validateTransfer } from '@solana/pay'
+import { Connection, PublicKey } from '@solana/web3.js'
 import { Http402Handler } from './Http402Handler'
 import type {
   EndpointPricing,
@@ -113,7 +113,10 @@ export class PaymentGate {
         case 'base':
         case 'arbitrum':
         case 'optimism':
-          verification = await this.verifyEthereumPayment(paymentState, verificationChain as PaymentChain)
+          verification = await this.verifyEthereumPayment(
+            paymentState,
+            verificationChain as PaymentChain
+          )
           break
 
         default:
@@ -197,7 +200,8 @@ export class PaymentGate {
         signatureInfo.signature,
         {
           recipient: new PublicKey(config.merchantWallet),
-          amount: amountLamports as any, // Type coercion for bignumber.js compatibility
+          // biome-ignore lint/suspicious/noExplicitAny: @solana/pay uses bignumber.js BigNumber type
+          amount: amountLamports as any,
           reference: referencePublicKey,
         },
         { commitment: (config.commitment || 'confirmed') as 'finalized' | 'confirmed' }
@@ -289,7 +293,7 @@ export class PaymentGate {
       }
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as { paid: boolean }
 
     return {
       paymentId,
@@ -335,7 +339,7 @@ export class PaymentGate {
       }
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as { status: string }
 
     return {
       paymentId,
@@ -376,14 +380,14 @@ export class PaymentGate {
    */
   async checkRateLimit(key: string, endpoint: string, isPaid: boolean): Promise<RateLimitResult> {
     if (!this.config.rateLimit) {
-      return { allowed: true, remaining: Infinity, resetAt: 0 }
+      return { allowed: true, remaining: Number.POSITIVE_INFINITY, resetAt: 0 }
     }
 
     // Use custom handler if provided
     if (this.config.rateLimit.customHandler) {
       const limit = isPaid ? this.config.rateLimit.paid : this.config.rateLimit.free
       if (!limit) {
-        return { allowed: true, remaining: Infinity, resetAt: 0 }
+        return { allowed: true, remaining: Number.POSITIVE_INFINITY, resetAt: 0 }
       }
       return this.config.rateLimit.customHandler.check(key, limit.requests, limit.window)
     }
@@ -391,7 +395,7 @@ export class PaymentGate {
     // Use built-in in-memory rate limiting
     const limit = isPaid ? this.config.rateLimit.paid : this.config.rateLimit.free
     if (!limit) {
-      return { allowed: true, remaining: Infinity, resetAt: 0 }
+      return { allowed: true, remaining: Number.POSITIVE_INFINITY, resetAt: 0 }
     }
 
     const now = Date.now()
@@ -428,7 +432,7 @@ export class PaymentGate {
     // Wildcard match
     for (const [pattern, pricing] of Object.entries(this.config.pricing)) {
       if (pattern.includes('*')) {
-        const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$')
+        const regex = new RegExp(`^${pattern.replace(/\*/g, '.*')}$`)
         if (regex.test(endpoint)) {
           return pricing
         }

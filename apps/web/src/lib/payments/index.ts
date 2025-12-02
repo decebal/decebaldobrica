@@ -215,11 +215,7 @@ export async function createPayment(params: CreatePaymentParams): Promise<Paymen
     metadata: params.metadata || null,
   }
 
-  const { data, error } = await supabase
-    .from('payments')
-    .insert(paymentData)
-    .select()
-    .single()
+  const { data, error } = await supabase.from('payments').insert(paymentData).select().single()
 
   if (error) throw error
   return data
@@ -231,11 +227,7 @@ export async function createPayment(params: CreatePaymentParams): Promise<Paymen
 export async function getPayment(paymentId: string): Promise<Payment | null> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
-    .from('payments')
-    .select('*')
-    .eq('id', paymentId)
-    .single()
+  const { data, error } = await supabase.from('payments').select('*').eq('id', paymentId).single()
 
   if (error) return null
   return data
@@ -279,10 +271,7 @@ export async function updatePaymentStatus(
     updates.confirmed_at = new Date().toISOString()
   }
 
-  const { error } = await supabase
-    .from('payments')
-    .update(updates)
-    .eq('id', paymentId)
+  const { error } = await supabase.from('payments').update(updates).eq('id', paymentId)
 
   if (error) throw error
 }
@@ -290,10 +279,7 @@ export async function updatePaymentStatus(
 /**
  * Get user's payment history
  */
-export async function getUserPayments(
-  walletAddress: string,
-  limit = 50
-): Promise<Payment[]> {
+export async function getUserPayments(walletAddress: string, limit = 50): Promise<Payment[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -342,9 +328,7 @@ export interface GrantServiceAccessParams {
 /**
  * Grant service access to user
  */
-export async function grantServiceAccess(
-  params: GrantServiceAccessParams
-): Promise<ServiceAccess> {
+export async function grantServiceAccess(params: GrantServiceAccessParams): Promise<ServiceAccess> {
   const supabase = await createClient()
 
   // Ensure user profile exists
@@ -541,10 +525,7 @@ export async function updateMeetingBooking(
 /**
  * Link payment to meeting booking
  */
-export async function linkPaymentToMeeting(
-  meetingId: string,
-  paymentId: string
-): Promise<void> {
+export async function linkPaymentToMeeting(meetingId: string, paymentId: string): Promise<void> {
   const supabase = await createClient()
 
   const { error } = await supabase
@@ -638,11 +619,9 @@ export async function syncPaymentConfigToDB(config: PaymentConfig): Promise<void
     is_popular: config.isPopular ?? false,
   }
 
-  const { error } = await supabase
-    .from('payment_config')
-    .upsert(dbData, {
-      onConflict: 'config_type,config_slug',
-    })
+  const { error } = await supabase.from('payment_config').upsert(dbData, {
+    onConflict: 'config_type,config_slug',
+  })
 
   if (error) throw error
 }

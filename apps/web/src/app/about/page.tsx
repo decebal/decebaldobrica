@@ -158,8 +158,8 @@ const AboutPage = () => {
                       Technology Strategy & Leadership
                     </h3>
                     <p className="text-white">
-                      Fractional CTO guiding startups through digital transformation. Led teams of
-                      25+ engineers, increasing productivity by 300% through modern development
+                      Engineering Leader guiding startups through digital transformation. Led teams
+                      of 25+ engineers, increasing productivity by 300% through modern development
                       practices.
                     </p>
                   </div>

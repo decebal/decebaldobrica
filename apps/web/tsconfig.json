@@ -2,14 +2,25 @@
   "extends": "../../tooling/typescript/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"],
       "@decebal/ui": ["../../packages/ui/src"],
+      "@decebal/ui/*": ["../../packages/ui/src/*"],
       "@decebal/database": ["../../packages/database/src"],
+      "@decebal/database/*": ["../../packages/database/src/*"],
       "@decebal/newsletter": ["../../packages/newsletter/src"],
+      "@decebal/newsletter/*": ["../../packages/newsletter/src/*"],
       "@decebal/analytics": ["../../packages/analytics/src"],
+      "@decebal/analytics/*": ["../../packages/analytics/src/*"],
       "@decebal/email": ["../../packages/email/src"],
-      "@decebal/payments": ["../../packages/payments/src"]
+      "@decebal/email/*": ["../../packages/email/src/*"],
+      "@decebal/payments": ["../../packages/payments/src"],
+      "@decebal/payments/*": ["../../packages/payments/src/*"],
+      "@decebal/social": ["../../packages/social/src"],
+      "@decebal/social/*": ["../../packages/social/src/*"],
+      "@decebal/payment-gate": ["../../packages/payment-gate/src"],
+      "@decebal/payment-gate/*": ["../../packages/payment-gate/src/*"]
     },
     "plugins": [
       {

@@ -1,6 +1,6 @@
+import { generateBlogPostWithRAG, generateBlogSection } from '@/lib/anythingllm'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { generateBlogSection, generateBlogPostWithRAG } from '@/lib/anythingllm'
 
 const requestSchema = z.object({
   action: z.enum(['full_post', 'regenerate_section']),
@@ -11,10 +11,14 @@ const requestSchema = z.object({
   mode: z.enum(['groq', 'anythingllm']).optional().default('groq'),
   sectionId: z.string().optional(),
   sectionTitle: z.string().optional(),
-  context: z.array(z.object({
-    title: z.string(),
-    content: z.string()
-  })).optional()
+  context: z
+    .array(
+      z.object({
+        title: z.string(),
+        content: z.string(),
+      })
+    )
+    .optional(),
 })
 
 async function callGroq(prompt: string, systemPrompt: string): Promise<string> {
@@ -28,17 +32,17 @@ async function callGroq(prompt: string, systemPrompt: string): Promise<string> {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: 'llama-3.1-70b-versatile', // Larger model for better writing
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: prompt }
+        { role: 'user', content: prompt },
       ],
       temperature: 0.7,
       max_tokens: 4096,
-    })
+    }),
   })
 
   if (!response.ok) {
@@ -53,49 +57,67 @@ const BLOG_STRUCTURE = [
   {
     id: 'hook',
     title: 'Hook (Viral Opening)',
-    prompt: 'Write a compelling 3-4 line hook that grabs attention immediately. Use bold statements, surprising facts, or relatable problems.'
+    prompt:
+      'Write a compelling 3-4 line hook that grabs attention immediately. Use bold statements, surprising facts, or relatable problems.',
   },
   {
     id: 'situation',
     title: 'Situation: The Challenge',
-    prompt: 'Describe the context and problem. Include:\n- What was the initial situation?\n- Why was it a problem?\n- What was the business impact?'
+    prompt:
+      'Describe the context and problem. Include:\n- What was the initial situation?\n- Why was it a problem?\n- What was the business impact?',
   },
   {
     id: 'task',
     title: 'Task: Define Clear Goals',
-    prompt: 'Define what needed to be accomplished:\n- Primary objectives (3-4 points)\n- Key constraints\n- Success metrics'
+    prompt:
+      'Define what needed to be accomplished:\n- Primary objectives (3-4 points)\n- Key constraints\n- Success metrics',
   },
   {
     id: 'actions',
     title: 'Action: Strategic Implementation',
-    prompt: 'Describe 3-5 key actions taken. For each action include:\n- What was done\n- Why this approach was chosen\n- How it was implemented\n- Immediate results'
+    prompt:
+      'Describe 3-5 key actions taken. For each action include:\n- What was done\n- Why this approach was chosen\n- How it was implemented\n- Immediate results',
   },
   {
     id: 'result',
     title: 'Result: Measurable Impact',
-    prompt: 'Present concrete results:\n- 4-6 key metrics (Before → After with improvement %)\n- Business impact\n- Lessons learned'
+    prompt:
+      'Present concrete results:\n- 4-6 key metrics (Before → After with improvement %)\n- Business impact\n- Lessons learned',
   },
   {
     id: 'golden_nuggets',
     title: 'Business Golden Nuggets (3 required)',
-    prompt: 'Extract 3 business golden nuggets. For each:\n- The key lesson\n- The framework/mental model\n- Business impact\n- Actionable advice (3-4 points)\n- Real-world application example'
+    prompt:
+      'Extract 3 business golden nuggets. For each:\n- The key lesson\n- The framework/mental model\n- Business impact\n- Actionable advice (3-4 points)\n- Real-world application example',
   },
   {
     id: 'thinking_tools',
     title: 'Thinking Tools Used (3 required)',
-    prompt: 'Identify 3 thinking tools/mental models used. For each:\n- Tool name and description\n- How it was applied\n- Why it worked\n- When to use it\n- Example in action'
+    prompt:
+      'Identify 3 thinking tools/mental models used. For each:\n- Tool name and description\n- How it was applied\n- Why it worked\n- When to use it\n- Example in action',
   },
   {
     id: 'conclusion',
     title: 'Conclusion',
-    prompt: 'Write a strong conclusion that:\n- Summarizes key takeaways\n- Provides a call to action\n- Leaves the reader inspired'
-  }
+    prompt:
+      'Write a strong conclusion that:\n- Summarizes key takeaways\n- Provides a call to action\n- Leaves the reader inspired',
+  },
 ]
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { action, topic, keyPoints, targetAudience, tone, mode, sectionId, sectionTitle, context } = requestSchema.parse(body)
+    const {
+      action,
+      topic,
+      keyPoints,
+      targetAudience,
+      tone,
+      mode,
+      sectionId,
+      sectionTitle,
+      context,
+    } = requestSchema.parse(body)
 
     // Use AnythingLLM for RAG-based generation
     if (mode === 'anythingllm' && action === 'full_post') {
@@ -108,7 +130,7 @@ export async function POST(request: Request) {
         })
 
         return NextResponse.json({
-          sections: result.sections.map(s => ({
+          sections: result.sections.map((s) => ({
             id: s.id,
             title: s.title,
             content: s.content,
@@ -126,7 +148,7 @@ export async function POST(request: Request) {
     // Use AnythingLLM for section regeneration
     if (mode === 'anythingllm' && action === 'regenerate_section') {
       try {
-        const section = BLOG_STRUCTURE.find(s => s.id === sectionId)
+        const section = BLOG_STRUCTURE.find((s) => s.id === sectionId)
         if (!section) {
           return NextResponse.json({ error: 'Invalid section ID' }, { status: 400 })
         }
@@ -179,7 +201,7 @@ Write ONLY the content for the "${section.title}" section. Be specific, use conc
             id: section.id,
             title: section.title,
             content,
-            aiGenerated: true
+            aiGenerated: true,
           }
         })
       )
@@ -188,7 +210,7 @@ Write ONLY the content for the "${section.title}" section. Be specific, use conc
     }
 
     if (action === 'regenerate_section') {
-      const contextStr = context?.map(c => `## ${c.title}\n${c.content}`).join('\n\n') || ''
+      const contextStr = context?.map((c) => `## ${c.title}\n${c.content}`).join('\n\n') || ''
 
       const prompt = `Topic: ${topic}
 
@@ -204,10 +226,9 @@ Regenerate the "${sectionTitle}" section with fresh content. Keep it aligned wit
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
-
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ error: error.errors[0]?.message ?? 'Validation error' }, { status: 400 })
     }
 
     console.error('[AI Blog] Error:', error)

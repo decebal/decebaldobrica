@@ -37,7 +37,7 @@ Decebal Dobrica is a Software Architect and technology leader with over 15 years
 - LinkedIn: linkedin.com/in/decebaldobrica
 
 ### Services Offered
-1. **Fractional CTO Services** - Strategic technical leadership for VC-backed startups, accelerating delivery without sacrificing quality
+1. **Engineering Leadership Services** - Strategic technical leadership for SaaS & AI platforms, accelerating delivery without sacrificing quality
 2. **Blockchain Development** - Building secure, scalable Web3 applications and smart contracts
 3. **Technical Architecture** - Designing serverless, cloud-native systems that scale efficiently
 4. **Team Acceleration** - Mentoring engineering teams to ship faster and maintain velocity

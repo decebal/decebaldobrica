@@ -3,8 +3,8 @@
 import { config } from '@/lib/personalConfig'
 import { Highlighter } from '@decebal/ui/highlighter'
 import NumberTicker from '@decebal/ui/number-ticker'
-import { motion } from 'motion/react'
 import { Award, Briefcase, GraduationCap, Heart, TrendingUp, Users, Zap } from 'lucide-react'
+import { motion } from 'motion/react'
 import React, { useEffect, useRef } from 'react'
 
 const AboutSection = () => {

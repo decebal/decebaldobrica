@@ -22,7 +22,7 @@ import {
 import Link from 'next/link'
 import React from 'react'
 
-const FractionalCTOPage = () => {
+const EngineeringLeadershipPage = () => {
   const benefits = [
     {
       icon: <TrendingUp className="h-6 w-6" />,
@@ -145,7 +145,7 @@ const FractionalCTOPage = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6">
               <span className="px-4 py-2 bg-brand-teal/10 border border-brand-teal/30 rounded-full text-brand-teal text-sm font-semibold">
-                Fractional CTO Services
+                Engineering Leadership Services
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
@@ -158,7 +158,7 @@ const FractionalCTOPage = () => {
               smarter, and avoid costly mistakes—starting at $12k/month.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <Link href="/contact?service=Fractional+CTO">
+              <Link href="/contact?service=Engineering+Leadership">
                 <ShimmerButton className="px-8 py-3">
                   <Briefcase className="mr-2 h-5 w-5" />
                   Schedule Discovery Call
@@ -200,7 +200,9 @@ const FractionalCTOPage = () => {
         {/* Benefits Section */}
         <div className="section-container py-16">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">Why Fractional CTO?</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12">
+              Why Engineering Leadership?
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {benefits.map((benefit) => (
                 <div key={benefit.title} className="brand-card p-8 rounded-lg">
@@ -216,7 +218,7 @@ const FractionalCTOPage = () => {
         </div>
 
         {/* Packages Section */}
-        <PricingGate serviceName="fractional CTO services">
+        <PricingGate serviceName="engineering leadership services">
           <div className="section-container py-16 bg-white/5">
             <div className="max-w-6xl mx-auto">
               {/* Thanks for coffee banner */}
@@ -224,8 +226,8 @@ const FractionalCTOPage = () => {
                 <Coffee className="h-8 w-8 text-brand-teal mx-auto mb-3" />
                 <p className="text-white font-semibold mb-2">☕ Thanks for the coffee!</p>
                 <p className="text-gray-300 text-sm">
-                  You now have access to transparent pricing for fractional CTO services. Below
-                  you'll find detailed engagement packages with exact monthly rates and time
+                  You now have access to transparent pricing for engineering leadership services.
+                  Below you'll find detailed engagement packages with exact monthly rates and time
                   commitments.
                 </p>
               </div>
@@ -360,7 +362,7 @@ const FractionalCTOPage = () => {
                 <h3 className="text-xl font-bold text-white mb-3">Growing Startups</h3>
                 <p className="text-gray-300 mb-4">
                   Companies scaling fast who need senior technical leadership but aren't ready for a
-                  full-time CTO.
+                  full-time engineering executive.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-400">
                   <li>• Series A-B</li>
@@ -397,13 +399,13 @@ const FractionalCTOPage = () => {
               goals. No pressure, just an honest conversation about how I can help.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
-              <Link href="/contact?service=Fractional+CTO+Discovery">
+              <Link href="/contact?service=Engineering+Leadership+Discovery">
                 <ShimmerButton className="px-8 py-3">
                   <Mail className="mr-2 h-5 w-5" />
                   Schedule Discovery Call
                 </ShimmerButton>
               </Link>
-              <Link href="/contact?service=Fractional+CTO&deposit=true">
+              <Link href="/contact?service=Engineering+Leadership&deposit=true">
                 <Button
                   size="lg"
                   className="bg-transparent border-2 border-brand-teal text-brand-teal hover:bg-brand-teal/10"
@@ -426,7 +428,7 @@ const FractionalCTOPage = () => {
             <div className="space-y-6">
               <div className="brand-card p-6 rounded-lg">
                 <h3 className="text-lg font-bold text-white mb-2">
-                  How is this different from hiring a full-time CTO?
+                  How is this different from hiring full-time?
                 </h3>
                 <p className="text-gray-300">
                   You get senior-level expertise immediately without $250k+ salary, equity dilution,
@@ -480,4 +482,4 @@ const FractionalCTOPage = () => {
   )
 }
 
-export default FractionalCTOPage
+export default EngineeringLeadershipPage

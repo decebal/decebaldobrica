@@ -104,7 +104,9 @@ function findNextAvailableSlot(
           hour12: false,
         })
 
-        const [myHour, myMinute] = myTimeString.split(':').map(Number)
+        const timeParts = myTimeString.split(':').map(Number)
+        const myHour = timeParts[0] ?? 0
+        const myMinute = timeParts[1] ?? 0
 
         // Check if this slot is within my business hours
         const meetingEndHour = myHour + Math.floor((myMinute + duration) / 60)
@@ -126,7 +128,7 @@ function findNextAvailableSlot(
 
         if (!isConflict) {
           // Found an available slot! Return it in user's local timezone format
-          const dateStr = slotStart.toISOString().split('T')[0]
+          const dateStr = slotStart.toISOString().split('T')[0] ?? ''
           const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
 
           return {

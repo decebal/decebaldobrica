@@ -21,7 +21,7 @@ He's particularly passionate about crypto and blockchain projects, working with 
 
 ## Target Clients
 
-- **VC-backed startups** looking to accelerate portfolio velocity
-- **Founders** who need strategic technical leadership without the overhead of a full-time CTO
+- **SaaS & AI platforms** looking to accelerate delivery velocity
+- **Founders** who need strategic technical leadership without the overhead of full-time hiring
 - **Engineering teams** seeking to increase productivity and ship faster
 - **Crypto and blockchain projects** needing expert technical guidance

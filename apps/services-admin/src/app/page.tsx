@@ -222,7 +222,7 @@ export default function ServicesAdminHome() {
             />
             <ActivityItem
               icon="📰"
-              text='Newsletter tier updated: Premium tier price adjusted'
+              text="Newsletter tier updated: Premium tier price adjusted"
               time="2 days ago"
               color="purple"
             />
@@ -285,7 +285,9 @@ function StatCard({
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+      />
       <div className="relative">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -295,7 +297,9 @@ function StatCard({
             {icon}
           </span>
         </div>
-        <p className={`text-3xl font-bold bg-gradient-to-br ${gradient} bg-clip-text text-transparent`}>
+        <p
+          className={`text-3xl font-bold bg-gradient-to-br ${gradient} bg-clip-text text-transparent`}
+        >
           {value}
         </p>
       </div>
@@ -323,13 +327,17 @@ function QuickLinkCard({
       href={href}
       className="group relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:scale-[1.02]"
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+      />
       <div className="relative">
         <div className="flex items-center justify-between mb-4">
           <div className="text-3xl group-hover:scale-110 transition-transform duration-300">
             {icon}
           </div>
-          <div className={`bg-gradient-to-br ${gradient} text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg`}>
+          <div
+            className={`bg-gradient-to-br ${gradient} text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg`}
+          >
             {count}
           </div>
         </div>
@@ -366,7 +374,9 @@ function ActivityItem({
   }
 
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg ${colorClasses[color]} transition-all hover:scale-[1.01]`}>
+    <div
+      className={`flex items-center justify-between p-3 rounded-lg ${colorClasses[color]} transition-all hover:scale-[1.01]`}
+    >
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{text}</span>

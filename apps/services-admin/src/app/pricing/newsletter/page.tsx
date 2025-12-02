@@ -120,9 +120,7 @@ export default function NewsletterPricingPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                      {tier.name}
-                    </h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{tier.name}</h3>
                     <span className="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                       {formatInterval(tier.metadata?.interval)}
                     </span>
@@ -175,7 +173,10 @@ export default function NewsletterPricingPage() {
                       </p>
                       <ul className="space-y-1">
                         {tier.benefits.map((benefit, idx) => (
-                          <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                          <li
+                            key={idx}
+                            className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2"
+                          >
                             <span className="text-green-500">✓</span>
                             {benefit}
                           </li>

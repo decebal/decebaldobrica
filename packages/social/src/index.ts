@@ -79,8 +79,12 @@ export async function postToAllPlatforms(post: SocialPost): Promise<SocialPostRe
   // Post to Twitter (as thread)
   try {
     const twitterThread = generateTwitterThread(post)
+    const firstTweet = twitterThread[0]
+    if (!firstTweet) {
+      throw new Error('Failed to generate Twitter thread')
+    }
     const twitterResult = await postToTwitter({
-      text: twitterThread[0],
+      text: firstTweet,
       threadParts: twitterThread,
       imageUrl: post.imageUrl,
     })

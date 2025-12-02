@@ -6,12 +6,12 @@
  * Payment is one-time, access is lifetime
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { servicesGateConfig } from '@/lib/payment-gate/config'
+import { getWalletAddressFromRequest, hasServicesPricingAccess } from '@/lib/payment-gate/helpers'
+import { SERVICE_TIERS } from '@/lib/payments/config'
 import { PaymentGate } from '@decebal/payment-gate'
 import { requirePayment } from '@decebal/payment-gate/middleware/nextjs'
-import { servicesGateConfig } from '@/lib/payment-gate/config'
-import { hasServicesPricingAccess, getWalletAddressFromRequest } from '@/lib/payment-gate/helpers'
-import { SERVICE_TIERS } from '@/lib/payments/config'
+import { type NextRequest, NextResponse } from 'next/server'
 
 // Initialize Payment Gate
 const gate = new PaymentGate(servicesGateConfig)

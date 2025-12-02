@@ -22,13 +22,15 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
 
   // Get service tier from unified payment config
   const tierConfig = getPaymentConfig('service_tier', serviceSlug)
-  const tier = tierConfig ? {
-    name: tierConfig.name,
-    description: tierConfig.description,
-    price: tierConfig.priceSol || 0,
-    priceUSD: tierConfig.priceUsd || 0,
-    benefits: tierConfig.benefits || [],
-  } : null
+  const tier = tierConfig
+    ? {
+        name: tierConfig.name,
+        description: tierConfig.description,
+        price: tierConfig.priceSol || 0,
+        priceUSD: tierConfig.priceUsd || 0,
+        benefits: tierConfig.benefits || [],
+      }
+    : null
 
   // Check access when wallet connects
   useEffect(() => {

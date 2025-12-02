@@ -1,16 +1,8 @@
 'use client'
 
+import { BarChart3, FileText, Home, Mail, Settings, Sparkles, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  BarChart3,
-  FileText,
-  Home,
-  Mail,
-  Settings,
-  Sparkles,
-  Users,
-} from 'lucide-react'
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },

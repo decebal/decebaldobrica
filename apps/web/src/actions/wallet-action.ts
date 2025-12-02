@@ -1,6 +1,6 @@
 'use server'
 
-import { ensureUserProfile, hasServiceAccess, grantServiceAccess } from '@/lib/payments'
+import { ensureUserProfile, grantServiceAccess, hasServiceAccess } from '@/lib/payments'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 

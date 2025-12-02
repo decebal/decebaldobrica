@@ -69,8 +69,8 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   }
 
   return (
-    // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe use of inline CSS for theming
     <style
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe use of inline CSS for theming
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

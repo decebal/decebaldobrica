@@ -313,7 +313,7 @@ test.describe('Blog Table of Contents', () => {
       // Find a section with children (has ChevronRight icon)
       const sectionWithChildren = page.locator('button:has(svg[class*="lucide-chevron"])').first()
 
-      if (await sectionWithChildren.count() > 0) {
+      if ((await sectionWithChildren.count()) > 0) {
         // Click to expand
         await sectionWithChildren.click()
         await page.waitForTimeout(300)

@@ -19,9 +19,9 @@ import React from 'react'
 const services = [
   {
     icon: <Briefcase className="h-8 w-8" />,
-    title: 'Fractional CTO Services',
+    title: 'Engineering Leadership Services',
     description:
-      'Strategic technical leadership for VC-backed startups. Technology strategy, architecture reviews, and team building.',
+      'Strategic technical leadership for SaaS & AI platforms. Full-stack architecture, team growth, and technology strategy.',
     teaser: 'Retainer-based',
     featured: true,
   },
@@ -73,7 +73,7 @@ const ServicesSection = () => {
       <div className="section-container">
         <h2 className="section-title">How I Can Help</h2>
         <p className="section-subtitle">
-          From fractional CTO services to technical content creation—strategic expertise that
+          From engineering leadership to technical content creation—strategic expertise that
           accelerates your startup's growth.
         </p>
 
@@ -124,7 +124,7 @@ const ServicesSection = () => {
             Ready to accelerate your portfolio velocity?
           </h3>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Whether you need fractional CTO services, technical content, or architecture
+            Whether you need engineering leadership, technical content, or architecture
             documentation—let's discuss how I can help you ship faster and scale smarter.
           </p>
           <div className="flex flex-wrap justify-center gap-4">

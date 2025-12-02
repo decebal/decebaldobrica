@@ -32,13 +32,13 @@ export class PaymentGateClient {
 
       // Success - return data
       if (response.ok) {
-        const data = await response.json()
+        const data = (await response.json()) as T
         return { data, status: response.status }
       }
 
       // Payment required
       if (response.status === 402) {
-        const payment: Http402Response = await response.json()
+        const payment = (await response.json()) as Http402Response
 
         if (this.config.autoRetry) {
           // Automatically handle payment and retry
@@ -117,7 +117,7 @@ export class PaymentGateClient {
     })
 
     if (retryResponse.ok) {
-      const data = await retryResponse.json()
+      const data = (await retryResponse.json()) as T
       return { data, status: retryResponse.status }
     }
 

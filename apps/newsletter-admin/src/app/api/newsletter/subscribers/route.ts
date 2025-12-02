@@ -26,18 +26,12 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching subscribers:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch subscribers' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch subscribers' }, { status: 500 })
     }
 
     return NextResponse.json({ subscribers: data || [] })
   } catch (error) {
     console.error('Newsletter subscribers error:', error)
-    return NextResponse.json(
-      { error: 'Something went wrong' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

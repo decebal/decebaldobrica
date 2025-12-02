@@ -52,7 +52,7 @@ export async function GET() {
 
     const monthlyGrowth =
       previousSubscribers && previousSubscribers > 0
-        ? ((recentSubscribers || 0) - previousSubscribers) / previousSubscribers * 100
+        ? (((recentSubscribers || 0) - previousSubscribers) / previousSubscribers) * 100
         : 0
 
     // Calculate revenue (basic estimation)
@@ -78,9 +78,6 @@ export async function GET() {
     return NextResponse.json(analytics)
   } catch (error) {
     console.error('Newsletter analytics error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch analytics' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
   }
 }

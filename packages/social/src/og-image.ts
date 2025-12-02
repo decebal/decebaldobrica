@@ -12,11 +12,19 @@ interface OGImageOptions {
   theme?: 'light' | 'dark'
 }
 
+interface OGImageElement {
+  type: string
+  props: {
+    style?: Record<string, string | number>
+    children?: string | OGImageElement | OGImageElement[]
+  }
+}
+
 /**
  * Generate OG image HTML for @vercel/og
  * This returns the JSX-like structure that @vercel/og expects
  */
-export function generateOGImageHTML(options: OGImageOptions): any {
+export function generateOGImageHTML(options: OGImageOptions): OGImageElement {
   const { title, subtitle, author = 'Decebal Dobrica', date, tags = [], theme = 'dark' } = options
 
   const isDark = theme === 'dark'

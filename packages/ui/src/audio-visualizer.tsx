@@ -28,7 +28,7 @@ export function AudioVisualizer({ stream, isRecording, onClick }: AudioVisualize
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const animationFrameRef = useRef<number>()
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLButtonElement>(null)
 
   // Cleanup function to stop visualization and close audio context
   const cleanup = useCallback(() => {

@@ -1,10 +1,14 @@
 'use client'
 
-import { cn } from './lib/utils'
 import { motion } from 'motion/react'
 import type React from 'react'
+import { cn } from './lib/utils'
 
-interface NeonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Omit props that conflict with framer-motion's types
+type NeonButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd'
+> & {
   children: React.ReactNode
   variant?: 'primary' | 'secondary'
 }
@@ -33,7 +37,7 @@ export function NeonButton({
       )}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      {...(props as React.ComponentPropsWithoutRef<'button'>)}
+      {...props}
     >
       <span className="relative z-10 inline-flex items-center justify-center gap-2">
         {children}

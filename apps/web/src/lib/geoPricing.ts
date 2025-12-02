@@ -521,13 +521,15 @@ export function getGeoPricingConfig(location: DetectedLocation): GeoPricingConfi
   }
 
   // Try country-specific mapping
-  if (GEO_PRICING_MAP[location.countryCode]) {
-    return GEO_PRICING_MAP[location.countryCode]
+  const countryConfig = GEO_PRICING_MAP[location.countryCode]
+  if (countryConfig) {
+    return countryConfig
   }
 
   // Fallback to country-level config
-  if (COUNTRY_FALLBACK_MAP[location.countryCode]) {
-    return COUNTRY_FALLBACK_MAP[location.countryCode]
+  const fallbackConfig = COUNTRY_FALLBACK_MAP[location.countryCode]
+  if (fallbackConfig) {
+    return fallbackConfig
   }
 
   // Default config

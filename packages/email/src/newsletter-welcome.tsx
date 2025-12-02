@@ -101,7 +101,10 @@ export function NewsletterWelcomeEmail({
                   access to content.
                 </Text>
                 <Section style={buttonContainer}>
-                  <Button style={button} href="https://decebaldobrica.com/newsletter/pricing?tier=free">
+                  <Button
+                    style={button}
+                    href="https://decebaldobrica.com/newsletter/pricing?tier=free"
+                  >
                     View Premium Plans
                   </Button>
                 </Section>
@@ -143,7 +146,10 @@ export function NewsletterWelcomeEmail({
               </Text>
               <Text style={footerUnsubscribe}>
                 You can{' '}
-                <Link href="https://decebaldobrica.com/newsletter/unsubscribe" style={unsubscribeLink}>
+                <Link
+                  href="https://decebaldobrica.com/newsletter/unsubscribe"
+                  style={unsubscribeLink}
+                >
                   unsubscribe
                 </Link>{' '}
                 at any time.

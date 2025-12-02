@@ -12,7 +12,12 @@
 // TYPES
 // ============================================================================
 
-export type PaymentType = 'meeting' | 'service_access' | 'newsletter_subscription' | 'deposit' | 'tip'
+export type PaymentType =
+  | 'meeting'
+  | 'service_access'
+  | 'newsletter_subscription'
+  | 'deposit'
+  | 'tip'
 
 export type Currency = 'SOL' | 'BTC' | 'ETH' | 'USDC' | 'USD'
 
@@ -86,11 +91,7 @@ export const MEETING_TYPES: Record<string, PaymentConfig> = {
     priceSol: 1.9, // ~$400 at $215/SOL
     priceUsd: 400,
     durationMinutes: 60,
-    benefits: [
-      'Architecture review',
-      'Tech stack decisions',
-      'Roadmap planning',
-    ],
+    benefits: ['Architecture review', 'Tech stack decisions', 'Roadmap planning'],
     isActive: true,
   },
 
@@ -102,10 +103,7 @@ export const MEETING_TYPES: Record<string, PaymentConfig> = {
     priceSol: 3.3, // ~$700 at $215/SOL
     priceUsd: 700,
     durationMinutes: 90,
-    benefits: [
-      'Comprehensive system architecture review',
-      'Detailed technical planning',
-    ],
+    benefits: ['Comprehensive system architecture review', 'Detailed technical planning'],
     isActive: true,
   },
 }

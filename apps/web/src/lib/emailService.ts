@@ -71,7 +71,7 @@ export async function sendMeetingConfirmation(
 
     console.log('   Full response:', JSON.stringify(result, null, 2))
     console.log(`✅ Meeting confirmation sent to ${meeting.contactEmail}`)
-    console.log(`   Email ID: ${result.data?.id || result.id || 'unknown'}`)
+    console.log(`   Email ID: ${result.data?.id || 'unknown'}`)
 
     if (result.error) {
       console.error('   ⚠️ Resend returned an error:', result.error)

@@ -69,7 +69,7 @@ class RateLimiter {
     }
 
     const submissions = entry.submissions.slice().sort((a, b) => b - a)
-    const timeSinceLastSubmission = submissions[0] - submissions[1]
+    const timeSinceLastSubmission = (submissions[0] ?? 0) - (submissions[1] ?? 0)
 
     return timeSinceLastSubmission < minIntervalMs
   }

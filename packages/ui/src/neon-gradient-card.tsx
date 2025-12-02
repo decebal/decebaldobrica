@@ -1,8 +1,8 @@
 'use client'
 
-import { cn } from './lib/utils'
 import type React from 'react'
 import type { CSSProperties } from 'react'
+import { cn } from './lib/utils'
 
 interface NeonGradientCardProps {
   children: React.ReactNode
@@ -52,8 +52,8 @@ export function NeonGradientCard({
         {children}
       </div>
 
-      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Safe use of inline CSS for animation keyframes */}
       <style
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe use of inline CSS for animation keyframes
         dangerouslySetInnerHTML={{
           __html: `
         @keyframes neon-pulse {

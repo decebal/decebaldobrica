@@ -8,7 +8,7 @@ import { Suspense } from 'react'
 export const metadata: Metadata = {
   title: 'Contact & Book',
   description:
-    'Schedule a consultation to discuss how fractional CTO services can accelerate your startup',
+    'Schedule a consultation to discuss how engineering leadership services can accelerate your startup',
 }
 
 export default function ContactPage() {

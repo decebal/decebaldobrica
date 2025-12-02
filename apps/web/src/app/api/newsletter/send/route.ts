@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const result = sendSchema.safeParse(body)
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ error: result.error.errors[0]?.message ?? 'Validation error' }, { status: 400 })
     }
 
     const { subject, content, tier } = result.data

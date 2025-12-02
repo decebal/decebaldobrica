@@ -101,7 +101,7 @@ test.describe('Contact Page', () => {
       // Set date to tomorrow
       const tomorrow = new Date()
       tomorrow.setDate(tomorrow.getDate() + 1)
-      const dateString = tomorrow.toISOString().split('T')[0]
+      const dateString = tomorrow.toISOString().split('T')[0] ?? ''
       await page.fill('input#date', dateString)
       await page.fill('input#time', '14:00')
 

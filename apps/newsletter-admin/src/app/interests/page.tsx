@@ -3,14 +3,7 @@
 import { getSupabaseAdmin } from '@decebal/database'
 import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@decebal/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@decebal/ui/table'
 import { Download, Mail, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -86,9 +79,7 @@ export default function InterestsPage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent mb-3">
             Plan Interest Tracker 🎯
           </h1>
-          <p className="text-foreground/70 text-lg">
-            Users interested in premium newsletter plans
-          </p>
+          <p className="text-foreground/70 text-lg">Users interested in premium newsletter plans</p>
         </div>
 
         {/* Stats Cards */}
@@ -99,9 +90,7 @@ export default function InterestsPage() {
                 <Users className="h-6 w-6" />
               </div>
             </div>
-            <p className="text-muted-foreground text-sm font-semibold mb-1">
-              Total Interests
-            </p>
+            <p className="text-muted-foreground text-sm font-semibold mb-1">Total Interests</p>
             <p className="text-4xl font-bold bg-gradient-to-br from-purple-500 to-violet-500 bg-clip-text text-transparent">
               {stats.total}
             </p>
@@ -205,8 +194,13 @@ export default function InterestsPage() {
               </TableHeader>
               <TableBody>
                 {filteredInterests.map((interest) => (
-                  <TableRow key={interest.id} className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors border-b border-border">
-                    <TableCell className="font-semibold text-foreground">{interest.email}</TableCell>
+                  <TableRow
+                    key={interest.id}
+                    className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors border-b border-border"
+                  >
+                    <TableCell className="font-semibold text-foreground">
+                      {interest.email}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         className={

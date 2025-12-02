@@ -353,7 +353,7 @@ export const caseStudies: CaseStudy[] = [
             title: 'Flo Health: Multiple Team Structure Iterations',
             url: 'https://teamtopologies.com/examples',
             description:
-              'Popular women\'s health app that evolved through multiple team structures as they grew, demonstrating the importance of adapting architecture as organizations scale.',
+              "Popular women's health app that evolved through multiple team structures as they grew, demonstrating the importance of adapting architecture as organizations scale.",
           },
           {
             title: 'The 10-Step MVP Development Process: Concept to Launch in 8 Weeks',
@@ -392,7 +392,8 @@ export const caseStudies: CaseStudy[] = [
     id: '4',
     slug: 'premium-newsletter-launch-stack',
     title: 'From Overengineered to MVP — Launch in 12 Days',
-    tagline: 'Enterprise architecture transformation: TOGAF-aligned platform modernization in 12 days',
+    tagline:
+      'Enterprise architecture transformation: TOGAF-aligned platform modernization in 12 days',
     industry: 'Financial Media',
     role: 'Solutions Architect & Digital Transformation Lead',
 
@@ -402,13 +403,12 @@ export const caseStudies: CaseStudy[] = [
     companyName: 'FinEdge Premium Intelligence',
     companyIndustry: 'Premium financial newsletter platform (Series A, $4.2M)',
     problem:
-      'Series A-backed FinEdge Premium Intelligence ($4.2M raised) faced critical delays launching their institutional newsletter.\n\nThe team **overengineered before validating**—Ghost CMS couldn\'t support multi-tier subscriptions, institutional SSO, or Bloomberg integrations.\n\n**Mid-cycle pivot cost $85K, 14 weeks lost, competitors launched first.**',
+      "Series A-backed FinEdge Premium Intelligence ($4.2M raised) faced critical delays launching their institutional newsletter.\n\nThe team **overengineered before validating**—Ghost CMS couldn't support multi-tier subscriptions, institutional SSO, or Bloomberg integrations.\n\n**Mid-cycle pivot cost $85K, 14 weeks lost, competitors launched first.**",
     impact:
       '**Financial:** $85K budget overrun, $127K lost revenue, 3.2x infrastructure costs.\n\n**Operational:** 67% velocity drop, 47% technical debt, deployment frequency collapsed.\n\n**Strategic:** Competitors captured 34% market share, board demanded architecture review, 7-9 weeks of runway remaining.',
 
     // Fix
-    framework:
-      'TOGAF ADM compressed into 12 days—enterprise architecture at startup speed.',
+    framework: 'TOGAF ADM compressed into 12 days—enterprise architecture at startup speed.',
     actions: [
       'Established 7 architecture principles (modularity, cloud-first, security by design)',
       'Designed cloud-native stack: Next.js, Supabase, Vercel Edge, TypeScript strict mode',
@@ -888,7 +888,8 @@ export const caseStudies: CaseStudy[] = [
               'TypeScript 5.3 (Strict mode, full type safety)',
               'Zod (Runtime schema validation)',
             ],
-            purpose: 'User interface, client-side logic, SEO optimization, responsive design (WCAG 2.1 AA compliant)',
+            purpose:
+              'User interface, client-side logic, SEO optimization, responsive design (WCAG 2.1 AA compliant)',
           },
           {
             name: 'Layer 2: API / Business Logic Layer',
@@ -899,7 +900,8 @@ export const caseStudies: CaseStudy[] = [
               'Zod Schemas (Request/response validation)',
               'Rate Limiting Middleware (DDoS protection)',
             ],
-            purpose: 'Business logic, API endpoints, data transformation, authentication/authorization, request validation',
+            purpose:
+              'Business logic, API endpoints, data transformation, authentication/authorization, request validation',
           },
           {
             name: 'Layer 3: Data / Persistence Layer',
@@ -910,7 +912,8 @@ export const caseStudies: CaseStudy[] = [
               'Cloudflare R2 (Object storage for media assets)',
               'Database Migrations (version-controlled schema changes)',
             ],
-            purpose: 'Data persistence, caching, file storage, transactional integrity, data security',
+            purpose:
+              'Data persistence, caching, file storage, transactional integrity, data security',
           },
           {
             name: 'Layer 4: Integration / External Services Layer',
@@ -921,7 +924,8 @@ export const caseStudies: CaseStudy[] = [
               'Auth0 (OAuth 2.0, OIDC, SSO)',
               'Bloomberg Terminal API (Financial data feeds)',
             ],
-            purpose: 'Third-party integrations, payment processing, email delivery, analytics, authentication providers',
+            purpose:
+              'Third-party integrations, payment processing, email delivery, analytics, authentication providers',
           },
           {
             name: 'Layer 5: Infrastructure / Deployment Layer',
@@ -932,7 +936,8 @@ export const caseStudies: CaseStudy[] = [
               'Terraform (Infrastructure as Code - IaC)',
               'Vercel Preview Environments (PR-based previews)',
             ],
-            purpose: 'Hosting, auto-scaling (0→10K users), CI/CD automation, infrastructure provisioning, deployment',
+            purpose:
+              'Hosting, auto-scaling (0→10K users), CI/CD automation, infrastructure provisioning, deployment',
           },
           {
             name: 'Layer 6: Observability / Monitoring Layer',
@@ -943,7 +948,8 @@ export const caseStudies: CaseStudy[] = [
               'Uptime Robot (Availability monitoring, alerts)',
               'GitHub Security Alerts (Dependency scanning)',
             ],
-            purpose: 'Error tracking, performance monitoring, user analytics, uptime monitoring, security vulnerability scanning',
+            purpose:
+              'Error tracking, performance monitoring, user analytics, uptime monitoring, security vulnerability scanning',
           },
           {
             name: 'Layer 7: Security / Compliance Layer',
@@ -954,7 +960,8 @@ export const caseStudies: CaseStudy[] = [
               'Database Encryption at Rest (AES-256)',
               'GDPR/CCPA Compliance Tools (data export, right to deletion)',
             ],
-            purpose: 'Authentication, authorization, encryption, DDoS protection, regulatory compliance (GDPR, CCPA, SEC)',
+            purpose:
+              'Authentication, authorization, encryption, DDoS protection, regulatory compliance (GDPR, CCPA, SEC)',
           },
         ],
       },
@@ -965,37 +972,73 @@ export const caseStudies: CaseStudy[] = [
         layers: [
           {
             name: 'User Actions → Frontend',
-            technologies: ['User interactions (clicks, form submissions)', 'React state management', 'Optimistic UI updates'],
+            technologies: [
+              'User interactions (clicks, form submissions)',
+              'React state management',
+              'Optimistic UI updates',
+            ],
             purpose: 'Capture user intent, provide immediate feedback, trigger API calls',
           },
           {
             name: 'Frontend → API Gateway (tRPC)',
-            technologies: ['Type-safe RPC calls', 'Zod schema validation', 'JWT token authentication'],
-            purpose: 'Route requests to appropriate microservices, validate inputs, enforce authentication',
+            technologies: [
+              'Type-safe RPC calls',
+              'Zod schema validation',
+              'JWT token authentication',
+            ],
+            purpose:
+              'Route requests to appropriate microservices, validate inputs, enforce authentication',
           },
           {
             name: 'API Gateway → Microservices',
-            technologies: ['Auth Service', 'Content Service', 'Billing Service', 'Email Service', 'Analytics Service'],
-            purpose: 'Execute business logic in isolated, scalable services with clear bounded contexts',
+            technologies: [
+              'Auth Service',
+              'Content Service',
+              'Billing Service',
+              'Email Service',
+              'Analytics Service',
+            ],
+            purpose:
+              'Execute business logic in isolated, scalable services with clear bounded contexts',
           },
           {
             name: 'Microservices → Database (Supabase)',
-            technologies: ['PostgreSQL transactions', 'Row-Level Security (RLS)', 'Connection pooling'],
+            technologies: [
+              'PostgreSQL transactions',
+              'Row-Level Security (RLS)',
+              'Connection pooling',
+            ],
             purpose: 'Persist data, enforce access control, maintain referential integrity',
           },
           {
             name: 'Microservices → Event Bus (Webhooks)',
-            technologies: ['Stripe webhooks (payment events)', 'SendGrid webhooks (email events)', 'Custom event emitters'],
-            purpose: 'Trigger async workflows, decouple services, enable event sourcing for audit trails',
+            technologies: [
+              'Stripe webhooks (payment events)',
+              'SendGrid webhooks (email events)',
+              'Custom event emitters',
+            ],
+            purpose:
+              'Trigger async workflows, decouple services, enable event sourcing for audit trails',
           },
           {
             name: 'Event Bus → Background Jobs',
-            technologies: ['Vercel Cron Jobs', 'Webhook handlers', 'Async email sending', 'Analytics aggregation'],
-            purpose: 'Process long-running tasks asynchronously, send notifications, generate reports',
+            technologies: [
+              'Vercel Cron Jobs',
+              'Webhook handlers',
+              'Async email sending',
+              'Analytics aggregation',
+            ],
+            purpose:
+              'Process long-running tasks asynchronously, send notifications, generate reports',
           },
           {
             name: 'All Layers → Observability',
-            technologies: ['Sentry (errors)', 'PostHog (analytics)', 'Vercel (performance)', 'Logs (structured JSON)'],
+            technologies: [
+              'Sentry (errors)',
+              'PostHog (analytics)',
+              'Vercel (performance)',
+              'Logs (structured JSON)',
+            ],
             purpose: 'Monitor system health, track user behavior, debug issues, measure KPIs',
           },
         ],
@@ -1007,33 +1050,66 @@ export const caseStudies: CaseStudy[] = [
         layers: [
           {
             name: 'Perimeter Security',
-            technologies: ['Vercel WAF (Web Application Firewall)', 'DDoS protection', 'Rate limiting (100 req/min per IP)', 'HTTPS/TLS 1.3 enforced'],
+            technologies: [
+              'Vercel WAF (Web Application Firewall)',
+              'DDoS protection',
+              'Rate limiting (100 req/min per IP)',
+              'HTTPS/TLS 1.3 enforced',
+            ],
             purpose: 'Prevent malicious traffic, block DDoS attacks, enforce encryption in transit',
           },
           {
             name: 'Authentication & Authorization',
-            technologies: ['Auth0 OAuth 2.0/OIDC', 'JWT tokens (signed, expiring)', 'Multi-Factor Authentication (MFA)', 'Role-Based Access Control (RBAC)'],
-            purpose: 'Verify user identity, enforce least-privilege access, support institutional SSO (Okta, Azure AD)',
+            technologies: [
+              'Auth0 OAuth 2.0/OIDC',
+              'JWT tokens (signed, expiring)',
+              'Multi-Factor Authentication (MFA)',
+              'Role-Based Access Control (RBAC)',
+            ],
+            purpose:
+              'Verify user identity, enforce least-privilege access, support institutional SSO (Okta, Azure AD)',
           },
           {
             name: 'Data Security',
-            technologies: ['Database encryption at rest (AES-256)', 'Row-Level Security (RLS) in Supabase', 'PII data masking', 'Backup encryption'],
+            technologies: [
+              'Database encryption at rest (AES-256)',
+              'Row-Level Security (RLS) in Supabase',
+              'PII data masking',
+              'Backup encryption',
+            ],
             purpose: 'Protect sensitive data, enforce multi-tenancy, comply with GDPR/CCPA',
           },
           {
             name: 'Application Security',
-            technologies: ['Input validation (Zod schemas)', 'SQL injection prevention (parameterized queries)', 'XSS protection (Content Security Policy)', 'CSRF tokens'],
+            technologies: [
+              'Input validation (Zod schemas)',
+              'SQL injection prevention (parameterized queries)',
+              'XSS protection (Content Security Policy)',
+              'CSRF tokens',
+            ],
             purpose: 'Prevent injection attacks, protect against XSS/CSRF, validate all inputs',
           },
           {
             name: 'Dependency Security',
-            technologies: ['Snyk (dependency scanning)', 'GitHub Dependabot (automated updates)', 'npm audit (vulnerability checks)', 'Lockfile integrity'],
-            purpose: 'Identify vulnerable dependencies, auto-patch security issues, prevent supply chain attacks',
+            technologies: [
+              'Snyk (dependency scanning)',
+              'GitHub Dependabot (automated updates)',
+              'npm audit (vulnerability checks)',
+              'Lockfile integrity',
+            ],
+            purpose:
+              'Identify vulnerable dependencies, auto-patch security issues, prevent supply chain attacks',
           },
           {
             name: 'Compliance & Auditing',
-            technologies: ['GDPR data export/deletion tools', 'Audit logs (all user actions)', 'SOC 2 Type II compliance (infrastructure)', 'PCI DSS (Stripe handles card data)'],
-            purpose: 'Meet regulatory requirements, provide audit trails, support compliance reporting',
+            technologies: [
+              'GDPR data export/deletion tools',
+              'Audit logs (all user actions)',
+              'SOC 2 Type II compliance (infrastructure)',
+              'PCI DSS (Stripe handles card data)',
+            ],
+            purpose:
+              'Meet regulatory requirements, provide audit trails, support compliance reporting',
           },
         ],
       },
@@ -1049,37 +1125,67 @@ export const caseStudies: CaseStudy[] = [
           },
           {
             name: 'Step 2: Automated Testing',
-            technologies: ['Unit tests (Jest, 87% coverage)', 'Integration tests (API endpoints)', 'E2E tests (Playwright)'],
+            technologies: [
+              'Unit tests (Jest, 87% coverage)',
+              'Integration tests (API endpoints)',
+              'E2E tests (Playwright)',
+            ],
             purpose: 'Catch bugs before deployment, ensure feature correctness',
           },
           {
             name: 'Step 3: Code Quality Checks',
-            technologies: ['TypeScript type checking', 'ESLint (code standards)', 'Prettier (formatting)', 'Biome (fast linting)'],
+            technologies: [
+              'TypeScript type checking',
+              'ESLint (code standards)',
+              'Prettier (formatting)',
+              'Biome (fast linting)',
+            ],
             purpose: 'Enforce code standards, maintain consistency, prevent technical debt',
           },
           {
             name: 'Step 4: Security Scanning',
-            technologies: ['Snyk (dependency vulnerabilities)', 'GitHub Security Alerts', 'Secrets detection (GitGuardian)'],
+            technologies: [
+              'Snyk (dependency vulnerabilities)',
+              'GitHub Security Alerts',
+              'Secrets detection (GitGuardian)',
+            ],
             purpose: 'Identify security vulnerabilities, prevent credential leaks',
           },
           {
             name: 'Step 5: Build & Bundle',
-            technologies: ['Next.js production build', 'Tree shaking (unused code removal)', 'Code splitting (lazy loading)', 'Asset optimization (images, fonts)'],
+            technologies: [
+              'Next.js production build',
+              'Tree shaking (unused code removal)',
+              'Code splitting (lazy loading)',
+              'Asset optimization (images, fonts)',
+            ],
             purpose: 'Create optimized production bundle, minimize bundle size',
           },
           {
             name: 'Step 6: Preview Deployment',
-            technologies: ['Vercel Preview URL (per PR)', 'Automated E2E tests on preview', 'Visual regression testing (Percy)'],
+            technologies: [
+              'Vercel Preview URL (per PR)',
+              'Automated E2E tests on preview',
+              'Visual regression testing (Percy)',
+            ],
             purpose: 'Test changes in production-like environment before merge',
           },
           {
             name: 'Step 7: Production Deployment',
-            technologies: ['Vercel edge network (300+ locations)', 'Blue-green deployment (zero downtime)', 'Automatic rollback on errors'],
+            technologies: [
+              'Vercel edge network (300+ locations)',
+              'Blue-green deployment (zero downtime)',
+              'Automatic rollback on errors',
+            ],
             purpose: 'Deploy to global CDN, ensure zero downtime, auto-rollback if issues detected',
           },
           {
             name: 'Step 8: Post-Deployment Validation',
-            technologies: ['Smoke tests (critical user flows)', 'Performance monitoring (Lighthouse CI)', 'Error tracking (Sentry alerts)'],
+            technologies: [
+              'Smoke tests (critical user flows)',
+              'Performance monitoring (Lighthouse CI)',
+              'Error tracking (Sentry alerts)',
+            ],
             purpose: 'Validate deployment success, monitor for regressions, alert on errors',
           },
         ],
@@ -1131,7 +1237,7 @@ export const caseStudies: CaseStudy[] = [
             title: 'TOGAF Relevance in 2025: AI & Digital Transformation',
             url: 'https://www.linkedin.com/pulse/togaf-relevant-2025-enterprise-architecture-age-ai-govindarajan-jruie',
             description:
-              'Analysis of TOGAF\'s adaptation for AI governance and digital transformation in 2025. Shows framework\'s evolution beyond traditional EA.',
+              "Analysis of TOGAF's adaptation for AI governance and digital transformation in 2025. Shows framework's evolution beyond traditional EA.",
           },
           {
             title: 'LeanIX: Implementing TOGAF Framework',
@@ -1364,7 +1470,7 @@ export const caseStudies: CaseStudy[] = [
           'Architecture principles prevent resume-driven development: 7 principles (modularity, cloud-first, security by design) blocked 5 technology debates that would have consumed 2+ weeks.',
           'TOGAF compressed to startup timelines aligns teams faster than meetings: Documented decisions in Architecture Vision eliminated 12+ hours of alignment meetings.',
           'Foundation Reference Model accelerates future projects: Reusable patterns saved 2-3 weeks on subsequent initiatives.',
-          'Enterprise architecture isn\'t just for enterprises: Series A startups benefit from lightweight EA frameworks when applied pragmatically.',
+          "Enterprise architecture isn't just for enterprises: Series A startups benefit from lightweight EA frameworks when applied pragmatically.",
         ],
       },
       {

@@ -1,8 +1,8 @@
 'use client'
 
 import Footer from '@/components/Footer'
-import EthereumIcon from '@/components/icons/EthereumIcon'
 import ServicesNavigation from '@/components/ServicesNavigation'
+import EthereumIcon from '@/components/icons/EthereumIcon'
 import SolanaIcon from '@/components/icons/SolanaIcon'
 import ServicePaymentGate from '@/components/payments/ServicePaymentGate'
 import { Button } from '@decebal/ui/button'
@@ -31,9 +31,9 @@ interface ServicePackage {
 }
 
 const ServicesPage = () => {
-  const [selectedService, setSelectedService] = useState<string>('fractional-cto')
+  const [selectedService, setSelectedService] = useState<string>('engineering-leadership')
 
-  const fractionalCTOPackages: ServicePackage[] = [
+  const engineeringLeadershipPackages: ServicePackage[] = [
     {
       name: 'Startup Advisory',
       price: '$12,000/month',
@@ -228,8 +228,8 @@ const ServicesPage = () => {
 
   const getPackages = (): ServicePackage[] => {
     switch (selectedService) {
-      case 'fractional-cto':
-        return fractionalCTOPackages
+      case 'engineering-leadership':
+        return engineeringLeadershipPackages
       case 'technical-writing':
         return technicalWritingPackages
       case 'case-studies':
@@ -237,15 +237,15 @@ const ServicesPage = () => {
       case 'architecture':
         return architecturePackages
       default:
-        return fractionalCTOPackages
+        return engineeringLeadershipPackages
     }
   }
 
   const serviceCategories = [
     {
-      id: 'fractional-cto',
+      id: 'engineering-leadership',
       icon: <Briefcase className="h-5 w-5" />,
-      name: 'Fractional CTO',
+      name: 'Engineering Leadership',
       description: 'Strategic technical leadership',
     },
     {
@@ -281,7 +281,7 @@ const ServicesPage = () => {
               className="text-xl text-gray-300 mb-8 animate-fade-in"
               style={{ animationDelay: '0.1s' }}
             >
-              From fractional CTO services to technical content creation—transparent pricing for
+              From engineering leadership to technical content creation—transparent pricing for
               high-impact technical expertise.
             </p>
 
@@ -502,9 +502,9 @@ const ServicesPage = () => {
                   What's the typical engagement length?
                 </h3>
                 <p className="text-gray-300">
-                  Fractional CTO retainers are typically 6-12 months with month-to-month renewal.
-                  Technical writing and case studies are project-based (1-4 weeks). Architecture
-                  documentation is usually 2-6 weeks.
+                  Engineering leadership retainers are typically 6-12 months with month-to-month
+                  renewal. Technical writing and case studies are project-based (1-4 weeks).
+                  Architecture documentation is usually 2-6 weeks.
                 </p>
               </div>
               <div className="brand-card p-6 rounded-lg">

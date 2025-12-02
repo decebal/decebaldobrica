@@ -13,6 +13,11 @@ import type {
   PaymentState,
 } from './types'
 
+// Type declaration for globalThis extension (var is required for global augmentation)
+declare global {
+  var __paymentGateStates: Map<string, PaymentState> | undefined
+}
+
 export class Http402Handler {
   constructor(private config: PaymentGateConfig) {}
 
@@ -139,7 +144,7 @@ export class Http402Handler {
       paymentUrl,
       reference,
       recipient: solanaConfig.merchantWallet,
-      label: `Payment for API access`,
+      label: 'Payment for API access',
       message: `Pay ${amount} SOL to access this endpoint`,
     }
   }
@@ -215,7 +220,7 @@ export class Http402Handler {
     label: string
   }): string {
     const { recipient, amount, reference, label } = params
-    const url = new URL('solana:' + recipient)
+    const url = new URL(`solana:${recipient}`)
     url.searchParams.set('amount', amount.toString())
     url.searchParams.set('reference', reference)
     url.searchParams.set('label', label)
@@ -273,7 +278,7 @@ export class Http402Handler {
       throw new Error('Failed to create LNBits invoice')
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as { payment_request: string; payment_hash: string }
     return {
       paymentRequest: data.payment_request,
       paymentHash: data.payment_hash,
@@ -309,7 +314,7 @@ export class Http402Handler {
       throw new Error('Failed to create BTCPay invoice')
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as { lightningInvoice?: string; id: string }
     return {
       paymentRequest: data.lightningInvoice || data.id,
       paymentHash: data.id,
@@ -348,10 +353,9 @@ export class Http402Handler {
   private async storePaymentState(state: PaymentState): Promise<void> {
     // This will be implemented by middleware
     // For now, we'll use in-memory storage
-    if (typeof globalThis !== 'undefined') {
-      ;(globalThis as any).__paymentGateStates =
-        (globalThis as any).__paymentGateStates || new Map()
-      ;(globalThis as any).__paymentGateStates.set(state.id, state)
+    if (typeof global !== 'undefined') {
+      global.__paymentGateStates = global.__paymentGateStates || new Map()
+      global.__paymentGateStates.set(state.id, state)
     }
   }
 
@@ -359,8 +363,8 @@ export class Http402Handler {
    * Get payment state
    */
   async getPaymentState(paymentId: string): Promise<PaymentState | null> {
-    if (typeof globalThis !== 'undefined') {
-      const states = (globalThis as any).__paymentGateStates
+    if (typeof global !== 'undefined') {
+      const states = global.__paymentGateStates
       return states?.get(paymentId) || null
     }
     return null
@@ -371,9 +375,9 @@ export class Http402Handler {
    */
   async updatePaymentState(paymentId: string, updates: Partial<PaymentState>): Promise<void> {
     const state = await this.getPaymentState(paymentId)
-    if (state && typeof globalThis !== 'undefined') {
+    if (state && typeof global !== 'undefined' && global.__paymentGateStates) {
       const updatedState = { ...state, ...updates }
-      ;(globalThis as any).__paymentGateStates.set(paymentId, updatedState)
+      global.__paymentGateStates.set(paymentId, updatedState)
     }
   }
 }

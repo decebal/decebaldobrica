@@ -16,10 +16,7 @@ export async function GET() {
     return NextResponse.json(data || [])
   } catch (error) {
     console.error('Failed to fetch meeting types:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch meeting types' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch meeting types' }, { status: 500 })
   }
 }
 
@@ -42,9 +39,6 @@ export async function POST(request: Request) {
     return NextResponse.json(data)
   } catch (error) {
     console.error('Failed to create meeting type:', error)
-    return NextResponse.json(
-      { error: 'Failed to create meeting type' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create meeting type' }, { status: 500 })
   }
 }

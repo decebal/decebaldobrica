@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       system: PORTFOLIO_CONTEXT,
       messages: convertToCoreMessages(messages),
       temperature: 0.7,
-      maxTokens: 400,
+      maxOutputTokens: 400,
       onFinish: async (result) => {
         const endTime = Date.now()
         const latency = endTime - startTime
@@ -76,9 +76,9 @@ export async function POST(req: Request) {
               $ai_input: lastMessage.content?.slice(0, 500) || '', // Truncate for privacy
               $ai_output: result.text?.slice(0, 500) || '', // Truncate for storage
               $ai_latency_ms: latency,
-              $ai_input_tokens: result.usage?.promptTokens || 0,
-              $ai_output_tokens: result.usage?.completionTokens || 0,
-              $ai_total_tokens: result.usage?.totalTokens || 0,
+              $ai_input_tokens: result.usage?.inputTokens || 0,
+              $ai_output_tokens: result.usage?.outputTokens || 0,
+              $ai_total_tokens: (result.usage?.inputTokens || 0) + (result.usage?.outputTokens || 0),
               $ai_temperature: 0.7,
               $ai_max_tokens: 400,
 
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
               message_length: result.text?.length || 0,
               conversation_id: conversationId,
               timestamp: new Date().toISOString(),
-              tokens_used: result.usage?.totalTokens || 0,
+              tokens_used: (result.usage?.inputTokens || 0) + (result.usage?.outputTokens || 0),
             },
           })
 

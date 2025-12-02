@@ -28,7 +28,6 @@ import { Label } from '@decebal/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@decebal/ui/select'
 import { Sparkles } from '@decebal/ui/sparkles'
 import { Textarea } from '@decebal/ui/textarea'
-import { motion } from 'motion/react'
 import {
   ArrowLeft,
   Calendar as CalendarIcon,
@@ -40,6 +39,7 @@ import {
   MapPin,
   MessageSquare,
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'

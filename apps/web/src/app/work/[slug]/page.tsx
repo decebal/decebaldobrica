@@ -22,9 +22,9 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 
 interface CaseStudyPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -262,18 +262,22 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-white">TOGAF Architecture Development Method</h2>
+                <h2 className="text-3xl font-bold text-white">
+                  TOGAF Architecture Development Method
+                </h2>
               </div>
 
               <div className="bg-gradient-to-br from-purple-400/10 to-purple-400/5 backdrop-blur-sm rounded-2xl p-6 border border-purple-400/20 mb-6">
                 <p className="text-gray-100 text-lg mb-6">
-                  Comprehensive 12-day sprint implementing TOGAF ADM Phases A-H with enterprise rigor at
-                  startup speed.
+                  Comprehensive 12-day sprint implementing TOGAF ADM Phases A-H with enterprise
+                  rigor at startup speed.
                 </p>
 
                 {/* Phase Duration Chart */}
                 <div className="mt-6">
-                  <h4 className="text-sm font-medium text-purple-400 mb-4 uppercase text-center">Phase Timeline Visualization</h4>
+                  <h4 className="text-sm font-medium text-purple-400 mb-4 uppercase text-center">
+                    Phase Timeline Visualization
+                  </h4>
                   <PhaseDurationChart phases={study.togafPhases} />
                 </div>
               </div>
@@ -305,7 +309,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                         </h4>
                         <ul className="space-y-2">
                           {phase.deliverables.map((deliverable) => (
-                            <li key={deliverable} className="flex items-start gap-2 text-gray-200 text-sm">
+                            <li
+                              key={deliverable}
+                              className="flex items-start gap-2 text-gray-200 text-sm"
+                            >
                               <CheckCircle2 className="h-4 w-4 text-purple-400 shrink-0 mt-0.5" />
                               <span>{deliverable}</span>
                             </li>
@@ -315,10 +322,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
                       {phase.kpis && phase.kpis.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-purple-400 mb-3 uppercase">KPIs</h4>
+                          <h4 className="text-sm font-medium text-purple-400 mb-3 uppercase">
+                            KPIs
+                          </h4>
                           <ul className="space-y-2">
                             {phase.kpis.map((kpi) => (
-                              <li key={kpi} className="flex items-start gap-2 text-gray-200 text-sm">
+                              <li
+                                key={kpi}
+                                className="flex items-start gap-2 text-gray-200 text-sm"
+                              >
                                 <TrendingUp className="h-4 w-4 text-purple-400 shrink-0 mt-0.5" />
                                 <span>{kpi}</span>
                               </li>
@@ -371,20 +383,23 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                           key={metric.name}
                           className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:border-blue-400/30 transition-colors"
                         >
-                          <h4 className="text-sm font-medium text-blue-400 mb-4 text-center">{metric.name}</h4>
+                          <h4 className="text-sm font-medium text-blue-400 mb-4 text-center">
+                            {metric.name}
+                          </h4>
 
                           {/* Radial Chart for visual impact */}
-                          {typeof metric.before === 'number' && typeof metric.after === 'number' && (
-                            <div className="mb-4">
-                              <KPIRadialChart
-                                name={metric.name}
-                                before={metric.before}
-                                after={metric.after}
-                                unit={metric.unit}
-                                improvement={metric.improvement}
-                              />
-                            </div>
-                          )}
+                          {typeof metric.before === 'number' &&
+                            typeof metric.after === 'number' && (
+                              <div className="mb-4">
+                                <KPIRadialChart
+                                  name={metric.name}
+                                  before={metric.before}
+                                  after={metric.after}
+                                  unit={metric.unit}
+                                  improvement={metric.improvement}
+                                />
+                              </div>
+                            )}
 
                           <div className="space-y-2 mb-3">
                             <div className="flex items-center justify-between text-sm">
@@ -460,18 +475,24 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     </div>
 
                     {/* Technology Visualization Charts */}
-                    {diagram.layers && diagram.layers.length > 0 && diagram.type === 'technology-stack' && (
-                      <div className="grid md:grid-cols-2 gap-8 mb-8">
-                        <div className="bg-gradient-to-br from-green-400/5 to-green-400/10 backdrop-blur-sm rounded-xl p-6 border border-green-400/20">
-                          <h4 className="text-lg font-bold text-white mb-4 text-center">Technology Distribution (Pie Chart)</h4>
-                          <TechStackPieChart layers={diagram.layers} />
+                    {diagram.layers &&
+                      diagram.layers.length > 0 &&
+                      diagram.type === 'technology-stack' && (
+                        <div className="grid md:grid-cols-2 gap-8 mb-8">
+                          <div className="bg-gradient-to-br from-green-400/5 to-green-400/10 backdrop-blur-sm rounded-xl p-6 border border-green-400/20">
+                            <h4 className="text-lg font-bold text-white mb-4 text-center">
+                              Technology Distribution (Pie Chart)
+                            </h4>
+                            <TechStackPieChart layers={diagram.layers} />
+                          </div>
+                          <div className="bg-gradient-to-br from-green-400/5 to-green-400/10 backdrop-blur-sm rounded-xl p-6 border border-green-400/20">
+                            <h4 className="text-lg font-bold text-white mb-4 text-center">
+                              Technology Radar
+                            </h4>
+                            <TechRadarChart layers={diagram.layers} />
+                          </div>
                         </div>
-                        <div className="bg-gradient-to-br from-green-400/5 to-green-400/10 backdrop-blur-sm rounded-xl p-6 border border-green-400/20">
-                          <h4 className="text-lg font-bold text-white mb-4 text-center">Technology Radar</h4>
-                          <TechRadarChart layers={diagram.layers} />
-                        </div>
-                      </div>
-                    )}
+                      )}
 
                     {diagram.layers && diagram.layers.length > 0 && (
                       <div className="space-y-4">
@@ -541,8 +562,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
               <div className="bg-gradient-to-br from-orange-400/10 to-orange-400/5 backdrop-blur-sm rounded-2xl p-6 border border-orange-400/20 mb-6">
                 <p className="text-gray-100 text-lg">
-                  All metrics, costs, and claims are backed by official pricing pages, industry research, and
-                  established standards.
+                  All metrics, costs, and claims are backed by official pricing pages, industry
+                  research, and established standards.
                 </p>
               </div>
 
@@ -605,12 +626,15 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-white">TOGAF Migration Planning Techniques</h2>
+                <h2 className="text-3xl font-bold text-white">
+                  TOGAF Migration Planning Techniques
+                </h2>
               </div>
 
               <div className="bg-gradient-to-br from-indigo-400/10 to-indigo-400/5 backdrop-blur-sm rounded-2xl p-6 border border-indigo-400/20 mb-6">
                 <p className="text-gray-100 text-lg">
-                  Systematic migration planning using TOGAF-certified techniques to reduce risk, track dependencies, and ensure successful enterprise architecture transformation.
+                  Systematic migration planning using TOGAF-certified techniques to reduce risk,
+                  track dependencies, and ensure successful enterprise architecture transformation.
                 </p>
               </div>
 
@@ -626,7 +650,12 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="text-sm font-medium text-indigo-400 mb-3 uppercase flex items-center gap-2">
-                          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" role="img">
+                          <svg
+                            className="h-4 w-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            role="img"
+                          >
                             <title>Document Icon</title>
                             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
                           </svg>
@@ -634,7 +663,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                         </h4>
                         <ul className="space-y-2">
                           {technique.artifacts.map((artifact) => (
-                            <li key={artifact} className="flex items-start gap-2 text-gray-200 text-sm">
+                            <li
+                              key={artifact}
+                              className="flex items-start gap-2 text-gray-200 text-sm"
+                            >
                               <CheckCircle2 className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                               <span>{artifact}</span>
                             </li>
@@ -649,7 +681,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                         </h4>
                         <ul className="space-y-2">
                           {technique.insights.map((insight) => (
-                            <li key={insight} className="flex items-start gap-2 text-gray-200 text-sm">
+                            <li
+                              key={insight}
+                              className="flex items-start gap-2 text-gray-200 text-sm"
+                            >
                               <TrendingUp className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                               <span>{insight}</span>
                             </li>
@@ -712,7 +747,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
               <div className="bg-gradient-to-br from-green-400/10 to-green-400/5 backdrop-blur-sm rounded-2xl p-6 border border-green-400/20 mb-6">
                 <p className="text-gray-100 text-lg">
-                  Key factors that enabled successful execution and outcomes, based on TOGAF best practices and real-world implementation experience.
+                  Key factors that enabled successful execution and outcomes, based on TOGAF best
+                  practices and real-world implementation experience.
                 </p>
               </div>
 

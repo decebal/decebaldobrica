@@ -100,7 +100,11 @@ export default function PricingAdminPage() {
             icon="📅"
             count={stats?.meetingTypes || 0}
             href="/pricing/meetings"
-            examples={['Quick Chat (15 min)', 'Discovery Call (30 min)', 'Strategy Session (60 min)']}
+            examples={[
+              'Quick Chat (15 min)',
+              'Discovery Call (30 min)',
+              'Strategy Session (60 min)',
+            ]}
           />
 
           <PricingCategoryCard
@@ -142,7 +146,8 @@ export default function PricingAdminPage() {
                 💡 Multi-Currency Support
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Each pricing config supports SOL, BTC, ETH, and USD. Update prices across all currencies or set individual values.
+                Each pricing config supports SOL, BTC, ETH, and USD. Update prices across all
+                currencies or set individual values.
               </p>
             </div>
             <div>
@@ -150,7 +155,8 @@ export default function PricingAdminPage() {
                 🔄 Instant Updates
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Changes to pricing are reflected immediately across the website and all payment flows.
+                Changes to pricing are reflected immediately across the website and all payment
+                flows.
               </p>
             </div>
             <div>
@@ -158,15 +164,15 @@ export default function PricingAdminPage() {
                 🎯 Active/Inactive
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Toggle pricing configs on/off without deleting them. Inactive configs won't show to users.
+                Toggle pricing configs on/off without deleting them. Inactive configs won't show to
+                users.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                ⭐ Popular Items
-              </h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">⭐ Popular Items</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Mark items as "popular" to highlight them in pricing displays and increase conversions.
+                Mark items as "popular" to highlight them in pricing displays and increase
+                conversions.
               </p>
             </div>
           </div>
@@ -245,7 +251,10 @@ function PricingCategoryCard({
         <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">EXAMPLES:</p>
         <ul className="space-y-1">
           {examples.map((example) => (
-            <li key={example} className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
+            <li
+              key={example}
+              className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2"
+            >
               <span className="text-gray-400">•</span>
               {example}
             </li>

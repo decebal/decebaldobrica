@@ -1,6 +1,6 @@
 # Decebal Dobrica - Resume
 
-**Hands-on CTO | Cryptocurrency | Blockchain Technology Expert**
+**Engineering Leader | Full-Stack Architecture & Team Growth | SaaS & AI Platforms**
 
 - Email: discovery@decebaldobrica.com
 - LinkedIn: https://www.linkedin.com/in/decebaldobrica
@@ -16,7 +16,7 @@ My expertise spans TypeScript, Rust, serverless, and blockchain, with a proven t
 
 I'm focused on the intersection of blockchain efficiency and AI productivity—optimizing smart contract and infrastructure performance while embedding GenAI workflows that accelerate development, testing, and delivery. I bring a pragmatic yet visionary approach to technical leadership: balancing resilience, cost efficiency, and speed, while mentoring teams to thrive in high-growth environments.
 
-Now seeking a hands-on CTO role where I can architect resilient blockchain platforms, leverage AI to drive engineering efficiency, and align technical execution with business growth.
+Now seeking engineering leadership roles where I can architect resilient platforms, leverage AI to drive engineering efficiency, and align technical execution with business growth.
 
 ## Key Achievements
 
@@ -198,7 +198,7 @@ Cut cloud costs by 75% using serverless design, boosting operational efficiency.
 - MongoDB for Developers
 - PHP Advanced Programmer @ infoacademy.net
 - Tech Leaders - Certified Coach Course
-- Tech Leaders - Fractional CTO Course
+- Tech Leaders - Engineering Leadership Course
 
 ## Technical Skills
 

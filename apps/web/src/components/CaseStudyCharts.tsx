@@ -37,30 +37,20 @@ export function TechStackPieChart({ layers }: TechStackPieChartProps) {
     fill: colors[idx % colors.length],
   }))
 
-  const chartConfig = layers.reduce(
-    (acc, layer, idx) => {
-      const key = layer.name.replace(/Layer \d+:\s*/, '').slice(0, 30)
-      acc[key] = {
-        label: key,
-        color: colors[idx % colors.length],
-      }
-      return acc
-    },
-    {} as ChartConfig
-  )
+  const chartConfig = layers.reduce((acc, layer, idx) => {
+    const key = layer.name.replace(/Layer \d+:\s*/, '').slice(0, 30)
+    acc[key] = {
+      label: key,
+      color: colors[idx % colors.length],
+    }
+    return acc
+  }, {} as ChartConfig)
 
   return (
     <ChartContainer config={chartConfig} className="h-[300px] w-full">
       <PieChart>
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Pie
-          data={chartData}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-        />
+        <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} />
         <ChartLegend content={<ChartLegendContent />} />
       </PieChart>
     </ChartContainer>
@@ -94,13 +84,7 @@ export function TechRadarChart({ layers }: TechRadarChartProps) {
         <ChartTooltip content={<ChartTooltipContent />} />
         <PolarAngleAxis dataKey="category" tick={{ fill: '#ffffff', fontSize: 11 }} />
         <PolarGrid stroke="#ffffff20" />
-        <Radar
-          dataKey="count"
-          fill="#03c9a9"
-          fillOpacity={0.6}
-          stroke="#03c9a9"
-          strokeWidth={2}
-        />
+        <Radar dataKey="count" fill="#03c9a9" fillOpacity={0.6} stroke="#03c9a9" strokeWidth={2} />
       </RadarChart>
     </ChartContainer>
   )
@@ -124,11 +108,12 @@ export function KPIRadialChart({ name, before, after, unit, improvement }: KPIRa
   }
 
   // Determine if lower is better based on improvement text
-  const isLowerBetter = improvement.includes('reduction') ||
-                        improvement.includes('faster') ||
-                        improvement.includes('↓') ||
-                        improvement.includes('cheaper') ||
-                        improvement.includes('better')
+  const isLowerBetter =
+    improvement.includes('reduction') ||
+    improvement.includes('faster') ||
+    improvement.includes('↓') ||
+    improvement.includes('cheaper') ||
+    improvement.includes('better')
 
   let improvementPercentage = 0
   if (isLowerBetter) {
@@ -160,7 +145,7 @@ export function KPIRadialChart({ name, before, after, unit, improvement }: KPIRa
       <RadialBarChart
         data={chartData}
         startAngle={90}
-        endAngle={90 + (displayPercentage * 3.6)}
+        endAngle={90 + displayPercentage * 3.6}
         innerRadius="60%"
         outerRadius="80%"
       >
@@ -204,12 +189,23 @@ interface PhaseDurationChartProps {
 }
 
 export function PhaseDurationChart({ phases }: PhaseDurationChartProps) {
-  const colors = ['#03c9a9', '#0a66c2', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4']
+  const colors = [
+    '#03c9a9',
+    '#0a66c2',
+    '#f59e0b',
+    '#10b981',
+    '#ef4444',
+    '#8b5cf6',
+    '#ec4899',
+    '#06b6d4',
+  ]
 
   const chartData = phases.map((phase, idx) => {
     const durationMatch = phase.duration.match(/Day (\d+)(?:-(\d+))?/)
     const days = durationMatch
-      ? (durationMatch[2] ? Number.parseInt(durationMatch[2]) - Number.parseInt(durationMatch[1]) + 1 : 1)
+      ? durationMatch[2]
+        ? Number.parseInt(durationMatch[2]) - Number.parseInt(durationMatch[1]) + 1
+        : 1
       : 1
 
     return {

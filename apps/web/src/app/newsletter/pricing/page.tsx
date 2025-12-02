@@ -2,7 +2,7 @@
 
 import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
 import { InterestModal } from '@/components/InterestModal'
-import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
+import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
 import { NEWSLETTER_TIERS } from '@/lib/payments/config'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -21,18 +21,25 @@ interface PricingTier {
 }
 
 // Transform unified config to UI format
-const PRICING_TIERS: PricingTier[] = Object.values(NEWSLETTER_TIERS).map(tier => ({
+const PRICING_TIERS: PricingTier[] = Object.values(NEWSLETTER_TIERS).map((tier) => ({
   id: tier.slug as 'free' | 'premium' | 'founding',
   name: tier.name,
   price: tier.priceUsd ? `$${tier.priceUsd.toFixed(2)}` : '$0',
   priceUsd: tier.priceUsd || 0,
-  interval: tier.metadata?.interval === 'lifetime' ? '/lifetime' :
-            tier.metadata?.interval === 'month' ? '/month' : '/forever',
+  interval:
+    tier.metadata?.interval === 'lifetime'
+      ? '/lifetime'
+      : tier.metadata?.interval === 'month'
+        ? '/month'
+        : '/forever',
   description: tier.description,
   features: tier.benefits || [],
-  cta: tier.slug === 'free' ? 'Subscribe for Free' :
-       tier.slug === 'premium' ? 'Upgrade to Premium' :
-       'Become a Founding Member',
+  cta:
+    tier.slug === 'free'
+      ? 'Subscribe for Free'
+      : tier.slug === 'premium'
+        ? 'Upgrade to Premium'
+        : 'Become a Founding Member',
   highlighted: tier.isPopular || false,
 }))
 
@@ -69,8 +76,7 @@ function PricingContent() {
 
     // Check if the plan is enabled via feature flags
     const isPlanEnabled =
-      (tier.id === 'premium' && isPremiumEnabled) ||
-      (tier.id === 'founding' && isFoundingEnabled)
+      (tier.id === 'premium' && isPremiumEnabled) || (tier.id === 'founding' && isFoundingEnabled)
 
     if (isPlanEnabled) {
       // Plan is enabled, proceed with payment

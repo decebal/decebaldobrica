@@ -3,9 +3,9 @@
  * Multi-chain HTTP 402 payment protocol for API monetization
  */
 
-import type { PaymentGateConfig } from '@decebal/payment-gate'
 import { createPayment, grantServiceAccess } from '@/lib/payments'
 import { SERVICE_TIERS } from '@/lib/payments/config'
+import type { PaymentGateConfig } from '@decebal/payment-gate'
 
 // ============================================================================
 // SERVICES PRICING API CONFIGURATION

@@ -11,9 +11,9 @@ import React from 'react'
 const POSTS_PER_PAGE = 10
 
 interface BlogPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string
-  }
+  }>
 }
 
 const BlogPage = async ({ searchParams }: BlogPageProps) => {

@@ -1,7 +1,7 @@
 'use client'
 
+import { Check, Copy, Maximize2, Minimize2, Terminal as TerminalIcon } from 'lucide-react'
 import { useState } from 'react'
-import { Copy, Check, Terminal as TerminalIcon, Maximize2, Minimize2 } from 'lucide-react'
 
 interface TerminalProps {
   children: React.ReactNode
@@ -88,11 +88,7 @@ export function Terminal({
               className="text-gray-400 hover:text-gray-200 transition-colors p-1"
               title="Copy to clipboard"
             >
-              {copied ? (
-                <Check className="w-4 h-4 text-green-400" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
+              {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
             </button>
           )}
           {showExpand && (
@@ -102,11 +98,7 @@ export function Terminal({
               className="text-gray-400 hover:text-gray-200 transition-colors p-1"
               title={isExpanded ? 'Minimize' : 'Maximize'}
             >
-              {isExpanded ? (
-                <Minimize2 className="w-4 h-4" />
-              ) : (
-                <Maximize2 className="w-4 h-4" />
-              )}
+              {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
           )}
         </div>
@@ -122,16 +114,16 @@ export function Terminal({
       >
         {/* Prompt */}
         <div className="terminal-prompt flex items-start gap-2 mb-2">
-          <span className="text-green-400">{user}@{host}</span>
+          <span className="text-green-400">
+            {user}@{host}
+          </span>
           <span className="text-gray-400">:</span>
           <span className="text-blue-400">{path}</span>
           <span className="text-gray-400">$</span>
         </div>
 
         {/* Content */}
-        <div className="terminal-content text-gray-100 whitespace-pre-wrap">
-          {children}
-        </div>
+        <div className="terminal-content text-gray-100 whitespace-pre-wrap">{children}</div>
       </div>
     </div>
   )
@@ -171,11 +163,7 @@ export function TerminalOutput({
     info: 'text-blue-400',
   }
 
-  return (
-    <div className={`terminal-output mb-1 ${colors[variant]}`}>
-      {children}
-    </div>
-  )
+  return <div className={`terminal-output mb-1 ${colors[variant]}`}>{children}</div>
 }
 
 /**
@@ -262,7 +250,7 @@ export function InteractiveTerminal({
   useState(() => {
     if (autoPlay && currentIndex < commands.length) {
       const timer = setTimeout(() => {
-        setCurrentIndex(prev => Math.min(prev + 1, commands.length))
+        setCurrentIndex((prev) => Math.min(prev + 1, commands.length))
       }, delay)
       return () => clearTimeout(timer)
     }
@@ -282,9 +270,7 @@ export function InteractiveTerminal({
       {visibleCommands.map((cmd, idx) => (
         <div key={idx} className="mb-3">
           <TerminalCommand>{cmd.command}</TerminalCommand>
-          <TerminalOutput variant={cmd.variant}>
-            {cmd.output}
-          </TerminalOutput>
+          <TerminalOutput variant={cmd.variant}>{cmd.output}</TerminalOutput>
         </div>
       ))}
     </Terminal>

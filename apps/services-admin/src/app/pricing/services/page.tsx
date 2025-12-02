@@ -161,7 +161,10 @@ export default function ServicesPricingPage() {
                       </p>
                       <ul className="space-y-1">
                         {service.benefits.map((benefit, idx) => (
-                          <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                          <li
+                            key={idx}
+                            className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2"
+                          >
                             <span className="text-green-500">✓</span>
                             {benefit}
                           </li>

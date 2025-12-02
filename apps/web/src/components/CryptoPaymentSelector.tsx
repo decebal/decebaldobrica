@@ -28,11 +28,7 @@ interface CryptoPaymentSelectorProps {
   }
 }
 
-export function CryptoPaymentSelector({
-  amount,
-  onSuccess,
-  metadata,
-}: CryptoPaymentSelectorProps) {
+export function CryptoPaymentSelector({ amount, onSuccess, metadata }: CryptoPaymentSelectorProps) {
   const amountUsd = amount
   const onPaymentMethodSelected = (method: CryptoPaymentMethod, network?: string) => {
     // For now, simulate a payment

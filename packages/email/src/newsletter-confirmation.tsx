@@ -58,8 +58,8 @@ export function NewsletterConfirmationEmail({
               </Link>
             </Section>
             <Text style={disclaimer}>
-              This link will expire in 24 hours. If you didn't subscribe to this newsletter, you
-              can safely ignore this email.
+              This link will expire in 24 hours. If you didn't subscribe to this newsletter, you can
+              safely ignore this email.
             </Text>
           </Section>
 

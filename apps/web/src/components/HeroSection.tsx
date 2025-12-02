@@ -1,6 +1,6 @@
 'use client'
 
-import { useFeatureFlag, FEATURE_FLAGS } from '@/hooks/useFeatureFlag'
+import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
 import { config } from '@/lib/personalConfig'
 import { ChevronDown, Play } from 'lucide-react'
 import React, { useState } from 'react'

@@ -51,16 +51,13 @@ function getConfig(): AnythingLLMConfig {
 /**
  * Make API request to AnythingLLM
  */
-async function makeRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const config = getConfig()
 
   const response = await fetch(`${config.apiUrl}${endpoint}`, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${config.apiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -108,7 +105,7 @@ export async function generateBlogSection({
   tone?: string
   context?: Array<{ title: string; content: string }>
 }): Promise<string> {
-  const contextStr = context?.map(c => `## ${c.title}\n${c.content}`).join('\n\n') || ''
+  const contextStr = context?.map((c) => `## ${c.title}\n${c.content}`).join('\n\n') || ''
 
   const prompt = `You are writing a section for a blog post. Use the STAR methodology and reference relevant frameworks, experiences, and examples from the knowledge base.
 
@@ -242,7 +239,7 @@ export async function uploadDocument(
     const response = await fetch(`${config.apiUrl}/api/v1/document/upload`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: formData,
     })
@@ -285,12 +282,14 @@ async function embedDocumentInWorkspace(documentId: string): Promise<void> {
 /**
  * List all documents in knowledge base
  */
-export async function listDocuments(): Promise<Array<{
-  id: string
-  name: string
-  type: string
-  createdAt: string
-}>> {
+export async function listDocuments(): Promise<
+  Array<{
+    id: string
+    name: string
+    type: string
+    createdAt: string
+  }>
+> {
   const response = await makeRequest<{
     documents: Array<{
       id: string
@@ -341,7 +340,10 @@ function extractListItems(text: string, keyword: string): string[] {
     }
 
     if (inSection && (line.startsWith('-') || line.startsWith('*') || /^\d+\./.test(line))) {
-      const item = line.replace(/^[-*]\s*/, '').replace(/^\d+\.\s*/, '').trim()
+      const item = line
+        .replace(/^[-*]\s*/, '')
+        .replace(/^\d+\.\s*/, '')
+        .trim()
       if (item) items.push(item)
     }
 
@@ -392,12 +394,32 @@ export async function generateBlogPostWithRAG({
   // Step 3: Generate sections (using existing structure)
   const BLOG_STRUCTURE = [
     { id: 'hook', title: 'Hook (Viral Opening)', prompt: 'Write a compelling 3-4 line hook' },
-    { id: 'situation', title: 'Situation: The Challenge', prompt: 'Describe the context and problem' },
-    { id: 'task', title: 'Task: Define Clear Goals', prompt: 'Define what needed to be accomplished' },
-    { id: 'actions', title: 'Action: Strategic Implementation', prompt: 'Describe 3-5 key actions taken' },
+    {
+      id: 'situation',
+      title: 'Situation: The Challenge',
+      prompt: 'Describe the context and problem',
+    },
+    {
+      id: 'task',
+      title: 'Task: Define Clear Goals',
+      prompt: 'Define what needed to be accomplished',
+    },
+    {
+      id: 'actions',
+      title: 'Action: Strategic Implementation',
+      prompt: 'Describe 3-5 key actions taken',
+    },
     { id: 'result', title: 'Result: Measurable Impact', prompt: 'Present concrete results' },
-    { id: 'golden_nuggets', title: 'Business Golden Nuggets (3 required)', prompt: 'Extract 3 business golden nuggets' },
-    { id: 'thinking_tools', title: 'Thinking Tools Used (3 required)', prompt: 'Identify 3 thinking tools/mental models' },
+    {
+      id: 'golden_nuggets',
+      title: 'Business Golden Nuggets (3 required)',
+      prompt: 'Extract 3 business golden nuggets',
+    },
+    {
+      id: 'thinking_tools',
+      title: 'Thinking Tools Used (3 required)',
+      prompt: 'Identify 3 thinking tools/mental models',
+    },
     { id: 'conclusion', title: 'Conclusion', prompt: 'Write a strong conclusion' },
   ]
 
@@ -420,7 +442,7 @@ Use the outline and research to write this section.`,
       id: section.id,
       title: section.title,
       content: response.textResponse,
-      sources: response.sources?.map(s => s.title) || [],
+      sources: response.sources?.map((s) => s.title) || [],
     })
 
     onProgress?.('section', { status: 'complete', section: section.id })

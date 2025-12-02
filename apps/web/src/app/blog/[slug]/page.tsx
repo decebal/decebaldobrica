@@ -1,7 +1,7 @@
 import { BlogCTA } from '@/components/BlogCTA'
 import { BlogTOC } from '@/components/BlogTOC'
 import Footer from '@/components/Footer'
-import { Terminal, TerminalCommand, TerminalOutput, TerminalLine } from '@/components/blog/Terminal'
+import { Terminal, TerminalCommand, TerminalLine, TerminalOutput } from '@/components/blog/Terminal'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
 import { Badge } from '@decebal/ui/badge'
@@ -16,9 +16,9 @@ import remarkGfm from 'remark-gfm'
 import 'highlight.js/styles/github-dark.css'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -129,7 +129,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               )}
 
               {/* Table of Contents */}
-              <BlogTOC content={post.content} />
+              <BlogTOC content={post.content ?? ''} />
 
               {/* Post content */}
               <div className="prose prose-invert prose-lg max-w-none">
@@ -182,10 +182,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         }
 
                         // Check if this is a terminal code block
-                        const isTerminal = className?.includes('language-terminal') ||
-                                         className?.includes('language-bash') ||
-                                         className?.includes('language-shell') ||
-                                         className?.includes('language-console')
+                        const isTerminal =
+                          className?.includes('language-terminal') ||
+                          className?.includes('language-bash') ||
+                          className?.includes('language-shell') ||
+                          className?.includes('language-console')
 
                         if (isTerminal) {
                           // Parse terminal content
@@ -212,14 +213,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                   )
                                 }
                                 // Detect output variants
-                                if (line.startsWith('✓') || line.startsWith('✅') || line.includes('success')) {
+                                if (
+                                  line.startsWith('✓') ||
+                                  line.startsWith('✅') ||
+                                  line.includes('success')
+                                ) {
                                   return (
                                     <TerminalOutput key={idx} variant="success">
                                       {line}
                                     </TerminalOutput>
                                   )
                                 }
-                                if (line.startsWith('✗') || line.startsWith('❌') || line.includes('error')) {
+                                if (
+                                  line.startsWith('✗') ||
+                                  line.startsWith('❌') ||
+                                  line.includes('error')
+                                ) {
                                   return (
                                     <TerminalOutput key={idx} variant="error">
                                       {line}
@@ -234,11 +243,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                   )
                                 }
                                 // Default output
-                                return (
-                                  <TerminalLine key={idx}>
-                                    {line}
-                                  </TerminalLine>
-                                )
+                                return <TerminalLine key={idx}>{line}</TerminalLine>
                               })}
                             </Terminal>
                           )
@@ -248,7 +253,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       },
                       pre: ({ children }) => {
                         // Skip pre wrapper if Terminal component is already rendered
-                        const isTerminalBlock = children &&
+                        const isTerminalBlock =
+                          children &&
                           typeof children === 'object' &&
                           'props' in children &&
                           children.props?.className?.includes('language-terminal')

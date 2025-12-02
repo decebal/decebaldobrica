@@ -39,9 +39,10 @@ export default function UserMenu() {
   }
 
   // Get display name
-  const displayName = supabaseUser?.user_metadata?.name ||
-                       supabaseUser?.email?.split('@')[0] ||
-                       (publicKey ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}` : 'User')
+  const displayName =
+    supabaseUser?.user_metadata?.name ||
+    supabaseUser?.email?.split('@')[0] ||
+    (publicKey ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}` : 'User')
 
   const handleLogout = async () => {
     if (publicKey) {

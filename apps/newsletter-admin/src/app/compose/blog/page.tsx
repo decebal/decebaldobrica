@@ -1,19 +1,11 @@
 'use client'
 
+import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
-import { Textarea } from '@decebal/ui/textarea'
 import { Input } from '@decebal/ui/input'
 import { Label } from '@decebal/ui/label'
-import { Badge } from '@decebal/ui/badge'
-import {
-  Brain,
-  Download,
-  Loader2,
-  Sparkles,
-  Wand2,
-  FileText,
-  Send
-} from 'lucide-react'
+import { Textarea } from '@decebal/ui/textarea'
+import { Brain, Download, FileText, Loader2, Send, Sparkles, Wand2 } from 'lucide-react'
 import { useState } from 'react'
 
 interface BlogSection {
@@ -54,31 +46,37 @@ export default function AIBlogComposerPage() {
           keyPoints,
           targetAudience,
           tone,
-          mode: aiMode
-        })
+          mode: aiMode,
+        }),
       })
 
       const data = await response.json()
 
       if (data.error) {
-        setProgressLog(prev => [...prev, `❌ Error: ${data.error}`])
+        setProgressLog((prev) => [...prev, `❌ Error: ${data.error}`])
         return
       }
 
       if (data.sections) {
         setSections(data.sections)
-        setProgressLog(prev => [...prev, `✅ Generated ${data.sections.length} sections successfully!`])
+        setProgressLog((prev) => [
+          ...prev,
+          `✅ Generated ${data.sections.length} sections successfully!`,
+        ])
       }
 
       if (data.research) {
-        setProgressLog(prev => [
+        setProgressLog((prev) => [
           ...prev,
-          `📚 Research: Found ${data.research.frameworks?.length || 0} frameworks, ${data.research.experiences?.length || 0} experiences`
+          `📚 Research: Found ${data.research.frameworks?.length || 0} frameworks, ${data.research.experiences?.length || 0} experiences`,
         ])
       }
     } catch (error) {
       console.error('Failed to generate post:', error)
-      setProgressLog(prev => [...prev, `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`])
+      setProgressLog((prev) => [
+        ...prev,
+        `❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      ])
     } finally {
       setGenerating(false)
     }
@@ -87,7 +85,7 @@ export default function AIBlogComposerPage() {
   const regenerateSection = async (sectionId: string) => {
     setCurrentSection(sectionId)
     try {
-      const section = sections.find(s => s.id === sectionId)
+      const section = sections.find((s) => s.id === sectionId)
       if (!section) return
 
       const response = await fetch('/api/admin/ai/generate-blog', {
@@ -98,18 +96,18 @@ export default function AIBlogComposerPage() {
           sectionId,
           sectionTitle: section.title,
           topic,
-          context: sections.map(s => ({ title: s.title, content: s.content }))
-        })
+          context: sections.map((s) => ({ title: s.title, content: s.content })),
+        }),
       })
 
       const data = await response.json()
 
       if (data.content) {
-        setSections(sections.map(s =>
-          s.id === sectionId
-            ? { ...s, content: data.content, aiGenerated: true }
-            : s
-        ))
+        setSections(
+          sections.map((s) =>
+            s.id === sectionId ? { ...s, content: data.content, aiGenerated: true } : s
+          )
+        )
       }
     } catch (error) {
       console.error('Failed to regenerate section:', error)
@@ -119,17 +117,17 @@ export default function AIBlogComposerPage() {
   }
 
   const updateSectionContent = (sectionId: string, content: string) => {
-    setSections(sections.map(s =>
-      s.id === sectionId
-        ? { ...s, content, aiGenerated: false }
-        : s
-    ))
+    setSections(
+      sections.map((s) => (s.id === sectionId ? { ...s, content, aiGenerated: false } : s))
+    )
   }
 
   const exportMarkdown = () => {
-    const markdown = sections.map(s => {
-      return `## ${s.title}\n\n${s.content}\n\n`
-    }).join('\n')
+    const markdown = sections
+      .map((s) => {
+        return `## ${s.title}\n\n${s.content}\n\n`
+      })
+      .join('\n')
 
     const fullMarkdown = `---
 title: '${topic}'
@@ -174,7 +172,9 @@ ${markdown}`
           <div className="space-y-4">
             {/* AI Mode Toggle */}
             <div>
-              <Label htmlFor="aiMode" className="text-foreground font-bold">AI Generation Mode</Label>
+              <Label htmlFor="aiMode" className="text-foreground font-bold">
+                AI Generation Mode
+              </Label>
               <div className="flex gap-3 mt-2">
                 <button
                   type="button"
@@ -187,13 +187,14 @@ ${markdown}`
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Brain className="h-5 w-5 text-purple-500" />
-                    <span className="font-semibold text-foreground">
-                      AnythingLLM (RAG)
-                    </span>
-                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">Recommended</Badge>
+                    <span className="font-semibold text-foreground">AnythingLLM (RAG)</span>
+                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">
+                      Recommended
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Uses your knowledge base for personalized content with your style and experiences
+                    Uses your knowledge base for personalized content with your style and
+                    experiences
                   </p>
                 </button>
 
@@ -208,9 +209,7 @@ ${markdown}`
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="h-5 w-5 text-purple-500" />
-                    <span className="font-semibold text-foreground">
-                      Groq (Basic)
-                    </span>
+                    <span className="font-semibold text-foreground">Groq (Basic)</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Direct LLM generation without knowledge base
@@ -254,7 +253,9 @@ ${markdown}`
               </div>
 
               <div>
-                <Label htmlFor="tone" className="text-foreground font-bold">Tone</Label>
+                <Label htmlFor="tone" className="text-foreground font-bold">
+                  Tone
+                </Label>
                 <select
                   id="tone"
                   value={tone}
@@ -308,11 +309,7 @@ ${markdown}`
               <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
                 Generated Content 📝
               </h2>
-              <Button
-                onClick={exportMarkdown}
-                variant="outline"
-                className="font-semibold border-2"
-              >
+              <Button onClick={exportMarkdown} variant="outline" className="font-semibold border-2">
                 <Download className="mr-2 h-4 w-4" />
                 Export MDX
               </Button>
@@ -326,9 +323,7 @@ ${markdown}`
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-foreground">
-                        {section.title}
-                      </h3>
+                      <h3 className="text-lg font-bold text-foreground">{section.title}</h3>
                       {section.aiGenerated && (
                         <Badge className="bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-300 dark:border-purple-700">
                           <Sparkles className="mr-1 h-3 w-3" />

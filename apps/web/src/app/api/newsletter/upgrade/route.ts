@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const result = upgradeSchema.safeParse(body)
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 })
+      return NextResponse.json({ error: result.error.errors[0]?.message ?? 'Validation error' }, { status: 400 })
     }
 
     const { email, tier, paymentId, chain, amount, subscriberId } = result.data

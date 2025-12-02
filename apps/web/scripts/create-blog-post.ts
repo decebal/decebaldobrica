@@ -120,7 +120,7 @@ async function promptMultiline(question: string): Promise<string> {
     lines.push(line)
   }
 
-  while (lines.length > 0 && lines[lines.length - 1].trim() === '') {
+  while (lines.length > 0 && (lines[lines.length - 1] ?? '').trim() === '') {
     lines.pop()
   }
 

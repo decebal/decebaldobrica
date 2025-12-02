@@ -3,7 +3,7 @@
  * Intercepts requests and enforces HTTP 402 payment requirement
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PaymentGate } from '../core/PaymentGate'
 import type { NextJsMiddlewareOptions, PaymentGateContext } from '../core/types'
 
@@ -100,8 +100,7 @@ export async function requirePayment(
   gate: PaymentGate,
   endpoint: string
 ): Promise<
-  | { authorized: true; context: PaymentGateContext }
-  | { authorized: false; response: NextResponse }
+  { authorized: true; context: PaymentGateContext } | { authorized: false; response: NextResponse }
 > {
   // Check if endpoint requires payment
   if (!gate.requiresPayment(endpoint)) {

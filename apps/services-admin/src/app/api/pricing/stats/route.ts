@@ -26,7 +26,8 @@ export async function GET() {
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true)
 
-    const totalConfigs = (meetingTypes || 0) + (serviceTiers || 0) + (newsletterTiers || 0) + (depositTypes || 0)
+    const totalConfigs =
+      (meetingTypes || 0) + (serviceTiers || 0) + (newsletterTiers || 0) + (depositTypes || 0)
 
     const stats = {
       totalConfigs,
@@ -39,9 +40,6 @@ export async function GET() {
     return NextResponse.json(stats)
   } catch (error) {
     console.error('Pricing stats error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch pricing stats' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch pricing stats' }, { status: 500 })
   }
 }

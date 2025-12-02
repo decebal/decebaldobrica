@@ -18,6 +18,29 @@ interface LinkedInPostResult {
   error?: string
 }
 
+interface LinkedInShareMedia {
+  status: string
+  media?: string
+  originalUrl?: string
+  title?: { text: string }
+  description?: { text: string }
+}
+
+interface LinkedInShareContent {
+  author: string
+  lifecycleState: string
+  specificContent: {
+    'com.linkedin.ugc.ShareContent': {
+      shareCommentary: { text: string }
+      shareMediaCategory: string
+      media?: LinkedInShareMedia[]
+    }
+  }
+  visibility: {
+    'com.linkedin.ugc.MemberNetworkVisibility': string
+  }
+}
+
 /**
  * Post content to LinkedIn
  * Requires LinkedIn access token with w_member_social scope
@@ -35,7 +58,7 @@ export async function postToLinkedIn(content: LinkedInPost): Promise<LinkedInPos
     }
 
     // Prepare the post content
-    const shareContent: any = {
+    const shareContent: LinkedInShareContent = {
       author: personUrn,
       lifecycleState: 'PUBLISHED',
       specificContent: {

@@ -309,7 +309,9 @@ export default function SubscribersPage() {
                     <td colSpan={4} className="px-6 py-12 text-center">
                       <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
                       <p className="text-gray-600 dark:text-gray-400 font-medium">
-                        {search ? 'No subscribers found matching your search' : 'No subscribers yet'}
+                        {search
+                          ? 'No subscribers found matching your search'
+                          : 'No subscribers yet'}
                       </p>
                     </td>
                   </tr>

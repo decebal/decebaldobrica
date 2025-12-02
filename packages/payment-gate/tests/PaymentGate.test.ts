@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { PaymentGate } from '../src/core/PaymentGate'
 import type { PaymentGateConfig } from '../src/core/types'
 
@@ -6,7 +6,7 @@ describe('PaymentGate', () => {
   const mockConfig: PaymentGateConfig = {
     pricing: {
       '/api/chat': { usd: 0.02 },
-      '/api/premium/*': { usd: 0.10 },
+      '/api/premium/*': { usd: 0.1 },
     },
     chains: ['solana'],
     chainConfig: {

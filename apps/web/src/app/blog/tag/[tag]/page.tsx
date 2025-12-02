@@ -10,12 +10,12 @@ import { notFound } from 'next/navigation'
 const POSTS_PER_PAGE = 10
 
 interface TagPageProps {
-  params: {
+  params: Promise<{
     tag: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     page?: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {

@@ -1,19 +1,19 @@
 # Services Offered
 
-## 1. Fractional CTO Services
+## 1. Engineering Leadership Services
 
-Strategic technical leadership for VC-backed startups, accelerating delivery without sacrificing quality.
+Strategic technical leadership for SaaS & AI platforms, accelerating delivery without sacrificing quality.
 
 **What you get:**
 - Strategic technical direction aligned with business goals
-- Architecture decisions that scale with your growth
-- Team mentorship and leadership
+- Full-stack architecture decisions that scale with your growth
+- Team mentorship and growth strategies
 - Cost optimization strategies
 - Hands-on technical execution when needed
 
 **Ideal for:**
-- Startups that need CTO-level guidance without full-time commitment
-- VC-backed companies looking to accelerate portfolio velocity
+- Startups that need engineering leadership without full-time commitment
+- SaaS & AI platforms looking to accelerate delivery velocity
 - Founders who need a technical partner to translate vision into reality
 
 ## 2. Blockchain Development
@@ -70,7 +70,7 @@ Mentoring engineering teams to ship faster and maintain velocity without burning
 ## Working Together
 
 Decebal works with clients through various engagement models:
-- **Fractional CTO** - Ongoing strategic partnership
+- **Engineering Leadership** - Ongoing strategic partnership
 - **Project-based consulting** - Specific technical initiatives
 - **Team coaching** - Accelerating existing engineering teams
 - **Architecture reviews** - One-time technical audits

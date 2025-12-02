@@ -64,9 +64,7 @@ export default function ComposeNewsletterPage() {
             <div className="p-3 rounded-lg bg-primary text-primary-foreground shadow-lg">
               <Mail className="h-6 w-6" />
             </div>
-            <h1 className="text-4xl font-bold text-foreground">
-              Compose Newsletter
-            </h1>
+            <h1 className="text-4xl font-bold text-foreground">Compose Newsletter</h1>
           </div>
           <p className="text-muted-foreground text-lg">
             Create and send newsletters to your subscribers
