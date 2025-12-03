@@ -1,0 +1,114 @@
+---
+title: Rethinking Technical Interviews - What Blackjack-Interview Taught Me About Hiring in the AI Era
+date: '2025-12-03T00:00:00.000Z'
+author: Decebal D.
+description: My view on interviews changed when I built blackjack-interview. It showed me what hiring should measure in 2025 - judgement, adaptability, and the ability to ship real software with modern tools.
+tags:
+  - hiring
+  - interviews
+  - ai
+  - engineering-leadership
+  - blackjack-interview
+slug: 2025-12-03-rethinking-technical-interviews-blackjack-interview
+---
+
+My view on interviews changed when I built [blackjack-interview](https://github.com/decebal/blackjack-interview). It showed me what hiring should measure in today's world.
+
+I used to watch companies scramble to block AI in interviews. Treat it like a cheat code. But that misses the point entirely. **The risk isn't tools. It's asking the wrong questions.**
+
+## Flipping the Frame
+
+With blackjack-interview, I flipped the question. Instead of "can you write this by hand without AI?", I asked: **"can you think with AI and still deliver value?"**
+
+The challenge gives candidates:
+- A skeleton game implementation
+- 40 failing tests
+- TypeScript types
+- A one-hour timeframe
+
+Then it says: **go**. Use whatever tools you want. Your job: ship something correct, readable, maintainable.
+
+## What I'm Actually Testing
+
+I'm not testing memorized algorithms or syntax speed. I'm testing:
+
+- **Judgement** - Can they verify AI suggestions against actual requirements?
+- **Prompt-crafting** - Can they get useful output from AI tools?
+- **Debugging ability** - Can they fix AI output when it's wrong?
+- **Shipping under real conditions** - Can they deliver working software with modern tools?
+
+The codebase intentionally contains misleading comments. Candidates who blindly follow AI suggestions without testing will fail. Those who verify suggestions against test requirements will catch the errors.
+
+## Why This Matters Now More Than Ever
+
+Technical interviews historically focused on toy problems: algorithms, puzzles, whiteboards. These rarely reflect real work. **AI didn't break interviews. It exposed how off-base they already were.**
+
+If you build the challenge around realistic context, real constraints, and tools that mirror the actual job, you get better signals:
+
+- Candidates who integrate with modern workflows
+- Early visibility into code structure, testing habits, and edge-case handling
+- Less bias toward pattern memorizers
+
+## The Evaluation Framework
+
+The [interview guide](https://github.com/decebal/blackjack-interview/blob/main/docs/INTERVIEW_GUIDE.md) breaks evaluation into five areas:
+
+**AI Tool Proficiency (25 points)**
+- Excellent: Verifies suggestions, catches misleading comments, iterates thoughtfully
+- Poor: Blindly follows AI suggestions, struggles to debug output
+
+**Test-Driven Development (20 points)**
+- Excellent: Constant test running, reads tests before coding, systematic progression
+- Poor: Rarely runs tests, implements without verification
+
+**Code Quality (20 points)**
+- Excellent: Clean, readable, handles edge cases, proper TypeScript usage
+- Poor: Messy code, significant issues
+
+**Problem-Solving (20 points)**
+- Excellent: Breaks down problems, systematic debugging, independent solutions
+- Poor: Cannot decompose problems, struggles without hints
+
+**Speed & Efficiency (15 points)**
+- Excellent: Completes in under 45 minutes, all tests passing
+- Adequate: 60+ minutes, partial completion
+
+## Success Benchmarks
+
+**Minimum Bar (Pass)**: 70%+ tests passing, core game works, demonstrates AI usage, reasonably clean code
+
+**Strong Performance**: 90%+ tests, full functionality, correct Ace handling, effective AI tool use, under 60 minutes
+
+**Exceptional**: All tests passing, polished implementation, sophisticated AI collaboration, excellent code quality
+
+## Red Flags to Watch For
+
+- Blindly following misleading comments without testing
+- Copy-pasting AI code without understanding
+- Never running tests or reading requirements
+- Cannot debug failures independently
+
+These behaviors predict how someone will work day-to-day. Better to see them in an hour than discover them after three months.
+
+## What This Doesn't Cover
+
+Blackjack-interview isn't perfect. It doesn't cover:
+- System scalability
+- Large-team coordination
+- Architectural decisions at scale
+
+But as a live test, it gives you a window into how a candidate works **today**, with **today's tools**.
+
+## The Lesson for Hiring Managers
+
+**Change the interview question. Measure signals that matter.**
+
+- Judgement over memorization
+- Adaptability over rigid process
+- Code quality under modern constraints
+
+Because in 2025, tools have changed. But the need for people who can deliver real work hasn't.
+
+---
+
+**Try it yourself**: The [blackjack-interview challenge](https://github.com/decebal/blackjack-interview) is open source. Use it for your next hire, or take it as a candidate to see where you stand.
