@@ -59,7 +59,8 @@
       "WebFetch(domain:posthog.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:www.magicpath.ai)",
-      "WebFetch(domain:www.x402.org)"
+      "WebFetch(domain:www.x402.org)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

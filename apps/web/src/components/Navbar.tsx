@@ -2,14 +2,43 @@
 
 import { Button } from '@decebal/ui/button'
 import { cn } from '@decebal/ui/lib/utils'
-import { ChevronRight, Menu, X } from 'lucide-react'
+import { Blocks, Brain, ChevronDown, ChevronRight, Menu, Terminal, Users, X } from 'lucide-react'
 import Link from 'next/link'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import UserMenu from './UserMenu'
+
+const expertiseLinks = [
+  {
+    href: '/about',
+    label: 'Engineering Leadership',
+    icon: Users,
+    description: 'Fractional CTO & Team Strategy',
+  },
+  {
+    href: '/ai',
+    label: 'AI Engineering',
+    icon: Brain,
+    description: 'GenAI, RAG & LLM Integration',
+  },
+  {
+    href: '/rust',
+    label: 'Rust Development',
+    icon: Terminal,
+    description: 'High-Performance Backend Systems',
+  },
+  {
+    href: '/smart-contracts',
+    label: 'Smart Contracts',
+    icon: Blocks,
+    description: 'Blockchain & DeFi Solutions',
+  },
+]
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [expertiseOpen, setExpertiseOpen] = useState(false)
+  const expertiseRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +52,20 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll)
     return () => {
       window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  // Close expertise dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (expertiseRef.current && !expertiseRef.current.contains(event.target as Node)) {
+        setExpertiseOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
@@ -49,9 +92,41 @@ const Navbar = () => {
           <Link href="/" className="brand-nav-link">
             Home
           </Link>
-          <Link href="/about" className="brand-nav-link">
-            About Me
-          </Link>
+
+          {/* Expertise Dropdown */}
+          <div ref={expertiseRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setExpertiseOpen(!expertiseOpen)}
+              className="brand-nav-link flex items-center gap-1"
+            >
+              Expertise
+              <ChevronDown
+                className={cn('h-4 w-4 transition-transform', expertiseOpen && 'rotate-180')}
+              />
+            </button>
+            {expertiseOpen && (
+              <div className="absolute top-full left-0 mt-2 w-72 bg-brand-darknavy/95 backdrop-blur-md rounded-lg border border-brand-teal/20 shadow-xl p-2">
+                {expertiseLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setExpertiseOpen(false)}
+                    className="flex items-start gap-3 p-3 rounded-md hover:bg-white/5 transition-colors group"
+                  >
+                    <link.icon className="w-5 h-5 text-brand-teal flex-shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-brand-heading font-medium group-hover:text-brand-teal transition-colors">
+                        {link.label}
+                      </div>
+                      <div className="text-xs text-white/60">{link.description}</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           <Link href="/work" className="brand-nav-link">
             Case Studies
           </Link>
@@ -93,42 +168,55 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              href="/about"
-              onClick={closeMobileMenu}
-              className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
-            >
-              About Me
-            </Link>
-            <Link
-              href="/work"
-              onClick={closeMobileMenu}
-              className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
-            >
-              Case Studies
-            </Link>
-            <Link
-              href="/services"
-              onClick={closeMobileMenu}
-              className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
-            >
-              Services
-            </Link>
-            <Link
-              href="/testimonials"
-              onClick={closeMobileMenu}
-              className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="/blog"
-              onClick={closeMobileMenu}
-              className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
-            >
-              Blog
-            </Link>
-            <div onClick={closeMobileMenu}>
+
+            {/* Expertise Section */}
+            <div className="border-t border-white/10 pt-2">
+              <p className="text-xs uppercase tracking-wider text-white/50 px-2 mb-2">Expertise</p>
+              {expertiseLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors"
+                >
+                  <link.icon className="w-4 h-4 text-brand-teal" />
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="border-t border-white/10 pt-2">
+              <Link
+                href="/work"
+                onClick={closeMobileMenu}
+                className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors block"
+              >
+                Case Studies
+              </Link>
+              <Link
+                href="/services"
+                onClick={closeMobileMenu}
+                className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors block"
+              >
+                Services
+              </Link>
+              <Link
+                href="/testimonials"
+                onClick={closeMobileMenu}
+                className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors block"
+              >
+                Testimonials
+              </Link>
+              <Link
+                href="/blog"
+                onClick={closeMobileMenu}
+                className="text-brand-heading hover:text-brand-teal text-left p-2 hover:bg-white/5 rounded transition-colors block"
+              >
+                Blog
+              </Link>
+            </div>
+
+            <div onClick={closeMobileMenu} className="border-t border-white/10 pt-2">
               <UserMenu />
             </div>
             <Link href="/contact" onClick={closeMobileMenu} className="w-full">

@@ -78,7 +78,8 @@ export async function POST(req: Request) {
               $ai_latency_ms: latency,
               $ai_input_tokens: result.usage?.inputTokens || 0,
               $ai_output_tokens: result.usage?.outputTokens || 0,
-              $ai_total_tokens: (result.usage?.inputTokens || 0) + (result.usage?.outputTokens || 0),
+              $ai_total_tokens:
+                (result.usage?.inputTokens || 0) + (result.usage?.outputTokens || 0),
               $ai_temperature: 0.7,
               $ai_max_tokens: 400,
 

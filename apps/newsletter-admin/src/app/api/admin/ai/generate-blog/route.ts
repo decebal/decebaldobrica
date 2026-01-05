@@ -228,7 +228,10 @@ Regenerate the "${sectionTitle}" section with fresh content. Keep it aligned wit
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0]?.message ?? 'Validation error' }, { status: 400 })
+      return NextResponse.json(
+        { error: error.errors[0]?.message ?? 'Validation error' },
+        { status: 400 }
+      )
     }
 
     console.error('[AI Blog] Error:', error)

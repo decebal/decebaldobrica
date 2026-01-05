@@ -46,7 +46,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors[0]?.message ?? 'Validation error' }, { status: 400 })
+      return NextResponse.json(
+        { error: error.errors[0]?.message ?? 'Validation error' },
+        { status: 400 }
+      )
     }
 
     console.error('[Interest] Unexpected error:', error)

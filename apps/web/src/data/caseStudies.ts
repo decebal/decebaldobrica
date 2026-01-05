@@ -1,3 +1,5 @@
+export type ServiceCategory = 'ai' | 'rust' | 'smart-contracts' | 'leadership' | 'architecture'
+
 export interface CaseStudy {
   id: string
   slug: string
@@ -5,6 +7,7 @@ export interface CaseStudy {
   tagline: string
   industry: string
   role: string
+  serviceCategories?: ServiceCategory[]
 
   // Frustration
   personName: string
@@ -105,6 +108,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Turning skeptical engineers into AI advocates',
     industry: 'AI-Enhanced Logistics',
     role: 'GenAI Strategy & Engineering Alignment',
+    serviceCategories: ['ai', 'leadership'],
 
     // Frustration
     personName: 'Optimus Prime',
@@ -199,6 +203,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Reclaiming focus by fixing org topology debt',
     industry: 'Cybernetics Defense',
     role: 'Team Topologies Strategy & Delivery Optimization',
+    serviceCategories: ['leadership', 'architecture'],
 
     // Frustration
     personName: 'Commander Arcturon',
@@ -299,6 +304,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Removing structural drag for a heroic engineering team',
     industry: 'Defense Technology',
     role: 'Monorepo Alignment & System Strategy',
+    serviceCategories: ['architecture', 'leadership'],
 
     // Frustration
     personName: 'Commander Skyvolt',
@@ -396,6 +402,7 @@ export const caseStudies: CaseStudy[] = [
       'Enterprise architecture transformation: TOGAF-aligned platform modernization in 12 days',
     industry: 'Financial Media',
     role: 'Solutions Architect & Digital Transformation Lead',
+    serviceCategories: ['architecture'],
 
     // Frustration
     personName: 'Marcus Sullivan',

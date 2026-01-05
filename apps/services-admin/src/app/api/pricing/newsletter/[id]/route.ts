@@ -2,19 +2,12 @@ import { getSupabaseAdmin } from '@decebal/database'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const supabase = getSupabaseAdmin()
 
-    const { data, error } = await supabase
-      .from('payment_config')
-      .select('*')
-      .eq('id', id)
-      .single()
+    const { data, error } = await supabase.from('payment_config').select('*').eq('id', id).single()
 
     if (error) throw error
 
@@ -25,10 +18,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const body = await request.json()
