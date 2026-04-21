@@ -1,20 +1,12 @@
-/**
- * Referral tracking utilities
- * Tracks where users came from before booking a session
- */
-
 export interface ReferralData {
   category: string
-  source?: string // e.g., blog post title, page name, etc.
+  source?: string
   timestamp: number
 }
 
 const STORAGE_KEY = 'booking_referral'
-const MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+const MAX_AGE_MS = 24 * 60 * 60 * 1000
 
-/**
- * Store referral data in localStorage
- */
 export function setReferralData(category: string, source?: string): void {
   if (typeof window === 'undefined') return
 
@@ -31,10 +23,6 @@ export function setReferralData(category: string, source?: string): void {
   }
 }
 
-/**
- * Get referral data from localStorage
- * Returns null if expired or not found
- */
 export function getReferralData(): ReferralData | null {
   if (typeof window === 'undefined') return null
 
@@ -44,7 +32,6 @@ export function getReferralData(): ReferralData | null {
 
     const data: ReferralData = JSON.parse(stored)
 
-    // Check if expired
     if (Date.now() - data.timestamp > MAX_AGE_MS) {
       clearReferralData()
       return null
@@ -57,9 +44,6 @@ export function getReferralData(): ReferralData | null {
   }
 }
 
-/**
- * Clear referral data from localStorage
- */
 export function clearReferralData(): void {
   if (typeof window === 'undefined') return
 
@@ -70,9 +54,6 @@ export function clearReferralData(): void {
   }
 }
 
-/**
- * Format referral data for display or submission
- */
 export function formatReferralData(data: ReferralData | null): string {
   if (!data) return ''
 

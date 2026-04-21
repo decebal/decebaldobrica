@@ -17,22 +17,28 @@ import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const metaDescription = (config as { metaDescription?: string }).metaDescription ?? config.tagline
+
 export const metadata: Metadata = {
   title: {
     default: `${config.name} - ${config.professional.title}`,
     template: `%s | ${config.name}`,
   },
-  description: config.tagline,
+  description: metaDescription,
   keywords: [
-    'Engineering Leader',
-    'Full-Stack Architecture',
-    'Team Growth',
-    'SaaS Platforms',
-    'AI Platforms',
+    'Rust Engineering Leader',
+    'Wolven Tech',
+    'Event Sourcing',
+    'Tokio',
+    'Axum',
+    'Tonic',
+    'Leptos',
+    'WASM',
+    'AI Engineering',
+    'Fractional CTO',
+    'Technical Due Diligence',
     'TypeScript',
     'Rust',
-    'Serverless',
-    'Technical Leadership',
   ],
   authors: [{ name: config.name }],
   creator: config.name,
@@ -43,12 +49,12 @@ export const metadata: Metadata = {
     url: '/',
     siteName: `${config.name} - ${config.professional.title}`,
     title: `${config.name} - ${config.professional.title}`,
-    description: config.tagline,
+    description: metaDescription,
   },
   twitter: {
     card: 'summary_large_image',
     title: `${config.name} - ${config.professional.title}`,
-    description: config.tagline,
+    description: metaDescription,
   },
 }
 

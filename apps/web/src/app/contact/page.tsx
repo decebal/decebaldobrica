@@ -1,7 +1,9 @@
 // src/app/contact/page.tsx
 // Contact page with booking form and AI chat
 
-import ContactBookingPage from '@/components/ContactBookingPage'
+import { bookMeeting } from '@/actions/meeting-action'
+import Footer from '@/components/Footer'
+import ContactBookingPage from '@decebal/booking/ContactBookingPage'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
@@ -23,7 +25,11 @@ export default function ContactPage() {
         </div>
       }
     >
-      <ContactBookingPage />
+      <ContactBookingPage
+        bookingAction={bookMeeting}
+        chatConfig={{ enabled: true }}
+        footer={<Footer />}
+      />
     </Suspense>
   )
 }

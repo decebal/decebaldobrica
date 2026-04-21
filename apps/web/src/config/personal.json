@@ -1,13 +1,16 @@
 {
   "name": "Decebal Dobrica",
-  "tagline": "Engineering Leader specializing in Full-Stack Architecture & Team Growth for SaaS & AI Platforms",
+  "tagline": "Rust Engineering Leader · Founder of Wolven Tech",
+  "metaDescription": "Rust engineering leader. Founder of Wolven Tech — a Rust-only technical advisory for founders and CTOs. Event sourcing, Tokio/Axum systems, AI-accelerated delivery. 15+ years scaling fintech, SaaS, and Web3 platforms.",
   "email": "discovery@decebaldobrica.com",
   "website": "https://decebaldobrica.com",
   "domain": "decebaldobrica.com",
   "oldBlog": "https://decebalonprogramming.net/",
   "ethAddress": "decebaldobrica.eth",
+  "wolvenTechUrl": "https://wolventech.io",
   "socialLinks": {
     "github": "https://github.com/decebal",
+    "githubWolvenTech": "https://github.com/wolven-tech",
     "linkedin": "https://www.linkedin.com/in/decebaldobrica/",
     "twitter": "https://x.com/ddonprogramming"
   },
@@ -18,22 +21,23 @@
     "timezone": "Europe/London"
   },
   "professional": {
-    "title": "Engineering Leader",
-    "currentRole": "Senior Technical Leadership",
-    "currentCompany": "HedgeX Capital",
+    "title": "Rust Engineering Leader",
+    "currentRole": "Founder & Principal Engineer",
+    "currentCompany": "Wolven Tech",
     "yearsExperience": "15+",
     "specialties": [
-      "AI Engineering & GenAI Integration",
-      "Cloud Architecture & SaaS",
-      "Technology Strategy & Leadership",
-      "Blockchain & Web Development"
+      "Rust Systems Engineering (Tokio / Axum / Tonic)",
+      "Event Sourcing & Clean Architecture",
+      "AI-Accelerated Delivery & Agentic Rust",
+      "WASM Frontends (Leptos) & Native Desktop (Tauri)"
     ]
   },
   "achievements": {
     "productivityIncrease": "3x",
-    "costReduction": "60-75%",
+    "costReduction": "75%",
     "teamSize": "25+",
-    "description": "Delivered 3x developer productivity gains and 60-75% infrastructure cost reductions through strategic technical leadership"
+    "rustShipped": "1M+",
+    "description": "Shipped 1M+ lines of production Rust across four event-sourced platforms — cutting memory 6–10× and infrastructure cost up to 75%"
   },
   "education": {
     "degree": "Software Engineering",

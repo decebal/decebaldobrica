@@ -99,31 +99,55 @@ const AboutPage = () => {
                 </h2>
                 <div className="prose prose-lg max-w-none text-white">
                   <p>
-                    I'm a technology leader specializing in AI engineering, software architecture,
-                    and digital transformation. As a {config.professional.title}, I help
-                    organizations navigate complex technological challenges and build scalable,
-                    innovative solutions.
+                    I'm a Rust engineering leader and the founder of{' '}
+                    <a
+                      href="https://wolventech.io"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-teal hover:underline"
+                    >
+                      Wolven Tech
+                    </a>
+                    , a Rust-only technical advisory practice. I've architected and shipped 1M+
+                    lines of production Rust across four event-sourced platforms — desktop AI
+                    tooling, gRPC microservices, embedded analytics engines, and WASM frontends.
                   </p>
                   <p>
-                    Most recently, I led a team of 7 engineers at <strong>Ebury</strong> as
-                    Engineering Manager, reducing customer onboarding time by 35% through modular
-                    architecture and automation. Concurrently, I worked as a Smart Contract Engineer
-                    at <strong>Mundo Wallet</strong>, transforming a crypto wallet into a fintech
-                    app for high-inflation markets and cutting blockchain infrastructure costs by
-                    60%.
+                    Previously <strong>Technical Lead at Ebury</strong> and{' '}
+                    <strong>Software Architect at Tellimer</strong>, with{' '}
+                    {config.professional.yearsExperience} years of fintech and SaaS experience. Most
+                    recently at Ebury I led 7 engineers to reduce customer onboarding time by 35%
+                    through modular architecture; concurrently, as Smart Contract Engineer at Mundo
+                    Wallet, I cut blockchain infrastructure costs by 60%.
                   </p>
                   <p>
-                    With over {config.professional.yearsExperience} years of experience, I've helped
-                    VC-backed startups overcome their toughest challenge: portfolio velocity. My
-                    track record includes {config.achievements.description}.
+                    Wolven Tech is my current operating vehicle. I help founders and CTOs who need
+                    backends that are quiet, cheap, and correct — event-sourced architectures,
+                    Tokio/Axum systems, WASM modules, and AI-accelerated delivery. Typical outcomes:
+                    6–10× memory reduction, 8× smaller release binaries, 5× faster startup vs.
+                    equivalent TypeScript services.
                   </p>
                   <p>
-                    I'm passionate about emerging technologies—from AI engineering and GenAI
-                    integration to blockchain and event-driven architectures. I write extensively
-                    about software architecture, guide development teams through technological
-                    transformations, and translate complex technical concepts into actionable
-                    strategies. My approach combines strategic technical leadership with hands-on
-                    execution, ensuring teams don't just build—they build right.
+                    I write about Rust systems design, event sourcing, agentic AI workflows, and how
+                    small teams outbuild big ones. Public artifacts include{' '}
+                    <a
+                      href="https://crates.io/crates/monorepo-meta"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-teal hover:underline"
+                    >
+                      monorepo-meta
+                    </a>{' '}
+                    on crates.io and the{' '}
+                    <a
+                      href="https://github.com/wolven-tech/rust-v1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-teal hover:underline"
+                    >
+                      wolven-tech/rust-v1
+                    </a>{' '}
+                    production template. Based in London.
                   </p>
                 </div>
               </section>

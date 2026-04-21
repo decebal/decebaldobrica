@@ -1,32 +1,58 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { Bot, Calendar, Loader2, Send } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import type { UIMessage } from 'ai'
+import { DefaultChatTransport } from 'ai'
+import { Bot, Loader2, Send } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChatMessage } from './ChatMessage'
 
-const ChatInterfaceAI = () => {
+export interface ChatInterfaceAIProps {
+  apiUrl?: string
+  initialGreeting?: string
+  placeholder?: string
+  suggestions?: string[]
+  subtitle?: string
+  className?: string
+}
+
+const DEFAULT_GREETING =
+  "Hello! I'm Decebal's AI assistant. I can answer questions about his fractional CTO services, blockchain expertise, and technical background. If you'd like to schedule a consultation, just let me know and I'll direct you to the booking form below!"
+
+const DEFAULT_SUGGESTIONS = [
+  'What are your fractional CTO services?',
+  'Tell me about your blockchain experience',
+  'How do I schedule a consultation?',
+]
+
+export const ChatInterfaceAI = ({
+  apiUrl = '/api/chat',
+  initialGreeting = DEFAULT_GREETING,
+  placeholder = "Ask about Decebal's work or schedule a meeting...",
+  suggestions = DEFAULT_SUGGESTIONS,
+  subtitle = 'Powered by Groq • Llama 3.1',
+  className,
+}: ChatInterfaceAIProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const [input, setInput] = useState('')
 
-  const { messages, status, error, sendMessage } = useChat({
-    api: '/api/chat',
-    initialMessages: [
+  const transport = useMemo(() => new DefaultChatTransport({ api: apiUrl }), [apiUrl])
+  const initialMessages = useMemo<UIMessage[]>(
+    () => [
       {
         id: 'initial',
         role: 'assistant',
-        createdAt: new Date(),
-        parts: [
-          {
-            type: 'text',
-            text: "Hello! I'm Decebal's AI assistant. I can answer questions about his fractional CTO services, blockchain expertise, and technical background. If you'd like to schedule a consultation, just let me know and I'll direct you to the booking form below!",
-          },
-        ],
+        parts: [{ type: 'text', text: initialGreeting }],
       },
     ],
+    [initialGreeting]
+  )
+
+  const { messages, status, error, sendMessage } = useChat({
+    transport,
+    messages: initialMessages,
   })
 
-  // Auto-scroll to bottom when new messages arrive
   // biome-ignore lint/correctness/useExhaustiveDependencies: messages.length is intentional to track message count changes
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -40,7 +66,7 @@ const ChatInterfaceAI = () => {
   return (
     <div
       data-testid="chat-interface"
-      className="flex flex-col h-[600px] w-full max-w-4xl mx-auto border border-white/10 rounded-lg overflow-hidden shadow-xl"
+      className={`flex flex-col h-[600px] w-full max-w-4xl mx-auto border border-white/10 rounded-lg overflow-hidden shadow-xl ${className ?? ''}`}
     >
       {/* Chat header */}
       <div className="bg-gradient-to-r from-brand-teal to-brand-teal/80 text-white px-6 py-3 flex items-center justify-between relative overflow-hidden flex-shrink-0">
@@ -49,7 +75,7 @@ const ChatInterfaceAI = () => {
           <Bot className="w-5 h-5 mr-2" />
           <div>
             <h3 className="font-medium text-base">AI Assistant</h3>
-            <p className="text-xs text-white/80">Powered by Groq • Llama 3.1</p>
+            <p className="text-xs text-white/80">{subtitle}</p>
           </div>
         </div>
       </div>
@@ -60,10 +86,8 @@ const ChatInterfaceAI = () => {
         className="flex-1 overflow-y-auto bg-gradient-to-b from-brand-navy/90 to-brand-darknavy/90"
       >
         {messages.map((message, index) => {
-          // Extract text content from message parts (AI SDK v5 format)
           const content = message.parts
-            .filter((part) => part.type === 'text')
-            .map((part) => part.text)
+            .map((part) => (part.type === 'text' ? part.text : ''))
             .join('')
 
           return (
@@ -71,9 +95,9 @@ const ChatInterfaceAI = () => {
               key={message.id}
               message={{
                 id: message.id,
-                role: message.role as 'user' | 'assistant',
+                role: message.role === 'assistant' ? 'assistant' : 'user',
                 content,
-                timestamp: message.createdAt || new Date(),
+                timestamp: new Date(),
               }}
               index={index}
               isStreaming={false}
@@ -135,7 +159,7 @@ const ChatInterfaceAI = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about Decebal's work or schedule a meeting..."
+            placeholder={placeholder}
             className="flex-1 bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-teal/50 focus:border-transparent transition-all duration-300 placeholder:text-white/40"
             disabled={status !== 'ready'}
           />
@@ -152,33 +176,21 @@ const ChatInterfaceAI = () => {
           </button>
         </form>
 
-        {/* Suggestion chips */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            onClick={() => setInput('What are your fractional CTO services?')}
-            type="button"
-            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
-            disabled={status !== 'ready'}
-          >
-            Fractional CTO services
-          </button>
-          <button
-            onClick={() => setInput('Tell me about your blockchain experience')}
-            type="button"
-            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
-            disabled={status !== 'ready'}
-          >
-            Blockchain experience
-          </button>
-          <button
-            onClick={() => setInput('How do I schedule a consultation?')}
-            type="button"
-            className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
-            disabled={status !== 'ready'}
-          >
-            Schedule consultation
-          </button>
-        </div>
+        {suggestions.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {suggestions.map((s) => (
+              <button
+                key={s}
+                onClick={() => setInput(s)}
+                type="button"
+                className="text-xs px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-gray-300 hover:text-white transition-colors"
+                disabled={status !== 'ready'}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

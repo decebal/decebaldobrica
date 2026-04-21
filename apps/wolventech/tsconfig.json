@@ -1,0 +1,24 @@
+{
+  "extends": "../../tooling/typescript/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@decebal/ui": ["../../packages/ui/src"],
+      "@decebal/ui/*": ["../../packages/ui/src/*"],
+      "@decebal/booking": ["../../packages/booking/src"],
+      "@decebal/booking/*": ["../../packages/booking/src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "allowJs": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitAny": false
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
