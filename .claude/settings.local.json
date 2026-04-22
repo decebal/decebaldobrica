@@ -63,7 +63,8 @@
       "Bash(ls:*)",
       "Bash(cn create *)",
       "Bash(cn *)",
-      "Bash(bunx playwright *)"
+      "Bash(bunx playwright *)",
+      "Bash(git commit -m ' *)"
     ],
     "deny": [],
     "ask": []
