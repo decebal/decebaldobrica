@@ -106,3 +106,88 @@
     font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
   }
 }
+
+/* React Timezone Select — rust dark theme (react-select emotion class targets) */
+.timezone-select div[class*="control"] {
+  @apply bg-rust-surface border border-rust-line text-rust-ink cursor-pointer transition-colors duration-200;
+  min-height: 42px;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="control"]:hover,
+.timezone-select div[class*="control--is-focused"],
+.timezone-select div[class*="control--menu-is-open"] {
+  @apply border-rust-primary bg-rust-surface;
+  box-shadow: none !important;
+}
+
+.timezone-select div[class*="ValueContainer"],
+.timezone-select div[class*="Input"] {
+  @apply bg-transparent text-rust-ink;
+}
+
+.timezone-select div[class*="Input"] input {
+  color: rgb(229 231 235) !important;
+  background-color: transparent !important;
+}
+
+.timezone-select div[class*="singleValue"] {
+  @apply text-rust-ink;
+}
+
+.timezone-select div[class*="placeholder"] {
+  @apply text-rust-muted;
+}
+
+.timezone-select div[class*="indicatorSeparator"] {
+  @apply bg-rust-line;
+}
+
+.timezone-select div[class*="indicatorContainer"] {
+  @apply text-rust-muted;
+}
+
+.timezone-select div[class*="indicatorContainer"]:hover {
+  @apply text-rust-amber;
+}
+
+.timezone-select div[class*="menu"] {
+  @apply bg-rust-elevated border border-rust-line rounded-md;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6) !important;
+  z-index: 50;
+}
+
+.timezone-select div[class*="MenuList"] {
+  @apply bg-transparent;
+}
+
+.timezone-select div[class*="option"] {
+  @apply text-rust-ink cursor-pointer transition-colors duration-150;
+  background-color: transparent !important;
+}
+
+.timezone-select div[class*="option"]:hover,
+.timezone-select div[class*="option--is-focused"] {
+  background-color: rgba(206, 66, 43, 0.18) !important;
+}
+
+.timezone-select div[class*="option--is-selected"] {
+  @apply text-rust-ink;
+  background-color: rgba(206, 66, 43, 0.32) !important;
+}
+
+/* Radix Select (shadcn) — keep highlighted/checked options readable on rust theme */
+[role="option"][data-radix-collection-item],
+[role="option"] {
+  color: hsl(var(--rust-ink, 214 19% 93%));
+}
+
+[role="option"][data-state="checked"],
+[role="option"][data-highlighted] {
+  background-color: rgba(206, 66, 43, 0.28) !important;
+  color: rgb(232, 236, 242) !important;
+}
+
+[role="option"][data-state="checked"] svg {
+  color: #ffa657;
+}

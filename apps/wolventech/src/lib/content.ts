@@ -1,11 +1,11 @@
 export type NavLink = { label: string; href: string }
 
 export const navLinks: NavLink[] = [
-  { label: 'Services', href: '#services' },
-  { label: 'Engagements', href: '#engagements' },
-  { label: 'Open Source', href: '#artifacts' },
-  { label: 'Process', href: '#process' },
-  { label: 'About', href: '#about' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Engagements', href: '/#engagements' },
+  { label: 'Open Source', href: '/#artifacts' },
+  { label: 'Process', href: '/#process' },
+  { label: 'About', href: '/#about' },
 ]
 
 export type ProofPoint = {
@@ -50,7 +50,7 @@ export const services: Service[] = [
     kicker: 'Fixed scope · 4–12 weeks',
     title: 'Platform Sprint',
     description:
-      'Design and build one concrete thing, end to end — an event-sourced service, an MCP server, a WASM migration, or a Tauri application. You get code, documentation, and a runbook. We show up, scope it, and ship it.',
+      'Design and build one concrete thing, end to end: an event-sourced service, an MCP server, a WASM migration, or a Tauri application. You get code, documentation, and a runbook. We show up, scope it, and ship it.',
     scope: ['Event sourcing', 'MCP / agents', 'WASM', 'Tauri'],
     price: 'Fixed fee. Weekly demos. Source license on delivery.',
   },
@@ -70,6 +70,8 @@ export type Case = {
   description: string
   facts: Array<{ n: string; l: string }>
   stack: string[]
+  href?: string
+  linkLabel?: string
 }
 
 export const cases: Case[] = [
@@ -107,10 +109,10 @@ export const cases: Case[] = [
     ],
   },
   {
-    tag: 'Embedded Engine · Analytics',
-    title: 'Embedded Event-Sourcing Engine',
+    tag: 'AllSource · Wolven Tech product',
+    title: 'AllSource: Embedded Rust Event Store',
     description:
-      'Four-crate Edition-2024 workspace with an Elixir NIF bridge. Columnar analytics over Arrow/Parquet/DataFusion; hybrid full-text + vector search via Tantivy, fastembed, and instant-distance. Seven-day durability stress harness.',
+      'Embedded Rust event store with an AI-ready product suite. Four-crate Edition-2024 workspace with an Elixir NIF bridge. Write-ahead log + Parquet columnar storage with zero-copy Arrow IPC on the hot path; hybrid full-text + vector search via Tantivy, fastembed, and instant-distance. Seven-day durability stress harness validates correctness under concurrent writers and crash recovery.',
     facts: [
       { n: '~353K', l: 'LOC Rust' },
       { n: '1,998', l: 'Public handlers' },
@@ -126,6 +128,8 @@ export const cases: Case[] = [
       'simd-json',
       'hotpath',
     ],
+    href: 'https://www.all-source.xyz/',
+    linkLabel: 'all-source.xyz',
   },
   {
     tag: 'SaaS · WASM Frontend',
@@ -178,6 +182,15 @@ export const artifacts: Artifact[] = [
     href: 'https://github.com/wolven-tech/mcp-log-server',
     linkLabel: 'View on GitHub',
   },
+  {
+    badge: 'Framework',
+    title: 'AllFrame',
+    code: 'all-source-os.github.io/all-frame',
+    description:
+      'The Composable Rust API Framework. Write your handler once, expose it via REST, GraphQL, and gRPC. Built-in HTTP/2 server, compile-time DI, CQRS, and MCP -- all TDD from day zero.',
+    href: 'https://all-source-os.github.io/all-frame',
+    linkLabel: 'View on GitHub',
+  },
 ]
 
 export type Step = { num: string; title: string; body: string }
@@ -208,9 +221,11 @@ export const steps: Step[] = [
 export const credentials: string[] = [
   '15+ years production software',
   '1M+ LOC Rust shipped (4 platforms)',
+  'Author of AllSource (embedded Rust event store)',
+  'Author of AllFrame (Rust framework)',
   'Technical Lead, Ebury (2025)',
   'Software Architect, Tellimer (2019–2023)',
-  'Tech Leaders — Certified Fractional CTO',
+  'Certified Fractional CTO (Tech Leaders)',
   'B.Sc. IT & Maths, Military Technical Academy',
   'Published: monorepo-meta on crates.io',
   'Based in London · Available worldwide (remote)',

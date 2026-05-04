@@ -1,7 +1,7 @@
 {
   "name": "Decebal Dobrica",
-  "tagline": "Rust Engineering Leader · Founder of Wolven Tech",
-  "metaDescription": "Rust engineering leader. Founder of Wolven Tech — a Rust-only technical advisory for founders and CTOs. Event sourcing, Tokio/Axum systems, AI-accelerated delivery. 15+ years scaling fintech, SaaS, and Web3 platforms.",
+  "tagline": "Rust Systems & Agentic AI · Author of AllSource & AllFrame",
+  "metaDescription": "Rust and AI engineer. Author of AllSource (embedded Rust event store) and AllFrame (Rust framework). Founder of Wolven Tech, building event-sourced systems, agentic LLM workflows, and AI-accelerated delivery. 15+ years across fintech, identity, SaaS, and Web3.",
   "email": "discovery@decebaldobrica.com",
   "website": "https://decebaldobrica.com",
   "domain": "decebaldobrica.com",
@@ -21,15 +21,16 @@
     "timezone": "Europe/London"
   },
   "professional": {
-    "title": "Rust Engineering Leader",
+    "title": "Rust Systems & Agentic AI",
     "currentRole": "Founder & Principal Engineer",
     "currentCompany": "Wolven Tech",
     "yearsExperience": "15+",
     "specialties": [
       "Rust Systems Engineering (Tokio / Axum / Tonic)",
+      "Agentic AI & LLM Workflows (Vercel AI SDK, RAG, tool-use)",
       "Event Sourcing & Clean Architecture",
-      "AI-Accelerated Delivery & Agentic Rust",
-      "WASM Frontends (Leptos) & Native Desktop (Tauri)"
+      "WASM Frontends (Leptos) & Native Desktop (Tauri)",
+      "Author of AllSource (event store) & AllFrame (framework)"
     ]
   },
   "achievements": {

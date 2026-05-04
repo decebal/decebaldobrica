@@ -4,8 +4,28 @@
  */
 
 import { createPayment, grantServiceAccess } from '@/lib/payments'
-import { SERVICE_TIERS } from '@/lib/payments/config'
+import { type Chain, type Currency, SERVICE_TIERS } from '@/lib/payments/config'
 import type { PaymentGateConfig } from '@decebal/payment-gate'
+import type { PaymentChain, PaymentCurrency } from '@decebal/payment-gate'
+
+const PAYMENT_CURRENCY_MAP: Record<PaymentCurrency, Currency> = {
+  SOL: 'SOL',
+  BTC: 'BTC',
+  ETH: 'ETH',
+  USDC: 'USDC',
+  // Project's Currency type doesn't model USDT separately; treat it as USDC for storage.
+  USDT: 'USDC',
+}
+
+const PAYMENT_CHAIN_MAP: Record<PaymentChain, Chain> = {
+  solana: 'solana',
+  ethereum: 'ethereum',
+  base: 'base',
+  arbitrum: 'arbitrum',
+  // Lightning settles on Bitcoin; Optimism not modeled — fall back to ethereum.
+  lightning: 'bitcoin',
+  optimism: 'ethereum',
+}
 
 // ============================================================================
 // SERVICES PRICING API CONFIGURATION
@@ -49,8 +69,8 @@ export const servicesGateConfig: PaymentGateConfig = {
         entityType: 'service',
         entityId: 'all-pricing',
         amount: verification.amount,
-        currency: verification.currency,
-        chain: verification.chain,
+        currency: PAYMENT_CURRENCY_MAP[verification.currency],
+        chain: PAYMENT_CHAIN_MAP[verification.chain],
         reference: verification.paymentId,
         description: 'Services pricing unlock via Payment Gate',
         metadata: {

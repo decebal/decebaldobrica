@@ -202,6 +202,7 @@ export default function ContactBookingPage({
           // Create a date object representing this time in the user's timezone
           // We'll use a reference date to calculate offsets
           const [year, month, day] = formData.date.split('-').map(Number)
+          if (year === undefined || month === undefined || day === undefined) continue
           const referenceDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0))
 
           // Get offset differences
@@ -278,8 +279,9 @@ export default function ContactBookingPage({
 
   // Auto-select meeting if only one option available
   useEffect(() => {
-    if (meetingTypes.length === 1 && !selectedMeeting) {
-      setSelectedMeeting(meetingTypes[0])
+    const onlyMeeting = meetingTypes[0]
+    if (meetingTypes.length === 1 && onlyMeeting && !selectedMeeting) {
+      setSelectedMeeting(onlyMeeting)
     }
   }, [meetingTypes, selectedMeeting])
 
@@ -432,6 +434,7 @@ export default function ContactBookingPage({
   const formatTimeDisplay = (timeString: string): string => {
     if (!timeString) return ''
     const [hour, minute] = timeString.split(':').map(Number)
+    if (hour === undefined || minute === undefined) return ''
     const period = hour >= 12 ? 'PM' : 'AM'
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
     return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
@@ -674,7 +677,7 @@ export default function ContactBookingPage({
 
                         <CardHeader>
                           <CardTitle className="text-white text-lg">
-                            {config.meetingType.split('(')[0].trim()}
+                            {(config.meetingType.split('(')[0] ?? config.meetingType).trim()}
                           </CardTitle>
                           <div className="text-gray-400 space-y-2 mt-2">
                             <div className="flex items-center gap-2 text-sm">
@@ -737,7 +740,10 @@ export default function ContactBookingPage({
                 <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                   <CardHeader className="pb-2 pt-3 md:pt-6">
                     <CardTitle className="text-white text-base md:text-lg">
-                      Book {selectedMeeting.meetingType.split('(')[0].trim()}
+                      Book{' '}
+                      {(
+                        selectedMeeting.meetingType.split('(')[0] ?? selectedMeeting.meetingType
+                      ).trim()}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-2 pb-3 md:pb-6">

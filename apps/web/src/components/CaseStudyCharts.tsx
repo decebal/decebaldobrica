@@ -202,11 +202,10 @@ export function PhaseDurationChart({ phases }: PhaseDurationChartProps) {
 
   const chartData = phases.map((phase, idx) => {
     const durationMatch = phase.duration.match(/Day (\d+)(?:-(\d+))?/)
-    const days = durationMatch
-      ? durationMatch[2]
+    const days =
+      durationMatch?.[2] && durationMatch[1]
         ? Number.parseInt(durationMatch[2]) - Number.parseInt(durationMatch[1]) + 1
         : 1
-      : 1
 
     return {
       phase: phase.phase.replace(/Phase [A-H] - /, '').slice(0, 25),

@@ -6,7 +6,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-20 border-b border-rust-line bg-rust-bg/85 backdrop-blur-md supports-[backdrop-filter]:bg-rust-bg/75">
       <div className="mx-auto flex max-w-[1160px] items-center justify-between px-7 py-4">
         <a
-          href="#top"
+          href="/"
           aria-label="Wolven Tech home"
           className="flex items-center gap-2.5 text-base font-bold tracking-tight text-rust-ink hover:no-underline"
         >

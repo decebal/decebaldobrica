@@ -12,10 +12,9 @@ tasks:
 
   # === DEVELOPMENT ===
   dev:
-    desc: Start dev server (web app)
-    dir: apps/web
+    desc: Start dev servers (web app + wolventech) in parallel
     cmds:
-      - '{{.PKG_MANAGER}} run dev'
+      - bunx turbo dev --filter=@decebal/web --filter=@decebal/wolventech
 
   dev:admin:
     desc: Start admin dashboard (port 3101)

@@ -21,7 +21,7 @@ export default function Footer() {
         </a>
         &nbsp;·&nbsp;{' '}
         <a
-          href="https://crates.io/crates/monorepo-meta"
+          href="https://crates.io/users/decebal"
           className="text-rust-ink-soft underline-offset-4 hover:underline"
         >
           crates.io

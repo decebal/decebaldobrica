@@ -37,9 +37,9 @@ export default function HomePage() {
             Rust systems, <span className="text-gradient-rust">shipped with intent</span>.
           </h1>
           <p className="mt-5 max-w-[620px] text-lg text-rust-ink-soft">
-            Wolven Tech is a one-person, Rust-only advisory practice. We design and build
-            event-sourced backends, Tokio/Axum services, WASM modules, and AI-agentic Rust — for
-            founders and CTOs who want their platform to be quiet, cheap, and correct.
+            Wolven Tech is a one-person, Rust-only advisory practice, built for HFT, prop trading,
+            HPC, and 24/7 platforms where microseconds and state integrity matter. Event-sourced
+            backends, Tokio/Axum services, WASM modules, AI-agentic Rust. Quiet, cheap, correct.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Button
@@ -82,7 +82,7 @@ export default function HomePage() {
         <SectionHeader
           kicker="Services"
           title="Four ways we engage."
-          subtitle="Pick the shape that matches your constraint. Every engagement starts with a 30-minute discovery call and a written proposal — no surprises, no vapor."
+          subtitle="Pick the shape that matches your constraint. Every engagement starts with a 30-minute discovery call and a written proposal. No surprises, no vapor."
         />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {services.map((s) => (
@@ -123,8 +123,8 @@ export default function HomePage() {
       <section id="engagements" className="mx-auto max-w-[1160px] scroll-mt-24 px-7 py-14">
         <SectionHeader
           kicker="Engagements"
-          title="Four production Rust platforms, anonymized."
-          subtitle="Every engagement below is real work Decebal has shipped. Names and domains are held confidential — the technical facts are not."
+          title="Four production Rust platforms."
+          subtitle="Three anonymized client engagements plus AllSource, our flagship embedded Rust event store. Client names and domains are held confidential; the technical facts are not."
         />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {cases.map((c) => (
@@ -162,6 +162,17 @@ export default function HomePage() {
                     </span>
                   ))}
                 </div>
+                {c.href && (
+                  <a
+                    href={c.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-rust-primary-2 hover:text-rust-amber"
+                  >
+                    {c.linkLabel ?? c.href}
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -175,7 +186,7 @@ export default function HomePage() {
           title="Public artifacts."
           subtitle="Proof you can read. Every one of these is live on crates.io or GitHub, MIT-licensed where applicable."
         />
-        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
           {artifacts.map((a) => (
             <Card
               key={a.title}
@@ -213,7 +224,7 @@ export default function HomePage() {
         <SectionHeader
           kicker="Process"
           title="How a Wolven Tech engagement runs."
-          subtitle="No bloated discovery phase. No slide-ware deliverables. We're calibrated for teams that want to ship — not teams that want to plan to ship."
+          subtitle="No bloated discovery phase. No slide-ware deliverables. We're calibrated for teams that want to ship, not teams that want to plan to ship."
         />
         <div className="grid grid-cols-1 gap-3.5 md:grid-cols-4">
           {steps.map((step) => (
@@ -242,8 +253,8 @@ export default function HomePage() {
               across multiple founder-mode startups.
             </p>
             <p>
-              I started Wolven Tech because the teams I most want to help — small, ambitious,
-              technical — keep asking the same questions:{' '}
+              I started Wolven Tech because the teams I most want to help (small, ambitious,
+              technical) keep asking the same questions:{' '}
               <em>
                 can Rust actually replace this TypeScript service? How do we event-source without
                 drowning in ceremony? What does a staff-engineer-quality architecture review look

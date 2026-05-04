@@ -11,16 +11,25 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.io'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Wolven Tech — Rust-only technical advisory for founders & CTOs',
+    default: 'Wolven Tech: Rust advisory for HFT, HPC & 24/7 platforms',
     template: '%s | Wolven Tech',
   },
   description:
-    'Wolven Tech is a Rust-only technical advisory practice. Event-sourced backends, Tokio/Axum systems, WASM modules, and AI-agentic Rust. Founded and operated by Decebal Dobrica.',
+    'Wolven Tech is a Rust-only technical advisory practice for HFT, prop trading, HPC, and 24/7 platforms where microseconds and state integrity matter. Event-sourced backends, Tokio/Axum systems, WASM modules, AI-agentic Rust. Founded and operated by Decebal Dobrica.',
   metadataBase: new URL(siteUrl),
   keywords: [
     'Rust advisory',
     'Fractional Rust architect',
+    'High-frequency trading',
+    'HFT',
+    'Prop trading',
+    'HPC',
+    'Low-latency Rust',
+    '24/7 platforms',
     'Event sourcing',
+    'Embedded event store',
+    'AllSource',
+    'AllFrame',
     'Tokio',
     'Axum',
     'WASM',
@@ -36,15 +45,15 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: '/',
     siteName: 'Wolven Tech',
-    title: 'Wolven Tech — Rust-only technical advisory',
+    title: 'Wolven Tech: Rust advisory for HFT, HPC & 24/7 platforms',
     description:
-      'Event-sourced backends, Tokio/Axum systems, WASM modules, AI-agentic Rust. Founded by Decebal Dobrica.',
+      'Rust-only advisory for HFT, prop trading, HPC, and 24/7 platforms. Event-sourced backends, Tokio/Axum systems, WASM, AI-agentic Rust. Founded by Decebal Dobrica.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Wolven Tech — Rust-only technical advisory',
+    title: 'Wolven Tech: Rust advisory for HFT, HPC & 24/7 platforms',
     description:
-      'Event-sourced backends, Tokio/Axum systems, WASM modules, AI-agentic Rust. Founded by Decebal Dobrica.',
+      'Rust-only advisory for HFT, prop trading, HPC, and 24/7 platforms. Event-sourced backends, Tokio/Axum systems, WASM, AI-agentic Rust. Founded by Decebal Dobrica.',
   },
 }
 

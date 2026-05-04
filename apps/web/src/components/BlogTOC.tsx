@@ -145,6 +145,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
+      if (line === undefined) continue
       const h2Match = line.match(/^##\s+(.+)$/)
       const h3Match = line.match(/^###\s+(.+)$/)
 
@@ -155,7 +156,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
           sectionContent = ''
         }
 
-        if (h2Match) {
+        if (h2Match?.[1]) {
           const title = h2Match[1].trim()
           currentH2 = {
             id: `section-${parsedSections.length}`,
@@ -167,7 +168,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
           }
           parsedSections.push(currentH2)
           sectionStartIndex = i
-        } else if (h3Match && currentH2) {
+        } else if (h3Match?.[1] && currentH2) {
           const title = h3Match[1].trim()
           const child: TOCSection = {
             id: `section-${parsedSections.length - 1}-${currentH2.children!.length}`,
@@ -215,8 +216,9 @@ export function BlogTOC({ content }: BlogTOCProps) {
         }
       }
 
-      if (foundActive && headings[currentIndex]) {
-        const activeId = headings[currentIndex].id
+      const activeHeading = headings[currentIndex]
+      if (foundActive && activeHeading) {
+        const activeId = activeHeading.id
         setActiveSection(activeId)
 
         // Calculate progress

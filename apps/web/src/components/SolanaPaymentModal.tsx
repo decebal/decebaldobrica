@@ -39,12 +39,13 @@ const SolanaPaymentModal = ({
   // Generate payment QR code
   useEffect(() => {
     if (open && qrCodeRef.current) {
+      const qrContainer = qrCodeRef.current
       const initialize = async () => {
         try {
           setLoading(true)
 
           // Clear previous QR code
-          qrCodeRef.current.innerHTML = ''
+          qrContainer.innerHTML = ''
 
           // Generate a unique reference for this payment
           const newReference = generateUniqueReference()
@@ -61,7 +62,7 @@ const SolanaPaymentModal = ({
           setPaymentUrl(url)
 
           // Add QR code to the DOM
-          qrCodeRef.current.appendChild(qrCode)
+          qrContainer.appendChild(qrCode)
           setLoading(false)
         } catch (error) {
           console.error('Error creating payment:', error)

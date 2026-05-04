@@ -220,9 +220,10 @@ export function estimateTransactionFee(
   network?: string
 ): { gasPrice: string; totalFee: string; usdValue: string } {
   // Rough estimates - should be fetched from actual gas oracles in production
-  const estimates = {
+  const estimates: Record<string, { gasPrice: string; totalFee: string; usdValue: string }> = {
     btc: { gasPrice: '1 sat/vB', totalFee: '~200 sats', usdValue: '$0.01' },
     'btc-lightning': { gasPrice: 'N/A', totalFee: '~1 sat', usdValue: '<$0.001' },
+    eth: { gasPrice: '~20 gwei', totalFee: '~21,000 gas', usdValue: '$2-10' },
     'eth-mainnet': { gasPrice: '~20 gwei', totalFee: '~21,000 gas', usdValue: '$2-10' },
     'eth-arbitrum': { gasPrice: '~0.1 gwei', totalFee: '~21,000 gas', usdValue: '$0.01-0.50' },
     'eth-polygon': { gasPrice: '~30 gwei', totalFee: '~21,000 gas', usdValue: '$0.01-0.10' },
@@ -232,7 +233,7 @@ export function estimateTransactionFee(
   }
 
   const key = network ? `${currency}-${network}` : currency
-  return estimates[key as keyof typeof estimates] || estimates[currency]
+  return estimates[key] || estimates[currency] || estimates.sol!
 }
 
 /**
