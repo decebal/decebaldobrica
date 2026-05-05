@@ -12,10 +12,9 @@ tasks:
 
   # === DEVELOPMENT ===
   dev:
-    desc: Start dev server (web app)
-    dir: apps/web
+    desc: Start dev servers (web app + wolventech) in parallel
     cmds:
-      - '{{.PKG_MANAGER}} run dev'
+      - bunx turbo dev --filter=@decebal/web --filter=@decebal/wolventech
 
   dev:admin:
     desc: Start admin dashboard (port 3101)
@@ -229,3 +228,28 @@ tasks:
     dir: apps/services-admin
     cmds:
       - '{{.PKG_MANAGER}} run build'
+
+  # === WOLVEN TECH ===
+  wolventech:
+    desc: Start Wolven Tech site dev server (port 4200)
+    dir: apps/wolventech
+    cmds:
+      - '{{.PKG_MANAGER}} run dev'
+
+  wolventech:build:
+    desc: Build Wolven Tech site for production
+    dir: apps/wolventech
+    cmds:
+      - '{{.PKG_MANAGER}} run build'
+
+  wolventech:test:
+    desc: Run Wolven Tech E2E tests (Playwright)
+    dir: apps/wolventech
+    cmds:
+      - '{{.PKG_MANAGER}} run test:e2e'
+
+  wolventech:test:snapshot:
+    desc: Update Wolven Tech Playwright visual snapshots (first run baseline)
+    dir: apps/wolventech
+    cmds:
+      - bunx playwright test --update-snapshots

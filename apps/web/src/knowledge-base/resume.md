@@ -50,7 +50,7 @@ Cut cloud costs by 75% using serverless design, boosting operational efficiency.
 - Cut third-party blockchain stack costs by 60% by reducing reliance on indexers and focusing on a cost-effective chain
 - Delivered smart contract and wallet feature optimizations, driving scalability and sustainable growth
 
-### Part-Time Senior Developer | HedgeX Capital (11/2024 - Present)
+### Part-Time Senior Developer | HedgeX Capital (11/2024 - 03/2026)
 **Location:** Remote
 **Tech Stack:** Rust, Wasm, Supabase, Vercel, Fermyon
 

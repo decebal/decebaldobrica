@@ -7,6 +7,8 @@
       "@/*": ["./src/*"],
       "@decebal/ui": ["../../packages/ui/src"],
       "@decebal/ui/*": ["../../packages/ui/src/*"],
+      "@decebal/booking": ["../../packages/booking/src"],
+      "@decebal/booking/*": ["../../packages/booking/src/*"],
       "@decebal/database": ["../../packages/database/src"],
       "@decebal/database/*": ["../../packages/database/src/*"],
       "@decebal/newsletter": ["../../packages/newsletter/src"],

@@ -1545,6 +1545,105 @@ export const caseStudies: CaseStudy[] = [
         'Engineering Lead → Solutions Architect (technical) | CEO (business/cost) | Full Governance Board (deadlocks, >$10K decisions)',
     },
   },
+  {
+    id: '5',
+    slug: 'wolventech-rust-monorepo-foundation',
+    title: 'From Prototype to Production Rust in 12 Weeks',
+    tagline: 'A founder-mode Rust + Axum platform on a Clean-Architecture monorepo',
+    industry: 'Developer Tooling / Rust Platform',
+    role: 'Founder & Principal Engineer (Wolven Tech)',
+    serviceCategories: ['rust', 'architecture'],
+
+    // Frustration
+    personName: 'Rhea Calder',
+    personTitle: 'Founder & CTO',
+    companyName: 'Wolven Tech client (founder-mode team)',
+    companyIndustry: 'Developer tooling & event-sourced platforms',
+    problem:
+      "A founder-mode team had a TypeScript services tier that **couldn't hold the line under real load**.\n\nCold starts stretched past half a second, memory per service sat at 30–50 MB per pod, and every new microservice meant another ~50 MB container shipped through the pipeline.\n\n**Infra spend scaled linearly with ambition.**\n\nThe team had the domain expertise but no shared foundation — every service invented its own clean architecture, its own monorepo discipline, its own hot-reload story.\n\n*How do you cross the gap from promising prototype to production Rust without spending the next year rebuilding the same primitives four times?*",
+    impact:
+      "**Runtime:** 30–50 MB per service, ~500 ms startup, ~50 MB release binaries.\n\n**Delivery:** Every new service re-litigated the same architecture debates — layering, async runtime, logging, CI.\n\n**Cost:** Cloud bills scaled with pod count, not with users.\n\n**Strategic:** The team couldn't commit to Rust until it had a *foundation* — a template that encoded the right answers so engineers could focus on the domain, not the scaffolding.",
+
+    // Fix
+    framework:
+      'Wolven Tech rust-v1 template: a production-ready monorepo with Rust API (Axum + Clean Architecture), Next.js 15 / React 19 marketing + app surfaces, 8 shared packages, and a Meta orchestrator (Tokio + Clap + Tmux) that runs the whole stack from one command.',
+    actions: [
+      'Replaced the TypeScript services tier with a **Rust + Axum platform** on a 4-layer clean architecture',
+      'Built the **Meta orchestrator** (Tokio async, Clap CLI, Tmux process management) — 2.7 MB binary, <50 ms startup, 3000+ log lines/sec',
+      'Shipped **1M+ lines of production Rust** across event-sourced domains, WASM frontends, and desktop AI tooling',
+      'Wired **Bacon hot-reload**, Criterion benchmarks, clippy/workspace-lint discipline, and Edition 2024 across every crate',
+      'Unified **Rust + JS orchestration** (Cargo workspaces + Turborepo + Bun) under one `meta` command — language-agnostic process orchestration, real-time log streaming',
+      'Published **monorepo-meta** on crates.io and open-sourced the **wolven-tech/rust-v1** template',
+    ],
+    outcomes: [
+      '**Memory: 2–5 MB per service** (down from 30–50 MB) — 6–10× reduction',
+      '**Startup: <100 ms** (down from ~500 ms) — 5× faster',
+      '**Release binary: 6.3 MB** (down from ~50 MB) — 8× smaller',
+      '**12 weeks** from template pick-up to production deploy',
+      'Infrastructure cost trajectory cut up to **75%** on Rust-replaced workloads',
+      'Reusable foundation: the next service is a `meta new` away, not a quarter of scaffolding',
+    ],
+
+    // Future
+    lesson:
+      "**Rust adoption succeeds when the foundation is shared.** Teams don't fail at Rust because of the borrow checker — they fail because every service rebuilds architecture, tooling, and orchestration from scratch. A clean-architecture template with an orchestrator on top collapses that tax.",
+    prescriptions: [
+      '**Start with a template, not a greenfield.** Encode clean architecture, workspace lints, and Criterion benches once — reuse across every service',
+      '**Invest in a polyglot orchestrator.** Rust + JS monorepos need one command to rule them all — Meta, Nx, or Turborepo-with-Cargo',
+      '**Benchmark before migrating.** Memory, startup, and binary size are the three numbers that justify Rust to a CFO — measure them upfront',
+      '**Adopt Edition 2024 + workspace lints from day one.** Retrofitting is painful; baseline discipline is free',
+    ],
+
+    color: 'orange',
+    metrics: [
+      { label: 'Memory Footprint', value: '6–10× ↓' },
+      { label: 'Release Binary Size', value: '8× ↓' },
+      { label: 'Startup Speed', value: '5× ↑' },
+    ],
+
+    // References & Citations
+    references: [
+      {
+        category: 'Wolven Tech Artifacts',
+        items: [
+          {
+            title: 'wolven-tech/rust-v1 template',
+            url: 'https://github.com/wolven-tech/rust-v1',
+            description:
+              'Open-source Rust + Axum + Next.js monorepo template with Meta orchestrator, Bacon hot-reload, and 8 shared packages. Foundation used in this case study.',
+          },
+          {
+            title: 'monorepo-meta on crates.io',
+            url: 'https://crates.io/crates/monorepo-meta',
+            description:
+              'Tokio + Clap + Tmux orchestrator for heterogeneous monorepos. 2.7 MB release binary, <50 ms startup, 3000+ log lines/sec streaming throughput.',
+          },
+          {
+            title: 'Wolven Tech on GitHub',
+            url: 'https://github.com/wolven-tech',
+            description: 'Rust-only technical advisory. Public artifacts and templates.',
+          },
+        ],
+      },
+      {
+        category: 'Rust vs. TypeScript Footprint',
+        items: [
+          {
+            title: 'Axum — ergonomic and modular async web framework',
+            url: 'https://github.com/tokio-rs/axum',
+            description:
+              'Tokio-based Rust web framework used for the production API layer. Zero-cost abstractions over hyper.',
+          },
+          {
+            title: 'Tokio — asynchronous runtime for Rust',
+            url: 'https://tokio.rs/',
+            description:
+              'Async runtime underpinning Axum and the Meta orchestrator. Enables 6–10× memory and 5× startup gains vs. Node.js services.',
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 export function getCaseStudy(slug: string): CaseStudy | undefined {

@@ -11,12 +11,21 @@ import {
   Lightbulb,
   MonitorSmartphone,
   PenTool,
+  Terminal,
   Users,
 } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 const services = [
+  {
+    icon: <Terminal className="h-8 w-8" />,
+    title: 'Rust Systems Advisory',
+    description:
+      'Rust-only technical advisory via Wolven Tech for founders and CTOs who need resilient, low-footprint backends. Event-sourced architectures, Tokio/Axum systems, WASM modules, and AI/agentic Rust. Four engagement models — DD, fractional architect, platform sprint, monthly advisor.',
+    teaser: 'Current focus · via Wolven Tech',
+    featured: true,
+  },
   {
     icon: <Briefcase className="h-8 w-8" />,
     title: 'Engineering Leadership Services',
@@ -31,7 +40,7 @@ const services = [
     description:
       'Developer-focused content that drives SEO and leads. Blog posts, tutorials, and B2B case studies showcasing technical wins.',
     teaser: 'Per article or retainer • Pricing on request',
-    featured: true,
+    featured: false,
   },
   {
     icon: <FileText className="h-8 w-8" />,
@@ -43,17 +52,17 @@ const services = [
   },
   {
     icon: <Code className="h-8 w-8" />,
-    title: 'Performance Optimization',
+    title: 'Performance Optimization (Rust-forward)',
     description:
-      'Proven track record of 30%+ API improvements. Database tuning, caching strategies, and infrastructure optimization.',
-    teaser: 'Custom engagement',
+      '30%+ API improvements is the baseline. With Rust we’ve seen 6–10× memory reduction, 5× faster startup, 8× smaller binaries vs. equivalent TypeScript services. Database tuning, caching, zero-cost profiling (hotpath, Criterion).',
+    teaser: 'Fixed scope',
     featured: false,
   },
   {
     icon: <BarChart className="h-8 w-8" />,
     title: 'Technical Due Diligence',
     description:
-      'Comprehensive technical assessment for VC firms evaluating portfolio companies or new investments.',
+      'For VC firms and acquirers evaluating Rust-heavy or event-sourced portfolios. Workspace health, clippy/lint discipline, async architecture, test coverage, observability, operational maturity. 48-hour turnaround available.',
     teaser: 'For VC firms',
     featured: false,
   },
@@ -61,7 +70,7 @@ const services = [
     icon: <Users className="h-8 w-8" />,
     title: 'Team Acceleration',
     description:
-      'Mentor engineering teams to ship faster and maintain velocity through proven development practices.',
+      'Mentor engineering teams to ship faster and maintain velocity through proven development practices and GenAI-assisted workflows.',
     teaser: 'Included in retainer',
     featured: false,
   },

@@ -3,7 +3,7 @@
 import { config } from '@/lib/personalConfig'
 import { Highlighter } from '@decebal/ui/highlighter'
 import NumberTicker from '@decebal/ui/number-ticker'
-import { Award, Briefcase, GraduationCap, Heart, TrendingUp, Users, Zap } from 'lucide-react'
+import { Award, Briefcase, Code2, GraduationCap, Heart, TrendingUp, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import React, { useEffect, useRef } from 'react'
 
@@ -41,10 +41,10 @@ const AboutSection = () => {
   }, [])
 
   const stats = [
-    { value: 15, label: 'Years Experience', icon: Briefcase, suffix: '+' },
-    { value: 3, label: 'Productivity Gains', icon: TrendingUp, suffix: 'x' },
-    { value: 70, label: 'Cost Reduction', icon: Zap, suffix: '%' },
-    { value: 10, label: 'Team Size Led', icon: Users, suffix: '+' },
+    { value: 15, label: 'Years shipping production code', icon: Briefcase, suffix: '+' },
+    { value: 1, label: 'Lines of production Rust', icon: Code2, suffix: 'M+' },
+    { value: 75, label: 'Infrastructure cost cut', icon: Zap, suffix: '%' },
+    { value: 3, label: 'Team velocity lift', icon: TrendingUp, suffix: '×' },
   ]
 
   return (
@@ -90,9 +90,12 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    {config.professional.yearsExperience} years as a {config.professional.title}.
-                    Recently led engineering teams at Ebury and built smart contract solutions at
-                    Mundo Wallet. {config.achievements.description}.
+                    {config.professional.yearsExperience} years building fintech, SaaS, and Web3
+                    platforms — now concentrated on Rust systems engineering as founder of Wolven
+                    Tech. I've architected event-sourced platforms spanning native desktop (Tauri),
+                    gRPC microservices (Tonic + Axum), embedded analytics (Arrow + DataFusion), and
+                    WASM frontends (Leptos). Previously Technical Lead at Ebury and Software
+                    Architect at Tellimer.
                   </p>
                 </div>
               </div>
@@ -108,9 +111,10 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    {config.education.degree} from {config.education.institution}.{' '}
-                    {config.education.certifications.slice(0, 2).join(', ')}, and ongoing
-                    professional development.
+                    B.Sc. in IT & Mathematics from {config.education.institution}. Linux/Unix system
+                    administration, Zend Certified PHP Engineer, Tech Leaders Fractional CTO
+                    certification. Continuous Rust practice: workspace-lint discipline, Criterion
+                    benchmarking, Edition 2024.
                   </p>
                 </div>
               </div>
@@ -126,9 +130,11 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    Led teams of {config.achievements.teamSize} engineers at Tellimer, Breakout
-                    Clips, and multiple startups. Expert in trunk development, monorepo strategies,
-                    and cloud architecture.
+                    Led engineering teams of up to {config.achievements.teamSize} across Tellimer,
+                    Breakout Clips, Ebury, and multiple founder-mode startups. Expert in trunk-based
+                    delivery, monorepo strategy (Turborepo, Cargo workspaces, Meta orchestrator),
+                    and clean-architecture enforcement through CI. I help leaders see the
+                    architecture, then help teams earn it.
                   </p>
                 </div>
               </div>
@@ -144,8 +150,10 @@ const AboutSection = () => {
                     </Highlighter>
                   </h3>
                   <p className="text-white">
-                    Writing extensively about AI engineering, event sourcing, and software
-                    architecture. Passionate about GenAI integration and emerging technologies.
+                    I write about Rust systems design, event sourcing, agentic AI workflows, and how
+                    small teams outbuild big ones. Public artifacts: monorepo-meta on crates.io, the
+                    wolven-tech/rust-v1 template, and the mcp-log-server. Wolven Tech is my current
+                    operating vehicle — a Rust-only advisory practice.
                   </p>
                 </div>
               </div>

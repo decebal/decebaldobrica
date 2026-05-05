@@ -2,8 +2,8 @@
 
 import { CryptoPaymentSelector } from '@/components/CryptoPaymentSelector'
 import { InterestModal } from '@/components/InterestModal'
-import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
 import { NEWSLETTER_TIERS } from '@/lib/payments/config'
+import { FEATURE_FLAGS, useFeatureFlag } from '@decebal/booking/client/useFeatureFlag'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useRef, useState } from 'react'

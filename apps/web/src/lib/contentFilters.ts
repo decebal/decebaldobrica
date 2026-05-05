@@ -48,12 +48,10 @@ export const SPECIALTY_TAGS: Record<Specialty, string[]> = {
 // Generic types for filtering (avoids importing from server modules at type level)
 interface PostWithTags {
   tags?: string[]
-  [key: string]: unknown
 }
 
 interface StudyWithCategories {
   serviceCategories?: ServiceCategory[]
-  [key: string]: unknown
 }
 
 /**

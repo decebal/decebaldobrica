@@ -7,6 +7,7 @@ export default {
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
+		"../../packages/booking/src/**/*.{ts,tsx}",
 	],
 	prefix: "",
 	theme: {

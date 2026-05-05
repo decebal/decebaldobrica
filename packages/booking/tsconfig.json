@@ -1,0 +1,22 @@
+{
+  "extends": "../../tooling/typescript/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@decebal/ui": ["../ui/src"],
+      "@decebal/ui/*": ["../ui/src/*"],
+      "@decebal/email": ["../email/src"],
+      "@decebal/email/*": ["../email/src/*"],
+      "@decebal/booking": ["./src"],
+      "@decebal/booking/*": ["./src/*"]
+    },
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "jsx": "preserve",
+    "noUncheckedIndexedAccess": false,
+    "noImplicitAny": false
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

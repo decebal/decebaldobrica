@@ -45,8 +45,19 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-brand-teal transition-colors"
+                aria-label="GitHub (personal)"
               >
                 <Github size={20} />
+              </a>
+              <a
+                href="https://github.com/wolven-tech"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-brand-teal transition-colors flex items-center gap-1 text-xs font-medium"
+                aria-label="GitHub: Wolven Tech"
+              >
+                <Github size={20} />
+                <span className="hidden sm:inline">wolven-tech</span>
               </a>
             </div>
           </div>

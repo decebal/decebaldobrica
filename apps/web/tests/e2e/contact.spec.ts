@@ -71,6 +71,20 @@ test.describe('Contact Page', () => {
     }
   })
 
+  test('contact hero visual snapshot', async ({ page }) => {
+    await page.goto('/contact')
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
+    // Masks: animated elements + dynamic geo-pricing text that varies by runner IP.
+    await expect(page.locator('body')).toHaveScreenshot('contact-hero.png', {
+      maxDiffPixelRatio: 0.02,
+      mask: [
+        page.locator('[data-testid="chat-interface"]'),
+        page.locator('text=/Pricing.*Tier/i'),
+      ],
+    })
+  })
+
   test('should render booking success page correctly', async ({ page }) => {
     // Track console errors
     const errors: string[] = []

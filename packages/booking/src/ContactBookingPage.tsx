@@ -1,11 +1,10 @@
 'use client'
 
-import { bookMeeting } from '@/actions/meeting-action'
-import ChatInterfaceAI from '@/components/ChatInterfaceAI'
-import Footer from '@/components/Footer'
-import { toast } from '@/hooks/use-toast'
-import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
-import { MEETING_TYPES, type PaymentConfig, formatPrice } from '@/lib/payments/config'
+import type { ChatInterfaceAIProps } from '@decebal/booking/chat'
+import { ChatInterfaceAI } from '@decebal/booking/chat'
+import { FEATURE_FLAGS, useFeatureFlag } from '@decebal/booking/client/useFeatureFlag'
+import { MEETING_TYPES, type PaymentConfig, formatPrice } from '@decebal/booking/config'
+import { toast } from '@decebal/ui/use-toast'
 import { Turnstile } from '@marsidev/react-turnstile'
 
 type MeetingPaymentConfig = PaymentConfig & {
@@ -18,7 +17,11 @@ type MeetingPaymentConfig = PaymentConfig & {
 
 const formatSOL = (amount: number) => formatPrice(amount, 'SOL')
 const formatUSD = (amount: number) => formatPrice(amount, 'USD')
-import { clearReferralData, formatReferralData, getReferralData } from '@/utils/referralTracking'
+import {
+  clearReferralData,
+  formatReferralData,
+  getReferralData,
+} from '@decebal/booking/lib/referral'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
 import { ComicText } from '@decebal/ui/comic-text'
@@ -73,12 +76,64 @@ interface GeoPricingData {
   discountMessage: string | null
 }
 
-export default function ContactBookingPage() {
-  const searchParams = useSearchParams()
-  const urlCategory = searchParams.get('category') || undefined
+export type BookingActionInput = {
+  meetingType: string
+  date: string
+  time: string
+  name: string
+  email: string
+  timezone: string
+  notes?: string
+  category?: string
+  paymentId?: string
+  paymentMethod?: 'SOL' | 'BTC' | 'ETH' | 'USDC'
+  turnstileToken?: string
+  formStartTime?: number
+  honeypot?: string
+}
 
-  // Use PostHog feature flags
-  const isPaidMeetingsEnabled = useFeatureFlag(FEATURE_FLAGS.ENABLE_PAID_MEETINGS)
+export type BookingActionResult = {
+  success: boolean
+  error?: string
+  meeting?: {
+    eventId?: string
+    meetingType: string
+    startTime: string
+    endTime: string
+    meetLink?: string
+    calendarLink?: string
+  }
+}
+
+export interface ContactBookingPageProps {
+  bookingAction: (input: BookingActionInput) => Promise<BookingActionResult>
+  chatConfig?: ChatInterfaceAIProps & { enabled?: boolean }
+  enablePayments?: boolean
+  theme?: 'default' | 'rust'
+  referralCategoryDefault?: string
+  className?: string
+  /**
+   * Slot rendered at the bottom of the page. Each app supplies its own
+   * branded Footer component so the package stays visually app-agnostic.
+   */
+  footer?: React.ReactNode
+}
+
+export default function ContactBookingPage({
+  bookingAction,
+  chatConfig,
+  enablePayments,
+  theme: _theme = 'default',
+  referralCategoryDefault,
+  className,
+  footer,
+}: ContactBookingPageProps) {
+  const searchParams = useSearchParams()
+  const urlCategory = searchParams.get('category') || referralCategoryDefault || undefined
+
+  // Use PostHog feature flag, but let the prop override (apps may force-disable payments).
+  const flagPaidMeetings = useFeatureFlag(FEATURE_FLAGS.ENABLE_PAID_MEETINGS)
+  const isPaidMeetingsEnabled = enablePayments === undefined ? flagPaidMeetings : enablePayments
 
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingPaymentConfig | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -147,6 +202,7 @@ export default function ContactBookingPage() {
           // Create a date object representing this time in the user's timezone
           // We'll use a reference date to calculate offsets
           const [year, month, day] = formData.date.split('-').map(Number)
+          if (year === undefined || month === undefined || day === undefined) continue
           const referenceDate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0))
 
           // Get offset differences
@@ -223,8 +279,9 @@ export default function ContactBookingPage() {
 
   // Auto-select meeting if only one option available
   useEffect(() => {
-    if (meetingTypes.length === 1 && !selectedMeeting) {
-      setSelectedMeeting(meetingTypes[0])
+    const onlyMeeting = meetingTypes[0]
+    if (meetingTypes.length === 1 && onlyMeeting && !selectedMeeting) {
+      setSelectedMeeting(onlyMeeting)
     }
   }, [meetingTypes, selectedMeeting])
 
@@ -327,7 +384,7 @@ export default function ContactBookingPage() {
         // For now, we'll skip payment validation
       }
 
-      const result = await bookMeeting({
+      const result = await bookingAction({
         meetingType: selectedMeeting.meetingType,
         date: formData.date,
         time: formData.time,
@@ -377,6 +434,7 @@ export default function ContactBookingPage() {
   const formatTimeDisplay = (timeString: string): string => {
     if (!timeString) return ''
     const [hour, minute] = timeString.split(':').map(Number)
+    if (hour === undefined || minute === undefined) return ''
     const period = hour >= 12 ? 'PM' : 'AM'
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour
     return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
@@ -407,7 +465,7 @@ export default function ContactBookingPage() {
 
   if (bookingSuccess) {
     return (
-      <div className="min-h-screen relative">
+      <div className={`min-h-screen relative ${className ?? ''}`} data-theme={_theme}>
         <Confetti particleCount={100} />
         <main className="pt-24 pb-16">
           <div className="section-container py-16">
@@ -512,19 +570,19 @@ export default function ContactBookingPage() {
 
               <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                 <CardContent className="pt-6">
-                  <ChatInterfaceAI />
+                  {chatConfig?.enabled !== false && <ChatInterfaceAI {...(chatConfig ?? {})} />}
                 </CardContent>
               </Card>
             </motion.div>
           </div>
         </main>
-        <Footer />
+        {footer}
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div className={`min-h-screen relative ${className ?? ''}`} data-theme={_theme}>
       <main className="pt-14 md:pt-16 pb-12">
         {/* Compact Header */}
         <div className="px-4 md:px-8 py-1 md:py-2 max-w-7xl mx-auto">
@@ -619,7 +677,7 @@ export default function ContactBookingPage() {
 
                         <CardHeader>
                           <CardTitle className="text-white text-lg">
-                            {config.meetingType.split('(')[0].trim()}
+                            {(config.meetingType.split('(')[0] ?? config.meetingType).trim()}
                           </CardTitle>
                           <div className="text-gray-400 space-y-2 mt-2">
                             <div className="flex items-center gap-2 text-sm">
@@ -682,7 +740,10 @@ export default function ContactBookingPage() {
                 <Card className="bg-white/5 backdrop-blur-sm border-white/10">
                   <CardHeader className="pb-2 pt-3 md:pt-6">
                     <CardTitle className="text-white text-base md:text-lg">
-                      Book {selectedMeeting.meetingType.split('(')[0].trim()}
+                      Book{' '}
+                      {(
+                        selectedMeeting.meetingType.split('(')[0] ?? selectedMeeting.meetingType
+                      ).trim()}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-2 pb-3 md:pb-6">
@@ -980,12 +1041,12 @@ export default function ContactBookingPage() {
               Have questions before booking? Chat with my AI assistant for instant answers about
               services, availability, and more.
             </p>
-            <ChatInterfaceAI />
+            {chatConfig?.enabled !== false && <ChatInterfaceAI {...(chatConfig ?? {})} />}
           </motion.div>
         </div>
       </main>
 
-      <Footer />
+      {footer}
     </div>
   )
 }

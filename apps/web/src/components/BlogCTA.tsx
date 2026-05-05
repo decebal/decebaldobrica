@@ -1,6 +1,6 @@
 'use client'
 
-import { setReferralData } from '@/utils/referralTracking'
+import { setReferralData } from '@decebal/booking/lib/referral'
 import { Button } from '@decebal/ui/button'
 import { NeonGradientCard } from '@decebal/ui/neon-gradient-card'
 import { Github, Linkedin, MessageCircle, Twitter } from 'lucide-react'

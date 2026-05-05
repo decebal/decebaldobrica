@@ -2,10 +2,22 @@
 
 import { Button } from '@decebal/ui/button'
 import { cn } from '@decebal/ui/lib/utils'
-import { Blocks, Brain, ChevronDown, ChevronRight, Menu, Terminal, Users, X } from 'lucide-react'
+import {
+  Blocks,
+  Brain,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  Menu,
+  Terminal,
+  Users,
+  X,
+} from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 import UserMenu from './UserMenu'
+
+const WOLVEN_TECH_URL = 'https://wolventech.io'
 
 const expertiseLinks = [
   {
@@ -139,6 +151,15 @@ const Navbar = () => {
           <Link href="/blog" className="brand-nav-link">
             Blog
           </Link>
+          <a
+            href={WOLVEN_TECH_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="brand-nav-link flex items-center gap-1 text-brand-teal font-semibold"
+          >
+            Wolven Tech
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
           <UserMenu />
           <Link href="/contact" className="brand-btn-primary flex items-center">
             <span>Talk With Me</span>
@@ -214,6 +235,16 @@ const Navbar = () => {
               >
                 Blog
               </Link>
+              <a
+                href={WOLVEN_TECH_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeMobileMenu}
+                className="flex items-center gap-2 text-brand-teal font-semibold text-left p-2 hover:bg-white/5 rounded transition-colors"
+              >
+                Wolven Tech
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
             </div>
 
             <div onClick={closeMobileMenu} className="border-t border-white/10 pt-2">

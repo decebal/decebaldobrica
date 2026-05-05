@@ -1,7 +1,7 @@
 'use client'
 
-import { FEATURE_FLAGS, useFeatureFlag } from '@/hooks/useFeatureFlag'
 import { config } from '@/lib/personalConfig'
+import { FEATURE_FLAGS, useFeatureFlag } from '@decebal/booking/client/useFeatureFlag'
 import { ChevronDown, Play } from 'lucide-react'
 import React, { useState } from 'react'
 import { GlowButton } from './ui/glow-button'
@@ -29,22 +29,35 @@ const HeroSection = () => {
             Hello, I'm <span className="text-brand-teal">{config.name}</span>
           </h1>
           <p
-            className="text-xl md:text-2xl mb-8 text-gray-300 animate-fade-in"
+            className="text-xl md:text-2xl mb-4 text-gray-300 animate-fade-in"
             style={{ animationDelay: '0.2s' }}
           >
             {config.tagline}
+          </p>
+          <p
+            className="text-base md:text-lg mb-8 text-gray-400 animate-fade-in max-w-2xl"
+            style={{ animationDelay: '0.3s' }}
+          >
+            I architect event-sourced backends and AI-accelerated platforms that cut memory 6–10×
+            and infrastructure cost up to 75%.
           </p>
           <div
             className="flex flex-col sm:flex-row gap-4 animate-fade-in"
             style={{ animationDelay: '0.4s' }}
           >
-            <GlowButton onClick={scrollToAbout}>Learn More About Me</GlowButton>
+            <GlowButton
+              onClick={() => {
+                window.location.href = '/work'
+              }}
+            >
+              Read the case studies
+            </GlowButton>
             <NeonButton
               onClick={() => {
                 window.location.href = '/contact?category=Homepage+Hero'
               }}
             >
-              Get in Touch
+              Book a discovery call
             </NeonButton>
           </div>
         </div>

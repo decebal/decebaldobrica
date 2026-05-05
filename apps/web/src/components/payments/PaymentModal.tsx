@@ -41,7 +41,7 @@ export default function PaymentModal({
           amount,
         })
 
-        if (!result.success) {
+        if (!result.success || !result.payment) {
           setError(result.error || 'Failed to initialize payment')
           setStatus('failed')
           return

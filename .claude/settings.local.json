@@ -60,7 +60,11 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:www.magicpath.ai)",
       "WebFetch(domain:www.x402.org)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cn create *)",
+      "Bash(cn *)",
+      "Bash(bunx playwright *)",
+      "Bash(git commit -m ' *)"
     ],
     "deny": [],
     "ask": []

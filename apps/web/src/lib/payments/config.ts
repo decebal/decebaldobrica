@@ -1,116 +1,28 @@
 /**
  * Unified Payment Configuration
- * Central source of truth for all payment types and pricing
  *
- * This replaces:
- * - lib/meetingPayments.ts (meeting pricing)
- * - lib/serviceAccessConfig.ts (service pricing)
- * - app/newsletter/pricing/page.tsx (newsletter pricing)
+ * Booking-related types + MEETING_TYPES + formatPrice live in @decebal/booking/config
+ * (so apps/wolventech can reuse them). Service, newsletter, and deposit tiers remain
+ * app-local because only apps/web monetizes those.
  */
 
-// ============================================================================
-// TYPES
-// ============================================================================
+export {
+  formatPrice,
+  getAllMeetingTypes,
+  getMeetingByName,
+  MEETING_TYPES,
+  type Chain,
+  type Currency,
+  type CurrencyType,
+  type MeetingType,
+  type Network,
+  type PaymentConfig,
+  type PaymentStatus,
+  type PaymentType,
+} from '@decebal/booking/config'
 
-export type PaymentType =
-  | 'meeting'
-  | 'service_access'
-  | 'newsletter_subscription'
-  | 'deposit'
-  | 'tip'
-
-export type Currency = 'SOL' | 'BTC' | 'ETH' | 'USDC' | 'USD'
-
-export type CurrencyType = 'crypto' | 'fiat'
-
-export type Chain = 'solana' | 'ethereum' | 'bitcoin' | 'polygon' | 'arbitrum' | 'base'
-
-export type Network = 'mainnet' | 'devnet' | 'lightning' | 'polygon' | 'arbitrum' | 'base'
-
-export type PaymentStatus = 'pending' | 'confirmed' | 'failed' | 'refunded' | 'expired'
-
-export interface PaymentConfig {
-  // Identification
-  configType: 'meeting_type' | 'service_tier' | 'newsletter_tier' | 'deposit_type'
-  slug: string
-
-  // Display
-  name: string
-  description: string
-
-  // Pricing (all prices are optional, use what's available)
-  priceSol?: number
-  priceUsd?: number
-  priceBtc?: number
-  priceEth?: number
-
-  // Additional config
-  durationMinutes?: number // For meetings
-  benefits?: string[]
-  metadata?: Record<string, any>
-
-  // Status
-  isActive?: boolean
-  isPopular?: boolean
-}
-
-// ============================================================================
-// MEETING TYPES
-// ============================================================================
-
-export const MEETING_TYPES: Record<string, PaymentConfig> = {
-  'quick-chat-15min': {
-    configType: 'meeting_type',
-    slug: 'quick-chat-15min',
-    name: 'Quick Chat (15 min)',
-    description: 'Free discovery call to discuss your needs',
-    priceSol: 0,
-    priceUsd: 0,
-    durationMinutes: 15,
-    benefits: ['Free discovery call to discuss your needs'],
-    isActive: true,
-  },
-
-  'discovery-call-30min': {
-    configType: 'meeting_type',
-    slug: 'discovery-call-30min',
-    name: 'Discovery Call (30 min)',
-    description: 'Initial project scoping and feasibility analysis',
-    priceSol: 0.7, // ~$150 at $215/SOL
-    priceUsd: 150,
-    durationMinutes: 30,
-    benefits: ['Initial project scoping and feasibility analysis'],
-    isActive: true,
-  },
-
-  'strategy-session-60min': {
-    configType: 'meeting_type',
-    slug: 'strategy-session-60min',
-    name: 'Strategy Session (60 min)',
-    description: 'Architecture review, tech stack decisions, and roadmap planning',
-    priceSol: 1.9, // ~$400 at $215/SOL
-    priceUsd: 400,
-    durationMinutes: 60,
-    benefits: ['Architecture review', 'Tech stack decisions', 'Roadmap planning'],
-    isActive: true,
-  },
-
-  'deep-dive-90min': {
-    configType: 'meeting_type',
-    slug: 'deep-dive-90min',
-    name: 'Deep Dive (90 min)',
-    description: 'Comprehensive system architecture review and detailed technical planning',
-    priceSol: 3.3, // ~$700 at $215/SOL
-    priceUsd: 700,
-    durationMinutes: 90,
-    benefits: ['Comprehensive system architecture review', 'Detailed technical planning'],
-    isActive: true,
-  },
-}
-
-// ============================================================================
-// SERVICE ACCESS TIERS
-// ============================================================================
+import type { Currency, PaymentConfig } from '@decebal/booking/config'
+import { MEETING_TYPES } from '@decebal/booking/config'
 
 export const SERVICE_TIERS: Record<string, PaymentConfig> = {
   'all-pricing': {
@@ -118,7 +30,7 @@ export const SERVICE_TIERS: Record<string, PaymentConfig> = {
     slug: 'all-pricing',
     name: 'Unlock All Pricing',
     description: 'View transparent pricing for all my services',
-    priceSol: 0.023, // ~$5 at $215/SOL
+    priceSol: 0.023,
     priceUsd: 5,
     benefits: [
       'View all Fractional CTO packages & pricing',
@@ -131,10 +43,6 @@ export const SERVICE_TIERS: Record<string, PaymentConfig> = {
     isPopular: true,
   },
 }
-
-// ============================================================================
-// NEWSLETTER TIERS
-// ============================================================================
 
 export const NEWSLETTER_TIERS: Record<string, PaymentConfig> = {
   free: {
@@ -161,7 +69,7 @@ export const NEWSLETTER_TIERS: Record<string, PaymentConfig> = {
     slug: 'premium',
     name: 'Premium',
     description: 'Unlock exclusive content and deep dives',
-    priceSol: 0.07, // ~$15 at $215/SOL
+    priceSol: 0.07,
     priceUsd: 14.99,
     benefits: [
       'All free benefits',
@@ -183,7 +91,7 @@ export const NEWSLETTER_TIERS: Record<string, PaymentConfig> = {
     slug: 'founding',
     name: 'Founding Member',
     description: 'One-time payment for lifetime access',
-    priceSol: 1.4, // ~$300 at $215/SOL
+    priceSol: 1.4,
     priceUsd: 300,
     benefits: [
       'All premium benefits',
@@ -200,10 +108,6 @@ export const NEWSLETTER_TIERS: Record<string, PaymentConfig> = {
   },
 }
 
-// ============================================================================
-// DEPOSIT TYPES
-// ============================================================================
-
 export const DEPOSIT_TYPES: Record<string, PaymentConfig> = {
   'fractional-cto': {
     configType: 'deposit_type',
@@ -211,7 +115,7 @@ export const DEPOSIT_TYPES: Record<string, PaymentConfig> = {
     name: 'Fractional CTO Deposit',
     description:
       'Refundable deposit for Fractional CTO services - shows serious interest and gets priority scheduling',
-    priceSol: 2.3, // ~$500 at $215/SOL
+    priceSol: 2.3,
     priceUsd: 500,
     isActive: true,
   },
@@ -221,7 +125,7 @@ export const DEPOSIT_TYPES: Record<string, PaymentConfig> = {
     slug: 'case-study',
     name: 'Case Study Deposit',
     description: 'Refundable deposit for case study projects - secures your spot in the queue',
-    priceSol: 1.4, // ~$300 at $215/SOL
+    priceSol: 1.4,
     priceUsd: 300,
     isActive: true,
   },
@@ -232,7 +136,7 @@ export const DEPOSIT_TYPES: Record<string, PaymentConfig> = {
     name: 'Technical Writing Deposit',
     description:
       'Refundable deposit for content creation projects - priority scheduling for articles and tutorials',
-    priceSol: 0.9, // ~$200 at $215/SOL
+    priceSol: 0.9,
     priceUsd: 200,
     isActive: true,
   },
@@ -243,19 +147,12 @@ export const DEPOSIT_TYPES: Record<string, PaymentConfig> = {
     name: 'Architecture Docs Deposit',
     description:
       'Refundable deposit for documentation projects - get started faster with priority onboarding',
-    priceSol: 1.4, // ~$300 at $215/SOL
+    priceSol: 1.4,
     priceUsd: 300,
     isActive: true,
   },
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-/**
- * Get payment configuration by type and slug
- */
 export function getPaymentConfig(
   configType: PaymentConfig['configType'],
   slug: string
@@ -274,9 +171,6 @@ export function getPaymentConfig(
   }
 }
 
-/**
- * Get all configs of a specific type
- */
 export function getPaymentConfigs(configType: PaymentConfig['configType']): PaymentConfig[] {
   switch (configType) {
     case 'meeting_type':
@@ -292,9 +186,6 @@ export function getPaymentConfigs(configType: PaymentConfig['configType']): Paym
   }
 }
 
-/**
- * Check if a meeting/service requires payment
- */
 export function requiresPayment(configType: PaymentConfig['configType'], slug: string): boolean {
   const config = getPaymentConfig(configType, slug)
   if (!config) return false
@@ -302,9 +193,6 @@ export function requiresPayment(configType: PaymentConfig['configType'], slug: s
   return (config.priceSol ?? 0) > 0 || (config.priceUsd ?? 0) > 0
 }
 
-/**
- * Get price in specific currency
- */
 export function getPrice(
   configType: PaymentConfig['configType'],
   slug: string,
@@ -325,38 +213,4 @@ export function getPrice(
     default:
       return null
   }
-}
-
-/**
- * Format price for display
- */
-export function formatPrice(amount: number, currency: Currency): string {
-  switch (currency) {
-    case 'SOL':
-      return `${amount.toFixed(3)} SOL`
-    case 'BTC':
-      return `${amount.toFixed(8)} BTC`
-    case 'ETH':
-      return `${amount.toFixed(6)} ETH`
-    case 'USDC':
-      return `${amount.toFixed(2)} USDC`
-    case 'USD':
-      return `$${amount.toFixed(2)}`
-    default:
-      return `${amount} ${currency}`
-  }
-}
-
-/**
- * Get all active meeting types (for backward compatibility)
- */
-export function getAllMeetingTypes(): PaymentConfig[] {
-  return Object.values(MEETING_TYPES).filter((config) => config.isActive !== false)
-}
-
-/**
- * Get meeting config by display name (for backward compatibility)
- */
-export function getMeetingByName(name: string): PaymentConfig | null {
-  return Object.values(MEETING_TYPES).find((config) => config.name === name) || null
 }
