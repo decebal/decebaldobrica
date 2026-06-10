@@ -240,8 +240,6 @@ export const socialLinks: SiteLink[] = [
   { label: '@ddonprogramming', href: 'https://x.com/ddonprogramming' },
 ]
 
-export const contactEmail = 'discovery@decebaldobrica.com'
-
 export type TerminalLine = {
   type: 'comment' | 'section' | 'entry' | 'prompt' | 'blank'
   key?: string
