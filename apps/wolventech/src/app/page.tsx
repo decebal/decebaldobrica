@@ -3,7 +3,6 @@ import TerminalManifest from '@/components/TerminalManifest'
 import {
   artifacts,
   cases,
-  contactEmail,
   credentials,
   proofPoints,
   services,
@@ -320,7 +319,7 @@ export default function HomePage() {
             size="lg"
             className="bg-rust-primary font-semibold text-white shadow-[0_10px_28px_-14px_rgba(206,66,43,0.7)] hover:bg-rust-primary-2"
           >
-            <a href={`mailto:${contactEmail}?subject=Wolven%20Tech%20discovery`}>{contactEmail}</a>
+            <a href="/contact">Book discovery</a>
           </Button>
         </div>
       </section>
