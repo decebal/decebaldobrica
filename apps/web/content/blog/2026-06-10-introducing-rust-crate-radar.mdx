@@ -1,0 +1,46 @@
+---
+title: 'Introducing Rust Crate Radar: A New Series on Crates Worth Betting On'
+date: '2026-06-10T13:00:00.000Z'
+author: Decebal D.
+description: "A new series that evaluates newly-released and meaningful Rust crates the way an engineering leader actually decides on a dependency — adoption risk, total cost of ownership, and architectural fit, ending in a one-word verdict. First up: Toasty, the Tokio team's new async ORM."
+tags:
+  - rust
+  - crates
+  - dependency-management
+  - newsletter
+  - announcement
+slug: 2026-06-10-introducing-rust-crate-radar
+---
+
+There is no shortage of "10 awesome Rust crates you should try" lists. What's missing is the one written by someone who has had to defend a dependency choice in an architecture review — and then carry the pager for it.
+
+That's the gap **Rust Crate Radar** fills. It's a new series, and if you're subscribed, it lands in your inbox on the same cadence as everything else here.
+
+## What it is
+
+Every post evaluates a newly-released or genuinely meaningful Rust crate the way an engineering leader actually decides whether to adopt it. Not a feature tour — a judgment call. The questions are the ones that matter when something enters your dependency tree and stays there for years:
+
+- Does it solve a real, recurring problem, or is it a novelty?
+- Is it mature enough to bet on, and who's maintaining it?
+- How does it fit the stack you already run?
+- What does it cost to adopt — compile times, binary size, unsafe surface — and how hard is it to rip out if it goes wrong?
+
+Every crate is scored against the same rubric, so the series is a **method**, not a feed. And every post closes with a one-word verdict borrowed from the ThoughtWorks Tech Radar: **Adopt, Trial, Assess, or Hold.**
+
+## What to expect
+
+Three rotating formats keep it varied and sustainable:
+
+- **Deep Dive** — one crate, the full rubric, real code, a clear verdict.
+- **Radar Digest** — a few of the latest notable releases, each with a short take and a verdict.
+- **Category Showdown** — periodic head-to-heads within a category (async ORMs, TUI frameworks, error handling) using the same rubric across contenders.
+
+Roughly a Deep Dive and a Digest each month, with a Showdown when a category gets interesting.
+
+## First up: Toasty
+
+The opening Deep Dive looks at [**Toasty**](/blog/2026-06-10-toasty-async-orm-rust-evaluation), the Tokio team's new async ORM that targets PostgreSQL, MySQL, SQLite, *and* DynamoDB from a single model definition. It hit crates.io in April and is moving fast. Is it ready for your production data layer? The short answer is **Assess** — and the post explains exactly why, and when that changes.
+
+If there's a crate you want put under the same lens, just reply to this email — reader requests will shape the backlog.
+
+Welcome aboard the Radar.

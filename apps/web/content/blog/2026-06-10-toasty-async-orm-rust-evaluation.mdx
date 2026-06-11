@@ -1,0 +1,102 @@
+---
+title: 'Toasty: Should the Tokio Team''s New ORM Enter Your Dependency Tree?'
+date: '2026-06-10T12:00:00.000Z'
+author: Decebal D.
+description: Toasty is a new async ORM from the Tokio team that targets both SQL and DynamoDB from one model definition. An engineering-leader's evaluation of whether it belongs in production yet — and a reusable rubric for judging any new crate.
+tags:
+  - rust
+  - crates
+  - orm
+  - database
+  - tokio
+  - dependency-management
+  - toasty
+slug: 2026-06-10-toasty-async-orm-rust-evaluation
+---
+
+> This is the first **Rust Crate Radar** post — a series that evaluates newly-released and meaningful Rust crates the way an engineering leader actually decides on a dependency: adoption risk, total cost of ownership, and architectural fit, not just a feature tour. Every post ends with a one-word verdict borrowed from the ThoughtWorks Tech Radar: **Adopt, Trial, Assess, or Hold.**
+
+## TL;DR — The Verdict
+
+**Assess.** [Toasty](https://github.com/tokio-rs/toasty) is the most interesting thing to happen to data access in Rust in a while: one model definition that targets PostgreSQL, MySQL, SQLite, *and* DynamoDB, from the team that owns the async ecosystem. It hit crates.io in April 2026 and is moving fast — 0.4, 0.5, and 0.6 shipped inside a single month. That velocity is exactly why it is not yet an **Adopt** for production systems. Prototype with it today; bet your data layer on it in a couple of releases.
+
+## The Problem It Solves
+
+Data access is where Rust's productivity story has historically wobbled. The mature options each ask you to pick a lane up front. [Diesel](https://diesel.rs/) gives you compile-time-checked SQL but is synchronous at its core and SQL-only. [sqlx](https://github.com/launchbadge/sqlx) is async and checks your queries against a live database, but you write raw SQL and it is firmly relational. [SeaORM](https://www.sea-ql.org/SeaORM/) layers an async ActiveRecord experience on top of sqlx. All three assume a SQL database.
+
+The moment your architecture includes DynamoDB — or you want to start on SQLite and migrate to Postgres, or run the same service against different backends per environment — you are writing two data layers and praying they stay in sync. That is the recurring, expensive pain Toasty targets: **one set of models, multiple storage backends, without pretending the backends are identical.**
+
+That last clause matters and is the design decision worth respecting. Toasty deliberately does *not* hide database capabilities behind a lowest-common-denominator abstraction. It leans into each target's strengths and tries to stop you from issuing queries that would be inefficient for that backend. An ORM with an opinion about *not* being a leaky abstraction is a rare and welcome thing.
+
+## What It Actually Does
+
+You define models as plain Rust structs and annotate them. Toasty infers the schema — field types map to column types, and attributes like `#[key]`, `#[unique]`, and `#[index]` shape it.
+
+```rust
+#[derive(toasty::Model)]
+struct Article {
+    #[key]
+    #[auto]
+    id: u64,
+
+    title: String,
+
+    tags: Vec<String>,
+}
+```
+
+The derive macro generates query builders, create/update builders, and relationship accessors at compile time, so the call sites stay ergonomic:
+
+```rust
+create!(Article {
+    title: "hello toasty!",
+    tags: ["announcement", "orm"]
+}).exec(&mut db).await?;
+```
+
+Two of the 0.6-era additions show where the project's head is at. **Deferred fields and `.select()`** give you real control over what you load — the classic "don't drag the full article body into the index-page query" problem, solved without dropping to raw SQL:
+
+```rust
+let ids_and_titles: Vec<(u64, String)> = Article::filter_by_id(article_id)
+    .select((
+        Article::fields().id(),
+        Article::fields().title(),
+    ))
+    .exec(&mut db)
+    .await?;
+```
+
+And **`Vec<scalar>` collection fields** are stored using whatever the backend does best — PostgreSQL arrays, JSON on other SQL databases, native lists on DynamoDB — with array-aware filters like `.intersects(...)` on top. That is the database-agnostic-but-not-database-blind philosophy made concrete, and it is the first step toward planned document-storage support (think Postgres JSONB as a first-class feature rather than an escape hatch).
+
+## Evaluation
+
+| Dimension | Assessment | Notes |
+|---|---|---|
+| **Problem fit** | Strong | Multi-backend (SQL + DynamoDB) from one model is a real, under-served need. |
+| **Maturity** | Early | 0.6.0 as of May 2026; pre-1.0, rapid breaking changes, NoSQL = DynamoDB only so far. |
+| **Stewardship** | Excellent | Tokio team. Best-in-class bus factor and ecosystem alignment in Rust. |
+| **Ecosystem fit** | Excellent | Async-native, built by the people who own the async runtime you already use. |
+| **Cost of adoption** | Low–Moderate | Ergonomic API, derive-driven; main cost is churn from tracking a fast-moving pre-1.0 crate. |
+| **Exit cost** | Moderate | Models and query DSL are Toasty-specific; you'd rewrite the data layer to leave. |
+
+The two dimensions that decide this verdict pull in opposite directions. **Stewardship** is as good as it gets — being a Tokio project means async alignment is a given, the maintainers are not going anywhere, and the crate will track the ecosystem's direction rather than fight it. That is worth a lot; a huge fraction of abandoned Rust crates die from maintainer burnout, and that risk is near-zero here.
+
+But **maturity** is genuinely early, and the maintainers are candid about it. Three minor versions in one month is thrilling to watch and painful to depend on — every release is a potential migration. On the NoSQL side, "supports NoSQL" today means DynamoDB and nothing else yet. For a production system, pre-1.0 churn plus a still-forming feature set is exactly the profile that warrants waiting rather than leading.
+
+The **exit cost** is the quiet one to plan for. Because your models *are* Toasty types and your queries use its DSL, adopting it is a real commitment — leaving means rewriting the data layer, not swapping a config value. That is true of every ORM, but it is the reason to be deliberate about *when* you commit, not just *whether*.
+
+## When to Adopt — and When Not To
+
+Reach for Toasty now if you are starting a greenfield service, can tolerate tracking a fast-moving dependency, and especially if your architecture spans both a SQL database and DynamoDB — that combination is where nothing else comes close and the upside justifies the churn.
+
+Hold off if you are adding persistence to an established production system where a breaking change every few weeks is unacceptable, if your needs are firmly relational (sqlx, SeaORM, and Diesel are battle-tested and a `1.0`-grade bet), or if you need NoSQL backends beyond DynamoDB today.
+
+The honest framing for a team lead: Toasty is a strategic bet that is likely to pay off, but it has not finished proving it. Put it in a side service or a prototype, get your team fluent in it, and re-evaluate at 1.0.
+
+## The Verdict
+
+**Assess.** Build something real but non-critical with it this quarter, keep an eye on the [changelog](https://github.com/tokio-rs/toasty/blob/main/crates/toasty/CHANGELOG.md) and [roadmap](https://github.com/tokio-rs/toasty/blob/main/docs/dev/roadmap.md), and the moment it stabilizes its API and broadens NoSQL support, it has a credible path to becoming a default. The one risk to watch is scope: an ORM trying to unify SQL and NoSQL elegantly is a hard problem, and the document-storage ambition widens it further. If it lands that, it's special. Either way, it is the most worth-watching data-access crate in Rust right now.
+
+---
+
+*Next in the Rust Crate Radar: a digest of the latest "Crate of the Week" picks, scored against the same rubric. Got a crate you want evaluated? [Get in touch](/contact).*
