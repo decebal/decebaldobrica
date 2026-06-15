@@ -1,6 +1,7 @@
 import { render } from '@react-email/render'
 import { Resend } from 'resend'
 import { NewsletterConfirmationEmail } from './newsletter-confirmation'
+import { NewsletterIssueEmail, type NewsletterIssueEmailProps } from './newsletter-issue'
 import { NewsletterWelcomeEmail } from './newsletter-welcome'
 
 let resend: Resend | null = null
@@ -104,8 +105,49 @@ export async function sendNewsletterWelcome(
 }
 
 /**
- * Send newsletter issue to subscribers
- * This will be used in Phase 5 for publishing blog posts
+ * Render the branded newsletter-issue email to HTML. Exposed so callers can
+ * store the exact HTML that gets sent (e.g. on the AllSource issue event).
+ */
+export function renderNewsletterIssue(props: NewsletterIssueEmailProps): Promise<string> {
+  return render(NewsletterIssueEmail(props))
+}
+
+/**
+ * Send a blog post to a subscriber as a fully branded newsletter issue:
+ * gradient header, real Markdown body (links/lists/code), a "Read the full
+ * post" CTA, and a footer with unsubscribe. Replaces the old raw-HTML path.
+ */
+export async function sendNewsletterPost(
+  email: string,
+  subject: string,
+  props: NewsletterIssueEmailProps
+): Promise<SendEmailResult> {
+  try {
+    const html = await renderNewsletterIssue(props)
+    const { data, error } = await getResendClient().emails.send({
+      from: process.env.EMAIL_FROM || 'Decebal Dobrica <newsletter@decebaldobrica.com>',
+      to: email,
+      subject,
+      html,
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send newsletter post:', error)
+      return { success: false, error: error.message || 'Failed to send newsletter post' }
+    }
+    return { success: true, id: data?.id }
+  } catch (error) {
+    console.error('[Email] Unexpected error sending newsletter post:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }
+  }
+}
+
+/**
+ * Send newsletter issue to subscribers (raw pre-rendered HTML).
+ * Prefer sendNewsletterPost() for blog posts — it applies the branded template.
  */
 export async function sendNewsletterIssue(
   email: string,

@@ -15,7 +15,8 @@
 
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { sendNewsletterIssue } from '@decebal/email'
+import { renderNewsletterIssue, sendNewsletterPost } from '@decebal/email'
+import type { NewsletterIssueEmailProps } from '@decebal/email'
 import { createNewsletterIssue, getActiveSubscribers, markIssueSent } from '@decebal/newsletter'
 import { generateOGImageUrl, postToAllPlatforms } from '@decebal/social'
 import matter from 'gray-matter'
@@ -97,21 +98,12 @@ function loadBlogPost(slug: string): BlogPost | null {
 }
 
 /**
- * Convert MDX content to HTML for email
+ * Rewrite root-relative markdown links/images (e.g. `](/blog/x)`) to absolute
+ * URLs so they resolve inside an email client. The branded email template
+ * renders the markdown itself (links, lists, code) — no hand-rolled HTML.
  */
-function mdxToHtml(content: string): string {
-  // Basic MDX to HTML conversion
-  // In production, use a proper MDX parser like @mdx-js/mdx
-  const html = content
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/\n\n/g, '</p><p>')
-
-  return `<p>${html}</p>`
+function absolutizeMarkdownUrls(markdown: string, baseUrl: string): string {
+  return markdown.replace(/\]\(\/(?!\/)/g, `](${baseUrl}/`)
 }
 
 /**
@@ -129,11 +121,24 @@ async function sendNewsletterToSubscribers(
   }
 
   try {
-    // Create newsletter issue (appends issue.created to AllSource)
-    const contentHtml = mdxToHtml(post.content)
+    // Build the branded email once: real Markdown body + absolute links + CTA.
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://decebaldobrica.com'
+    const postUrl = `${baseUrl}/blog/${post.slug}`
+    const issueProps: NewsletterIssueEmailProps = {
+      title: post.title,
+      preview: post.excerpt,
+      markdown: absolutizeMarkdownUrls(post.content, baseUrl),
+      postUrl,
+      kicker: post.tags[0] ?? 'New post',
+      unsubscribeUrl: `${baseUrl}/newsletter/unsubscribe`,
+    }
+    const subject = `New Post: ${post.title}`
+
+    // Store the exact HTML that subscribers receive on the AllSource issue event.
+    const contentHtml = await renderNewsletterIssue(issueProps)
     const issue = await createNewsletterIssue({
       title: post.title,
-      subject: `New Post: ${post.title}`,
+      subject,
       preview_text: post.excerpt,
       content_html: contentHtml,
       content_text: post.content,
@@ -161,7 +166,6 @@ async function sendNewsletterToSubscribers(
         .join(', ')}`
     )
 
-    const subject = `New Post: ${post.title}`
     let sent = 0
     let errors = 0
 
@@ -177,7 +181,7 @@ async function sendNewsletterToSubscribers(
       // In test-recipient mode, never send to the real subscriber list.
       const recipient = guard.testRecipient ?? subscriber.email
       try {
-        const result = await sendNewsletterIssue(recipient, subject, contentHtml)
+        const result = await sendNewsletterPost(recipient, subject, issueProps)
         if (result.success) {
           sent++
           process.stdout.write('.')
