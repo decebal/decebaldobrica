@@ -1,5 +1,4 @@
 import { bookMeeting } from '@/actions/meeting-action'
-import Footer from '@/components/Footer'
 import ContactBookingPage from '@decebal/booking/ContactBookingPage'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
@@ -27,7 +26,6 @@ export default function ContactPage() {
         enablePayments={false}
         theme="rust"
         chatConfig={{ enabled: false }}
-        footer={<Footer />}
       />
     </Suspense>
   )
