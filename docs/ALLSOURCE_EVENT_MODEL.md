@@ -55,7 +55,9 @@ must be the value you will look a record up by.**
 
 ### Naming conventions
 
-- `event_type`: dotted, `aggregate.past-tense-verb`, e.g. `subscriber.subscribed`.
+- `event_type`: lowercase, dots and underscores only, **NO hyphens** (the gateway
+  enforces this — a hyphenated `event_type` is rejected with HTTP 422); convention
+  `namespace.entity.action`, e.g. `subscriber.subscribed`.
 - `stream_id` (= `entity_id`): `<aggregate>:<natural-key>`, e.g.
   `subscriber:jane@example.com`. Prefixing keeps streams from different
   aggregates from colliding in a shared key space.
@@ -130,25 +132,25 @@ Read shapes used by consumers (`packages/newsletter/src/index.ts`,
 - **Stream id:** `subscriber:<email>` (email is `UNIQUE`; it is the lookup key).
 - **Events:**
   - `subscriber.subscribed` — `{ email, name?, tier, status:'pending', frequency, interests?, utm_source?, utm_medium?, utm_campaign?, subscribed_at }`
-  - `subscriber.confirmation-requested` — `{ confirmation_token, confirmation_token_expires_at }`
+  - `subscriber.confirmation_requested` — `{ confirmation_token, confirmation_token_expires_at }`
   - `subscriber.confirmed` — `{ confirmed_at }` (status → active)
   - `subscriber.unsubscribed` — `{ unsubscribed_at }` (status → unsubscribed)
   - `subscriber.bounced` — `{ at }` (status → bounced)
-  - `subscriber.tier-changed` — `{ from_tier, to_tier, subscription_expires_at?, stripe_customer_id?, stripe_subscription_id?, solana_wallet_address? }`
-  - `subscriber.engagement-updated` — `{ open_rate, click_rate, last_opened_at }`
+  - `subscriber.tier_changed` — `{ from_tier, to_tier, subscription_expires_at?, stripe_customer_id?, stripe_subscription_id?, solana_wallet_address? }`
+  - `subscriber.engagement_updated` — `{ open_rate, click_rate, last_opened_at }`
 - **Projection (fold):** start empty; `subscribed` seeds the record;
   `confirmed`/`unsubscribed`/`bounced` set `status` + the matching timestamp;
-  `tier-changed` sets `tier` + billing fields; `engagement-updated` sets rates
+  `tier_changed` sets `tier` + billing fields; `engagement_updated` sets rates
   and `last_opened_at`. Final state == the `NewsletterSubscriber` interface.
 - **List/count by tier:** not an `entity_id` lookup → served by a fold over
   `queryEvents({ event_type })` for the lifecycle types, reduced per
   `entity_id`, then filtered on `status === 'active'` and `tier`. (Candidate for
   a Prime projection in 003 if volume grows; current volume is ~2 rows.)
 - **Idempotency:** `sub:<email>:subscribed`, `sub:<email>:confirmed`, etc.
-- **Migration mapping:** one row → `subscribed` (+ `confirmation-requested` if a
+- **Migration mapping:** one row → `subscribed` (+ `confirmation_requested` if a
   token is present) (+ `confirmed` if `confirmed_at`) (+ `unsubscribed` if
-  `unsubscribed_at`) (+ `tier-changed` if `tier != 'free'`) (+
-  `engagement-updated` if `open_rate`/`click_rate`/`last_opened_at` set).
+  `unsubscribed_at`) (+ `tier_changed` if `tier != 'free'`) (+
+  `engagement_updated` if `open_rate`/`click_rate`/`last_opened_at` set).
 
 ### 4.2 `newsletter_issues` → aggregate `issue`
 
@@ -161,10 +163,10 @@ Consumers: `createNewsletterIssue` (insert; status `draft`/`scheduled`),
   - `issue.created` — `{ title, subject, preview_text?, content_html, content_text, tier, blog_post_slug?, scheduled_for?, status }`
   - `issue.scheduled` — `{ scheduled_for }`
   - `issue.sent` — `{ sent_at, recipients_count }`
-  - `issue.metrics-updated` — `{ opens_count, clicks_count, unsubscribes_count }`
+  - `issue.metrics_updated` — `{ opens_count, clicks_count, unsubscribes_count }`
 - **Projection:** fold to the `NewsletterIssue` interface.
 - **Idempotency:** `issue:<uuid>:created`, `:sent`, etc.
-- **Migration:** `created` always; `sent` if `sent_at`; `metrics-updated` if any
+- **Migration:** `created` always; `sent` if `sent_at`; `metrics_updated` if any
   count > 0.
 
 ### 4.3 `newsletter_events` → events on aggregate `subscriber`
@@ -174,11 +176,11 @@ Consumers: `trackNewsletterEvent` (insert; on `opened` also bumps subscriber
 
 - **Stream id:** `subscriber:<email>` (so a subscriber's full timeline,
   including engagement, lives in one stream and folds in 4.1).
-- **Event type:** `subscriber.message-event` — `{ issue_id, kind:
+- **Event type:** `subscriber.message_event` — `{ issue_id, kind:
   'sent'|'delivered'|'opened'|'clicked'|'bounced'|'complained', link_url?,
   user_agent?, ip_address?, occurred_at }`.
 - **Cross-cut by issue:** analytics that count opens per issue use
-  `queryEvents({ event_type: 'subscriber.message-event' })` filtered on
+  `queryEvents({ event_type: 'subscriber.message_event' })` filtered on
   `payload.issue_id`, or a Prime projection keyed by issue. (Volume currently 0
   rows.)
 - **Idempotency:** `nlevent:<supabase_id>` (the original `newsletter_events.id`
@@ -194,10 +196,10 @@ Billing/subscription records (Stripe/Solana) tied to a subscriber.
 - **Stream id:** `subscriber:<email>` (resolve `subscriber_id` → email at
   migration time from `newsletter_subscribers`).
 - **Events:**
-  - `subscriber.subscription-started` — `{ subscription_uuid, provider, provider_subscription_id?, tier, amount, currency, interval, current_period_start, current_period_end }`
-  - `subscriber.subscription-renewed` — `{ subscription_uuid, current_period_start, current_period_end }`
-  - `subscriber.subscription-cancelled` — `{ subscription_uuid, cancel_at_period_end, cancelled_at }`
-  - `subscriber.subscription-status-changed` — `{ subscription_uuid, status: 'active'|'cancelled'|'past_due'|'expired' }`
+  - `subscriber.subscription_started` — `{ subscription_uuid, provider, provider_subscription_id?, tier, amount, currency, interval, current_period_start, current_period_end }`
+  - `subscriber.subscription_renewed` — `{ subscription_uuid, current_period_start, current_period_end }`
+  - `subscriber.subscription_cancelled` — `{ subscription_uuid, cancel_at_period_end, cancelled_at }`
+  - `subscriber.subscription_status_changed` — `{ subscription_uuid, status: 'active'|'cancelled'|'past_due'|'expired' }`
 - **Projection:** folds into a `subscriptions[]` slice of the subscriber state
   (or a standalone `NewsletterSubscription` per `subscription_uuid`).
 - **Idempotency:** `subscription:<subscription_uuid>:<event>`.
@@ -238,9 +240,9 @@ Consumers: `grantServiceAccess` (upsert on `wallet_address,service_slug`),
 - **Stream id:** `service-access:<wallet_address>:<service_slug>` (matches the
   `UNIQUE(wallet_address, service_slug)` constraint — one stream per grant).
 - **Events:**
-  - `service-access.granted` — `{ user_id?, service_slug, service_type, payment_id?, granted_at, expires_at? }`
-  - `service-access.revoked` — `{ revoked_at, revoke_reason? }`
-  - `service-access.expired` — `{ at }` (derived; emitted lazily or computed in fold)
+  - `service_access.granted` — `{ user_id?, service_slug, service_type, payment_id?, granted_at, expires_at? }`
+  - `service_access.revoked` — `{ revoked_at, revoke_reason? }`
+  - `service_access.expired` — `{ at }` (derived; emitted lazily or computed in fold)
 - **Projection:** fold to `ServiceAccess`; `is_active` = granted and not
   revoked and (`expires_at` null or future). The `hasServiceAccess` check is the
   fold's boolean.
@@ -256,17 +258,17 @@ Consumers: `createMeetingBooking`, `getMeetingBooking(meetingId)`,
   the app's lookup key).
 - **Events:**
   - `meeting.booked` — `{ meeting_type, meeting_id, user_id?, wallet_address?, email, name?, scheduled_at, duration_minutes, timezone, requires_payment, payment_amount?, payment_currency?, notes?, conversation_id?, metadata? }`
-  - `meeting.payment-linked` — `{ payment_id }`
+  - `meeting.payment_linked` — `{ payment_id }`
   - `meeting.confirmed` — `{ confirmed_at, google_calendar_event_id? }`
   - `meeting.cancelled` — `{ cancelled_at }`
   - `meeting.completed` — `{ at }`
-  - `meeting.no-show` — `{ at }`
+  - `meeting.no_show` — `{ at }`
 - **Projection:** fold to `MeetingBooking`; `status` from the last lifecycle
   event.
 - **Lookup by wallet:** `queryEvents({ event_type: 'meeting.booked' })` filtered
   on `payload.wallet_address`, fold each stream.
 - **Idempotency:** `meeting:<meeting_id>:booked`, `:confirmed`, …
-- **Migration:** `booked`; `payment-linked` if `payment_id`; one terminal status
+- **Migration:** `booked`; `payment_linked` if `payment_id`; one terminal status
   event matching `status`.
 
 ### 4.8 `user_profiles` → aggregate `wallet` (user profile)
@@ -291,8 +293,8 @@ Schema: `UNIQUE(email, plan_id)`; tracks interest in `premium`/`founding`.
 
 - **Stream id:** `plan-interest:<email>:<plan_id>`.
 - **Events:**
-  - `plan-interest.registered` — `{ email, plan_id, plan_name, created_at }`
-  - `plan-interest.notified` — `{ notified_at }`
+  - `plan_interest.registered` — `{ email, plan_id, plan_name, created_at }`
+  - `plan_interest.notified` — `{ notified_at }`
 - **Projection:** fold to `{ email, plan_id, plan_name, created_at,
   notified_at? }`.
 - **Idempotency:** `planinterest:<email>:<plan_id>` (registration is naturally
@@ -306,14 +308,14 @@ Automation tracking for LinkedIn/Twitter posts per blog slug.
 - **Stream id:** `social-post:<uuid>` (no stable natural key — a slug can have
   many posts across platforms/retries).
 - **Events:**
-  - `social-post.drafted` — `{ blog_post_slug, platform, content, media_url?, scheduled_for? }`
-  - `social-post.scheduled` — `{ scheduled_for }`
-  - `social-post.published` — `{ published_at, platform_post_id?, platform_url? }`
-  - `social-post.failed` — `{ error_message, retry_count }`
-  - `social-post.engagement-updated` — `{ likes_count, comments_count, shares_count }`
+  - `social_post.drafted` — `{ blog_post_slug, platform, content, media_url?, scheduled_for? }`
+  - `social_post.scheduled` — `{ scheduled_for }`
+  - `social_post.published` — `{ published_at, platform_post_id?, platform_url? }`
+  - `social_post.failed` — `{ error_message, retry_count }`
+  - `social_post.engagement_updated` — `{ likes_count, comments_count, shares_count }`
 - **Projection:** fold to the social-post read shape; `status` from last
   lifecycle event.
-- **Query by slug:** `queryEvents({ event_type: 'social-post.drafted' })`
+- **Query by slug:** `queryEvents({ event_type: 'social_post.drafted' })`
   filtered on `payload.blog_post_slug`.
 - **Idempotency:** `social:<uuid>:drafted`, `:published`, …
 - **Migration:** 0 rows now.
@@ -326,9 +328,9 @@ Reference/config data, not transactional. Consumers: `getPaymentConfigFromDB`,
 - **Stream id:** `payment-config:<config_type>:<config_slug>` (matches
   `UNIQUE(config_type, config_slug)`).
 - **Events:**
-  - `payment-config.defined` — `{ config_type, config_slug, name, description?, price_sol?, price_usd?, price_btc?, price_eth?, duration_minutes?, benefits?, metadata?, is_active, is_popular }`
-  - `payment-config.updated` — `{ ...changed fields }`
-  - `payment-config.deactivated` — `{ at }`
+  - `payment_config.defined` — `{ config_type, config_slug, name, description?, price_sol?, price_usd?, price_btc?, price_eth?, duration_minutes?, benefits?, metadata?, is_active, is_popular }`
+  - `payment_config.updated` — `{ ...changed fields }`
+  - `payment_config.deactivated` — `{ at }`
 - **Projection:** fold to `PaymentConfig`.
 - **Idempotency:** `config:<type>:<slug>:defined`.
 - **Caveat (see §6):** this is effectively current-state reference data, also
@@ -346,11 +348,11 @@ Schema: `email UNIQUE NOT NULL`, `role`, `permissions JSONB`, `is_super_admin`,
 - **Stream id:** `admin:<email>` (email is the authorization key).
 - **Events:**
   - `admin.registered` — `{ email, full_name?, avatar_url?, role, permissions, is_active, is_super_admin, auth_user_id?, created_at }`
-  - `admin.role-changed` — `{ role, permissions }`
+  - `admin.role_changed` — `{ role, permissions }`
   - `admin.activated` / `admin.deactivated` — `{ at }`
-  - `admin.login-recorded` — `{ last_login_at, login_count }`
+  - `admin.login_recorded` — `{ last_login_at, login_count }`
 - **Projection:** fold to the admin read shape.
-- **Idempotency:** `admin:<email>:registered`, `:role-changed`, …
+- **Idempotency:** `admin:<email>:registered`, `:role_changed`, …
 - **Migration:** `registered` per row (1 row). `auth_user_id` carried as opaque
   attribute; no FK rebuilt.
 
@@ -360,10 +362,10 @@ Append-only audit. Originally `admin_user_id` FK → `admin_users`.
 
 - **Stream id:** `admin:<email>` (resolve `admin_user_id` → email at migration
   time). Audit lives alongside the admin it concerns.
-- **Event type:** `admin.activity-logged` — `{ action, resource_type?,
+- **Event type:** `admin.activity_logged` — `{ action, resource_type?,
   resource_id?, old_data?, new_data?, ip_address?, user_agent?, occurred_at }`.
 - **Projection:** these are pure facts; "read" = `queryEvents({ entity_id:
-  'admin:<email>', event_type: 'admin.activity-logged' })`, no fold needed.
+  'admin:<email>', event_type: 'admin.activity_logged' })`, no fold needed.
 - **Idempotency:** `adminlog:<supabase_id>`.
 - **Migration:** 0 rows now.
 
@@ -397,7 +399,7 @@ explicitly kept in code with optional audit events.**
 - **`payment_config`** — reference/config data with a current-state read pattern
   and an existing code-defined source (`payment-action.ts` seeds + reads). Event
   sourcing adds no value (no meaningful history, no concurrency). **Keep in code;
-  optionally emit `payment-config.defined/updated` as an audit trail.**
+  optionally emit `payment_config.defined/updated` as an audit trail.**
 - **Cross-aggregate list/aggregate reads** (`getActiveSubscribers`,
   `getSubscriberCount`, `get_payment_stats`, payment/meeting analytics views).
   AllSource addresses by `entity_id`; "all rows matching a predicate" is served
