@@ -129,7 +129,14 @@ export function createMeetingActions(ctx: BookingContext) {
         }
       }
 
-      const meetingConfig = MEETING_TYPES[meetingType]
+      // The client sends the display name (config.name) as meetingType, while
+      // MEETING_TYPES is keyed by slug. Resolve by key first, then fall back to
+      // matching name or slug so either identifier validates.
+      const meetingConfig =
+        MEETING_TYPES[meetingType] ??
+        Object.values(MEETING_TYPES).find(
+          (c) => c.name === meetingType || c.slug === meetingType
+        )
       if (!meetingConfig) {
         return { success: false, error: 'Invalid meeting type' }
       }
