@@ -170,7 +170,7 @@ docs/
 - Solana Pay for crypto payments
 - Meeting types have different pricing (free, 0.05 SOL, 0.1 SOL, 0.15 SOL)
 - Payment status tracked in-memory (`src/lib/meetingPayments.ts`)
-- Service access payments stored in Supabase
+- Service access payments stored in AllSource (event store; replaced Supabase — see `docs/ALLSOURCE_CUTOVER.md`)
 
 ### Important Configuration
 
