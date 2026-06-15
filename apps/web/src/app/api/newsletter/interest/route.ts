@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@decebal/database'
+import { getAllSourceClient } from '@decebal/database'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -8,40 +8,45 @@ const interestSchema = z.object({
   planName: z.string(),
 })
 
+/**
+ * Register interest in a paid plan tier.
+ *
+ * AllSource event model §4.9: stream `plan-interest:<email>:<plan_id>` (hyphens
+ * are legal in entity_id), event type `plan_interest.registered` (underscores
+ * only — hyphenated event_types are rejected with 422). Registration is unique
+ * per stream, so a non-empty stream means interest already exists.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { email, planId, planName } = interestSchema.parse(body)
 
-    const supabase = getSupabaseAdmin()
+    const client = getAllSourceClient()
+    const stream = `plan-interest:${email}:${planId}`
 
-    // Check if interest already exists
-    const { data: existing } = await supabase
-      .from('plan_interest')
-      .select('id')
-      .eq('email', email)
-      .eq('plan_id', planId)
-      .single()
-
-    if (existing) {
+    // Already registered? The stream carries a `plan_interest.registered` event.
+    const existing = await client.queryEvents({ entity_id: stream, limit: 1 })
+    const existingCount = Array.isArray(existing)
+      ? existing.length
+      : (existing?.events?.length ?? 0)
+    if (existingCount > 0) {
       return NextResponse.json(
         { error: 'Interest already registered for this plan' },
         { status: 400 }
       )
     }
 
-    // Insert new interest
-    const { error: insertError } = await supabase.from('plan_interest').insert({
-      email,
-      plan_id: planId,
-      plan_name: planName,
-      created_at: new Date().toISOString(),
+    await client.ingestEvent({
+      event_type: 'plan_interest.registered',
+      entity_id: stream,
+      payload: {
+        email,
+        plan_id: planId,
+        plan_name: planName,
+        created_at: new Date().toISOString(),
+      },
+      metadata: { source: 'app', schema_version: 1 },
     })
-
-    if (insertError) {
-      console.error('[Interest] Failed to save interest:', insertError)
-      return NextResponse.json({ error: 'Failed to register interest' }, { status: 500 })
-    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

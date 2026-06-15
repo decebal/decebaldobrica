@@ -9,6 +9,7 @@ import {
   getPayment,
   getPaymentByReference,
   getPaymentConfig,
+  getPaymentsByType,
   grantServiceAccess,
   updatePaymentStatus,
 } from '@/lib/payments'
@@ -287,28 +288,29 @@ export async function cancelPayment(paymentId: string) {
 }
 
 /**
- * Get payment statistics from Supabase
- * Returns analytics data for all payments
+ * Get payment statistics from AllSource.
+ *
+ * Replaces the Supabase `get_payment_stats` RPC: folds every meeting payment
+ * (cross-aggregate read over `payment.initiated` filtered to `payment_type =
+ * 'meeting'`, then per-stream fold) and aggregates the counts/revenue
+ * client-side. The payments stream is empty in the migrated data, so this
+ * returns zeros cleanly until real payments are recorded.
  */
 export async function getPaymentAnalytics() {
   try {
-    // Use Supabase function for stats
-    const { createClient } = await import('@/lib/supabase/server')
-    const supabase = await createClient()
+    const payments = await getPaymentsByType('meeting')
 
-    const { data, error } = await supabase.rpc('get_payment_stats', {
-      p_payment_type: 'meeting',
-    })
-
-    if (error) throw error
+    const confirmed = payments.filter((p) => p.status === 'confirmed')
+    const pending = payments.filter((p) => p.status === 'pending')
+    const totalRevenue = confirmed.reduce((acc, p) => acc + (p.amount || 0), 0)
 
     return {
       success: true,
       analytics: {
-        totalPayments: Number(data[0]?.total_payments || 0),
-        confirmedPayments: Number(data[0]?.confirmed_payments || 0),
-        pendingPayments: Number(data[0]?.pending_payments || 0),
-        totalRevenue: Number(data[0]?.total_revenue_sol || 0),
+        totalPayments: payments.length,
+        confirmedPayments: confirmed.length,
+        pendingPayments: pending.length,
+        totalRevenue,
       },
     }
   } catch (error) {

@@ -1,4 +1,5 @@
-import { getSupabaseAdmin } from '@decebal/database'
+import { getAllSourceClient } from '@decebal/database'
+import { getSubscriberByEmail } from '@decebal/newsletter'
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -11,6 +12,15 @@ const upgradeSchema = z.object({
   subscriberId: z.string().optional(),
 })
 
+/**
+ * Upgrade a newsletter subscriber to a paid tier after crypto payment.
+ *
+ * AllSource event model §4.1/§4.4: appends `subscriber.tier_changed` (sets the
+ * new tier + expiry/billing fields) and `subscriber.subscription_started` (the
+ * billing record) to the subscriber's stream. The subscriber is addressed by
+ * email — `subscriberId`, when present, is the `subscriber:<email>` stream id,
+ * so we derive the email from it.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -24,77 +34,68 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, tier, paymentId, chain, amount, subscriberId } = result.data
-    const supabase = getSupabaseAdmin()
 
-    // If we have subscriberId, use it; otherwise find by email
-    let subscriber: Record<string, unknown> | null = null
-    if (subscriberId) {
-      const { data } = await supabase
-        .from('newsletter_subscribers')
-        .select('*')
-        .eq('id', subscriberId)
-        .single()
-      subscriber = data
-    } else if (email) {
-      const { data } = await supabase
-        .from('newsletter_subscribers')
-        .select('*')
-        .eq('email', email)
-        .single()
-      subscriber = data
+    // Resolve the subscriber's email (the stream key).
+    let subscriberEmail = email
+    if (!subscriberEmail && subscriberId?.startsWith('subscriber:')) {
+      subscriberEmail = subscriberId.slice('subscriber:'.length)
     }
 
+    if (!subscriberEmail) {
+      return NextResponse.json({ error: 'Subscriber not found' }, { status: 404 })
+    }
+
+    const subscriber = await getSubscriberByEmail(subscriberEmail)
     if (!subscriber) {
       return NextResponse.json({ error: 'Subscriber not found' }, { status: 404 })
     }
 
-    // Update subscriber tier
+    const client = getAllSourceClient()
+    const stream = `subscriber:${subscriberEmail}`
+    const now = new Date().toISOString()
     const expiresAt =
       tier === 'founding'
         ? null // Lifetime access
-        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days for premium
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
 
-    const { error: updateError } = await supabase
-      .from('newsletter_subscribers')
-      .update({
-        tier,
-        subscription_expires_at: expiresAt?.toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', subscriber.id)
-
-    if (updateError) {
-      console.error('Error upgrading subscriber:', updateError)
-      return NextResponse.json({ error: 'Failed to upgrade subscription' }, { status: 500 })
-    }
-
-    // Record payment in subscriptions table
-    const { error: paymentError } = await supabase.from('newsletter_subscriptions').insert({
-      subscriber_id: subscriber.id,
-      provider: 'crypto',
-      provider_subscription_id: paymentId,
-      tier,
-      status: 'active',
-      amount,
-      currency: chain.toUpperCase(),
-      interval: tier === 'founding' ? 'lifetime' : 'month',
-      current_period_start: new Date().toISOString(),
-      current_period_end: expiresAt?.toISOString() || null,
-      cancel_at_period_end: false,
+    await client.ingestEvent({
+      event_type: 'subscriber.tier_changed',
+      entity_id: stream,
+      payload: {
+        from_tier: subscriber.tier,
+        to_tier: tier,
+        subscription_expires_at: expiresAt,
+      },
+      metadata: { source: 'app', schema_version: 1 },
     })
 
-    if (paymentError) {
-      console.error('Error recording payment:', paymentError)
-      // Don't fail the upgrade, just log the error
+    // Billing record (subscription_started) — best-effort, never fails the upgrade.
+    try {
+      await client.ingestEvent({
+        event_type: 'subscriber.subscription_started',
+        entity_id: stream,
+        payload: {
+          subscription_uuid: crypto.randomUUID(),
+          provider: 'solana',
+          provider_subscription_id: paymentId,
+          tier,
+          amount,
+          currency: chain.toUpperCase(),
+          interval: tier === 'founding' ? 'lifetime' : 'month',
+          current_period_start: now,
+          current_period_end: expiresAt,
+        },
+        metadata: { source: 'app', schema_version: 1 },
+      })
+    } catch (subError) {
+      console.error('Error recording subscription billing event:', subError)
     }
-
-    // TODO: Send upgrade confirmation email
 
     return NextResponse.json({
       success: true,
       message: 'Subscription upgraded successfully',
       tier,
-      expiresAt: expiresAt?.toISOString() || 'lifetime',
+      expiresAt: expiresAt ?? 'lifetime',
     })
   } catch (error) {
     console.error('Newsletter upgrade error:', error)
