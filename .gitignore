@@ -69,3 +69,9 @@ data/chat-history.db
 # AnythingLLM
 anythingllm-storage/
 .env.anythingllm
+
+# Internal content notes (private strategy/drafts; not for the public repo)
+apps/web/content/blog/_*.md
+
+# Stray broken tooling clones
+.rcr-broken-*/

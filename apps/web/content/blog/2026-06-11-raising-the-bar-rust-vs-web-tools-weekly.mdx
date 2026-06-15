@@ -1,0 +1,94 @@
+---
+title: 'Raising the Bar: A Rust-Systems Read on Web Tools Weekly #673'
+date: '2026-06-11T15:00:00.000Z'
+author: Decebal D.
+description: "Web Tools Weekly curates 25 JavaScript tools a week with one-line blurbs and four ads. Here's the same issue read through a systems lens — every tool mapped to a Rust alternative with an Adopt/Trial/Assess/Hold verdict, and an honest account of where JavaScript still wins."
+tags:
+  - rust
+  - javascript
+  - tooling
+  - build-tools
+  - wasm
+  - crate-radar
+slug: 2026-06-11-raising-the-bar-rust-vs-web-tools-weekly
+---
+
+[Web Tools Weekly](https://webtoolsweekly.com/) is a well-run newsletter. Louis Lazaris has shipped it for years, and [issue #673](https://australis.eomail6.com/web-version?ep=2&lc=d62f32cc-8ccc-11f0-b93b-0d9e6d36d81a&p=c29906a8-6565-11f1-b029-e3b1f4ef2873&pt=campaign&t=1781190205&s=741649f5cbbb4f8fa56638fe25bc014998f4efc65df28c1d466a4dd9cb202d8d) is a representative slice: roughly two dozen JavaScript and TypeScript tools across utilities, build tooling, and React Native, each in a single sentence, interleaved with four advertisements — an "AI credit optimizer," two CORS proxies, and a "how the rich pick stocks" trading webinar.
+
+That's the standard for tool curation in the JS world: broad, fast, ad-supported, one line per item, no verdict. It's useful for discovery. It is not built to help you *decide*. This is a Crate Radar special: the same issue, read the way an engineering leader reads it — what's actually worth adopting, and where the better answer now lives in Rust.
+
+There's a delicious irony sitting right in the issue. The Build Tools section leads with **Yuku**, "a high-performance JavaScript and TypeScript compiler toolchain written in *Zig*." A compiler for JavaScript, written in a systems language, because JavaScript is too slow to build JavaScript. That's not a one-off — it's the whole story of the last two years, and Zig is the late entrant. Rust got there first and won.
+
+## The toolchain already flipped
+
+If you only skim the JS tooling headlines, here's what you missed while reading one-line blurbs:
+
+[Vite 8 shipped stable on 12 March 2026](https://www.devclass.com/development/2026/03/17/vite-team-boasts-10-30x-faster-builds-with-rust-powered-rolldown/) with [Rolldown](https://rolldown.rs/) — a Rust bundler — replacing *both* esbuild and Rollup, and the Vite team clocking it at "10–30× faster than Rollup." Underneath it sits [OXC](https://github.com/oxc-project/oxc), the Rust "Oxidation Compiler," doing parsing, transforms, and minification at [over 30× Prettier's formatting speed](https://github.com/oxc-project/oxc). [Biome](https://biomejs.dev/) replaced Prettier and ESLint at ~25× the speed. Vercel's Rust bundler [Turbopack](https://turbo.build/pack) is the default engine in Next.js 16. [Lightning CSS](https://lightningcss.dev/) is Vite 8's default CSS minifier. And on 4 June 2026, [Cloudflare acquired VoidZero](https://www.nexgismo.com/blog/cloudflare-voidzero-vite-8-rolldown-guide-2026-3) — the team behind Vite, Rolldown, OXC, and Vitest — with the projects staying open source under a $1M community fund.
+
+So the most important fact about "web tools" in 2026 isn't in the newsletter's twenty-five blurbs. It's that the substrate the entire JS ecosystem builds on is now written in Rust. A curation standard worth its salt would lead with that. Let's apply it.
+
+## Every tool in #673, mapped
+
+Verdicts apply to the **Rust alternative** and use the Tech Radar vocabulary — **Adopt** (proven, default choice), **Trial** (real but non-critical use), **Assess** (prototype and watch), **Hold** (not yet). Where JavaScript genuinely remains the right tool, I say so plainly — a Rust-systems lens isn't a mandate to rewrite the browser.
+
+### JavaScript utilities
+
+| Tool (#673) | What it does | Rust alternative | Verdict |
+|---|---|---|---|
+| View Transitions Toolkit | Helpers for the View Transitions API | Browser API — handled inside [Leptos](https://leptos.dev/)/[Dioxus](https://dioxuslabs.com/) view layers | Stay JS / Assess WASM |
+| TypeScript XDK | X (Twitter) API SDK | [`twitter-v2`](https://crates.io/crates/twitter-v2), [`egg-mode`](https://crates.io/crates/egg-mode) | Trial |
+| Render.js | Pure-JS raytracer (RenderMan RIB) | [`bevy`](https://bevyengine.org/), `embree` bindings, Rust raytracers | **Adopt** |
+| TSTyche | Type-level testing for TS | [`trybuild`](https://crates.io/crates/trybuild) + [`static_assertions`](https://crates.io/crates/static_assertions) | **Adopt** |
+| Tegaki | Font → animated handwriting | Niche; `cosmic-text`/`ab_glyph` for text, no direct port | Stay JS |
+| devalue | `JSON.stringify` for cyclic/rich data | [`serde`](https://serde.rs/) + `serde_json`; [`rkyv`](https://rkyv.org/), `postcard`, `ron` | **Adopt** |
+| Cleverbrush | Schema validation faster than Zod | [`garde`](https://crates.io/crates/garde), [`validator`](https://crates.io/crates/validator), `schemars` | **Adopt** |
+| Temml | LaTeX → MathML | [`latex2mathml`](https://crates.io/crates/latex2mathml) | Trial |
+
+The pattern is already clear. Anything that is *compute* — raytracing, serialization, validation, type-level testing — Rust does better, because that's the home turf: predictable performance, no GC pauses, compile-time guarantees. `devalue` exists because `JSON.stringify` chokes on cyclic and rich data; serde simply doesn't have that problem, and `rkyv` gives you zero-copy deserialization the JS world can't express. Anything that is *the browser itself* — the View Transitions API — stays where it is, or moves into a WASM framework if you've already committed to one.
+
+### Build tools and bundlers
+
+| Tool (#673) | What it does | Rust alternative | Verdict |
+|---|---|---|---|
+| Yuku | JS/TS compiler toolchain in Zig | [OXC](https://github.com/oxc-project/oxc), [SWC](https://swc.rs/) | **Adopt** |
+| pu.sh | <50KB shell-based coding agent | Different niche; [`rig`](https://crates.io/crates/rig) for Rust agents | Stay / Assess |
+| unbarrelify | Removes ESM barrel files | N/A — Rust's module system has no barrel-file problem | No equivalent needed |
+| Addfox | Browser-extension scaffolding (Rsbuild) | WASM extensions possible but immature | Stay JS |
+| Nitro | Production server toolkit for Vite apps | [Axum](https://github.com/tokio-rs/axum), Leptos SSR, [Loco](https://loco.rs/) | **Adopt** |
+| npmx | Modern npm registry browser | [lib.rs](https://lib.rs/), `cargo info`, crates.io | **Adopt** |
+| Hono CLI | CLI for the Hono web framework | Axum, [Actix](https://actix.rs/), [Salvo](https://salvo.rs/), Loco | **Adopt** |
+| Tsonic | TS → C# native binaries | Just write Rust — native binaries are the default | **Adopt** |
+
+This section is the rout. Yuku is a compiler for JS written in Zig; OXC and SWC are compilers for JS written in Rust, and they already power the tools you use. `Tsonic` transpiles TypeScript to C# to *get a native binary* — a multi-stage workaround for a problem Rust doesn't have. `unbarrelify` is a tool to undo a footgun (barrel files breaking tree-shaking) that Rust's module system never introduced. Half of "build tooling" in JS is paying down the language's own structural debt; in Rust that tax mostly isn't levied.
+
+### React Native and mobile
+
+| Tool (#673) | What it does | Rust alternative | Verdict |
+|---|---|---|---|
+| React Native Vibe Code | AI builds RN/Expo apps | [Dioxus](https://dioxuslabs.com/) (web/desktop/mobile, one codebase) | Assess |
+| @native-html/render | Renders HTML to native RN views | Dioxus native renderer | Stay JS / Assess |
+| Argent | AI access to iOS/Android simulators | `cargo-mobile2` tooling; no direct equivalent | Stay JS |
+| React Native View Recorder | Capture a View to video/image | Platform-specific; no Rust port | Stay JS |
+| Rock | Build/DX toolkit for RN teams | `cargo-mobile2`, Dioxus CLI | Assess |
+| React Native Grab | Touch-to-grab UI context for agents | Niche RN tooling | Stay JS |
+| react-native-keyboard-controller | Keyboard handling for RN | Native in [Slint](https://slint.dev/)/Dioxus UI layers | Stay JS |
+
+Here's where intellectual honesty matters: **mobile UI is React Native's strongest ground, and Rust does not yet beat it for app front-ends.** The mature, batteries-included path to a polished iOS/Android app is still RN (or native, or Flutter). What Rust offers mobile teams isn't a UI framework that out-polishes RN — it's a different architecture. Put your domain logic, sync engine, and crypto in a shared Rust core and bind it to native UIs with [UniFFI](https://mozilla.github.io/uniffi-rs/) or the [Crux](https://redbadger.github.io/crux/) pattern; or, if you want one Rust codebase across web/desktop/mobile, [Dioxus](https://dioxuslabs.com/) (Y Combinator-backed, used in production by Airbus and the ESA) is the credible bet. For most teams shipping a consumer app today, RN stays — and that's the right call.
+
+## What "raising the bar" actually means
+
+The point isn't that Rust wins every row — it plainly doesn't, and a curation standard that pretended otherwise would be worth less, not more. The point is the *standard itself*. Web Tools Weekly optimizes for breadth and discovery; it tells you a tool exists. Four things would raise the bar, and they're the operating principles of this series:
+
+A **verdict on every item.** "Here's a thing" is a starting point, not an answer. Adopt/Trial/Assess/Hold forces a position.
+
+A **systems lens.** Most JS tooling churn is the ecosystem refactoring around the language's constraints — GC, single-threading, the module system, the build pipeline. Naming that turns twenty-five disconnected blurbs into one legible story: the foundation is being rewritten in Rust, and you should know which layer you're standing on.
+
+**Honesty about trade-offs**, including where the incumbent wins. The mobile section above is more useful *because* it tells you to keep React Native.
+
+**Signal over sponsorship.** An issue that carries a "how the rich pick stocks" ad between dev tools has made a choice about whose attention it's optimizing. A higher bar treats the reader's judgment as the product, not the inventory.
+
+---
+
+*This is the kind of read the [Rust Crate Radar](/blog/2026-06-10-introducing-rust-crate-radar) exists to do — every week there's a JS tool whose better answer is a crate. Want a specific tool put under this lens? [Get in touch](/contact).*
+
+**Sources:** [Vite 8 / Rolldown performance](https://www.devclass.com/development/2026/03/17/vite-team-boasts-10-30x-faster-builds-with-rust-powered-rolldown/) · [OXC](https://github.com/oxc-project/oxc) · [Cloudflare acquires VoidZero](https://www.nexgismo.com/blog/cloudflare-voidzero-vite-8-rolldown-guide-2026-3) · [Web Tools Weekly #673](https://webtoolsweekly.com/)
