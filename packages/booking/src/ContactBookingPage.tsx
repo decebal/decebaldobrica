@@ -544,36 +544,38 @@ export default function ContactBookingPage({
             </motion.div>
 
             {/* Chat Section on Success Page */}
-            <motion.div
-              className="max-w-4xl mx-auto mt-16"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2, duration: 0.6 }}
-              data-success-chat-section
-            >
-              <div className="text-center mb-6">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
-                  >
-                    <MessageSquare className="h-6 w-6 text-brand-teal" />
-                  </motion.div>
-                  <h2 className="text-2xl font-bold text-white">
-                    Want to Learn More About Working Together?
-                  </h2>
+            {chatConfig?.enabled !== false && (
+              <motion.div
+                className="max-w-4xl mx-auto mt-16"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2, duration: 0.6 }}
+                data-success-chat-section
+              >
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
+                    >
+                      <MessageSquare className="h-6 w-6 text-brand-teal" />
+                    </motion.div>
+                    <h2 className="text-2xl font-bold text-white">
+                      Want to Learn More About Working Together?
+                    </h2>
+                  </div>
+                  <p className="text-gray-400">
+                    Chat with my AI assistant to explore how we can collaborate on your project
+                  </p>
                 </div>
-                <p className="text-gray-400">
-                  Chat with my AI assistant to explore how we can collaborate on your project
-                </p>
-              </div>
 
-              <Card className="bg-white/5 backdrop-blur-sm border-white/10">
-                <CardContent className="pt-6">
-                  {chatConfig?.enabled !== false && <ChatInterfaceAI {...(chatConfig ?? {})} />}
-                </CardContent>
-              </Card>
-            </motion.div>
+                <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                  <CardContent className="pt-6">
+                    <ChatInterfaceAI {...(chatConfig ?? {})} />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
           </div>
         </main>
         {footer}
@@ -1021,29 +1023,31 @@ export default function ContactBookingPage({
         </div>
 
         {/* Chat Section - Well Below the Fold */}
-        <div className="px-4 md:px-8 py-16 md:py-24 max-w-7xl mx-auto" data-chat-section>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="max-w-4xl mx-auto"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
-              >
-                <MessageSquare className="h-6 w-6 text-brand-teal" />
-              </motion.div>
-              <h2 className="text-2xl font-bold text-white">Questions? Ask My AI Assistant</h2>
-            </div>
-            <p className="text-gray-400 mb-6">
-              Have questions before booking? Chat with my AI assistant for instant answers about
-              services, availability, and more.
-            </p>
-            {chatConfig?.enabled !== false && <ChatInterfaceAI {...(chatConfig ?? {})} />}
-          </motion.div>
-        </div>
+        {chatConfig?.enabled !== false && (
+          <div className="px-4 md:px-8 py-16 md:py-24 max-w-7xl mx-auto" data-chat-section>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
+                >
+                  <MessageSquare className="h-6 w-6 text-brand-teal" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-white">Questions? Ask My AI Assistant</h2>
+              </div>
+              <p className="text-gray-400 mb-6">
+                Have questions before booking? Chat with my AI assistant for instant answers about
+                services, availability, and more.
+              </p>
+              <ChatInterfaceAI {...(chatConfig ?? {})} />
+            </motion.div>
+          </div>
+        )}
       </main>
 
       {footer}
