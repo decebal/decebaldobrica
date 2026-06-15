@@ -8,16 +8,20 @@ A modern monorepo for my personal portfolio website, newsletter system, and admi
 .
 ├── apps/
 │   ├── web/              # Main portfolio website (decebaldobrica.com)
-│   ├── newsletter/       # Newsletter admin dashboard
-│   └── api/              # Supabase Edge Functions
+│   ├── wolventech/       # Wolven Tech advisory site (wolventech.io)
+│   ├── newsletter-admin/ # Newsletter admin dashboard
+│   ├── services-admin/   # Services/pricing admin dashboard
+│   └── anything-llm/     # Local LLM / RAG tooling
 ├── packages/
 │   ├── ui/               # Shared UI components (shadcn/ui)
-│   ├── database/         # Supabase client & utilities
+│   ├── database/         # AllSource event-store client & utilities
+│   ├── booking/          # Shared booking/contact flow
 │   ├── newsletter/       # Newsletter business logic
-│   ├── email/            # Email templates (React Email)
+│   ├── email/            # Email templates (React Email) + Resend
 │   ├── social/           # LinkedIn/Twitter automation
 │   ├── analytics/        # PostHog analytics
-│   └── payments/         # Stripe & Solana Pay
+│   ├── payment-gate/     # Content/access payment gating
+│   └── crypto-subscriptions/ # Solana subscription logic
 └── tooling/
     ├── typescript/       # Shared TS configs
     └── biome/            # Linting & formatting
@@ -52,19 +56,19 @@ Main portfolio website with blog, services, contact form, and newsletter signup.
 **URL:** https://decebaldobrica.com
 **Tech:** Next.js 15, React 19, TailwindCSS, shadcn/ui
 
-### Newsletter (`apps/newsletter`)
-Admin dashboard for managing newsletter subscribers, composing issues, and viewing analytics.
+### Wolven Tech (`apps/wolventech`)
+Rust-only technical advisory site with its own contact/booking flow.
 
-**URL:** https://newsletter.decebaldobrica.com (TBD)
-**Tech:** Next.js 15, React 19, TailwindCSS
+**URL:** https://wolventech.io
+**Tech:** Next.js 15, React 18, TailwindCSS, shadcn/ui
 
-### API (`apps/api`)
-Supabase Edge Functions for background jobs like sending newsletters and posting to social media.
+### Admin dashboards (`apps/newsletter-admin`, `apps/services-admin`)
+Internal dashboards for managing newsletter subscribers/issues and services/pricing.
 
-**Functions:**
-- `newsletter-send` - Send newsletter to subscribers
-- `social-publish` - Auto-post blog posts to LinkedIn/Twitter
-- `payment-webhook` - Handle Stripe/Solana webhooks
+**Tech:** Next.js 15, React, TailwindCSS
+
+> Background jobs (newsletter send, social posting) run via the `task publish`
+> script (`apps/web/scripts/publish-blog-post.ts`), not edge functions.
 
 ## 📚 Packages
 
@@ -72,12 +76,12 @@ All packages are available as workspace dependencies:
 
 ```typescript
 import { Button } from '@decebal/ui'
-import { getSupabaseClient } from '@decebal/database'
+import { getAllSourceClient } from '@decebal/database'
 import { subscribeToNewsletter } from '@decebal/newsletter'
 import { WelcomeEmail } from '@decebal/email'
 import { postToLinkedIn } from '@decebal/social'
 import { trackEvent } from '@decebal/analytics'
-import { createCheckout } from '@decebal/payments'
+import { requireAccess } from '@decebal/payment-gate'
 ```
 
 ## 🛠️ Development
@@ -85,7 +89,7 @@ import { createCheckout } from '@decebal/payments'
 ### Prerequisites
 - Bun >= 1.0
 - Node.js >= 18
-- Supabase account
+- AllSource tenant + service API key (event store backend)
 - Resend account
 
 ### Environment Variables
@@ -93,10 +97,10 @@ import { createCheckout } from '@decebal/payments'
 Copy `.env.example` to `.env.local` in each app:
 
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+# AllSource (event store — replaces the former Supabase backend)
+ALLSOURCE_API_URL=https://allsource-query.fly.dev
+ALLSOURCE_TENANT_ID=
+ALLSOURCE_API_KEY=
 
 # Resend
 RESEND_API_KEY=
@@ -132,9 +136,9 @@ bun run lint:fix              # Fix all
 # Type checking
 bun run type-check            # All packages
 
-# Database
-bun run db:push               # Push schema to Supabase
-bun run db:migrate            # Run migrations
+# Data (AllSource event store — no relational schema to push)
+# One-off backfill / migration tooling lives in:
+#   packages/database/scripts/migrate-supabase-to-allsource.ts
 
 # Testing
 bun run test                  # Unit tests
@@ -157,9 +161,9 @@ App Router • Server Components • Server Actions • Streaming
 **[TailwindCSS](https://tailwindcss.com)** • **[shadcn/ui](https://ui.shadcn.com)** • **[Radix UI](https://www.radix-ui.com)**
 Responsive Design • Dark Mode • Accessible Components
 
-### Backend & Database
-**[Supabase](https://supabase.com)** (PostgreSQL) • Edge Functions • Row Level Security
-Real-time Subscriptions • Authentication • Storage
+### Backend & Data
+**[AllSource](https://www.all-source.xyz)** (Rust event store) • Event Sourcing • Projections
+Append-only events • Tenant-scoped • `@allsourcedev/client` TS SDK
 
 ### Email & Communication
 **[Resend](https://resend.com)** • **[React Email](https://react.email)**
@@ -189,20 +193,16 @@ Auto-posting • Content Distribution • Engagement Tracking
 
 ## 📖 Documentation
 
-### 🚀 Getting Started
-- **[Quick Start Guide](./docs/QUICK_START.md)** - Get up and running in 5 minutes
-- **[Newsletter Remaining Work](./docs/NEWSLETTER_REMAINING_WORK.md)** - What's left to build for newsletter system
-
-### 📦 Migration & Setup
-- [Migration Complete Summary](./docs/MIGRATION_COMPLETE.md) - Monorepo migration overview
-- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Step-by-step migration instructions
-- [GIT Migration Guide](./docs/GIT_MIGRATION_GUIDE.md) - Git-specific migration details
-- [Monorepo Migration Plan](./docs/MONOREPO_MIGRATION_PLAN.md) - Full migration strategy
+### 🗄️ Data & Architecture (AllSource)
+- [AllSource Cutover](./docs/ALLSOURCE_CUTOVER.md) - How the app moved off Supabase to AllSource
+- [AllSource Event Model](./docs/ALLSOURCE_EVENT_MODEL.md) - Streams, events, and projections per domain
+- [Migration Report](./docs/MIGRATION_REPORT.md) - Supabase-dump → AllSource migration results
 
 ### 📧 Newsletter System
-- [Newsletter Implementation Plan](./docs/NEWSLETTER_IMPLEMENTATION_PLAN.md) - Complete 14-page roadmap
-- [Newsletter Progress](./docs/NEWSLETTER_PROGRESS.md) - Current implementation status
-- [Newsletter Supabase Setup](./docs/NEWSLETTER_SUPABASE_SETUP.md) - Database configuration
+- [Newsletter Story](./docs/NEWSLETTER_STORY.md) - Product narrative
+- [Newsletter Honest Status](./docs/NEWSLETTER_HONEST_STATUS.md) - Current implementation status
+- [Newsletter Admin App](./docs/NEWSLETTER_ADMIN_APP.md) - Admin dashboard
+- [Blog Post Creation Guide](./docs/BLOG_POST_CREATION_GUIDE.md) - Authoring + `task publish`
 
 ### 💰 Payments & Services
 - [Crypto Payments Guide](./docs/CRYPTO_PAYMENTS.md) - Solana Pay integration
@@ -218,44 +218,27 @@ Auto-posting • Content Distribution • Engagement Tracking
 - [Services Implementation Summary](./docs/SERVICES_IMPLEMENTATION_SUMMARY.md) - Services feature status
 - [Case Study Examples](./docs/CASE_STUDY_EXAMPLES.md) - Portfolio case study templates
 - [Homepage Video Script](./docs/HOMEPAGE_VIDEO_SCRIPT.md) - Video content plan
-- [Video Recording Software](./docs/VIDEO_RECORDING_SOFTWARE.md) - Production tools
 
 ### 📊 Analytics & Monitoring
 - [PostHog Setup](./docs/POSTHOG_SETUP.md) - Analytics configuration
 - [PostHog Troubleshooting](./docs/POSTHOG_TROUBLESHOOTING.md) - Common issues & fixes
 
-### 🚀 Deployment
-- [Deployment Guide](./docs/DEPLOYMENT.md) - Production deployment
-- [Production Deployment Changes](./docs/PRODUCTION_DEPLOYMENT_CHANGES.md) - Environment-specific changes
-- [Quick Start Deployment](./docs/QUICK-START-DEPLOYMENT.md) - Fast deployment guide
-- [Web App Deployment](./docs/WEB_DEPLOYMENT.md) - Web-specific deployment
-- [Web App README](./docs/WEB_APP_README.md) - Web app documentation
-
 ### 🛠️ Development
 - [Development Standards](./docs/DEVELOPMENT_STANDARDS.md) - Code quality guidelines
-- [Implementation Summary](./docs/IMPLEMENTATION_SUMMARY.md) - Feature implementation status
-- [Testing Summary](./docs/TESTING_SUMMARY.md) - Test coverage & strategy
+- [Port Configuration](./docs/PORT_CONFIGURATION.md) - Dev server ports per app
+- [Bot Protection](./docs/BOT_PROTECTION.md) - Cloudflare Turnstile on forms
 - [NPM Package Strategy](./docs/NPM_PACKAGE_STRATEGY.md) - Package publishing plan
 - [Personal Config](./docs/PERSONAL_CONFIG.md) - Configuration management
 
 ## 🚀 Deployment
 
-### Vercel (apps/web & apps/newsletter)
+### Vercel
 
 Each app deploys separately:
 
 ```bash
-# Web app
-vercel --cwd apps/web
-
-# Newsletter app
-vercel --cwd apps/newsletter
-```
-
-### Supabase Edge Functions (apps/api)
-
-```bash
-supabase functions deploy
+vercel --cwd apps/web          # Portfolio site
+vercel --cwd apps/wolventech   # Wolven Tech site
 ```
 
 ## 📊 Features
