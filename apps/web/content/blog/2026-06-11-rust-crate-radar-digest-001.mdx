@@ -1,0 +1,65 @@
+---
+title: 'Rust Crate Radar Digest #1: Memory-Safe Zstd, a Fast SMB Client, and a Standard Library Rewrite'
+date: '2026-06-11T12:00:00.000Z'
+author: Decebal D.
+description: "Five recent Rust crates worth knowing about — a memory-safe Zstandard, a pure-Rust SMB2/3 client that outruns the native macOS client, two Crate-of-the-Week picks, and an ambitious extended standard library — each scored Adopt, Trial, Assess, or Hold through an engineering-leader lens."
+tags:
+  - rust
+  - crates
+  - dependency-management
+  - digest
+  - supply-chain
+slug: 2026-06-11-rust-crate-radar-digest-001
+---
+
+Welcome to the first **Radar Digest** — the faster-moving companion to the [Rust Crate Radar](/blog/2026-06-10-introducing-rust-crate-radar) Deep Dives. The format is simple: a handful of recent, genuinely meaningful crates, each with a short take and a one-word verdict borrowed from the ThoughtWorks Tech Radar — **Adopt, Trial, Assess, or Hold**. No "awesome list" padding; every entry has to earn its place in a real dependency tree.
+
+This week's theme, mostly by accident: who do you trust to write the foundational code your systems depend on — a funded foundation, a solo maintainer, or a coding agent?
+
+## libzstd-rs-sys — a memory-safe Zstandard
+
+**The pitch.** [Trifecta Tech Foundation](https://trifectatech.org/) — the non-profit behind the memory-safe [zlib-rs](https://github.com/trifectatechfoundation/zlib-rs) and a bzip2 rewrite — has [announced](https://trifectatech.org/blog/announcing-zstandard-in-rust/) its third compression project: a pure-Rust implementation of Zstandard. It compiles to a drop-in-compatible C library, so it can replace the reference `libzstd` wholesale, and it removes the C-toolchain requirement that makes the existing `zstd` crate awkward on Windows and WebAssembly.
+
+**Why it matters to a leader.** This is the supply-chain and memory-safety story in miniature. Compression libraries are everywhere — web traffic, storage, package managers — and they parse untrusted input, which is exactly where memory-safety bugs turn into CVEs. An independent, fuzz-tested, Miri-checked implementation that doesn't require signing Meta's contributor agreement strengthens a critical piece of infrastructure. The honest caveat: default decompression runs ~3% slower than C (four bounds checks), recoverable via an opt-in `unsafe-performance-experimental` flag, and it's at `v0.0.1-prerelease.2` — decompression and the dictionary builder are done, but the encoder is still unfunded and unfinished.
+
+**Verdict: Assess.** Track it, and prototype the decompression path. It's not a production bet until the encoder lands and it cuts a stable release, but the trajectory — and the team's track record with zlib-rs — make it the most strategically important crate on this list.
+
+## smb2 — a pure-Rust SMB2/3 client that's faster than your OS
+
+**The pitch.** [smb2](https://github.com/vdavid/smb2) is an async, runtime-agnostic, pure-Rust SMB 2.x/3.x client built directly from Microsoft's MS-SMB2 spec. No C dependencies, no SMB1. Its headline trick is pipelined I/O — compound requests and a sliding window with adaptive chunking — and the [benchmarks](https://www.veszelovszki.com/a/smb2/) are striking: on a NAS over Gigabit it beats the *native macOS* SMB client on every operation (up to 5× faster on downloads) and runs 3–8× faster than the existing `smb` crate.
+
+**Why it matters to a leader.** Two things stand out beyond raw speed. First, the testing rigor is unusually high for a young crate: ~970 tests, property tests, 12 fuzz targets, and integration tests against **14 Docker-based Samba containers** (encryption-required, high-latency, connection-dropping, tiny-read-size, and so on) running in CI on every PR — plus a `testing` feature that lets *your* app spin up the same containers. That's the kind of test infrastructure that de-risks adoption. Second, the maturity signals are real: MSRV 1.85, MIT-or-Apache, at `v0.11.3` after months of daily real-world use as the engine inside a shipping file manager. The adoption risks: it's a solo maintainer, it was written with heavy AI assistance (the author is upfront about this), and it omits multi-channel and QUIC/RDMA that the `smb` crate has.
+
+**Verdict: Trial.** If you touch SMB from Rust, put this in a non-critical path now. The test suite and benchmarks back up the claims; the single-maintainer bus factor is the thing to weigh.
+
+## remyx — structure on top of Ratatui
+
+**The pitch.** [Ratatui](https://ratatui.rs/) has become the default for terminal UIs in Rust, but it's deliberately low-level — you own the render loop, state, and layout plumbing. [remyx](https://github.com/manuelgdlvh/remyx) ([Crate of the Week](https://this-week-in-rust.org/blog/2026/06/03/this-week-in-rust-654/)) is a framework layered on top of Ratatui that aims to supply the application structure Ratatui leaves to you.
+
+**Why it matters to a leader.** Higher-level TUI frameworks are a recurring need — every team that builds more than a toy TUI ends up reinventing an architecture for it. A good convention layer could save real time. But this one is brand new and self-suggested, with a single author and little adoption history, so the stewardship and maturity questions are wide open.
+
+**Verdict: Assess.** Worth a weekend spike if you're starting a TUI and want opinions baked in. For anything you'll maintain for years, let it accrete users and a release history first.
+
+## rustion — an SSH bastion server in Rust
+
+**The pitch.** [rustion](https://github.com/handewo/rustion) ([Crate of the Week](https://this-week-in-rust.org/blog/2026/06/10/this-week-in-rust-655/)) is an SSH bastion (jump host) server written in Rust — the controlled choke point through which administrators reach internal infrastructure.
+
+**Why it matters to a leader.** A bastion is security-critical, internet-facing, and parses a hostile protocol — precisely the profile where Rust's memory safety pays off, and where the broader ecosystem is investing (Trifecta Tech has its own [ssh-server](https://trifectatech.org/projects/ssh-server) initiative). An auditable, memory-safe bastion is an appealing idea. The flip side: security infrastructure is the *last* place to adopt something immature, and this is a new, single-maintainer project without third-party audits.
+
+**Verdict: Assess.** Stand it up in a lab and read the code. Do not put an unaudited, early-stage bastion in front of production access — but keep this category on your radar, because memory-safe SSH infrastructure is coming.
+
+## stdx — an "extended standard library" for Rust
+
+**The pitch.** [stdx](https://github.com/rust-stdx/stdx) is Sylvain Kerkour's [attempt](https://kerkour.com/stdx) to give Rust a Go-style batteries-included standard library: a dependency-free common base of the most-used building blocks (dotenv parsing, crypto, CSV, and more), motivated explicitly by supply-chain security — reducing the sprawling transitive-dependency graph that, he argues, rivals npm's for risk.
+
+**Why it matters to a leader.** The thesis is one every engineering leader should take seriously: dependency sprawl *is* attack surface, and Rust's small standard library pushes teams toward dozens of small third-party crates. A curated, zero-dependency base is a real answer. Two large caveats, stated plainly. It's a single maintainer, brand new, and — per the author — largely written by AI coding agents (DeepSeek v4 and similar), with the human focused on architecture and test design. That's a fascinating model and arguably well-suited to spec-and-test-driven domains like crypto, but "consolidate your foundational dependencies onto a new, mostly-AI-generated, single-maintainer library" is close to the opposite of what supply-chain prudence usually recommends. The vision and the current risk profile are in genuine tension.
+
+**Verdict: Hold.** Watch it closely and borrow the *idea* — audit your dependency tree, prune what you don't need. Betting your foundation on stdx today trades one supply-chain risk for another. Reassess as it gains maintainers, external review, and a track record.
+
+---
+
+## The through-line
+
+Four of these five are young, single-maintainer projects, and two were built substantially with AI. That isn't a reason to dismiss them — smb2's test suite is more disciplined than many funded libraries — but it is the central adoption question of this moment: *provenance and stewardship now matter as much as the code itself.* The rubric still holds. Ask who maintains it, how it's tested, what it costs to adopt, and how hard it is to rip out. The answers, not the hype, decide whether something earns a place in your `Cargo.toml`.
+
+*Want a specific crate evaluated, or think I've misjudged one of these? [Get in touch](/contact). Next on the Radar: a Deep Dive on the [Toasty ORM](/blog/2026-06-10-toasty-async-orm-rust-evaluation).*

@@ -1,0 +1,93 @@
+---
+title: 'Radar Digest: An Extended Std Lib, a Pure-Rust SMB Client, and Four More'
+date: '2026-06-15T12:00:00.000Z'
+author: Decebal D.
+description: A Rust Crate Radar digest of six notable releases from the week — stdx, smb2, Ratatui 0.30, kache, OmniScope, and rustion — each scored against the same engineering-leadership rubric and given a one-word verdict.
+tags:
+  - rust
+  - crates
+  - dependency-management
+  - supply-chain
+  - tui
+  - build-systems
+slug: 2026-06-15-radar-digest-stdx-smb2-six-releases
+---
+
+> This is a **Rust Crate Radar** digest — a few of the week's notable releases, each scored against the same rubric an engineering leader uses to decide on a dependency (problem fit, maturity, stewardship, ecosystem fit, cost of adoption, exit cost) and given a one-word verdict from the ThoughtWorks Tech Radar: **Adopt, Trial, Assess, or Hold.**
+
+## TL;DR — The Radar
+
+| Crate | What it is | Verdict |
+|---|---|---|
+| [stdx](https://github.com/rust-stdx/stdx) | An "extended standard library" pulled from one git source | **Assess** |
+| [smb2](https://crates.io/crates/smb2) | Pure-Rust SMB2/3 client, no C, faster than native | **Trial** |
+| [Ratatui 0.30](https://ratatui.rs/highlights/v030/) | The de-facto TUI library, now modular + no_std | **Adopt** |
+| [kache](https://github.com/kunobi-ninja/kache) | Content-addressed Rust build cache (sccache alternative) | **Assess** |
+| [OmniScope 0.2](https://this-week-in-rust.org/blog/2026/06/10/this-week-in-rust-655/) | FFI static-analysis tool built on LLVM IR | **Assess** |
+| [rustion](https://github.com/handewo/rustion) | SSH bastion server (this week's Crate of the Week) | **Hold** |
+
+No single flagship release this week, but the theme writing itself is hard to miss: **supply chain and the cost of trust.** Three of these six exist primarily to reduce what you have to trust — fewer dependencies, no C, or a tool to audit the unsafe boundary. That is worth a leadership conversation on its own, which is why the digest leads with the most provocative one.
+
+## stdx — the dependency tree, rebundled
+
+[stdx](https://kerkour.com/stdx) is an "extended standard library": a curated bundle of common utility crates (base64 and friends), no_std-friendly, distributed not through crates.io but from a single git source you pin directly — `base64 = { git = "https://github.com/rust-stdx/stdx", branch = "main" }`.
+
+**Why a leader should care.** This is the Crate Radar rubric turned into a product. It is a direct answer to the problem every one of these posts circles: a Rust binary routinely pulls in a hundred-plus transitive crates, any one of which can be abandoned, typosquatted, or — as the `onering` exfiltration crate reminded everyone this spring — quietly turned hostile. stdx's pitch is to collapse that surface into one vetted, single-owner tree.
+
+The trouble is the mechanism. Bypassing crates.io means giving up the tooling built around it: `cargo audit` against the advisory database, yank semantics when something goes wrong, and semver resolution so two of your dependencies can agree on a shared version. You also trade a *diffuse* trust problem for a *concentrated* one. A hundred small bus factors become a single large one — the project is essentially one maintainer's judgment, and a git `branch = "main"` dependency is an unpinned, moving target unless you do the pinning by hand.
+
+So the idea deserves an Adopt-grade hearing and the implementation does not — yet. It is a genuinely useful provocation to put in front of your staff engineers: *what is our actual policy for vetting a new dependency, and would this be better or just differently risky?*
+
+**Verdict: Assess.** Read it, argue about it, let it sharpen your dependency policy. Don't refactor a production tree around it.
+
+## smb2 — memory safety with a performance receipt
+
+[smb2](https://www.veszelovszki.com/a/smb2/) is a pure-Rust SMB2/3 client: no C, no FFI, built straight from Microsoft's MS-SMB2 specification, with 3.x signing (HMAC-SHA256, AES-CMAC/GMAC) and encryption. The author built it for a file manager and benchmarks it at 1.3–5× faster than native macOS SMB across uploads, downloads, listings, and deletes — largely by pipelining and compounding requests instead of sending one read at a time.
+
+**Why a leader should care.** This is the rare memory-safety argument that comes with a performance receipt rather than a sermon. Replacing a C SMB stack with a pure-Rust one removes a whole class of remote-parsing CVEs *and* goes faster. That is the easiest version of the Rust adoption pitch to take into a review.
+
+The caveats are the usual ones for a young, single-author 0.x crate: the API will move, the bus factor is one, and protocol corner-cases against the full zoo of real-world SMB servers are not yet battle-proven. But it is narrowly scoped and easy to sandbox behind your own trait.
+
+**Verdict: Trial** for the specific job of programmatic SMB access; Assess if you'd be putting it on a critical path today.
+
+## Ratatui 0.30 — the standard, matured
+
+[Ratatui 0.30](https://ratatui.rs/highlights/v030/) is a big release for the de-facto Rust TUI library: the crate split into a workspace (`ratatui-core`, `ratatui-widgets`, and per-backend crates), added no_std support, shipped a `ratatui::run()` convenience entry point, and added serde derives for layout and palette types.
+
+**Why a leader should care.** If your team ships internal CLIs or operator tooling, this is the baseline, and the 0.30 modularization is the kind of boring-but-important maturation that signals a library settling in for the long haul. Large community, healthy stewardship, real momentum.
+
+The cost is a migration: 0.29 → 0.30 carries breaking changes, so budget a focused pass rather than a drive-by bump.
+
+**Verdict: Adopt** for TUI work — with a migration ticket attached.
+
+## kache — a faster build cache, if the keys are right
+
+[kache 0.5.0](https://kunobi.ninja/blog/kache-v0-5-0) is a content-addressed Rust build cache used as a `RUSTC_WRAPPER` — an sccache alternative that keys artifacts on a blake3 hash of everything that affects rustc's output, hardlinks locally, and shares via S3. The 0.5 work is specifically about getting that cache key neither too tight (needless recompiles) nor too loose (wrong artifacts).
+
+**Why a leader should care.** CI build time is a direct cost and a direct drag on iteration speed, and a Rust-native cache is an obvious lever. But the entire value proposition rests on cache-key correctness — a too-loose key serves you the *wrong* binary, which is a far worse failure than a slow build.
+
+It's young and effectively single-vendor, and it competes with the established, well-understood sccache.
+
+**Verdict: Assess** — pilot it in a non-critical CI lane, verify artifacts, and watch the correctness story before you trust it on a release pipeline.
+
+## OmniScope 0.2 — auditing the unsafe boundary
+
+[OmniScope 0.2.0](https://this-week-in-rust.org/blog/2026/06/10/this-week-in-rust-655/) is a static-detection tool for FFI issues, working at the LLVM IR level. It belongs to the same supply-chain-and-safety theme as the rest of this digest: tooling to see what's actually happening at the boundary where Rust's guarantees stop.
+
+It's very early (0.2) and niche, so this is a watch-the-space entry rather than something to wire into your pipeline.
+
+**Verdict: Assess** — keep it on the radar, especially if you maintain meaningful `unsafe`/FFI surface.
+
+## rustion — interesting, but not in your SSH path
+
+[rustion](https://github.com/handewo/rustion), this week's official Crate of the Week, is an SSH bastion server. It's a genuinely interesting self-hosted-infrastructure project, but two facts decide the verdict: it is an *application*, not a library, and it is an early, self-suggested, single-author project sitting on a security-critical path.
+
+**Verdict: Hold.** Worth watching; not worth standing between your engineers and production just yet.
+
+---
+
+## The throughline
+
+When a week has no flagship, the pattern is the lesson. Four of these six — stdx, smb2, OmniScope, and arguably kache — are ultimately about *trust*: trusting fewer dependencies, trusting no C, auditing the unsafe edge, or trusting a cache to hand back the right bytes. The crates worth betting on are increasingly the ones that shrink the surface you have to trust. That's the lens to carry into next week.
+
+*Got a crate you want put under the same rubric? [Get in touch](/contact) — reader requests shape the backlog.*
