@@ -4,6 +4,9 @@ node_modules/
 .pnp.js
 bun.lockb
 
+# Per-machine Claude Code local settings (permissions etc. — not for the repo)
+.claude/settings.local.json
+
 # Testing
 coverage/
 .nyc_output/
