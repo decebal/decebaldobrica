@@ -16,8 +16,7 @@
       ".cache",
       "coverage",
       "*.config.js",
-      "*.config.ts",
-      "packages/allsource-client/src"
+      "*.config.ts"
     ]
   },
   "formatter": {

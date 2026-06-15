@@ -13,7 +13,7 @@
  * Never prints the API key. If it must be referenced it is redacted to the
  * first 12 characters.
  */
-import { AllSourceError } from '@allsource/client'
+import { AllSourceError } from '@allsourcedev/client'
 import { getAllSourceClient } from '../src/allsource'
 
 function redact(secret: string | undefined): string {

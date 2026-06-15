@@ -1,4 +1,4 @@
-import { AllSourceClient } from '@allsource/client'
+import { AllSourceClient } from '@allsourcedev/client'
 
 /**
  * Construct a configured AllSource client from environment variables.
@@ -37,4 +37,4 @@ export function getAllSourceTenantId(): string {
   return tenantId
 }
 
-export type { AllSourceClient } from '@allsource/client'
+export type { AllSourceClient } from '@allsourcedev/client'
