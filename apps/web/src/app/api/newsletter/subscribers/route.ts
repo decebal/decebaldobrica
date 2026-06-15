@@ -1,35 +1,28 @@
-import { getSupabaseAdmin } from '@decebal/database'
+import { listSubscribers } from '@decebal/newsletter'
 import { type NextRequest, NextResponse } from 'next/server'
 
+/**
+ * Admin subscriber list. Reads the AllSource `subscriber:*` projection
+ * (folded per stream) with optional tier/status filters, newest first.
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const tier = searchParams.get('tier')
-    const status = searchParams.get('status')
+    const tier = searchParams.get('tier') as 'free' | 'premium' | 'founding' | 'all' | null
+    const status = searchParams.get('status') as
+      | 'pending'
+      | 'active'
+      | 'unsubscribed'
+      | 'bounced'
+      | 'all'
+      | null
 
-    const supabase = getSupabaseAdmin()
+    const subscribers = await listSubscribers({
+      tier: tier ?? undefined,
+      status: status ?? undefined,
+    })
 
-    let query = supabase
-      .from('newsletter_subscribers')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (tier && tier !== 'all') {
-      query = query.eq('tier', tier)
-    }
-
-    if (status && status !== 'all') {
-      query = query.eq('status', status)
-    }
-
-    const { data, error } = await query
-
-    if (error) {
-      console.error('Error fetching subscribers:', error)
-      return NextResponse.json({ error: 'Failed to fetch subscribers' }, { status: 500 })
-    }
-
-    return NextResponse.json({ subscribers: data || [] })
+    return NextResponse.json({ subscribers })
   } catch (error) {
     console.error('Newsletter subscribers error:', error)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })

@@ -1,7 +1,11 @@
 'use server'
 
-import { ensureUserProfile, grantServiceAccess, hasServiceAccess } from '@/lib/payments'
-import { createClient } from '@/lib/supabase/server'
+import {
+  ensureUserProfile,
+  getUserProfile,
+  grantServiceAccess,
+  hasServiceAccess,
+} from '@/lib/payments'
 import { z } from 'zod'
 
 const walletAuthSchema = z.object({
@@ -19,34 +23,28 @@ const grantAccessSchema = z.object({
   paymentId: z.string(),
 })
 
+const currentWalletSchema = z.object({
+  walletAddress: z.string().min(32),
+})
+
 /**
- * Authenticate user with Solana wallet via Supabase
- * This should be called after wallet connection on the client
+ * Establish a wallet identity server-side.
+ *
+ * Migration note (event model §2): Supabase GoTrue Web3 auth has been removed.
+ * Identity is now the wallet address itself — the wallet signature is verified
+ * client-side by the wallet adapter, and the server simply ensures a profile
+ * exists in AllSource (stream `wallet:<address>`). There is no server session.
  */
 export async function authenticateWallet(input: z.infer<typeof walletAuthSchema>) {
   try {
     const { walletAddress } = walletAuthSchema.parse(input)
 
-    const supabase = await createClient()
-
-    // Sign in with Web3 - Supabase handles the wallet signature verification
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.signInWithWeb3({
-      chain: 'solana',
-      statement: 'Access premium content on decebaldobrica.com',
-    })
-
-    if (error) throw error
-    if (!user) throw new Error('Failed to authenticate')
-
-    // Ensure user profile exists (unified payment system)
-    await ensureUserProfile(walletAddress, 'solana')
+    // Ensure the user profile exists (AllSource get-or-create).
+    const userId = await ensureUserProfile(walletAddress, 'solana')
 
     return {
       success: true,
-      userId: user.id,
+      userId,
       walletAddress,
     }
   } catch (error) {
@@ -59,13 +57,12 @@ export async function authenticateWallet(input: z.infer<typeof walletAuthSchema>
 }
 
 /**
- * Check if wallet has access to a service
+ * Check if a wallet has access to a service (AllSource service-access fold).
  */
 export async function checkWalletAccess(input: z.infer<typeof checkAccessSchema>) {
   try {
     const { walletAddress, serviceSlug } = checkAccessSchema.parse(input)
 
-    // Use unified payment system
     const hasAccess = await hasServiceAccess(walletAddress, serviceSlug)
 
     return {
@@ -83,13 +80,12 @@ export async function checkWalletAccess(input: z.infer<typeof checkAccessSchema>
 }
 
 /**
- * Grant service access after payment confirmation
+ * Grant service access after payment confirmation (AllSource event append).
  */
 export async function grantWalletAccess(input: z.infer<typeof grantAccessSchema>) {
   try {
     const { walletAddress, serviceSlug, paymentId } = grantAccessSchema.parse(input)
 
-    // Use unified payment system
     await grantServiceAccess({
       walletAddress,
       serviceSlug,
@@ -112,34 +108,23 @@ export async function grantWalletAccess(input: z.infer<typeof grantAccessSchema>
 }
 
 /**
- * Get current user's wallet address from session
+ * Resolve the user profile for a wallet address.
+ *
+ * Migration note: previously read the connected wallet from a Supabase session.
+ * Without server sessions the wallet address now comes from the caller (the
+ * client wallet adapter is the source of truth); this confirms a profile exists
+ * and echoes the canonical address back.
  */
-export async function getCurrentWalletAddress() {
+export async function getCurrentWalletAddress(input: z.infer<typeof currentWalletSchema>) {
   try {
-    const supabase = await createClient()
+    const { walletAddress } = currentWalletSchema.parse(input)
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return {
-        success: false,
-        walletAddress: null,
-      }
-    }
-
-    // Get wallet address from user profile
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('wallet_address')
-      .eq('id', user.id)
-      .single()
+    const profile = await getUserProfile(walletAddress)
 
     return {
       success: true,
-      walletAddress: profile?.wallet_address || null,
-      userId: user.id,
+      walletAddress: profile?.walletAddress ?? walletAddress,
+      userId: profile?.id ?? null,
     }
   } catch (error) {
     return {

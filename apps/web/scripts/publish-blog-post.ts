@@ -16,9 +16,35 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { sendNewsletterIssue } from '@decebal/email'
-import { createNewsletterIssue, getActiveSubscribers } from '@decebal/newsletter'
+import { createNewsletterIssue, getActiveSubscribers, markIssueSent } from '@decebal/newsletter'
 import { generateOGImageUrl, postToAllPlatforms } from '@decebal/social'
 import matter from 'gray-matter'
+
+/**
+ * Guarded-send config. Lets verification run the FULL publish path (load post →
+ * create issue event in AllSource → resolve subscribers → reach the send loop)
+ * WITHOUT emailing real subscribers.
+ *
+ *  - PUBLISH_DRY_RUN=1 (or --dry-run): log intended recipients, send nothing.
+ *  - --test-recipient=<addr> (or PUBLISH_TEST_RECIPIENT): send ONLY to that
+ *    address, never to the resolved subscriber list.
+ *
+ * With neither flag the real (unguarded) send path runs — that is the mode the
+ * human uses for a real publish.
+ */
+interface SendGuard {
+  dryRun: boolean
+  testRecipient: string | null
+}
+
+function resolveSendGuard(argv: string[]): SendGuard {
+  const dryRun = process.env.PUBLISH_DRY_RUN === '1' || argv.includes('--dry-run')
+  const testArg = argv.find((a) => a.startsWith('--test-recipient='))
+  const testRecipient =
+    (testArg ? testArg.replace('--test-recipient=', '') : process.env.PUBLISH_TEST_RECIPIENT) ||
+    null
+  return { dryRun, testRecipient }
+}
 
 interface BlogPost {
   slug: string
@@ -36,7 +62,7 @@ interface BlogPost {
  */
 function loadBlogPost(slug: string): BlogPost | null {
   try {
-    const contentDir = join(process.cwd(), '..', '..', 'content', 'blog')
+    const contentDir = join(process.cwd(), 'content', 'blog')
     const files = readdirSync(contentDir)
     const mdxFile = files.find((f) => f.endsWith('.mdx') && f.includes(slug))
 
@@ -92,12 +118,18 @@ function mdxToHtml(content: string): string {
  * Send newsletter to subscribers
  */
 async function sendNewsletterToSubscribers(
-  post: BlogPost
+  post: BlogPost,
+  guard: SendGuard
 ): Promise<{ sent: number; errors: number }> {
   console.log('\n📧 Sending newsletter to subscribers...')
+  if (guard.dryRun) {
+    console.log('🧪 DRY RUN — no real emails will be sent (recipients logged only)')
+  } else if (guard.testRecipient) {
+    console.log(`🧪 TEST RECIPIENT — sending only to ${guard.testRecipient}`)
+  }
 
   try {
-    // Create newsletter issue
+    // Create newsletter issue (appends issue.created to AllSource)
     const contentHtml = mdxToHtml(post.content)
     const issue = await createNewsletterIssue({
       title: post.title,
@@ -113,8 +145,9 @@ async function sendNewsletterToSubscribers(
       console.error('❌ Failed to create newsletter issue')
       return { sent: 0, errors: 1 }
     }
+    console.log(`📝 Created newsletter issue in AllSource: ${issue.issueId}`)
 
-    // Get all active subscribers
+    // Resolve active subscribers from the AllSource projection
     const subscribers = await getActiveSubscribers('all')
 
     if (subscribers.length === 0) {
@@ -122,21 +155,29 @@ async function sendNewsletterToSubscribers(
       return { sent: 0, errors: 0 }
     }
 
-    console.log(`📬 Sending to ${subscribers.length} subscribers...`)
+    console.log(
+      `📬 Resolved ${subscribers.length} active subscriber(s): ${subscribers
+        .map((s) => s.email)
+        .join(', ')}`
+    )
 
+    const subject = `New Post: ${post.title}`
     let sent = 0
     let errors = 0
 
-    // Send to each subscriber
-    // In production, use a proper email service with batching
+    // Send to each subscriber (guarded). In production use a batching service.
     for (const subscriber of subscribers) {
-      try {
-        const result = await sendNewsletterIssue(
-          subscriber.email,
-          `New Post: ${post.title}`,
-          contentHtml
-        )
+      if (guard.dryRun) {
+        // Full path up to (not including) the real send.
+        console.log(`   [dry-run] would send "${subject}" to ${subscriber.email}`)
+        sent++
+        continue
+      }
 
+      // In test-recipient mode, never send to the real subscriber list.
+      const recipient = guard.testRecipient ?? subscriber.email
+      try {
+        const result = await sendNewsletterIssue(recipient, subject, contentHtml)
         if (result.success) {
           sent++
           process.stdout.write('.')
@@ -144,13 +185,25 @@ async function sendNewsletterToSubscribers(
           errors++
           process.stdout.write('x')
         }
-      } catch (error) {
+      } catch (_error) {
         errors++
         process.stdout.write('x')
       }
+
+      // test-recipient sends a single email then stops scanning the list.
+      if (guard.testRecipient) break
     }
 
-    console.log(`\n✅ Newsletter sent: ${sent} delivered, ${errors} failed`)
+    console.log(
+      `\n✅ Newsletter ${guard.dryRun ? 'dry-run' : 'send'}: ${sent} ok, ${errors} failed`
+    )
+
+    // Record issue.sent only for a real send (not dry-run / single test email).
+    if (!guard.dryRun && !guard.testRecipient && sent > 0) {
+      await markIssueSent(issue.issueId, sent)
+      console.log('📨 Recorded issue.sent in AllSource')
+    }
+
     return { sent, errors }
   } catch (error) {
     console.error('❌ Newsletter sending error:', error)
@@ -208,7 +261,7 @@ async function postToSocialMedia(post: BlogPost): Promise<void> {
 /**
  * Main publishing function
  */
-async function publishBlogPost(slug: string): Promise<void> {
+async function publishBlogPost(slug: string, guard: SendGuard): Promise<void> {
   console.log('🚀 Blog Post Publishing Automation')
   console.log('=====================================\n')
 
@@ -230,11 +283,15 @@ async function publishBlogPost(slug: string): Promise<void> {
   console.log(`   Date: ${post.date}`)
   console.log(`   Tags: ${post.tags.join(', ')}`)
 
-  // 2. Send newsletter
-  await sendNewsletterToSubscribers(post)
+  // 2. Send newsletter (guarded — see resolveSendGuard)
+  await sendNewsletterToSubscribers(post, guard)
 
-  // 3. Post to social media
-  await postToSocialMedia(post)
+  // 3. Post to social media — skipped in dry-run to avoid real public posts.
+  if (guard.dryRun) {
+    console.log('\n📱 Social media: skipped (dry-run)')
+  } else {
+    await postToSocialMedia(post)
+  }
 
   // Done!
   console.log('\n✨ Publishing complete!')
@@ -260,4 +317,5 @@ if (!slugArg) {
 }
 
 const slug = slugArg.replace('--slug=', '')
-publishBlogPost(slug)
+const guard = resolveSendGuard(args)
+publishBlogPost(slug, guard)

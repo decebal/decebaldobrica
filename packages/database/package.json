@@ -9,9 +9,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@allsourcedev/client": "0.23.0",
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.75.0"
+    "@allsourcedev/client": "0.23.0"
   },
   "devDependencies": {
     "@types/node": "^22",

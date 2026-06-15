@@ -1,7 +1,9 @@
 import { randomBytes } from 'node:crypto'
-import { createClient } from '@supabase/supabase-js'
+import { type AllSourceClient, type Event, getAllSourceClient } from '@decebal/database'
 
-// Types matching our Supabase schema
+// Types matching the read shapes consumers expect (formerly the Supabase rows).
+// These are now reconstructed by folding the AllSource `subscriber:*` / `issue:*`
+// event streams rather than read from Postgres columns.
 export interface NewsletterSubscriber {
   id: string
   email: string
@@ -78,68 +80,269 @@ export interface NewsletterSubscription {
   updated_at: string
 }
 
-/**
- * Get Supabase client (server-side only)
- * Uses service role key for full access
- */
-function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+// ============================================================================
+// AllSource event-model constants (must match the migrated streams; the gateway
+// rejects hyphenated event_types — see docs/ALLSOURCE_EVENT_MODEL.md §1).
+// ============================================================================
 
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase environment variables')
-  }
+const SUBSCRIBER_STREAM = (email: string): string => `subscriber:${email}`
+const ISSUE_STREAM = (uuid: string): string => `issue:${uuid}`
 
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  })
+// Subscriber lifecycle event types we fold over for list reads.
+const SUBSCRIBER_LIFECYCLE_TYPES = [
+  'subscriber.subscribed',
+  'subscriber.confirmation_requested',
+  'subscriber.confirmed',
+  'subscriber.unsubscribed',
+  'subscriber.bounced',
+  'subscriber.tier_changed',
+  'subscriber.engagement_updated',
+] as const
+
+type Payload = Record<string, unknown>
+
+function str(v: unknown): string | undefined {
+  return typeof v === 'string' && v.length > 0 ? v : undefined
+}
+
+function num(v: unknown): number {
+  return typeof v === 'number' && Number.isFinite(v) ? v : 0
 }
 
 /**
- * Generate a secure confirmation token
- * Returns a URL-safe random token
+ * Fold a single subscriber's event stream (`subscriber:<email>`) into the
+ * `NewsletterSubscriber` read shape. Returns null if the stream has no
+ * `subscriber.subscribed` seed event.
+ *
+ * Mirrors the projection contract in docs/ALLSOURCE_EVENT_MODEL.md §4.1.
+ */
+function foldSubscriber(email: string, events: Event[]): NewsletterSubscriber | null {
+  // Events come back in append order from the gateway.
+  let seeded = false
+  const sub: NewsletterSubscriber = {
+    id: SUBSCRIBER_STREAM(email),
+    email,
+    tier: 'free',
+    status: 'pending',
+    subscribed_at: '',
+    frequency: 'weekly',
+    open_rate: 0,
+    click_rate: 0,
+    created_at: '',
+    updated_at: '',
+  }
+
+  for (const ev of events) {
+    const p = (ev.payload ?? {}) as Payload
+    switch (ev.event_type) {
+      case 'subscriber.subscribed': {
+        seeded = true
+        sub.email = str(p.email) ?? email
+        sub.name = str(p.name)
+        sub.tier = (str(p.tier) as NewsletterSubscriber['tier']) ?? 'free'
+        sub.status = (str(p.status) as NewsletterSubscriber['status']) ?? 'pending'
+        sub.frequency = (str(p.frequency) as NewsletterSubscriber['frequency']) ?? 'weekly'
+        sub.interests = Array.isArray(p.interests) ? (p.interests as string[]) : undefined
+        sub.utm_source = str(p.utm_source)
+        sub.utm_medium = str(p.utm_medium)
+        sub.utm_campaign = str(p.utm_campaign)
+        sub.subscribed_at = str(p.subscribed_at) ?? ev.timestamp
+        sub.created_at = sub.subscribed_at
+        break
+      }
+      case 'subscriber.confirmation_requested': {
+        sub.confirmation_token = str(p.confirmation_token)
+        sub.confirmation_token_expires_at = str(p.confirmation_token_expires_at)
+        break
+      }
+      case 'subscriber.confirmed': {
+        sub.status = 'active'
+        sub.confirmed_at = str(p.confirmed_at) ?? ev.timestamp
+        // A confirmation clears any pending token.
+        sub.confirmation_token = undefined
+        sub.confirmation_token_expires_at = undefined
+        break
+      }
+      case 'subscriber.unsubscribed': {
+        sub.status = 'unsubscribed'
+        sub.unsubscribed_at = str(p.unsubscribed_at) ?? ev.timestamp
+        break
+      }
+      case 'subscriber.bounced': {
+        sub.status = 'bounced'
+        break
+      }
+      case 'subscriber.tier_changed': {
+        sub.tier = (str(p.to_tier) as NewsletterSubscriber['tier']) ?? sub.tier
+        sub.subscription_expires_at = str(p.subscription_expires_at)
+        sub.stripe_customer_id = str(p.stripe_customer_id)
+        sub.stripe_subscription_id = str(p.stripe_subscription_id)
+        sub.solana_wallet_address = str(p.solana_wallet_address)
+        break
+      }
+      case 'subscriber.engagement_updated': {
+        sub.open_rate = num(p.open_rate)
+        sub.click_rate = num(p.click_rate)
+        sub.last_opened_at = str(p.last_opened_at)
+        break
+      }
+      default:
+        break
+    }
+    sub.updated_at = ev.timestamp
+  }
+
+  if (!seeded) return null
+  if (!sub.created_at) sub.created_at = sub.updated_at
+  return sub
+}
+
+/**
+ * Fold an issue's event stream (`issue:<uuid>`) into the `NewsletterIssue`
+ * read shape. docs/ALLSOURCE_EVENT_MODEL.md §4.2.
+ */
+function foldIssue(uuid: string, events: Event[]): NewsletterIssue | null {
+  let seeded = false
+  const issue: NewsletterIssue = {
+    id: uuid,
+    title: '',
+    subject: '',
+    content_html: '',
+    content_text: '',
+    status: 'draft',
+    tier: 'free',
+    recipients_count: 0,
+    opens_count: 0,
+    clicks_count: 0,
+    unsubscribes_count: 0,
+    created_at: '',
+    updated_at: '',
+  }
+
+  for (const ev of events) {
+    const p = (ev.payload ?? {}) as Payload
+    switch (ev.event_type) {
+      case 'issue.created': {
+        seeded = true
+        issue.title = str(p.title) ?? ''
+        issue.subject = str(p.subject) ?? ''
+        issue.preview_text = str(p.preview_text)
+        issue.content_html = str(p.content_html) ?? ''
+        issue.content_text = str(p.content_text) ?? ''
+        issue.tier = (str(p.tier) as NewsletterIssue['tier']) ?? 'free'
+        issue.blog_post_slug = str(p.blog_post_slug)
+        issue.scheduled_for = str(p.scheduled_for)
+        issue.status = (str(p.status) as NewsletterIssue['status']) ?? 'draft'
+        issue.created_at = str(p.created_at) ?? ev.timestamp
+        break
+      }
+      case 'issue.scheduled': {
+        issue.status = 'scheduled'
+        issue.scheduled_for = str(p.scheduled_for)
+        break
+      }
+      case 'issue.sent': {
+        issue.status = 'sent'
+        issue.sent_at = str(p.sent_at) ?? ev.timestamp
+        issue.recipients_count = num(p.recipients_count)
+        break
+      }
+      case 'issue.metrics_updated': {
+        issue.opens_count = num(p.opens_count)
+        issue.clicks_count = num(p.clicks_count)
+        issue.unsubscribes_count = num(p.unsubscribes_count)
+        break
+      }
+      default:
+        break
+    }
+    issue.updated_at = ev.timestamp
+  }
+
+  if (!seeded) return null
+  if (!issue.created_at) issue.created_at = issue.updated_at
+  return issue
+}
+
+/**
+ * Fold every subscriber stream by querying the lifecycle event types and
+ * grouping by `entity_id` (= `subscriber:<email>`). AllSource has no
+ * cross-aggregate predicate index, so a "list all subscribers" read is a
+ * fold over the lifecycle event types, de-duplicated per stream
+ * (docs/ALLSOURCE_EVENT_MODEL.md §4.1 / §6).
+ */
+async function getAllSubscribers(client: AllSourceClient): Promise<NewsletterSubscriber[]> {
+  const byStream = new Map<string, Event[]>()
+
+  for (const eventType of SUBSCRIBER_LIFECYCLE_TYPES) {
+    const events = await queryAllEvents(client, { event_type: eventType })
+    for (const ev of events) {
+      const stream = ev.entity_id
+      if (!stream.startsWith('subscriber:')) continue
+      const list = byStream.get(stream)
+      if (list) list.push(ev)
+      else byStream.set(stream, [ev])
+    }
+  }
+
+  const out: NewsletterSubscriber[] = []
+  for (const [stream, events] of byStream) {
+    // Fold needs append order; we queried per-type, so sort by timestamp.
+    events.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+    const email = stream.slice('subscriber:'.length)
+    const sub = foldSubscriber(email, events)
+    if (sub) out.push(sub)
+  }
+  return out
+}
+
+/**
+ * Page through `queryEvents`, defensively handling either an array or an
+ * `{ events }` / `{ data }` envelope from the gateway.
+ */
+async function queryAllEvents(
+  client: AllSourceClient,
+  params: { entity_id?: string; event_type?: string }
+): Promise<Event[]> {
+  const pageSize = 500
+  let offset = 0
+  const all: Event[] = []
+
+  while (true) {
+    const res = (await client.queryEvents({ ...params, limit: pageSize, offset })) as unknown
+    const page = normalizeEvents(res)
+    all.push(...page)
+    if (page.length < pageSize) break
+    offset += pageSize
+  }
+  return all
+}
+
+function normalizeEvents(res: unknown): Event[] {
+  if (Array.isArray(res)) return res as Event[]
+  if (res && typeof res === 'object') {
+    const obj = res as Record<string, unknown>
+    if (Array.isArray(obj.events)) return obj.events as Event[]
+    if (Array.isArray(obj.data)) return obj.data as Event[]
+  }
+  return []
+}
+
+/**
+ * Generate a secure confirmation token (URL-safe random).
  */
 export function generateConfirmationToken(): string {
   return randomBytes(32).toString('base64url')
 }
 
 /**
- * Store confirmation token for a subscriber
- * Token expires in 24 hours
- */
-async function storeConfirmationToken(email: string, token: string): Promise<boolean> {
-  try {
-    const supabase = getSupabaseAdmin()
-    const expiresAt = new Date()
-    expiresAt.setHours(expiresAt.getHours() + 24) // 24 hour expiry
-
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .update({
-        confirmation_token: token,
-        confirmation_token_expires_at: expiresAt.toISOString(),
-      })
-      .eq('email', email)
-
-    if (error) {
-      console.error('Error storing confirmation token:', error)
-      return false
-    }
-
-    return true
-  } catch (error) {
-    console.error('Store confirmation token error:', error)
-    return false
-  }
-}
-
-/**
- * Subscribe a new user to the newsletter
- * Generates confirmation token for double opt-in flow
- * The caller should send the confirmation email using the returned token
+ * Subscribe a new user to the newsletter.
+ *
+ * Appends `subscriber.subscribed` (status pending) + `subscriber.confirmation_requested`
+ * to the subscriber stream for the double opt-in flow, then returns the token so
+ * the caller (API route) can send the confirmation email. Rejects re-subscribe
+ * when the existing fold is already `active` or `pending`; allows resubscribe
+ * when previously `unsubscribed` (event model §7).
  */
 export async function subscribeToNewsletter(data: {
   email: string
@@ -154,14 +357,11 @@ export async function subscribeToNewsletter(data: {
   error?: string
 }> {
   try {
-    const supabase = getSupabaseAdmin()
+    const client = getAllSourceClient()
+    const stream = SUBSCRIBER_STREAM(data.email)
 
-    // Check if email already exists
-    const { data: existing } = await supabase
-      .from('newsletter_subscribers')
-      .select('id, status')
-      .eq('email', data.email)
-      .single()
+    const existingEvents = await queryAllEvents(client, { entity_id: stream })
+    const existing = foldSubscriber(data.email, existingEvents)
 
     if (existing) {
       if (existing.status === 'active') {
@@ -170,53 +370,40 @@ export async function subscribeToNewsletter(data: {
       if (existing.status === 'pending') {
         return { success: false, error: 'Please check your email to confirm your subscription.' }
       }
-      // If unsubscribed, we can resubscribe them
+      // unsubscribed/bounced → allow resubscribe (append a fresh lifecycle).
     }
 
-    // Insert or update subscriber
-    const { data: subscriber, error } = await supabase
-      .from('newsletter_subscribers')
-      .upsert(
-        {
-          email: data.email,
-          name: data.name,
-          status: 'pending',
-          tier: 'free',
-          utm_source: data.utm_source,
-          utm_medium: data.utm_medium,
-          utm_campaign: data.utm_campaign,
-        },
-        {
-          onConflict: 'email',
-        }
-      )
-      .select()
-      .single()
+    const now = new Date().toISOString()
+    await client.ingestEvent({
+      event_type: 'subscriber.subscribed',
+      entity_id: stream,
+      payload: {
+        email: data.email,
+        name: data.name ?? null,
+        tier: 'free',
+        status: 'pending',
+        frequency: 'weekly',
+        utm_source: data.utm_source ?? null,
+        utm_medium: data.utm_medium ?? null,
+        utm_campaign: data.utm_campaign ?? null,
+        subscribed_at: now,
+      },
+      metadata: { source: 'app', schema_version: 1 },
+    })
 
-    if (error) {
-      console.error('Error creating subscriber:', error)
-      return { success: false, error: 'Failed to subscribe. Please try again.' }
-    }
-
-    // Generate and store confirmation token
     const confirmationToken = generateConfirmationToken()
-    const tokenStored = await storeConfirmationToken(data.email, confirmationToken)
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    await client.ingestEvent({
+      event_type: 'subscriber.confirmation_requested',
+      entity_id: stream,
+      payload: {
+        confirmation_token: confirmationToken,
+        confirmation_token_expires_at: expiresAt,
+      },
+      metadata: { source: 'app', schema_version: 1 },
+    })
 
-    if (!tokenStored) {
-      console.error('Failed to store confirmation token for:', data.email)
-      return {
-        success: false,
-        error: 'Failed to send confirmation email. Please try again.',
-      }
-    }
-
-    // Return success with token
-    // The caller (API route) will send the confirmation email
-    return {
-      success: true,
-      subscriberId: subscriber.id,
-      confirmationToken,
-    }
+    return { success: true, subscriberId: stream, confirmationToken }
   } catch (error) {
     console.error('Newsletter subscription error:', error)
     return { success: false, error: 'An unexpected error occurred.' }
@@ -224,32 +411,42 @@ export async function subscribeToNewsletter(data: {
 }
 
 /**
- * Confirm a subscriber's email address using confirmation token
+ * Confirm a subscriber's email using a confirmation token.
+ *
+ * Cross-aggregate lookup by token: query the `subscriber.confirmation_requested`
+ * events for the matching token, then fold that subscriber's stream to validate
+ * expiry/current status before appending `subscriber.confirmed`.
  */
 export async function confirmSubscription(
   token: string
 ): Promise<{ success: boolean; error?: string; subscriber?: NewsletterSubscriber }> {
   try {
-    const supabase = getSupabaseAdmin()
+    const client = getAllSourceClient()
 
-    // Find subscriber by confirmation token
-    const { data: subscriber, error: fetchError } = await supabase
-      .from('newsletter_subscribers')
-      .select('*')
-      .eq('confirmation_token', token)
-      .single()
+    const tokenEvents = await queryAllEvents(client, {
+      event_type: 'subscriber.confirmation_requested',
+    })
+    const match = tokenEvents.find((ev) => {
+      const p = (ev.payload ?? {}) as Payload
+      return str(p.confirmation_token) === token
+    })
 
-    if (fetchError || !subscriber) {
-      return {
-        success: false,
-        error: 'Invalid confirmation link. Please try subscribing again.',
-      }
+    if (!match) {
+      return { success: false, error: 'Invalid confirmation link. Please try subscribing again.' }
     }
 
-    // Check if token is expired
+    const stream = match.entity_id
+    const email = stream.slice('subscriber:'.length)
+    const events = await queryAllEvents(client, { entity_id: stream })
+    const subscriber = foldSubscriber(email, events)
+
+    if (!subscriber) {
+      return { success: false, error: 'Invalid confirmation link. Please try subscribing again.' }
+    }
+
+    // Expiry check against the (still-valid) token on the folded record.
     if (subscriber.confirmation_token_expires_at) {
-      const expiresAt = new Date(subscriber.confirmation_token_expires_at)
-      if (expiresAt < new Date()) {
+      if (new Date(subscriber.confirmation_token_expires_at) < new Date()) {
         return {
           success: false,
           error: 'This confirmation link has expired. Please subscribe again.',
@@ -257,68 +454,43 @@ export async function confirmSubscription(
       }
     }
 
-    // Check if already confirmed
+    // Already confirmed → idempotent success.
     if (subscriber.status === 'active' && subscriber.confirmed_at) {
-      return {
-        success: true,
-        subscriber,
-      }
+      return { success: true, subscriber }
     }
 
-    // Confirm the subscription
-    const { error: updateError } = await supabase
-      .from('newsletter_subscribers')
-      .update({
-        status: 'active',
-        confirmed_at: new Date().toISOString(),
-        confirmation_token: null, // Clear the token after use
-        confirmation_token_expires_at: null,
-      })
-      .eq('id', subscriber.id)
-
-    if (updateError) {
-      console.error('Error confirming subscription:', updateError)
-      return {
-        success: false,
-        error: 'Failed to confirm subscription. Please try again.',
-      }
-    }
+    const confirmedAt = new Date().toISOString()
+    await client.ingestEvent({
+      event_type: 'subscriber.confirmed',
+      entity_id: stream,
+      payload: { confirmed_at: confirmedAt },
+      metadata: { source: 'app', schema_version: 1 },
+    })
 
     return {
       success: true,
-      subscriber,
+      subscriber: { ...subscriber, status: 'active', confirmed_at: confirmedAt },
     }
   } catch (error) {
     console.error('Subscription confirmation error:', error)
-    return {
-      success: false,
-      error: 'An unexpected error occurred.',
-    }
+    return { success: false, error: 'An unexpected error occurred.' }
   }
 }
 
 /**
- * Unsubscribe a user from the newsletter
+ * Unsubscribe a user (append `subscriber.unsubscribed`).
  */
 export async function unsubscribeFromNewsletter(
   email: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = getSupabaseAdmin()
-
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .update({
-        status: 'unsubscribed',
-        unsubscribed_at: new Date().toISOString(),
-      })
-      .eq('email', email)
-
-    if (error) {
-      console.error('Error unsubscribing:', error)
-      return { success: false, error: 'Failed to unsubscribe.' }
-    }
-
+    const client = getAllSourceClient()
+    await client.ingestEvent({
+      event_type: 'subscriber.unsubscribed',
+      entity_id: SUBSCRIBER_STREAM(email),
+      payload: { unsubscribed_at: new Date().toISOString() },
+      metadata: { source: 'app', schema_version: 1 },
+    })
     return { success: true }
   } catch (error) {
     console.error('Unsubscribe error:', error)
@@ -327,24 +499,13 @@ export async function unsubscribeFromNewsletter(
 }
 
 /**
- * Get subscriber by email
+ * Get a single subscriber by email (fold their stream).
  */
 export async function getSubscriberByEmail(email: string): Promise<NewsletterSubscriber | null> {
   try {
-    const supabase = getSupabaseAdmin()
-
-    const { data, error } = await supabase
-      .from('newsletter_subscribers')
-      .select('*')
-      .eq('email', email)
-      .single()
-
-    if (error) {
-      console.error('Error fetching subscriber:', error)
-      return null
-    }
-
-    return data
+    const client = getAllSourceClient()
+    const events = await queryAllEvents(client, { entity_id: SUBSCRIBER_STREAM(email) })
+    return foldSubscriber(email, events)
   } catch (error) {
     console.error('Get subscriber error:', error)
     return null
@@ -352,28 +513,49 @@ export async function getSubscriberByEmail(email: string): Promise<NewsletterSub
 }
 
 /**
- * Get all active subscribers by tier
+ * Get all subscribers (any status), optionally filtered by tier and status.
+ *
+ * Powers admin list views that need pending/unsubscribed rows too, not just the
+ * active ones. Folds every subscriber stream and applies the optional filters.
+ */
+export async function listSubscribers(filters?: {
+  tier?: 'free' | 'premium' | 'founding' | 'all'
+  status?: NewsletterSubscriber['status'] | 'all'
+}): Promise<NewsletterSubscriber[]> {
+  try {
+    const client = getAllSourceClient()
+    const all = await getAllSubscribers(client)
+    return all
+      .filter((s) => {
+        if (filters?.tier && filters.tier !== 'all' && s.tier !== filters.tier) return false
+        if (filters?.status && filters.status !== 'all' && s.status !== filters.status) return false
+        return true
+      })
+      .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+  } catch (error) {
+    console.error('List subscribers error:', error)
+    return []
+  }
+}
+
+/**
+ * Get all active subscribers, optionally filtered by tier.
+ *
+ * Folds every subscriber stream (event-type query + de-dup per `entity_id`) and
+ * filters on `status === 'active'` (+ tier). Returns the migrated active
+ * subscriber(s) — at current volume just `decebal1988@gmail.com`.
  */
 export async function getActiveSubscribers(
   tier?: 'free' | 'premium' | 'founding' | 'all'
 ): Promise<NewsletterSubscriber[]> {
   try {
-    const supabase = getSupabaseAdmin()
-
-    let query = supabase.from('newsletter_subscribers').select('*').eq('status', 'active')
-
-    if (tier && tier !== 'all') {
-      query = query.eq('tier', tier)
-    }
-
-    const { data, error } = await query
-
-    if (error) {
-      console.error('Error fetching subscribers:', error)
-      return []
-    }
-
-    return data || []
+    const client = getAllSourceClient()
+    const all = await getAllSubscribers(client)
+    return all.filter((s) => {
+      if (s.status !== 'active') return false
+      if (tier && tier !== 'all' && s.tier !== tier) return false
+      return true
+    })
   } catch (error) {
     console.error('Get active subscribers error:', error)
     return []
@@ -381,29 +563,17 @@ export async function getActiveSubscribers(
 }
 
 /**
- * Get subscriber count by tier
+ * Count active subscribers, optionally by tier.
  */
 export async function getSubscriberCount(tier?: 'free' | 'premium' | 'founding'): Promise<number> {
   try {
-    const supabase = getSupabaseAdmin()
-
-    let query = supabase
-      .from('newsletter_subscribers')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'active')
-
-    if (tier) {
-      query = query.eq('tier', tier)
-    }
-
-    const { count, error } = await query
-
-    if (error) {
-      console.error('Error counting subscribers:', error)
-      return 0
-    }
-
-    return count || 0
+    const client = getAllSourceClient()
+    const all = await getAllSubscribers(client)
+    return all.filter((s) => {
+      if (s.status !== 'active') return false
+      if (tier && s.tier !== tier) return false
+      return true
+    }).length
   } catch (error) {
     console.error('Get subscriber count error:', error)
     return 0
@@ -411,10 +581,12 @@ export async function getSubscriberCount(tier?: 'free' | 'premium' | 'founding')
 }
 
 /**
- * Track a newsletter event (sent, opened, clicked, etc.)
+ * Track a newsletter message event (sent/opened/clicked/…). Appended to the
+ * subscriber's stream as `subscriber.message_event` (event model §4.3). The
+ * derived `last_opened_at` is recomputed in the fold, not stored separately.
  */
 export async function trackNewsletterEvent(event: {
-  subscriber_id: string
+  email: string
   issue_id: string
   event_type: 'sent' | 'delivered' | 'opened' | 'clicked' | 'bounced' | 'complained'
   link_url?: string
@@ -422,23 +594,20 @@ export async function trackNewsletterEvent(event: {
   ip_address?: string
 }): Promise<boolean> {
   try {
-    const supabase = getSupabaseAdmin()
-
-    const { error } = await supabase.from('newsletter_events').insert(event)
-
-    if (error) {
-      console.error('Error tracking event:', error)
-      return false
-    }
-
-    // Update last_opened_at if it's an open event
-    if (event.event_type === 'opened') {
-      await supabase
-        .from('newsletter_subscribers')
-        .update({ last_opened_at: new Date().toISOString() })
-        .eq('id', event.subscriber_id)
-    }
-
+    const client = getAllSourceClient()
+    await client.ingestEvent({
+      event_type: 'subscriber.message_event',
+      entity_id: SUBSCRIBER_STREAM(event.email),
+      payload: {
+        issue_id: event.issue_id,
+        kind: event.event_type,
+        link_url: event.link_url ?? null,
+        user_agent: event.user_agent ?? null,
+        ip_address: event.ip_address ?? null,
+        occurred_at: new Date().toISOString(),
+      },
+      metadata: { source: 'app', schema_version: 1 },
+    })
     return true
   } catch (error) {
     console.error('Track event error:', error)
@@ -447,7 +616,11 @@ export async function trackNewsletterEvent(event: {
 }
 
 /**
- * Create a new newsletter issue
+ * Create a new newsletter issue.
+ *
+ * Appends `issue.created` to a fresh `issue:<uuid>` stream and returns the issue
+ * id. Status is `scheduled` when `scheduled_for` is set, else `draft` — same
+ * contract as before, now event-sourced (event model §4.2).
  */
 export async function createNewsletterIssue(issue: {
   title: string
@@ -460,23 +633,30 @@ export async function createNewsletterIssue(issue: {
   scheduled_for?: string
 }): Promise<{ success: boolean; issueId?: string; error?: string }> {
   try {
-    const supabase = getSupabaseAdmin()
+    const client = getAllSourceClient()
+    const issueId = crypto.randomUUID()
+    const status: NewsletterIssue['status'] = issue.scheduled_for ? 'scheduled' : 'draft'
+    const now = new Date().toISOString()
 
-    const { data, error } = await supabase
-      .from('newsletter_issues')
-      .insert({
-        ...issue,
-        status: issue.scheduled_for ? 'scheduled' : 'draft',
-      })
-      .select()
-      .single()
+    await client.ingestEvent({
+      event_type: 'issue.created',
+      entity_id: ISSUE_STREAM(issueId),
+      payload: {
+        title: issue.title,
+        subject: issue.subject,
+        preview_text: issue.preview_text ?? null,
+        content_html: issue.content_html,
+        content_text: issue.content_text,
+        tier: issue.tier,
+        blog_post_slug: issue.blog_post_slug ?? null,
+        scheduled_for: issue.scheduled_for ?? null,
+        status,
+        created_at: now,
+      },
+      metadata: { source: 'app', schema_version: 1 },
+    })
 
-    if (error) {
-      console.error('Error creating issue:', error)
-      return { success: false, error: 'Failed to create newsletter issue.' }
-    }
-
-    return { success: true, issueId: data.id }
+    return { success: true, issueId }
   } catch (error) {
     console.error('Create newsletter issue error:', error)
     return { success: false, error: 'An unexpected error occurred.' }
@@ -484,7 +664,43 @@ export async function createNewsletterIssue(issue: {
 }
 
 /**
- * Get newsletter statistics
+ * Mark an issue as sent (append `issue.sent` with the recipient count). Called
+ * after the send loop completes successfully (event model §4.2).
+ */
+export async function markIssueSent(issueId: string, recipientsCount: number): Promise<boolean> {
+  try {
+    const client = getAllSourceClient()
+    await client.ingestEvent({
+      event_type: 'issue.sent',
+      entity_id: ISSUE_STREAM(issueId),
+      payload: { sent_at: new Date().toISOString(), recipients_count: recipientsCount },
+      metadata: { source: 'app', schema_version: 1 },
+    })
+    return true
+  } catch (error) {
+    console.error('Mark issue sent error:', error)
+    return false
+  }
+}
+
+/**
+ * Get a single issue by id (fold its stream).
+ */
+export async function getNewsletterIssue(issueId: string): Promise<NewsletterIssue | null> {
+  try {
+    const client = getAllSourceClient()
+    const events = await queryAllEvents(client, { entity_id: ISSUE_STREAM(issueId) })
+    return foldIssue(issueId, events)
+  } catch (error) {
+    console.error('Get newsletter issue error:', error)
+    return null
+  }
+}
+
+/**
+ * Newsletter statistics. Subscriber counts come from the subscriber fold;
+ * total issues from a fold over `issue.created`; engagement rates averaged
+ * across active subscribers (event model §6 — derived, not stored).
  */
 export async function getNewsletterStats(): Promise<{
   totalSubscribers: number
@@ -496,38 +712,26 @@ export async function getNewsletterStats(): Promise<{
   avgClickRate: number
 }> {
   try {
-    const supabase = getSupabaseAdmin()
+    const client = getAllSourceClient()
+    const all = await getAllSubscribers(client)
+    const active = all.filter((s) => s.status === 'active')
 
-    const [total, free, premium, founding, issues] = await Promise.all([
-      getSubscriberCount(),
-      getSubscriberCount('free'),
-      getSubscriberCount('premium'),
-      getSubscriberCount('founding'),
-      supabase.from('newsletter_issues').select('id', { count: 'exact', head: true }),
-    ])
-
-    // Get average engagement rates
-    const { data: stats } = await supabase
-      .from('newsletter_subscribers')
-      .select('open_rate, click_rate')
-      .eq('status', 'active')
+    const issueCreated = await queryAllEvents(client, { event_type: 'issue.created' })
+    const totalIssues = new Set(issueCreated.map((e) => e.entity_id)).size
 
     const avgOpenRate =
-      stats && stats.length > 0
-        ? stats.reduce((acc, s) => acc + (s.open_rate || 0), 0) / stats.length
-        : 0
-
+      active.length > 0 ? active.reduce((acc, s) => acc + (s.open_rate || 0), 0) / active.length : 0
     const avgClickRate =
-      stats && stats.length > 0
-        ? stats.reduce((acc, s) => acc + (s.click_rate || 0), 0) / stats.length
+      active.length > 0
+        ? active.reduce((acc, s) => acc + (s.click_rate || 0), 0) / active.length
         : 0
 
     return {
-      totalSubscribers: total,
-      freeSubscribers: free,
-      premiumSubscribers: premium,
-      foundingSubscribers: founding,
-      totalIssues: issues.count || 0,
+      totalSubscribers: active.length,
+      freeSubscribers: active.filter((s) => s.tier === 'free').length,
+      premiumSubscribers: active.filter((s) => s.tier === 'premium').length,
+      foundingSubscribers: active.filter((s) => s.tier === 'founding').length,
+      totalIssues,
       avgOpenRate: Math.round(avgOpenRate * 100) / 100,
       avgClickRate: Math.round(avgClickRate * 100) / 100,
     }

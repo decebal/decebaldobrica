@@ -37,4 +37,10 @@ export function getAllSourceTenantId(): string {
   return tenantId
 }
 
-export type { AllSourceClient } from '@allsourcedev/client'
+export type {
+  AllSourceClient,
+  Event,
+  IngestEventInput,
+  QueryEventsParams,
+  QueryEventsResponse,
+} from '@allsourcedev/client'

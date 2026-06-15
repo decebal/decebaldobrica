@@ -1,56 +1,38 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { LogOut, User, Wallet } from 'lucide-react'
+import { LogOut, Wallet } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
+/**
+ * User menu.
+ *
+ * Migration note (event model §2): Supabase GoTrue auth has been removed, so
+ * identity here is the connected Solana wallet. This is a `'use client'`
+ * component and intentionally holds NO server credentials — it never imports the
+ * AllSource client or service key. Any data it needs beyond the wallet adapter
+ * must come from a server action / route handler.
+ */
 export default function UserMenu() {
   const { publicKey, disconnect } = useWallet()
-  const [supabaseUser, setSupabaseUser] = useState<any>(null)
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
-  // Check Supabase auth status
-  useEffect(() => {
-    const supabase = createClient()
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSupabaseUser(session?.user ?? null)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSupabaseUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Check if user is logged in (either wallet or Supabase)
-  const isLoggedIn = !!publicKey || !!supabaseUser
+  // Logged in == wallet connected (the only identity source after the cutover).
+  const isLoggedIn = !!publicKey
 
   if (!isLoggedIn) {
     return null
   }
 
-  // Get display name
-  const displayName =
-    supabaseUser?.user_metadata?.name ||
-    supabaseUser?.email?.split('@')[0] ||
-    (publicKey ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}` : 'User')
+  const displayName = publicKey
+    ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}`
+    : 'User'
 
   const handleLogout = async () => {
     if (publicKey) {
       await disconnect()
-    }
-    if (supabaseUser) {
-      const supabase = createClient()
-      await supabase.auth.signOut()
     }
     setIsOpen(false)
     router.refresh()
@@ -65,7 +47,7 @@ export default function UserMenu() {
         aria-label="User menu"
       >
         <div className="w-8 h-8 rounded-full bg-brand-teal/20 flex items-center justify-center text-brand-teal">
-          {publicKey ? <Wallet className="h-4 w-4" /> : <User className="h-4 w-4" />}
+          <Wallet className="h-4 w-4" />
         </div>
         <span className="hidden md:block text-sm text-white">{displayName}</span>
       </button>
@@ -86,9 +68,7 @@ export default function UserMenu() {
           <div className="absolute right-0 mt-2 w-48 bg-brand-darknavy border border-white/10 rounded-lg shadow-lg z-50">
             <div className="p-3 border-b border-white/10">
               <p className="text-sm font-semibold text-white">{displayName}</p>
-              <p className="text-xs text-gray-400 truncate">
-                {publicKey ? 'Wallet Connected' : supabaseUser?.email}
-              </p>
+              <p className="text-xs text-gray-400 truncate">Wallet Connected</p>
             </div>
 
             <div className="p-2">
