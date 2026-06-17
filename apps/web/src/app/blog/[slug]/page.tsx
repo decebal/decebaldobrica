@@ -1,7 +1,13 @@
 import { BlogCTA } from '@/components/BlogCTA'
 import { BlogTOC } from '@/components/BlogTOC'
 import Footer from '@/components/Footer'
-import { Terminal, TerminalCommand, TerminalLine, TerminalOutput } from '@/components/blog/Terminal'
+import {
+  Terminal,
+  TerminalCommand,
+  TerminalLine,
+  TerminalOutput,
+} from '@/components/blog/Terminal'
+import { extractText } from '@/components/blog/extractText'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
 import { Badge } from '@decebal/ui/badge'
@@ -189,8 +195,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           className?.includes('language-console')
 
                         if (isTerminal) {
-                          // Parse terminal content
-                          const content = String(children).trim()
+                          // Parse terminal content. rehype-highlight turns the
+                          // code body into token elements, so String(children)
+                          // would yield "[object Object]" — extract the text.
+                          const content = extractText(children).trim()
                           const lines = content.split('\n')
 
                           // Extract title from first line if it's a comment

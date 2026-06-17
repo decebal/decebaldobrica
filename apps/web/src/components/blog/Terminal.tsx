@@ -2,6 +2,7 @@
 
 import { Check, Copy, Maximize2, Minimize2, Terminal as TerminalIcon } from 'lucide-react'
 import { useState } from 'react'
+import { extractText } from './extractText'
 
 interface TerminalProps {
   children: React.ReactNode
@@ -195,25 +196,6 @@ export function TerminalLine({
       {children}
     </div>
   )
-}
-
-/**
- * Helper to extract text from React nodes
- */
-function extractText(node: React.ReactNode): string {
-  if (typeof node === 'string' || typeof node === 'number') {
-    return String(node)
-  }
-
-  if (Array.isArray(node)) {
-    return node.map(extractText).join('')
-  }
-
-  if (node && typeof node === 'object' && 'props' in node) {
-    return extractText(node.props.children)
-  }
-
-  return ''
 }
 
 /**
