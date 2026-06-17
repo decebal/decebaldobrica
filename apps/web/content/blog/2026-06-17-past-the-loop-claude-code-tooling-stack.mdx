@@ -1,0 +1,156 @@
+---
+title: 'Past the 9-Step Loop: The Claude Code Stack That Actually Makes Agents Senior'
+date: '2026-06-17T09:00:00.000Z'
+author: Decebal D.
+description: "A widely-shared thread argues Claude Code becomes a senior engineer once you wrap it in a 9-step loop built from plan mode, subagents, hooks, CLAUDE.md, and slash commands. The loop is right and necessary — but it quietly assumes infinite context, perfect memory, and that an in-session reviewer is enough. Here's the tooling layer that makes the loop actually run on a real codebase: chronis, AllSource Prime, caveman, rtk, CodeRabbit, and pixel-perfect overlays."
+tags:
+  - claude-code
+  - ai-agents
+  - developer-tools
+  - agentic-ai
+  - rust
+  - tooling
+  - workflow
+  - event-sourcing
+slug: 2026-06-17-past-the-loop-claude-code-tooling-stack
+---
+
+> A response to [0xMorty's "The 9-Step Loop That Turns Claude Code Into a Senior Engineer"](https://x.com/0xMortyx/status/2066469702075920794) (77K+ views, and deservedly so). I agree with almost all of it. This is the *yes, and* — the part the thread leaves out, which is the part that actually decides whether the loop survives contact with a production codebase.
+
+## The thread is right. That's the problem.
+
+The viral version of the argument goes like this: the model was always capable; what was missing was the **loop** around it. Explore, plan, build small, enforce with hooks, test, review with a second agent, fix and re-check, ship with a slash command. Wire Claude Code's built-in primitives together and a junior-tier setup becomes a senior-tier one.
+
+I've run that loop. It works. If you take nothing else from either post, take the discipline: never let it build before you've seen the plan, make the important rules deterministic, and don't trust a diff that hasn't been tested. That's correct and most people don't do it.
+
+But "the loop is the difference, not the model" is only half true, and the missing half is where all the real engineering lives. A loop is **control flow**. It says *what order* the steps run in. It says nothing about whether each step can actually execute on a 400-file codebase, across a week of work, without the agent running out of context, forgetting why it made a decision three sessions ago, or shipping a diff that two LLMs both rationalized past.
+
+The 9-step loop quietly assumes three things that are false on any real project:
+
+1. **Context is free.** Explore + plan + build + test + review + re-review is six-plus full passes over your code, every task. On a real repo that's not a workflow, it's a token bonfire — and it hits the context window long before it hits "done."
+2. **Memory persists.** Plan mode and `CLAUDE.md` live for exactly one session. The moment you `/compact` or close the terminal, the *why* behind every decision evaporates. The agent re-explores the same code tomorrow because it has no durable memory of having understood it yesterday.
+3. **An in-session reviewer is enough.** A "review subagent" with a clean context window is better than nothing. But it runs in the same environment, on the same model, against the same blind spots, and on *your* token budget. It is not an independent reviewer. It is the same engineer wearing a fake moustache.
+
+The loop is the floor. The thing that turns it from a clever demo into a workflow you can run fifty times a day is the **tooling layer** underneath it. Here's mine.
+
+## The loop's hidden assumptions, and what fixes each
+
+| The thread's step | The hidden assumption | What actually fixes it |
+|---|---|---|
+| 1. Explore the codebase | Re-explore every session, for free | **AllSource Prime** — durable, queryable memory of what the code *is* and why |
+| 2. Plan in plan mode | The plan lives one session | **chronis** — the plan becomes an event-sourced task graph that outlives the window |
+| 3. Standards in `CLAUDE.md` | Advisory text the model reads | **AllSource Prime** — decisions/ADRs stored with provenance, recalled on demand |
+| 4. Build small pieces | The agent reads its own state cheaply | **chronis `--toon`** — task state at ~50% fewer tokens |
+| 5. Enforce with hooks | Hooks just run lint/tests | Hooks also run **rtk** + **caveman** so the loop stays affordable |
+| 6. Prove it with tests | Tests are the ceiling of verification | **CodeRabbit** — independent review on the PR, outside your context |
+| 7. Second-agent review | A sibling LLM is "independent" | **CodeRabbit** — different system, different budget, doesn't share your blind spots |
+| 8. Fix and re-check | "Undo" is re-opening a task by hand | **chronis** temporal replay — reconstruct any prior state from the event stream |
+| 9. Ship with a slash command | Shipping code is the finish line | **Pixel Perfect** — the missing step: does the *rendered UI* match the design? |
+
+The rest of this post is that table, with receipts.
+
+## Layer 1 — The token economy: caveman + rtk
+
+Start here, because nothing else matters if you can't afford to run the loop.
+
+The 9-step loop is *expensive by design*. Every task does multiple full passes over your code. The honest math: a disciplined loop on a non-trivial change can burn more tokens on **process** — exploring, planning, reviewing, re-reviewing — than on the actual change. Do that on every task and you either hit the context ceiling mid-loop or you watch your bill detonate. Most people quietly abandon the discipline for exactly this reason. The loop didn't fail; it got too costly to keep running.
+
+Two tools attack the two biggest sources of waste.
+
+[**caveman**](https://github.com/juliusbrussee/caveman) is a Claude Code skill that rewrites the model's *own output* to be terse — "why use many token when few token do trick." It cuts roughly 65–75% of output tokens without touching the reasoning. As its author puts it: *"Caveman no make brain smaller. Caveman make mouth smaller."* The agent still thinks in full; it just stops narrating every thought in three paragraphs of prose you were going to skim anyway.
+
+**rtk** (Rust Token Killer) attacks the other end: terminal output. Bash output is the cheapest and biggest source of wasted context there is — a single `npm test` or `cargo build` can dump thousands of tokens of progress bars, stack traces, and noise straight into the window. rtk is a small Rust binary that pipes that output through a filter *before* it enters context. In a loop where step 5 runs lint and tests on every edit (per the thread's own advice), this is the difference between a hook that helps and a hook that floods.
+
+Wire both into the loop's hooks and the economics flip: now you can actually afford to explore-plan-build-test-review-rereview, because each pass costs a fraction of what the naive version does.
+
+## Layer 2 — Durable memory and task state: chronis + AllSource Prime
+
+This is the layer the thread is most missing, and the one I care most about — partly because [chronis](https://crates.io/crates/chronis) and [AllSource](https://all-source.xyz) are my own projects, so read this section knowing I built the tools I'm recommending. The argument stands on its own; the disclosure is owed.
+
+The thread's plan and standards steps live and die inside one session. Plan mode produces a plan you approve — and then it's gone. `CLAUDE.md` is, in the thread's own words, *advisory*; the model reads it most of the time. Neither survives a `/compact`. On a multi-day feature, the agent has no idea what it decided on Monday by the time it's coding on Wednesday.
+
+[**chronis**](https://crates.io/crates/chronis) turns the plan into something durable. It's an agent-native, **event-sourced** task CLI (the binary is `cn`). Every action — create, claim, done, approve, add a dependency — is an immutable event; current state is a projection folded from that stream. That gives you things plan mode structurally cannot:
+
+- **Temporal replay.** Agent closed the wrong task? You don't manually re-open it — you reconstruct state at any prior point from the event stream. The thread's "fix and re-check" step gets a real undo.
+- **Cascade operations.** `cn done <epic-id> --cascade` closes an epic and all its children in one command, instead of scripting N calls.
+- **TOON output.** This is the signature feature, and it ties straight back to Layer 1. Pass `--toon` to any command and you get [Token-Oriented Object Notation](https://github.com/toon-format/toon) instead of an ASCII table. A `cn list` that costs ~180 tokens of box-drawing characters becomes ~60 tokens of pipe-delimited rows — same information, ~50% fewer tokens, parsed natively by the model. When the agent reads its own task list dozens of times a session, that compounds.
+- **HTTP sync, no git.** State syncs to a remote Core over HTTP, so it works with a dirty worktree and never stalls on a merge conflict.
+
+So the "plan" stops being a one-session artifact and becomes a queryable, replayable, agent-readable task graph that any session can pick up cold.
+
+**AllSource Prime** is the other half: the semantic memory. Where chronis remembers *what work happened*, Prime remembers *what the system is and why*. It's a knowledge-graph memory layer — hybrid recall over vectors plus graph expansion plus temporal recency — that you query for "what do I know about X?" across sessions. Decisions, ADRs, the shape of the auth flow, the reason a fragile module is fragile: stored with provenance, recalled on demand. That's what the thread's "explore the codebase" step *should* produce — not a throwaway summary that dies at session end, but an accumulating model the agent consults instead of re-deriving.
+
+Put bluntly: plan mode + `CLAUDE.md` is the agent's short-term memory. chronis + Prime is its long-term memory. A senior engineer's value is mostly long-term memory — they remember why the thing is the way it is. You can't get senior behavior from an agent with anterograde amnesia, no matter how good the loop is.
+
+## Layer 3 — Independent verification: CodeRabbit
+
+The thread's step 7 is the right instinct executed in the wrong place. "Spin up a review subagent with a clean context window" — yes, fresh eyes catch what the builder rationalized past. But a subagent is not independent in any way that matters:
+
+- It runs **on the same model**, so it shares the builder's blind spots.
+- It runs **in the same session**, on **your token budget**, so a thorough review competes for context with the work itself.
+- It's **non-deterministic** — review quality varies run to run, and there's no audit trail.
+
+[**CodeRabbit**](https://www.coderabbit.ai/) is what step 7 actually wants: an independent reviewer that lives **outside** your Claude Code session, on the pull request. It reviews every PR automatically, posts line-level comments, understands the diff in the context of the whole repo, and — critically — doesn't spend a single token of your agent's context window to do it. It's the human-team code-review model applied honestly: the reviewer didn't write the code, isn't in the author's head, and produces a durable, reviewable record on the PR itself.
+
+Use the in-session subagent as a cheap first pass if you like. But the review that decides whether you ship should come from a system that doesn't share your agent's mind. That's not a nuance — it's the whole reason code review works for human teams.
+
+## Layer 4 — The step the loop doesn't have: pixel-perfect verification
+
+Here's the gap that should bother anyone who builds front-end work with agents: the entire 9-step loop can pass, tests green, both reviewers happy — and the UI can still be visibly wrong. Tests assert behavior. LLM review reads code. **Neither of them looks at the rendered pixels.** An agent will confidently report "matches the design" while the button sits 8px too low, the font weight is off, and the spacing drifted three commits ago.
+
+A **pixel-perfect browser extension** (the [PerfectPixel](https://www.welldonecode.com/perfectpixel/)-style overlay tools) closes that gap the way a real front-end engineer does: it overlays the actual design comp on top of the running app at adjustable opacity, so the difference between intended and rendered is *visible*, to the pixel. It's the ground-truth check that no amount of "looks good to me" — from a human or a model — substitutes for. This is the missing tenth step: not "ship it," but "verify the artifact against reality before you ship it." For UI work, this is where "done" is actually earned.
+
+## The loop, with the stack wired in
+
+Same discipline the thread preaches. The difference is what each step stands on:
+
+```bash
+# /ship — the senior loop, on a real stack
+
+# 0. Recall: what do we already know? (AllSource Prime — don't re-explore)
+#    query Prime for the subsystem before touching anything
+
+# 1. Plan as durable, replayable task state (chronis)
+cn task create "Add rate limiting" -p p0 --type=epic
+cn task create "Token bucket middleware" --parent=<epic> --toon
+
+# 2. Build small pieces; agent reads its own state cheaply
+cn ready --toon            # ~60 tokens, not ~180
+cn claim <id> --toon
+
+# 3. Enforce non-negotiables AND keep the loop affordable (hooks)
+#    PostToolUse: rtk filters test/build output, caveman trims agent prose,
+#    then lint + tests run deterministically
+
+# 4. Close the task with a full event trail (temporal replay if wrong)
+cn done <id> --toon
+
+# 5. Independent review OUTSIDE the session (CodeRabbit on the PR)
+
+# 6. For UI: overlay the design comp, verify to the pixel (Pixel Perfect)
+
+# 7. Ship — and the durable artifact is the event history + memory graph,
+#    not a one-shot command you'll never read again
+```
+
+The loop didn't change. What changed is that every step now rests on something that survives the session, costs a fraction of the tokens, and verifies against reality instead of against another guess.
+
+## Where the bare loop is genuinely enough (the honest part)
+
+I'd be doing exactly what I'm criticizing if I sold you a heavier stack as a universal mandate. It isn't.
+
+- **For a one-file script, a throwaway prototype, or a quick fix, the bare 9-step loop is the right amount of process.** Standing up event-sourced task tracking and a memory graph to rename a function is its own kind of malpractice.
+- **The stack has real setup and operating costs.** caveman and rtk trade a little output fidelity for tokens — occasionally you want the verbose version back. CodeRabbit is a paid service. Pixel-perfect overlays only help front-end work. chronis and AllSource are early and, again, mine — adopt them with the same skepticism you'd apply to any dependency from someone with an interest in your saying yes.
+- **The thread's primitives are the foundation, not the enemy.** Hooks, plan mode, subagents, and `CLAUDE.md` are exactly where this stack plugs in. I'm not replacing the loop. I'm giving it a substrate.
+
+The counter-argument deserves a fair hearing: maybe context windows keep growing, native memory keeps improving, and in a year the model remembers everything and reviews itself well enough that half this tooling is redundant. Possible. But "the constraints will disappear eventually" is not a plan for shipping this quarter, and every one of these constraints is biting *today*.
+
+## The actual difference
+
+The thread says the difference between a junior-tier and senior-tier setup is the loop, not the model. I'd put it one level deeper: the model was never the bottleneck, and neither is the loop. **The substrate is.** Tokens, memory, and independent verification are the three things that decide whether a disciplined workflow survives a real codebase — and the loop, on its own, addresses none of them.
+
+Build the loop. It's necessary. Then give it a stack that makes it affordable to run, durable across sessions, and honest about whether the work is actually done. That's the part that turns a senior-engineer *demo* into a senior-engineer *workflow*.
+
+---
+
+*Tools referenced: [chronis](https://crates.io/crates/chronis) and [AllSource](https://all-source.xyz) (my own projects — disclosed above), [caveman](https://github.com/juliusbrussee/caveman) and rtk by [@JuliusBrussee](https://github.com/juliusbrussee), [CodeRabbit](https://www.coderabbit.ai/), and [PerfectPixel](https://www.welldonecode.com/perfectpixel/)-style overlay extensions. Original thread: [0xMorty](https://x.com/0xMortyx/status/2066469702075920794).*
