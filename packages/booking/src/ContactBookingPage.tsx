@@ -113,6 +113,12 @@ export interface ContactBookingPageProps {
   referralCategoryDefault?: string
   className?: string
   /**
+   * Where the post-booking "Back to Services" button links. Apps with a
+   * dedicated route use `/services` (default); single-page sites pass an
+   * anchor like `/#services`.
+   */
+  backHref?: string
+  /**
    * Slot rendered at the bottom of the page. Each app supplies its own
    * branded Footer component so the package stays visually app-agnostic.
    */
@@ -127,6 +133,7 @@ export default function ContactBookingPage({
   referralCategoryDefault,
   className,
   footer,
+  backHref = '/services',
 }: ContactBookingPageProps) {
   const searchParams = useSearchParams()
   const urlCategory = searchParams.get('category') || referralCategoryDefault || undefined
@@ -508,7 +515,7 @@ export default function ContactBookingPage({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <Link href="/services">
+                <Link href={backHref}>
                   <Button variant="outline" className="w-full sm:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Services
@@ -520,28 +527,30 @@ export default function ContactBookingPage({
               </motion.div>
             </motion.div>
 
-            {/* Scroll Indicator on Success Page - Matches hero section style */}
-            <motion.div
-              className="flex justify-center mt-16 mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.8 }}
-            >
-              <div className="animate-bounce">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const chatSection = document.querySelector('[data-success-chat-section]')
-                    if (chatSection) {
-                      chatSection.scrollIntoView({ behavior: 'smooth' })
-                    }
-                  }}
-                  className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
-                >
-                  <ChevronDown className="text-brand-teal" />
-                </button>
-              </div>
-            </motion.div>
+            {/* Scroll Indicator on Success Page - only when chat is below */}
+            {chatConfig?.enabled !== false && (
+              <motion.div
+                className="flex justify-center mt-16 mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 0.8 }}
+              >
+                <div className="animate-bounce">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const chatSection = document.querySelector('[data-success-chat-section]')
+                      if (chatSection) {
+                        chatSection.scrollIntoView({ behavior: 'smooth' })
+                      }
+                    }}
+                    className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
+                  >
+                    <ChevronDown className="text-brand-teal" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Chat Section on Success Page */}
             {chatConfig?.enabled !== false && (
@@ -997,30 +1006,32 @@ export default function ContactBookingPage({
           </div>
         </div>
 
-        {/* Scroll Indicator - Matches hero section style */}
-        <div className="px-4 md:px-8 py-20 md:py-32 max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="max-w-4xl mx-auto flex justify-center"
-          >
-            <div className="animate-bounce">
-              <button
-                type="button"
-                onClick={() => {
-                  const chatSection = document.querySelector('[data-chat-section]')
-                  if (chatSection) {
-                    chatSection.scrollIntoView({ behavior: 'smooth' })
-                  }
-                }}
-                className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
-              >
-                <ChevronDown className="text-brand-teal" />
-              </button>
-            </div>
-          </motion.div>
-        </div>
+        {/* Scroll Indicator - only when there's a chat section below to reach */}
+        {chatConfig?.enabled !== false && (
+          <div className="px-4 md:px-8 py-20 md:py-32 max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+              className="max-w-4xl mx-auto flex justify-center"
+            >
+              <div className="animate-bounce">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const chatSection = document.querySelector('[data-chat-section]')
+                    if (chatSection) {
+                      chatSection.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
+                  className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
+                >
+                  <ChevronDown className="text-brand-teal" />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Chat Section - Well Below the Fold */}
         {chatConfig?.enabled !== false && (

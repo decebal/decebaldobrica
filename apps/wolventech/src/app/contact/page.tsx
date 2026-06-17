@@ -26,6 +26,7 @@ export default function ContactPage() {
         enablePayments={false}
         theme="rust"
         chatConfig={{ enabled: false }}
+        backHref="/#services"
       />
     </Suspense>
   )

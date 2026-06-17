@@ -1,0 +1,81 @@
+---
+title: 'smb2: The Pure-Rust SMB Client That Outruns macOS''s Own'
+date: '2026-06-13T12:00:00.000Z'
+author: Decebal D.
+description: "A months-old, pure-Rust SMB2/3 client beats the native macOS file client on a NAS and is tested harder than most funded libraries. Should it be in your stack yet? The Crate Radar verdict: Trial."
+tags:
+  - rust
+  - crates
+  - smb
+  - networking
+  - dependency-management
+  - crate-radar
+slug: 2026-06-13-smb2-pure-rust-smb-client
+---
+
+Copy a few gigabytes off a network drive and you quietly accept a speed limit — whatever your operating system's own file client can manage feels like a law of nature.
+
+On a Gigabit NAS, [smb2](https://github.com/vdavid/smb2) breaks that law. The pure-Rust SMB client, in [benchmarks its author published](https://www.veszelovszki.com/a/smb2/), beats the *native macOS* SMB client on every operation — by as much as 5× on downloads — and it has only been on [crates.io](https://crates.io/crates/smb2) since April.
+
+That alone makes it worth a look. What makes it worth a *verdict* is everything around the speed: a test suite most funded libraries would envy, a refreshingly honest list of limitations, and a provenance question every engineering leader now has to weigh.
+
+> **TL;DR — Trial.** Put smb2 on a real but non-critical path today. The thing keeping it from a clean "Adopt" isn't the code; it's the bus factor.
+
+*(This is a [Rust Crate Radar](/blog/2026-06-10-introducing-rust-crate-radar) Deep Dive — every verdict is checked against the crate's live maintenance and activity, not vibes.)*
+
+## What it actually is
+
+smb2 is an async, runtime-agnostic SMB 2.x/3.x client written straight from Microsoft's [MS-SMB2 specification](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/). There is no C library underneath it and no SMB1 — a deliberate, security-minded omission. Talking to a Windows share or a Samba server from Rust used to mean binding to a C client; smb2 makes it a pure-Cargo dependency.
+
+The API is the boring kind, which is a compliment:
+
+```rust
+let mut client = smb2::connect(&addr, &user, &pass).await?;
+let mut share = client.connect_share("Documents").await?;
+let data = client.read_file(&mut share, "report.pdf").await?;
+```
+
+A runnable version lives in the series' examples repo, on the [Digest #1 branch](https://github.com/decebal/rust-crate-radar/tree/rust-crate-radar-digest-001/examples/smb2).
+
+## The benchmark that earns attention
+
+> On a Gigabit NAS, smb2 beats the native macOS SMB client on every operation — and runs 3–8× faster than the existing `smb` crate.
+
+The speed isn't an accident of micro-optimization; it's architectural. smb2 pipelines its I/O — it batches compound requests and rides a sliding window with adaptive chunking, so it isn't idling between round-trips the way a request-response client does. On a high-latency or lossy link, that design is the difference, and it's exactly where a from-the-spec implementation can out-engineer a decades-old default.
+
+## What actually earns the verdict: the testing
+
+Speed is easy to stage in a benchmark; durability is not. The reason smb2 reaches **Trial** rather than **Assess** is its test discipline, which is unusual for a crate this young: roughly 970 tests, property tests, 12 fuzz targets, and — the part worth pausing on — integration tests against **14 Docker-based Samba containers** in CI, covering encryption-required servers, high latency, dropped connections, and tiny read sizes. A `testing` feature lets *your* application spin up the same containers, so you can prove the integration against your own access patterns before you commit.
+
+That is more rigor than many funded, decade-old libraries carry. It is the single strongest signal that this isn't a weekend project.
+
+## The catch
+
+Two things hold smb2 back from a clean "Adopt," and the author is upfront about both.
+
+It is a **single maintainer** — [David Veszelovszki](https://www.veszelovszki.com/) — which is real bus-factor risk for anything you'd build a product on. And it was written with heavy AI assistance, stated plainly in the project's own notes. The test suite above is precisely what makes that provenance defensible: the code is held to spec by machinery, not vibes. But "one person, AI-assisted" is a profile to weigh deliberately, not wave through.
+
+It is also **not yet feature-complete** against its older rival. The more established [`smb`](https://crates.io/crates/smb) crate has multi-channel and QUIC/RDMA support that smb2 omits. If you need those, this isn't your client yet.
+
+## Evaluation
+
+Run smb2 through the Crate Radar [evaluation tool](https://github.com/decebal/rust-crate-radar) and the maintenance picture is healthy, which is what tips the trade-offs toward Trial rather than Assess:
+
+- **Problem fit — Strong.** Pure-Rust SMB with no C dependency is a real, under-served need.
+- **Maturity — Early.** `0.11.3`, pre-1.0, first published April 2026; expect breaking changes.
+- **Activity — Active.** Last commit six days ago; eleven releases in the past year.
+- **Stewardship — Watch.** Single maintainer, AI-assisted; offset by an exceptional test suite.
+- **Ecosystem fit — Strong.** Async and runtime-agnostic; MSRV 1.85; dual MIT/Apache.
+- **Exit cost — Low.** A client behind a thin call surface; swapping it back out is cheap.
+
+## The verdict
+
+**Trial.** If you touch SMB from Rust, put smb2 on a real but non-critical path now — a sync job, an internal tool, an importer — and lean on its container test harness to prove it against your servers. The benchmarks are real and the testing is better than its age suggests.
+
+The one thing to keep your eye on isn't a line of code. It's whether a second maintainer ever shows up. The day this stops being one person's project is the day it graduates to Adopt.
+
+---
+
+*Next on the Radar: a Category Showdown of async runtimes. Got a crate you want put under the tool? [Get in touch](/contact).*
+
+**Sources:** [smb2 on GitHub](https://github.com/vdavid/smb2) · [crates.io](https://crates.io/crates/smb2) · [author's benchmarks & write-up](https://www.veszelovszki.com/a/smb2/)
