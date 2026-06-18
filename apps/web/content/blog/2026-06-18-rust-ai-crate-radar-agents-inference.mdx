@@ -1,0 +1,67 @@
+---
+title: 'Rust for AI: A Crate Radar on the Agent and Inference Stack'
+date: '2026-06-18T12:00:00.000Z'
+author: Decebal D.
+description: A Rust Crate Radar digest of the crates building the Rust+AI stack — rig, candle, mistral.rs, burn, and swiftide — each scored against the same engineering-leadership rubric, each ending in a one-word verdict.
+tags:
+  - rust
+  - crates
+  - ai
+  - llm
+  - agents
+  - inference
+  - dependency-management
+slug: 2026-06-18-rust-ai-crate-radar-agents-inference
+---
+
+> This is a **Rust Crate Radar** digest — this time themed. Curated tools roundups like *Web Tools Weekly* are great for discovery; they are not built to tell you what to bet production on. So here is the Rust+AI corner of that world, run through the rubric an engineering leader actually uses to adopt a dependency (problem fit, maturity, stewardship, ecosystem fit, cost of adoption, exit cost), each ending in a one-word verdict from the ThoughtWorks Tech Radar: **Adopt, Trial, Assess, or Hold.**
+
+## TL;DR — The Radar
+
+| Crate | What it is | Verdict |
+|---|---|---|
+| [rig](https://github.com/0xPlaygrounds/rig) | Modular LLM-application & agent framework | **Trial** |
+| [candle](https://github.com/huggingface/candle) | Minimalist ML / inference framework from Hugging Face | **Adopt** (inference) |
+| [mistral.rs](https://github.com/EricLBuehler/mistral.rs) | Fast multimodal LLM inference & serving engine | **Trial** |
+| [burn](https://github.com/tracel-ai/burn) | Next-gen tensor library & training framework | **Assess** |
+| [swiftide](https://github.com/bosun-ai/swiftide) | Streaming RAG indexing + agentic pipelines | **Assess** |
+
+The honest throughline up front: **2026 is the year Rust crossed from experimental to production-viable for the *inference* and *agent* layers of AI — while training stays firmly in Python.** Pick your battles accordingly. The crates worth adopting are the ones that let you delete Python from the serving path, not the ones asking you to reinvent the training path.
+
+## Lead Deep Dive candidate
+
+**rig (rig-core) — the agent framework that grew up** · [github.com/0xPlaygrounds/rig](https://github.com/0xPlaygrounds/rig) · [rig.rs](https://www.rig.rs/)
+A modular Rust library for LLM applications: an `Agent` abstraction that scales from a single model call to a full RAG system, with compatibility across 20+ model providers and 10+ vector stores.
+**Why it matters to a leader:** this is the crate that makes "build the agent in Rust" a real option rather than a science project. Independent 2026 ecosystem write-ups peg Rust-native agent frameworks at roughly **5× lower memory and 25–44% lower latency** than Python equivalents, with dramatically faster cold starts — which is exactly the cost structure that matters when an agent runs as a serverless function or a per-request sidecar. Real adopters (VT Code, Dria, and others) are now in production.
+**Verdict: Trial.** The API stabilized in late 2025/early 2026 and it is genuinely production-viable — but you are still betting on a young framework in a fast-moving category, and the provider/vector-store breadth means real surface area to keep current. Build a real agent on it this quarter; keep the LLM-provider boundary behind your own trait so you are not married to it.
+**Adoption risk:** category churn. Agent abstractions are still being collectively figured out across the industry; expect the "right" shape to keep moving for another year.
+
+## The rest of the shortlist
+
+**candle — delete Python from the inference path** · [github.com/huggingface/candle](https://github.com/huggingface/candle)
+Hugging Face's minimalist ML framework with a PyTorch-like API, CUDA/Metal acceleration, and a serverless-first design; `candle-transformers` hit 0.9.2 in January 2026.
+*Why it matters:* it lets you ship a small, dependency-light binary that does inference for LLaMA/Mistral/Stable-Diffusion-class models with no Python runtime in production — a real win for cold starts, container size, and supply-chain surface.
+**Verdict: Adopt** for inference workloads, with eyes open: it is still pre-1.0, so treat minor bumps as potential migrations. Backed by Hugging Face, which is about the best stewardship signal the Rust ML space has.
+
+**mistral.rs — the batteries-included serving engine** · [github.com/EricLBuehler/mistral.rs](https://github.com/EricLBuehler/mistral.rs)
+A fast, genuinely multimodal inference engine (text, vision, audio, speech, image) exposing OpenAI- and Anthropic-compatible endpoints, with PagedAttention, speculative decoding, continuous batching, a broad quantization menu, and an agentic runtime (web search, code execution, tools).
+*Why it matters:* it is the closest thing Rust has to a drop-in, self-hosted, OpenAI-compatible serving layer — you can point existing clients at it and run models from a Raspberry Pi to a CUDA box.
+**Verdict: Trial** for self-hosted serving; **Assess** before betting your platform on it. The feature velocity is extraordinary, which is both the appeal and the warning: development is concentrated around a single highly prolific maintainer, so weigh the bus-factor against the capability.
+
+**burn — impressive, but training still lives in Python** · [github.com/tracel-ai/burn](https://github.com/tracel-ai/burn)
+A next-generation tensor library and deep-learning framework; 0.20 (January 2026) shipped CubeK — unified CPU/GPU kernels via CubeCL across CUDA, ROCm, Metal, WebGPU, and Vulkan — plus an overhauled ONNX import.
+*Why it matters:* it is the most credible attempt at a Rust-native training-and-inference stack, and the multi-backend kernel story is legitimately ahead of its time.
+**Verdict: Assess** (Trial for greenfield edge/embedded inference or research). For most teams, training pipelines, talent, and tooling are Python-shaped, and that gravity is not shifting this year. Watch burn closely; adopt it where you control the whole stack.
+
+**swiftide — RAG pipelines as a first-class citizen** · [github.com/bosun-ai/swiftide](https://github.com/bosun-ai/swiftide)
+Fast, streaming indexing and query pipelines plus agentic building blocks; ~0.32 as of late 2025.
+*Why it matters:* it treats ingestion → transformation → indexing → retrieval as a real, composable pipeline rather than glue code, which is where most RAG systems rot.
+**Verdict: Assess.** The maintainers say it plainly — "under heavy development" with breaking changes — and it is backed by a small team (bosun.ai). Prototype a pipeline, keep it isolated, and don't treat 0.x as a stable contract yet.
+
+---
+
+## The throughline
+
+If you take one decision rule from this issue: **reach for Rust on the serving and agent path, keep Python on the training path.** candle and mistral.rs are ready to remove Python from inference today; rig makes Rust agents real; swiftide makes RAG pipelines composable; burn is the one to watch for the day training gravity finally shifts. The pattern from the rest of the Radar holds here too — the crates worth betting on are the ones that shrink the surface you have to operate and trust, and "no Python in the production container" is one of the biggest surface reductions on offer.
+
+*Got a Rust+AI crate you want put under the same rubric? [Get in touch](/contact) — reader requests shape the backlog.*

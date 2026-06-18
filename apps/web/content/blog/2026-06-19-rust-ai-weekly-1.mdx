@@ -1,0 +1,92 @@
+---
+title: 'Rust & AI Weekly #1: an agent from Block, edge inference, and a vector DB Netflix trusts'
+date: '2026-06-19T12:00:00.000Z'
+author: Decebal D.
+description: A curated, vetted roundup of real, current Rust+AI tools — agent frameworks and the official MCP SDK, inference engines, vector/RAG crates, and the dev tools worth a bookmark. Each entry carries maintenance, latest-release, and adoption signals.
+tags:
+  - rust
+  - ai
+  - llm
+  - agents
+  - newsletter
+  - roundup
+slug: 2026-06-19-rust-ai-weekly-1
+---
+
+Welcome to the first **Rust & AI Weekly** — a curated sweep of the crates and tools showing up where Rust meets AI. No rubric, no thousand-word evaluations (that's what the [Crate Radar](/blog) series is for). Just the things worth a bookmark this week, each in a line or two — but every entry is **vetted**: under each blurb you'll find a status line with open-source maintenance, the latest contribution, and real adoption signals, so you're not bookmarking something that quietly died last summer. The theme that kept surfacing: the agent and inference layers have quietly become *real* in Rust, while the dev-tooling around them gets weirder and more fun. Let's dig in.
+
+*(Status lines reflect public signals as of June 2026 — stars and downloads are approximate and move fast.)*
+
+## Pick of the week
+
+[**goose**](https://github.com/block/goose) — An open-source, on-machine AI agent whose core and CLI are written in Rust, from Block (the Square/Cash App parent). It runs tasks against your tools and MCP servers locally, and it has quietly become one of the most-starred agent projects anywhere — a rare case of "big company actually ships and uses its open agent."
+<br/>*Maintenance: very actively maintained (Block-backed, 400+ contributors) · Latest: v1.29.1 (Apr 2026) · Adoption: ~35k★; built and used by Block. (Rust-core agent/CLI; the desktop UI is TypeScript.)*
+
+## Agentic AI & LLM crates
+
+[**rmcp**](https://github.com/modelcontextprotocol/rust-sdk) — The *official* Rust SDK for the Model Context Protocol, with a pluggable transport layer. Build MCP servers that expose tools to assistants, or clients that consume them — the boring plumbing you'll be glad is first-party.
+<br/>*Maintenance: actively maintained (official MCP org) · Latest: v1.7.0 (May 2026) · Adoption: ~3.4k★, ~13M downloads — the highest here; the canonical Rust MCP implementation*
+
+[**genai**](https://github.com/jeremychone/rust-genai) — One ergonomic client across ~25 providers and 200+ models — OpenAI, Anthropic, Gemini, local, and the rest — without learning five SDKs. The fastest way to stop hard-coding a single vendor.
+<br/>*Maintenance: actively maintained (solo maintainer — note the bus-factor) · Latest: v0.6.0 (May 2026) · Adoption: ~800★; used in the author's AIPack tooling*
+
+[**kalosm**](https://github.com/floneum/floneum) — A local-first toolkit for language, audio, and image models with embeddings and vector search built in. The fastest way to give a Rust CLI opinions about your codebase without phoning home.
+<br/>*Maintenance: slowing — mid-rewrite toward a new WGPU backend · Latest: v0.4.0 (Feb 2025) · Adoption: ~2.2k★ (Floneum), no named enterprise users — treat as promising/experimental*
+
+[**async-openai**](https://github.com/64bit/async-openai) — The unglamorous workhorse: ergonomic, async bindings for the OpenAI-compatible API surface that half the ecosystem now speaks. Boring in the best way.
+<br/>*Maintenance: actively maintained (solo maintainer) · Latest: v0.41.0 (Jun 2026) · Adoption: ~1.9k★, ~5.7M downloads — a de-facto standard client*
+
+## Inference, Models & Serving
+
+[**tract**](https://github.com/sonos/tract) — Sonos's pure-Rust neural-network inference engine, running ONNX and TensorFlow models. The quietly impressive part: it's been in production on millions of Sonos speakers doing wake-word and streaming ASR for years.
+<br/>*Maintenance: actively maintained (Sonos) · Latest: v0.21.15 (Mar 2026) · Adoption: ~2.9k★; core sub-crates ~1M downloads each; production use at Sonos — the strongest embedded-inference track record here*
+
+[**ort**](https://github.com/pykeio/ort) — Mature Rust bindings for ONNX Runtime. When you just need to run an exported model fast and don't want a framework, this is the short path.
+<br/>*Maintenance: actively maintained · Latest: v2.0.0-rc.12 (Mar 2026; still pre-1.0 API) · Adoption: ~10.8M downloads; named users incl. Twitter/X, SurrealDB, Bloop, Google Magika, Wasmtime*
+
+[**llama-cpp-2**](https://github.com/utilityai/llama-cpp-rs) — Pragmatic Rust bindings over llama.cpp that track upstream closely, so new model support lands fast. The trade-off is honesty about it: no semver, so pin your versions.
+<br/>*Maintenance: actively maintained, tracks upstream llama.cpp · Latest: 0.1.146 (Apr 2026) · Adoption: ~580★, llama-cpp-sys-2 ~655k downloads; powers UtilityAI's workloads*
+
+[**luminal**](https://github.com/luminal-ai/luminal) — A from-scratch deep-learning library that compiles your model into a static graph for fast, portable execution. YC-backed and moving quickly — the high-upside newcomer of the issue.
+<br/>*Maintenance: actively developed via main (release tags lag — last tag 0.2; pre-1.0) · Latest: active commits through mid-2026 · Adoption: ~2.9k★; YC S25, $5.3M seed, used in research at Yale — exciting, not yet a production bet*
+
+## Data, Vectors & RAG
+
+[**qdrant**](https://github.com/qdrant/qdrant) — The vector database that happens to be written in Rust, and it shows in the tail latencies. If your RAG stack has a vector store, there's a good chance it's this one.
+<br/>*Maintenance: actively maintained · Latest: v1.17.1 (Mar 2026) · Adoption: ~31k★; customers incl. Tripadvisor and HubSpot; managed Qdrant Cloud*
+
+[**lancedb**](https://github.com/lancedb/lancedb) — A Rust-core vector and multimodal database built on the Lance columnar format, with Python/JS/Java bindings on top. Designed for the "embeddings *and* the raw data live together" workflow.
+<br/>*Maintenance: very actively maintained, nearing 1.0 · Latest: v0.33.x beta (Jun 2026) · Adoption: ~10.5k★; named users incl. Netflix and CodeRabbit; commercial Cloud/Enterprise tiers*
+
+[**tantivy**](https://github.com/quickwit-oss/tantivy) — A full-text search engine in the spirit of Lucene, in Rust. Pair it with embeddings for hybrid search and you've skipped a whole category of infrastructure.
+<br/>*Maintenance: actively maintained (Quickwit team) · Latest: v0.26.x (2026) · Adoption: very heavy — underpins Quickwit and ParadeDB; core sub-crates ~10M downloads each*
+
+[**fastembed-rs**](https://github.com/Anush008/fastembed-rs) — Fast, local text embeddings with no Python and no API bill. The crate you reach for when "just embed these documents" shouldn't require a service.
+<br/>*Maintenance: actively maintained (very frequent releases) · Latest: v5.17.2 (Jun 2026) · Adoption: ~900★, ~1.5M downloads; integrates with the major Rust LLM frameworks*
+
+[**Stoolap**](https://github.com/stoolap/stoolap) — An embedded SQL database that folds OLTP, OLAP, *and* native vector search into one serverless runtime. The "wait, it does vectors too?" entry of the week.
+<br/>*Maintenance: actively maintained but early/pre-1.0 · Latest: v0.3.1 (2026) · Adoption: ~540★, no named enterprise users yet — a genuine one-to-watch, not a production bet*
+
+## Dev Tools, CLI & Agent Tooling
+
+[**aichat**](https://github.com/sigoden/aichat) — An all-in-one LLM CLI with shell integration, RAG, and configurable roles — define a `rust-reviewer` role once and pipe code at it forever. Connects to local models via Ollama too.
+<br/>*Maintenance: actively maintained · Latest: v0.28.0 (Feb 2026) · Adoption: ~10k★; 20+ LLM providers*
+
+[**Tabby**](https://github.com/TabbyML/tabby) — A self-hosted, GitHub-Copilot-style coding assistant that's mostly Rust, runs on a consumer GPU, and needs no external database or cloud. Privacy-conscious teams' favorite — with one caveat below.
+<br/>*Maintenance: maintained, but release cadence has slowed — commits continue, yet the last tagged release was v0.30 (Jul 2025). Confirm current momentum before depending on it. · Adoption: ~24k★*
+
+[**Zed**](https://github.com/zed-industries/zed) — The Rust-built editor whose agentic editing and assistant features matured into something you'd actually use daily. Proof that "fast native app" and "AI-first" aren't mutually exclusive.
+<br/>*Maintenance: actively maintained (Zed Industries) · Latest: stable Jun 2026; reached v1.0 in 2026 · Adoption: ~83k★*
+
+## A thought for the week
+
+We keep reaching for Rust on the inference and serving path and leaving training to Python. Is that a permanent division of labor rooted in what each language is actually good at — or just the current truce, waiting for the training-side frameworks to make the rewrite worth it? I genuinely don't know which, and I think the honest answer shapes a lot of architecture decisions.
+
+## Before I go
+
+Nothing to do with Rust: there's a daily browser game that's just *one hole* of 3D mini-golf — [putt.day](https://putt.day) — and it has quietly become how I reset between deep-work blocks. One putt, par or bust, close the tab. You've been warned.
+
+That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me — reader picks shape the list.
+
+Keep shipping,
+Decebal
