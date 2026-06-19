@@ -12,7 +12,7 @@ const groq = createGroq({
 
 // Initialize PostHog for server-side tracking
 let posthog: PostHog | null = null
-if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+if (process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_DISABLED !== 'true') {
   posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
     host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
   })
