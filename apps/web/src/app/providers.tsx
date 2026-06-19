@@ -27,7 +27,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Initialize PostHog with cookieless tracking for privacy
   // Note: Ensure "Cookieless server hash mode" is enabled in PostHog Project Settings > Web analytics
   useEffect(() => {
-    if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    if (
+      typeof window !== 'undefined' &&
+      process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+      process.env.NEXT_PUBLIC_POSTHOG_DISABLED !== 'true'
+    ) {
       try {
         posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
           api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
