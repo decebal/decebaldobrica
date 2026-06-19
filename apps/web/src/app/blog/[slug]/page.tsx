@@ -1,6 +1,7 @@
 import { BlogCTA } from '@/components/BlogCTA'
 import { BlogTOC } from '@/components/BlogTOC'
 import Footer from '@/components/Footer'
+import { RadarBanner, shouldShowRadarBanner } from '@/components/RadarBanner'
 import {
   Terminal,
   TerminalCommand,
@@ -65,6 +66,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
+  const showRadar = shouldShowRadarBanner(post.tags)
+
   return (
     <div className="min-h-screen relative">
       <main className="pt-24 pb-16">
@@ -116,6 +119,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   ))}
                 </div>
               )}
+
+              {/* Radar promo — slim strip (Rust/AI posts only) */}
+              {showRadar && <RadarBanner variant="strip" />}
 
               {/* Archive Notice for Imported Posts */}
               {post.canonicalUrl && (
@@ -324,6 +330,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </ReactMarkdown>
                 </div>
               </div>
+
+              {/* Radar promo — compact card above the connect CTA (Rust/AI posts only) */}
+              {showRadar && <RadarBanner variant="card" />}
 
               {/* Call to Action */}
               <BlogCTA postTitle={post.title} />
