@@ -1,0 +1,39 @@
+# Fly app: newsletter autopilot.
+#
+# A supercronic worker — NO public HTTP service. It wakes on the crontab
+# schedule, sends due+unsent posts, and idles in between.
+#
+# Deploy from the REPO ROOT (the Docker build context must include the whole
+# workspace). See README.md for the full first-time setup + secrets.
+#
+#   fly deploy --config deploy/newsletter-cron/fly.toml .
+
+app = "decebal-newsletter-cron"
+primary_region = "lhr"  # London. Match your AllSource region for lower latency.
+
+# dockerfile path is resolved relative to THIS config file's directory.
+# Build context is the positional WORKINGDIR passed to `fly deploy` (repo root):
+#   fly deploy . --config deploy/newsletter-cron/fly.toml
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # The canonical site URL. The entire point of moving off the laptop is that
+  # this is ALWAYS production and NEVER localhost. (Secret values — Resend,
+  # AllSource, social — are set via `fly secrets set`, not here.)
+  NEXT_PUBLIC_APP_URL = "https://decebaldobrica.com"
+
+  # Due-scan eligibility window in days. Weekly cron (7-day cadence) + 8-day
+  # window = 1 day of slack, so a post published any time in the week before a
+  # Monday tick is caught exactly once even if its timestamp is later in the day
+  # than the 14:00 fire. The AllSource dedupe is the backstop against resends.
+  PUBLISH_LOOKBACK_DAYS = "8"
+
+  TZ = "UTC"
+
+# One always-on Machine. With no [http_service] there is nothing to auto-stop on,
+# so supercronic keeps running between ticks. Keep the count at 1:
+#   fly scale count 1 --config deploy/newsletter-cron/fly.toml
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

@@ -1,0 +1,32 @@
+# Docker build-context hygiene for deploy/newsletter-cron/Dockerfile.
+# The build context is the repo root; keep apps/web/content (the posts) but drop
+# everything heavy, generated, or secret.
+
+**/node_modules
+.git
+.github
+
+# Generated / build output
+**/.next
+**/.turbo
+**/dist
+**/build
+**/out
+**/coverage
+**/.vercel
+**/playwright-report
+**/test-results
+
+# Secrets & local env — CRITICAL.
+# A baked-in .env.local (NEXT_PUBLIC_APP_URL=http://localhost:3000) would be
+# auto-loaded by Bun inside the container and override the Fly [env], putting
+# localhost links back into real subscriber emails. Never ship .env* in the image;
+# real secrets are injected at runtime via `fly secrets set`.
+**/.env
+**/.env.*
+
+# Editor / OS noise
+**/*.log
+**/.DS_Store
+.idea
+.vscode
