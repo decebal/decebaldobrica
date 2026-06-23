@@ -16,7 +16,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:install": "playwright install --with-deps",
     "create-post": "bun ./scripts/create-blog-post.ts",
-    "publish-post": "bun ./scripts/publish-blog-post.ts"
+    "publish-post": "bun ./scripts/publish-blog-post.ts",
+    "publish-due": "bun ./scripts/publish-due-posts.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^2.0.22",

@@ -698,6 +698,42 @@ export async function getNewsletterIssue(issueId: string): Promise<NewsletterIss
 }
 
 /**
+ * Has a newsletter issue for this blog post slug already been sent?
+ *
+ * Issues live in `issue:<uuid>` streams; `issue.created` carries the
+ * `blog_post_slug` and `issue.sent` is appended to the same stream once the
+ * send loop finishes. We resolve the set of issue streams created for this slug,
+ * then check whether any of them has an `issue.sent`. Used by the autopilot
+ * (publish-due-posts) so a recurring cron never re-sends the same post.
+ *
+ * Fail-safe: on any query error we return `true` (treat as already sent) so a
+ * transient AllSource outage can never trigger a duplicate blast — a missed
+ * send is recoverable next run, a double-send to every subscriber is not.
+ */
+export async function wasIssueSentForSlug(slug: string): Promise<boolean> {
+  try {
+    const client = getAllSourceClient()
+
+    const created = await queryAllEvents(client, { event_type: 'issue.created' })
+    const slugStreams = new Set(
+      created
+        .filter((ev) => {
+          const p = (ev.payload ?? {}) as Payload
+          return str(p.blog_post_slug) === slug
+        })
+        .map((ev) => ev.entity_id)
+    )
+    if (slugStreams.size === 0) return false
+
+    const sent = await queryAllEvents(client, { event_type: 'issue.sent' })
+    return sent.some((ev) => slugStreams.has(ev.entity_id))
+  } catch (error) {
+    console.error('wasIssueSentForSlug error (failing safe → treated as sent):', error)
+    return true
+  }
+}
+
+/**
  * Newsletter statistics. Subscriber counts come from the subscriber fold;
  * total issues from a fold over `issue.created`; engagement rates averaged
  * across active subscribers (event model §6 — derived, not stored).

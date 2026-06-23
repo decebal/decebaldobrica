@@ -1,0 +1,15 @@
+# Newsletter autopilot — supercronic crontab.
+#
+# Runs publish-due-posts.ts: sends every published post dated within the last
+# PUBLISH_LOOKBACK_DAYS (default 7) that has NOT already been sent. The AllSource
+# dedupe (wasIssueSentForSlug) makes re-runs safe — already-sent posts are
+# skipped, so a missed tick simply catches up on the next one.
+#
+# Fields: minute hour day-of-month month day-of-week  (UTC; see TZ in the image).
+# Default: every Monday at 14:00 UTC. Change the 5 fields to re-time it.
+#
+# Wrapped in `sh -c` so the `cd` + `&&` chain runs regardless of how supercronic
+# execs the command. cwd must be apps/web (that's where content/blog lives and
+# where the `publish-due` script is defined).
+
+0 14 * * 1 /bin/sh -c 'cd /app/apps/web && bun run publish-due'
