@@ -1,0 +1,78 @@
+---
+title: 'Rust & AI Weekly #2: a P2P 1.0, agents that out-benchmark Python, and Rust creeping onto the GPU'
+date: '2026-06-22T12:00:00.000Z'
+author: Decebal D.
+description: Week two of the vetted Rust+AI roundup — the most-adopted Rust agent framework, two newcomers that beat LangGraph on latency, Hugging Face's ML stack, Rust-native training with Burn, and a genuine P2P 1.0. Each entry carries maintenance, latest-release, and adoption signals.
+tags:
+  - rust
+  - ai
+  - llm
+  - agents
+  - newsletter
+  - roundup
+slug: 2026-06-22-rust-ai-weekly-2
+---
+
+Welcome back to **Rust & AI Weekly** — the curated, vetted sweep of crates and tools showing up where Rust meets AI. Same deal as [last week](/blog/2026-06-19-rust-ai-weekly-1): no rubric, no thousand-word evaluations (that's the [Crate Radar](/blog) series' job), just the things worth a bookmark, each in a line or two, with a status line underneath so you're not bookmarking something that quietly died last summer. The theme this week wrote itself: the agent layer is consolidating fast — with newcomers now beating the Python frameworks on the benchmarks they care about — and Rust took two visible steps *onto the GPU and into training*, the side of the stack we'd all quietly conceded to Python. Plus the week's genuine flagship release. Let's dig in.
+
+*(Status lines reflect public signals as of June 2026 — stars and downloads are approximate and move fast.)*
+
+[![Rust & AI Crate Radar — 28 tools mapped by Adopt / Trial / Assess / Hold, this week's snapshot](/images/radar/2026-06-22-radar.png)](/radar)
+
+*This week's radar — 28 tools and counting. The six new entries join it; [explore the interactive version](/radar).*
+
+## Pick of the week
+
+[**Rig**](https://github.com/0xPlaygrounds/rig) — The most-adopted Rust framework for building LLM apps and agents: providers, embeddings, vector stores, and tool-calling all behind a small set of composable traits. Conspicuously absent from issue #1 and overdue — if you're starting a serious agent project in Rust today, this is the default starting point, not a curiosity.
+<br/>*Maintenance: very actively maintained (0xPlaygrounds; breaking changes flagged as ongoing) · Latest: active releases through 2026 · Adoption: ~6.7k★; production users incl. Cloudflare, Neon, Nethermind, and St. Jude — the clear leader of the Rust agent-framework cluster*
+
+## Agentic AI & LLM frameworks
+
+[**AutoAgents**](https://github.com/liquidos-ai/AutoAgents) — A multi-agent framework with type-safe agent models, structured tool-calling, configurable memory, and pluggable LLM backends, built to run on both server and edge. The headline is the benchmark: it (and Rig) stay under ~1.1 GB peak memory where every Python framework measured blew past 4.7 GB, and it reportedly beats LangGraph by ~43% on latency. Python bindings ship via `autoagents-py`.
+<br/>*Maintenance: actively developed (liquidos-ai) · Latest: active through 2026 · Adoption: emerging, benchmark-led; PyPI bindings — smaller community than Rig, but the numbers are real*
+
+[**rs-graph-llm**](https://github.com/a-agmon/rs-graph-llm) — A graph-based framework for interactive multi-agent workflows with distributed execution — think LangGraph's mental model, Rust's runtime. The maintainer reports a logistics deployment running at 99.99% uptime, which is a more interesting adoption signal than a star count.
+<br/>*Maintenance: actively maintained (solo — note the bus-factor) · Latest: v1.4.2 · Adoption: smaller; one named production deployment (logistics) — promising, verify the fit before you bet a workflow engine on it*
+
+## Inference, Models & Serving
+
+[**candle**](https://github.com/huggingface/candle) — Hugging Face's minimalist ML framework: a PyTorch-shaped API with CUDA, Metal, and WASM backends, broad model support (LLaMA, Phi, Gemma, StarCoder, and friends), and the ability to run a model in the browser. The other glaring omission from issue #1 — if you want HF-blessed inference without the Python, start here.
+<br/>*Maintenance: actively maintained (Hugging Face) · Latest: candle-core 0.10.2 · Adoption: ~7.8k★; the de-facto Rust ML framework*
+
+[**mistral.rs**](https://github.com/EricLBuehler/mistral.rs) — A fast, cross-platform inference engine that's quietly become the most *feature-complete* one in Rust: text, vision, audio, image-gen, and embeddings, plus a built-in **agentic loop** with web search, code/shell execution, and OpenAI-compatible skills. Rust crate and Python package both.
+<br/>*Maintenance: very actively maintained (EricLBuehler) · Latest: v0.8.2 (CUDA graphs, FlashInfer paged kernels, MoE opts; strong on GB10/B200/H100) · Adoption: heavy; the multimodal-plus-agentic option when llama.cpp bindings aren't enough*
+
+[**Burn**](https://github.com/tracel-ai/burn) — A next-generation tensor library and deep-learning framework that doesn't just *infer* — it **trains**, then deploys the same model across CUDA, ROCm, Metal, WebGPU, and Vulkan via its CubeCL compute layer. This is the entry that makes last week's closing question (below) live.
+<br/>*Maintenance: very actively maintained (Tracel AI) · Latest: v0.20 (Jan 2026; introduced CubeK kernels on CubeCL) · Adoption: the leading Rust-native *training* framework — the rare "train in Rust, not just serve" bet*
+
+[**cuTile Rust**](https://arxiv.org/abs/2606.15991) — Not a crate you adopt yet — a research result worth knowing about: memory-safe, data-race-free GPU kernels written in Rust, with B200 benchmarks. The interesting part isn't the speed, it's the safety model reaching the place GPU code has always been least safe.
+<br/>*Maintenance: research artifact (arXiv, June 2026) · Latest: paper + early code · Adoption: none yet — a watch-this-space signal, not a dependency*
+
+## Data, Vectors & RAG
+
+[**Swiftide**](https://github.com/bosun-ai/swiftide) — Fast, streaming indexing and query pipelines for RAG — parallel and async by design — that has grown agent and tool-calling support on top. From the team building bosun.ai's autonomous-code-improvement platform, so the RAG-over-codebases path is well-trodden.
+<br/>*Maintenance: actively maintained (bosun-ai) · Latest: active 2026 (pre-1.0 — expect breaking changes) · Adoption: growing; powers bosun.ai — promising, still early*
+
+[**text-splitter**](https://github.com/benbrandt/text-splitter) — The unglamorous RAG primitive: split text into semantic chunks up to a token or character budget, at sensible boundaries, callable from both Rust and Python. The crate you reach for to stop hand-rolling chunking and getting it subtly wrong.
+<br/>*Maintenance: actively maintained (benbrandt) · Latest: v0.30.x · Adoption: widely used across Rust RAG stacks; also shipped as the `semantic-text-splitter` Python package*
+
+## Dev Tools & Interop
+
+[**Diplomat**](https://github.com/rust-diplomat/diplomat) — Generate *idiomatic* bindings (C, C++, JS, with more via a plugin interface) from explicitly-tagged "bridge" Rust, so refactoring your library can't silently change its FFI surface. The clean way to expose a Rust AI core to the rest of a polyglot org — and it's been proven in production carrying ICU4X to other languages.
+<br/>*Maintenance: actively maintained (rust-diplomat; ICU4X lineage) · Latest: active 2026 (Java/Panama backend in progress) · Adoption: battle-tested as ICU4X's cross-language layer — compare against UniFFI before you choose*
+
+[**Iroh 1.0**](https://www.iroh.computer/blog/v1) — The week's flagship release. Dial any device by its **cryptographic public key**, not its IP, over QUIC — IPs become ephemeral hints, the key is the stable identity, and a direct UDP hole-punch lands ~90% of the time. For anyone wiring up distributed or multi-agent systems that have to find each other across NATs, this is the connectivity substrate you were about to hand-roll. Official Python, Node, Swift, and Kotlin bindings.
+<br/>*Maintenance: very actively maintained (n0 / N0 Inc.) · Latest: v1.0 (Jun 2026) with a committed wire-protocol stability guarantee · Adoption: 200M+ endpoints created in the last 30 days; four years and 65 pre-releases to reach 1.0*
+
+## A thought for the week
+
+Last week I asked whether Rust-on-inference / Python-on-training is a permanent division of labor or just the current truce. This week handed over two data points pulling against the truce: **Burn** shipped a serious multi-backend training story, and **cuTile** showed memory-safe GPU kernels are a research reality, not a fantasy. Two swallows don't make a summer — Python's training ecosystem is a decade and a million tutorials deep — but it's the first week in a while where the "you'd never train in Rust" reflex felt less like a law and more like a habit. I still wouldn't rewrite your training pipeline. I'd just stop assuming you never will.
+
+## Before I go
+
+The [putt.day](https://putt.day) habit from last week survived contact with a full sprint — one hole of 3D mini-golf, par or bust, close the tab. Turns out the discipline of *exactly one putt* is the whole point; the day I let myself take a mulligan is the day it becomes a time sink. Anyway. Back to the crates.
+
+That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me — reader picks shape the list.
+
+Keep shipping,
+Decebal
