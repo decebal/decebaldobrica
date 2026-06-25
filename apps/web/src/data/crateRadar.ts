@@ -32,7 +32,7 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-06-19'
+export const RADAR_GENERATED_AT = '2026-06-22'
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -62,7 +62,7 @@ export const crateRadarTools: RadarTool[] = [
     name: 'rig', url: 'https://github.com/0xPlaygrounds/rig', category: 'agentic', quadrant: 'agentic',
     ring: 'Trial', maintenance: 'actively maintained', latest: 'rig-core 0.38.2 (Jun 2026)',
     stars: '~7k★', downloads: '~1.2M', adopters: 'Neon, St. Jude, Nethermind, Dria, Coral Protocol',
-    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #1 (2026-06-19)', returning: true,
+    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #2 (2026-06-22)', returning: true,
   },
   {
     name: 'genai', url: 'https://github.com/jeremychone/rust-genai', category: 'agentic/client', quadrant: 'agentic',
@@ -80,7 +80,7 @@ export const crateRadarTools: RadarTool[] = [
     name: 'swiftide', url: 'https://github.com/bosun-ai/swiftide', category: 'agentic/RAG', quadrant: 'agentic',
     ring: 'Assess', maintenance: 'maintained, pre-1.0, small team', latest: 'v0.32.1 (Nov 2025)',
     stars: '~710★', downloads: '~82k', adopters: 'bosun.ai (primary)',
-    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #1 (2026-06-19)', returning: true,
+    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #2 (2026-06-22)', returning: true,
   },
   {
     name: 'kalosm', url: 'https://github.com/floneum/floneum', category: 'agentic/local-models', quadrant: 'agentic',
@@ -88,13 +88,27 @@ export const crateRadarTools: RadarTool[] = [
     stars: '~2.2k★', adopters: 'none named',
     mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false, note: 'experimental',
   },
+  {
+    name: 'AutoAgents', url: 'https://github.com/liquidos-ai/AutoAgents', category: 'agentic', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'actively developed (liquidos-ai)', latest: 'active 2026',
+    adopters: 'benchmark-led; autoagents-py on PyPI',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'multi-agent; <1.1GB peak vs Python >4.7GB; reportedly ~43% lower latency than LangGraph',
+  },
+  {
+    name: 'rs-graph-llm', url: 'https://github.com/a-agmon/rs-graph-llm', category: 'agentic/workflows', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'actively maintained (solo — bus-factor)', latest: 'v1.4.2',
+    adopters: 'one named logistics deployment (reported 99.99% uptime)',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'graph-based multi-agent workflows with distributed execution',
+  },
 
   // ── Inference & Serving ──
   {
     name: 'candle', url: 'https://github.com/huggingface/candle', category: 'inference', quadrant: 'inference',
     ring: 'Adopt', maintenance: 'actively maintained (Hugging Face)', latest: 'candle-core 0.10.2 (Apr 2026)',
     stars: '~20k★', adopters: 'anchors mistral.rs, kalosm; Hugging Face',
-    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #1 (2026-06-19)', returning: true,
+    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #2 (2026-06-22)', returning: true,
   },
   {
     name: 'ort', url: 'https://github.com/pykeio/ort', category: 'inference', quadrant: 'inference',
@@ -112,7 +126,7 @@ export const crateRadarTools: RadarTool[] = [
     name: 'mistral.rs', url: 'https://github.com/EricLBuehler/mistral.rs', category: 'inference', quadrant: 'inference',
     ring: 'Trial', maintenance: 'actively maintained — high velocity, single maintainer (bus-factor)', latest: 'v0.8.2 (2026)',
     stars: '~6.5k★', adopters: 'none named',
-    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #1 (2026-06-19)', returning: true,
+    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #2 (2026-06-22)', returning: true,
   },
   {
     name: 'llama-cpp-2', url: 'https://github.com/utilityai/llama-cpp-rs', category: 'inference', quadrant: 'inference',
@@ -124,13 +138,20 @@ export const crateRadarTools: RadarTool[] = [
     name: 'burn', url: 'https://github.com/tracel-ai/burn', category: 'inference/training', quadrant: 'inference',
     ring: 'Assess', maintenance: 'actively maintained (Tracel AI)', latest: 'v0.20.0 (Jan 2026, CubeK)',
     stars: '~15k★', adopters: 'none named',
-    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #1 (2026-06-19)', returning: true,
+    mentions: 'Crate Radar (2026-06-18); Rust & AI Weekly #2 (2026-06-22)', returning: true,
   },
   {
     name: 'luminal', url: 'https://github.com/luminal-ai/luminal', category: 'inference/training', quadrant: 'inference',
     ring: 'Assess', maintenance: 'actively developed via main (release tags lag; pre-1.0)', latest: 'active commits mid-2026 (last tag 0.2)',
     stars: '~2.9k★', adopters: 'YC S25, $5.3M seed; research use at Yale',
     mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false, note: 'one-to-watch / pre-1.0',
+  },
+  {
+    name: 'cuTile Rust', url: 'https://arxiv.org/abs/2606.15991', category: 'inference/GPU', quadrant: 'inference',
+    ring: 'Assess', maintenance: 'research artifact (arXiv, Jun 2026)', latest: 'paper + early code',
+    adopters: 'none yet',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'memory-safe, data-race-free GPU kernels in Rust (B200 benchmarks) — watch-this-space, not yet a crate',
   },
 
   // ── Data & Search ──
@@ -165,6 +186,13 @@ export const crateRadarTools: RadarTool[] = [
     stars: '~540★', adopters: 'none yet',
     mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false, note: 'one-to-watch',
   },
+  {
+    name: 'text-splitter', url: 'https://github.com/benbrandt/text-splitter', category: 'data/RAG', quadrant: 'data',
+    ring: 'Trial', maintenance: 'actively maintained (benbrandt)', latest: 'v0.30.x',
+    adopters: 'widely used across Rust RAG stacks; semantic-text-splitter on PyPI',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'semantic chunking by token/char budget; callable from Rust and Python',
+  },
 
   // ── Dev Tools & Editors ──
   {
@@ -184,5 +212,19 @@ export const crateRadarTools: RadarTool[] = [
     ring: 'Hold', maintenance: 'maintained, but release cadence slowed', latest: 'v0.30 (Jul 2025) — ~11mo gap; commits continue',
     stars: '~24k★', adopters: 'self-hosted Copilot alternative',
     mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false, note: 'watch-cadence',
+  },
+  {
+    name: 'Diplomat', url: 'https://github.com/rust-diplomat/diplomat', category: 'dev-tools/FFI', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (rust-diplomat; ICU4X lineage)', latest: 'active 2026 (Java/Panama backend WIP)',
+    adopters: "ICU4X's cross-language bindings",
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'idiomatic C/C++/JS bindings from tagged "bridge" Rust; compare against UniFFI',
+  },
+  {
+    name: 'Iroh', url: 'https://www.iroh.computer/blog/v1', category: 'dev-tools/networking', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'very actively maintained (n0 / N0 Inc.)', latest: 'v1.0 (Jun 2026)',
+    adopters: '200M+ endpoints created in last 30 days; Python/Node/Swift/Kotlin bindings',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
+    note: 'dial devices by public key over QUIC; committed wire-protocol stability — P2P substrate for distributed/multi-agent systems',
   },
 ]
