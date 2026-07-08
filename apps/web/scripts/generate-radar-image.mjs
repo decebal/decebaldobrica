@@ -108,7 +108,7 @@ svg += `<rect width="${W}" height="${H}" fill="${bg}"/>`
 
 // Title + ring legend
 svg += `<text x="40" y="48" fill="${fg}" font-size="30" font-weight="700">Rust &amp; AI Crate Radar</text>`
-svg += `<text x="40" y="74" fill="${muted}" font-size="15">${tools.length} tools mapped · Rust &amp; AI Weekly #2 · updated ${GENERATED_AT}</text>`
+svg += `<text x="40" y="74" fill="${muted}" font-size="15">${tools.length} tools mapped · Rust &amp; AI Weekly #3 · updated ${GENERATED_AT}</text>`
 // ring legend top-right
 let lx = W - 470
 RINGS.forEach((ring, i) => {

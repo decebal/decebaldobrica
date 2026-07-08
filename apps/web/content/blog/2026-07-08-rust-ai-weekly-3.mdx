@@ -1,0 +1,79 @@
+---
+title: 'Rust & AI Weekly #3: agents get a protocol, the desktop gets agent-ready, and dalek breaks everything (on schedule)'
+date: '2026-07-08T12:00:00.000Z'
+author: Decebal D.
+description: Issue three of the vetted Rust+AI roundup. Zed's agent protocol goes multi-vendor, Slint embeds an MCP server in every GUI, curve25519-dalek ships a coordinated major, googletest-rust gets forked by its own author, and kache earns a verdict upgrade. Each entry carries maintenance, latest-release, and adoption signals.
+tags:
+  - rust
+  - ai
+  - llm
+  - agents
+  - newsletter
+  - roundup
+slug: 2026-07-08-rust-ai-weekly-3
+---
+
+Welcome back to **Rust & AI Weekly**, the curated, vetted sweep of crates and tools showing up where Rust meets AI. Same deal as [last time](/blog/2026-06-22-rust-ai-weekly-2): no rubric, no thousand-word evaluations (that's the [Crate Radar](/radar) series' job), just the things worth a bookmark, each in a line or two, with a status line underneath so you're not bookmarking something that quietly died last summer. This issue covers two weeks (the radar kept spinning while the publishing didn't), and the theme practically filed itself: **the agent seam is standardizing.** Editors and agents agreed on a protocol, a GUI toolkit shipped an MCP server *inside the toolkit*, and the infrastructure layer underneath kept crossing 1.0 lines and asking to be trusted. Let's dig in.
+
+*(Status lines reflect public signals as of early July 2026; stars and downloads are approximate and move fast.)*
+
+[![Rust & AI Crate Radar, tools mapped by Adopt / Trial / Assess / Hold, this fortnight's snapshot](/images/radar/2026-07-08-radar.png)](/radar)
+
+*This fortnight's radar: nine new entries join the map. [Explore the interactive version](/radar).*
+
+## Pick of the week
+
+[**Slint 1.17**](https://slint.dev/blog/slint-1.17-released) — The Rust-native GUI toolkit's "desktop-ready" push lands drag and drop, system tray icons, tooltips, and two-way bindings on model rows. The sleeper, though, is that **a Slint app can now embed a Model Context Protocol server**: an AI assistant can inspect the running UI through its accessibility tree, inject input, and screenshot the result. Agent-driven QA of desktop apps just got its first first-class toolkit support. Full rubric treatment in the companion Deep Dive: [Is Rust Finally Desktop-Ready?](/blog/2026-07-08-slint-1-17-rust-desktop-ready-evaluation)
+<br/>*Maintenance: actively maintained (SixtyFPS GmbH; NLnet-funded features) · Latest: 1.17 (Jun 2026) · Adoption: LibrePCB and a broad embedded base; tri-license (GPL / royalty-free / commercial), so budget the legal hour*
+
+## Agentic AI & protocols
+
+[**agent-client-protocol**](https://github.com/agentclientprotocol/agent-client-protocol) — The Rust runtime crate for Zed's [Agent Client Protocol](https://zed.dev/acp): JSON-RPC connecting any coding agent to any editor. It's the LSP move, replayed for agents. The [registry went live](https://zed.dev/blog/acp-registry) with Claude Code, Codex CLI, GitHub Copilot CLI, and Gemini CLI on it, and those vendors don't usually agree on anything. If you're building agent tooling, this collapses your N-agents-times-M-editors integration matrix.
+<br/>*Maintenance: actively maintained (Zed Industries + ACP org) · Latest: v1.2.0 (Jul 2026) · Adoption: multi-vendor registry live; spec is young and Zed-steered, but the JSON-RPC seam keeps exit cost modest*
+
+## Systems & supply chain
+
+[**curve25519-dalek 5.0**](https://github.com/dalek-cryptography/curve25519-dalek/releases) — A coordinated major across the dalek crypto family, and `cargo tree -i curve25519-dalek` will tell you why you care: it sits under a substantial share of the ecosystem's signatures and key exchange. The API breaks (basepoint tables now go through a required `BasepointTable` trait), partly to relax bounds that were blocking downstream builds. Don't let transitive pins drift into two majors in one binary. One coordinated family upgrade PR, scheduled, soon.
+<br/>*Maintenance: actively maintained (dalek-cryptography org) · Latest: v5.0.0 (Jul 6) · Adoption: foundational; the migration is the event, not the release*
+
+[**image-png**](https://github.com/image-rs/image-png) — The memory-safety argument with a performance receipt: the pure-Rust PNG decoder that's also the *fastest* option is now the default in Chromium (since M139) and GNOME 49. In the format-parsing hot seat where C libraries historically bled CVEs, the browser vendors already voted. Keep this datapoint for your next rewrite-it-in-Rust review.
+<br/>*Maintenance: actively maintained (image-rs) · Latest: ongoing perf work (Jun 2026) · Adoption: Chromium and GNOME defaults; for decode, you already adopted it through your browser*
+
+[**GuardianDB 0.17**](https://this-week-in-rust.org/blog/2026/07/01/this-week-in-rust-658/) — Follow-up on issue #2's flagship: the P2P database shipped a release built on **Iroh 1.0** within a fortnight of iroh's stable cut. Early, but exactly the downstream-bet signal that separates a 1.0 milestone from a press release.
+<br/>*Maintenance: actively developed · Latest: 0.17.0 (Jun 2026) · Adoption: early; the interesting part is what it says about iroh*
+
+## Dev tools & testing
+
+[**kache 0.9**](https://github.com/kunobi-ninja/kache) — Verdict upgrade. Flagged as Assess in [the June 15 radar digest](/blog/2026-06-15-radar-digest-stdx-smb2-six-releases) over cache-key correctness; since then the maintainers ground down exactly that: content-hashed native libs, cross-clone key-race fixes, and a self-healing index that degrades to a miss instead of bricking the build, plus zero-copy restores on Windows ReFS. Two releases in three weeks. A build cache is still the rare dependency with near-zero exit cost: pilot it against sccache and the loser costs you nothing.
+<br/>*Maintenance: very actively maintained (Kunobi; 0.8 to 0.9 inside two weeks) · Latest: v0.9.0 (Jul 7) · Adoption: young vs. entrenched sccache; now **Trial**, up from Assess*
+
+[**Test That!**](https://hovinen.me/announcements/2026/06/24/introducing-test-that.html) — googletest-rust, forked by the person who created googletest-rust at Google. The 0.12 matcher redesign wrecked the assertion ergonomics he'd built the library around (reference and lifetime puzzles where effortless assertions used to be), upstreaming a reversal was politically dead, so: fork, original model restored, composability corner-cases actually fixed, zero mandatory dependencies. The announcement doubles as one of the most honest API-design post-mortems you'll read this year.
+<br/>*Maintenance: brand new, solo (the original author: pedigree, but a bus factor of one) · Latest: pre-1.0 (announced Jun 24) · Adoption: none yet; googletest alias features make trialing cheap, so watch whether it gathers contributors*
+
+[**hotpath**](https://hotpath.rs) — Profiling for async Rust that understands channels and lock contention, which is where your tokio services actually burn their latency budgets and where conventional profilers shrug.
+<br/>*Maintenance: actively developed, young · Latest: 0.18 (Jun 2026) · Adoption: early; treat output as a lead, not gospel*
+
+[**cargo-rdme**](https://github.com/orium/cargo-rdme) — Generates your README from your crate-level docs, ending the drift between the two. A CI step, not a runtime dependency; adoption risk approximately zero.
+<br/>*Maintenance: maintained · Latest: TWiR 657's Crate of the Week · Adoption: trivially reversible; just use it*
+
+## Edge & embedded
+
+[**AimDB**](https://github.com/aimdb-dev/aimdb) — A typed in-memory record hub for edge/IoT dataflows whose new [bring-your-own-connector layer](https://aimdb.dev/blog/aimdb-bring-your-own-connector) is a genuinely elegant piece of API design: implement three small traits (about 40 lines) and you've swapped the entire transport (UDS, serial, TCP) under an unchanged wire protocol, dispatch, and security policy. Runs std (Tokio) and no_std (Embassy), so the MCU on a UART answers the same protocol as the cloud node behind a socket.
+<br/>*Maintenance: actively developed, small team, pre-1.0 (API churn already visible in their own migration notes) · Latest: transport layer landed Jun 2026 · Adoption: early; niche unless you run MCU-to-cloud dataflows, but read the connector post for the design taste alone*
+
+## Also seen
+
+**bevy 0.19** (next-gen BSN scenes, resources-as-components, 261 contributors; the pre-1.0 upgrade treadmill still applies) · **mlua 0.12**, **octocrab 0.54**, `cached` 3.0-rc (routine major-version hygiene) · **deconvolution** (TWiR's Crate of the Week: unusually well-documented image restoration with Wiener, Richardson-Lucy, and blind PSF estimation; specialist but classy).
+
+## A thought for the week
+
+Issue #2 asked whether Rust could creep from inference into training. This fortnight the creep went somewhere I didn't expect: *toward the user*. ACP standardizes how agents talk to editors; Slint puts an MCP server inside the GUI toolkit so agents can drive running desktop apps. Put those together and the "agent" stops being a thing that lives in your terminal and starts being a peer across the whole surface of your software, with Rust supplying the plumbing at both seams. The protocols are young and one vendor holds each pen. But the last time editor-tooling integration standardized around a JSON-RPC seam, we got LSP, and nobody serious hand-rolls that matrix anymore. Worth positioning for now, not after.
+
+## Before I go
+
+Two weeks between issues is the cobbler's-children version of dependency management: the sourcing pipeline ran on schedule, the publishing human didn't. The fix was writing the catch-up as one issue instead of two apologies. Back to the crates.
+
+That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me; reader picks shape the list.
+
+Keep shipping,
+Decebal

@@ -1,0 +1,100 @@
+---
+title: 'Slint 1.17: Is Rust Finally Desktop-Ready?'
+date: '2026-07-08T14:00:00.000Z'
+author: Decebal D.
+description: Slint 1.17 ships drag and drop, system tray icons, tooltips, and an embedded MCP server that lets AI assistants drive a running UI. An engineering-leader's evaluation of whether the Rust-native GUI toolkit belongs in your dependency tree, licensing, DSL cost, and exit cost included.
+tags:
+  - rust
+  - crates
+  - gui
+  - desktop
+  - slint
+  - dependency-management
+  - agentic-ai
+slug: 2026-07-08-slint-1-17-rust-desktop-ready-evaluation
+---
+
+> This is a **Rust Crate Radar** Deep Dive: one crate, the full engineering-leadership rubric, and a one-word verdict from the ThoughtWorks Tech Radar vocabulary: **Adopt, Trial, Assess, or Hold.**
+
+## TL;DR — The Verdict
+
+**Trial.** [Slint 1.17](https://slint.dev/blog/slint-1.17-released) is the release where "Rust desktop app without Electron" stops being a hobbyist claim and starts being a plannable one. Drag and drop, system tray icons, tooltips, and two-way bindings on model rows close out most of the boring-but-mandatory desktop checklist the team committed to last November. The stewardship is real (a company, with NLnet co-funding), the tooling is unusually good, and there's a genuinely novel angle: a built-in MCP server that lets an AI assistant inspect and drive your running UI. What keeps it at Trial rather than Adopt: a tri-license that needs a legal read before commercial use, and a DSL that is a deliberate team-skills investment.
+
+## The Problem It Solves
+
+Shipping a desktop application in 2026 usually means choosing between two taxes. The Electron tax: a bundled browser, a few hundred megabytes of memory floor, and a UI stack your Rust core talks to through IPC. Or the native tax: three platform codebases, or C++ and Qt with its own licensing labyrinth.
+
+The promise of a Rust-native toolkit is one codebase, native performance, a single binary, and no browser runtime. The problem historically was that the last 20% of desktop expectations (drag and drop, tray icons, tooltips, focus management, accessibility) is where every young toolkit quietly dies. Users don't list these features; they just reject apps that lack them as "not a real app."
+
+[Slint](https://github.com/slint-ui/slint) has been working that list down deliberately since declaring a desktop-readiness roadmap in November. With 1.17, four more items fall: **single-window drag and drop**, **system tray icons**, **tooltips as a built-in widget**, and **two-way bindings on model rows**. That's not a feature dump; it's a burn-down chart being executed in public, the November plan checked off release by release.
+
+## What It Actually Does
+
+Slint UIs are written in a declarative DSL that compiles to native code, with business logic in Rust (or C++, JavaScript, Python; more on why that matters under stewardship). The new drag-and-drop model is representative of the design taste: a `DragArea` marks the source, a `DropArea` the target, and the payload is an opaque data-transfer value your host language constructs and reads:
+
+```slint
+export component Example inherits Window {
+    DragArea {
+        data: Api.make-transfer("Hello World");
+        allow-copy: true;
+        Rectangle { background: #f0c000; width: 100px; height: 100px; }
+    }
+
+    drop := DropArea {
+        can-drop(event) => DragAction.copy;
+        dropped(event) => {
+            debug("Got: ", Api.read-transfer(event.data));
+            return event.proposed-action;
+        }
+        Rectangle {
+            background: drop.contains-drag ? #80e080 : #a0a0a0;
+            width: 100px; height: 100px;
+        }
+    }
+}
+```
+
+Scope honesty from the maintainers: this is *within-application* drag and drop today; cross-application drops are in development upstream in winit. The tray icon story is similarly pragmatic, one `SystemTrayIcon` element with a menu, working across macOS, Windows, and Linux.
+
+The sleeper feature is buried in the "other changes" section: **a Slint application can now embed a Model Context Protocol server.** Once connected, an AI assistant can inspect the running application through its accessibility tree, inject mouse and keyboard input, and capture screenshots to reason about the result. They also ship skills that teach coding assistants to write Slint's DSL.
+
+Pause on that. UI test automation has always been the flakiest, most expensive layer of the pyramid, and agent-driven QA of desktop apps has been blocked on exactly the introspection surface Slint just made a first-class feature. If you're already building agentic workflows, this is the first GUI toolkit to meet you halfway, and it neatly doubles as the accessibility investment paying twice.
+
+Rounding out the release: two-way bindings on model rows (`text <=> item.name`, so you edit a row in place with no callback bounce), a remote viewer that live-renders a `.slint` file on a phone while you edit on a desktop, C++-on-Android support, and a Node.js port that now idles at near-zero CPU by tying into libuv's event loop.
+
+## Evaluation
+
+| Dimension | Assessment | Notes |
+|---|---|---|
+| **Problem fit** | Strong | Desktop-without-Electron is a real, recurring need; the missing pieces were exactly these. |
+| **Maturity** | Good and visibly improving | 1.x with a public desktop-readiness roadmap being executed; within-app DnD caveat is typical of remaining edges. |
+| **Stewardship** | Strong, with a caveat | SixtyFPS GmbH (company, not a hobby), NLnet grant co-funding features, steady release cadence. Caveat: business sustainability *is* your dependency. |
+| **Ecosystem fit** | Good | Rust-first with C++/JS/Python APIs; winit/wgpu-adjacent rather than fighting the ecosystem; embedded + desktop from one toolkit. |
+| **Cost of adoption** | Moderate | The DSL is a real learning curve and a hiring consideration; tooling (LSP, live preview, now AI skills) softens it substantially. |
+| **Exit cost** | Moderate–High | UI definitions are Slint-specific; leaving means rewriting the view layer. Standard for GUI toolkits, so decide deliberately. |
+
+Three of these deserve the longer look.
+
+**Stewardship cuts both ways.** A GmbH with employees, a commercial license to sell, and NLnet grant money for specific features (drag and drop, tray, and tooltips were funded for the [LibrePCB](https://librepcb.org/) "Slintify" project) is a far better bet than a BDFL's weekend project. This is a team whose rent depends on the toolkit staying alive. The mirror-image risk is that a company can pivot or fold in ways a community project can't. The mitigations are real, though: the code is open source, and the multi-language API strategy (C++, Python, JS) diversifies its user base well beyond the Rust hype cycle. That's a survival trait, not a distraction.
+
+**The license is the actual adoption decision.** Slint ships under a triple license: GPLv3, a royalty-free license for desktop, mobile, and web applications, and a paid commercial license (chiefly for embedded devices). For a typical proprietary desktop app the royalty-free option covers you, but it is *not* a plain MIT/Apache grant, and your counsel should read it before a product bet, especially if "desktop app" might someday become "embedded device," where the paid tier kicks in. This is a Qt-shaped consideration at friendlier terms. Budget the legal hour; it's cheaper than the retrofit.
+
+**The DSL is a team-capability question, not a syntax question.** Every engineer you hire knows neither Slint's DSL nor your `.slint` codebase. The counterweights: the DSL is small and readable, designer-developer separation is a feature not an accident, the live-preview tooling is genuinely good, and as of 1.17 the AI-assistant skills mean your coding agent has likely already read the manual. Still: this is a strategic language adoption in miniature. Treat it like one.
+
+## When to Adopt — and When Not To
+
+Reach for Slint now if you're building a new desktop tool or an embedded HMI, your team is Rust-comfortable, and you want native footprint without a browser runtime, especially if the product spans embedded *and* desktop, where Slint's one-toolkit story has no serious Rust rival. The agentic-QA angle is a bonus that nothing else offers today.
+
+Hold off if your UI is deeply web-shaped (complex HTML-like layouts, web-native talent pool; Tauri keeps the web stack with a Rust core), if you need cross-application drag and drop *today*, or if immediate-mode simplicity fits better (egui remains the pragmatic choice for internal tooling that doesn't need to feel native).
+
+The honest framing for a team lead: the risk in Slint has migrated from "will this toolkit survive" (it will) to "is my organization ready to own a DSL and a license nuance." Those are answerable questions, which is precisely what makes this a Trial rather than a gamble.
+
+## The Verdict
+
+**Trial.** Build a real internal tool on 1.17 this quarter, something with a tray icon and drag and drop, so you exercise exactly the seams that used to be missing. Have legal read the royalty-free license against your product roadmap in parallel. If both come back clean, Slint is on a credible path to being the default answer for Rust desktop, and the November roadmap's remaining items (cross-app DnD upstream in winit among them) are the milestones to watch for the Adopt call.
+
+---
+
+*This fortnight's roundup covers the rest of the radar, including ACP going multi-vendor, curve25519-dalek 5.0, and a fork with unusual pedigree: [Rust & AI Weekly #3](/blog/2026-07-08-rust-ai-weekly-3)*
+
+*Got a crate you want put under the same rubric? [Get in touch](/contact); reader requests shape the backlog.*

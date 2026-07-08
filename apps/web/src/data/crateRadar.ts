@@ -32,7 +32,7 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-06-22'
+export const RADAR_GENERATED_AT = '2026-07-08'
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -224,7 +224,67 @@ export const crateRadarTools: RadarTool[] = [
     name: 'Iroh', url: 'https://www.iroh.computer/blog/v1', category: 'dev-tools/networking', quadrant: 'dev',
     ring: 'Trial', maintenance: 'very actively maintained (n0 / N0 Inc.)', latest: 'v1.0 (Jun 2026)',
     adopters: '200M+ endpoints created in last 30 days; Python/Node/Swift/Kotlin bindings',
-    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
-    note: 'dial devices by public key over QUIC; committed wire-protocol stability — P2P substrate for distributed/multi-agent systems',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22); Rust & AI Weekly #3 (2026-07-08)', returning: true,
+    note: 'dial devices by public key over QUIC; committed wire-protocol stability; P2P substrate for distributed/multi-agent systems; GuardianDB 0.17 now ships on it',
+  },
+  {
+    name: 'agent-client-protocol', url: 'https://github.com/agentclientprotocol/agent-client-protocol', category: 'agentic/protocol', quadrant: 'agentic',
+    ring: 'Trial', maintenance: 'actively maintained (Zed Industries + ACP org)', latest: 'v1.2.0 (Jul 2026)',
+    adopters: 'registry live: Claude Code, Codex CLI, Copilot CLI, Gemini CLI, OpenCode',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'the LSP move replayed for agents; JSON-RPC seam keeps exit cost modest; spec young and Zed-steered',
+  },
+  {
+    name: 'Slint', url: 'https://github.com/slint-ui/slint', category: 'dev-tools/gui', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (SixtyFPS GmbH; NLnet-funded features)', latest: '1.17 (Jun 2026)',
+    adopters: 'LibrePCB; broad embedded base',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08); Crate Radar Deep Dive (2026-07-08)', returning: false,
+    note: 'desktop-ready push (DnD, tray, tooltips) + embedded MCP server so agents can drive a running UI; tri-license needs a legal read',
+  },
+  {
+    name: 'curve25519-dalek', url: 'https://github.com/dalek-cryptography/curve25519-dalek', category: 'dev-tools/crypto', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'actively maintained (dalek-cryptography org)', latest: 'v5.0.0 (Jul 2026)',
+    adopters: 'foundational; huge transitive dep tree',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'coordinated dalek-family major; breaking BasepointTable trait, so schedule one family upgrade PR and don’t let pins drift',
+  },
+  {
+    name: 'image-png', url: 'https://github.com/image-rs/image-png', category: 'data/media', quadrant: 'data',
+    ring: 'Adopt', maintenance: 'actively maintained (image-rs)', latest: 'ongoing perf work (Jun 2026)',
+    adopters: 'Chromium default since M139; GNOME 49 via glycin',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'memory safety with a performance receipt: fastest PNG decoder, already in the browsers',
+  },
+  {
+    name: 'kache', url: 'https://github.com/kunobi-ninja/kache', category: 'dev-tools/build-cache', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; 0.8→0.9 inside two weeks)', latest: 'v0.9.0 (Jul 2026)',
+    adopters: 'young vs. entrenched sccache',
+    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08)', returning: true,
+    note: 'verdict upgraded Assess→Trial: correctness work landed (content-hashed static libs, self-healing index, ReFS zero-copy restores); near-zero exit cost',
+  },
+  {
+    name: 'Test That!', url: 'https://hovinen.me/announcements/2026/06/24/introducing-test-that.html', category: 'dev-tools/testing', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'brand new, solo (original googletest-rust author)', latest: 'pre-1.0 (Jun 2026)',
+    adopters: 'none yet; googletest alias features ease migration',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'googletest-rust forked by its own creator over the 0.12 matcher redesign; watch for contributors before betting',
+  },
+  {
+    name: 'hotpath', url: 'https://hotpath.rs', category: 'dev-tools/profiling', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively developed, young', latest: '0.18 (Jun 2026)',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'async profiling that understands channel + lock contention; treat output as a lead, not gospel',
+  },
+  {
+    name: 'cargo-rdme', url: 'https://github.com/orium/cargo-rdme', category: 'dev-tools/cargo', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'maintained', latest: 'TWiR 657 Crate of the Week',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'README generated from crate docs; CI step, adoption risk ~zero',
+  },
+  {
+    name: 'AimDB', url: 'https://github.com/aimdb-dev/aimdb', category: 'data/edge', quadrant: 'data',
+    ring: 'Assess', maintenance: 'actively developed, small team, pre-1.0', latest: 'BYO-connector transport layer (Jun 2026)',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
+    note: 'typed record hub for MCU-to-cloud dataflows; swap transports via 3 traits (~40 lines); std + no_std/Embassy',
   },
 ]
