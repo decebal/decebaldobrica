@@ -27,6 +27,8 @@ if (!arrMatch) throw new Error('Could not locate crateRadarTools array')
 const tools = eval(`(${arrMatch[1]})`)
 const dateMatch = src.match(/RADAR_GENERATED_AT\s*=\s*'([^']+)'/)
 const GENERATED_AT = dateMatch ? dateMatch[1] : new Date().toISOString().slice(0, 10)
+const issueMatch = src.match(/RADAR_ISSUE\s*=\s*(\d+)/)
+const ISSUE = issueMatch ? issueMatch[1] : '?'
 
 // ── Geometry (mirrors src/components/radar/geometry.ts) ──────────────────────
 const RING_COLORS = { Adopt: '#3fb950', Trial: '#58a6ff', Assess: '#d29922', Hold: '#f85149' }
@@ -108,7 +110,7 @@ svg += `<rect width="${W}" height="${H}" fill="${bg}"/>`
 
 // Title + ring legend
 svg += `<text x="40" y="48" fill="${fg}" font-size="30" font-weight="700">Rust &amp; AI Crate Radar</text>`
-svg += `<text x="40" y="74" fill="${muted}" font-size="15">${tools.length} tools mapped · Rust &amp; AI Weekly #3 · updated ${GENERATED_AT}</text>`
+svg += `<text x="40" y="74" fill="${muted}" font-size="15">${tools.length} tools mapped · Rust &amp; AI Weekly #${ISSUE} · updated ${GENERATED_AT}</text>`
 // ring legend top-right
 let lx = W - 470
 RINGS.forEach((ring, i) => {

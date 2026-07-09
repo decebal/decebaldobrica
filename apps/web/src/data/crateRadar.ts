@@ -34,6 +34,9 @@ export interface RadarTool {
 
 export const RADAR_GENERATED_AT = '2026-07-08'
 
+/** Issue number shown in the generated radar image subtitle. Bump per issue. */
+export const RADAR_ISSUE = 3
+
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
   { key: 'inference', label: 'Inference & Serving' },
