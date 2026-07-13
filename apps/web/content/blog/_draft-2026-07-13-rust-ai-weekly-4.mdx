@@ -1,0 +1,73 @@
+---
+title: 'Rust & AI Weekly #4: robots get a stable runtime, proxies get a framework, and rewrites get a receipt'
+date: '2026-07-13T12:00:00.000Z'
+author: Decebal D.
+description: "Today's issue: copper-rs hits 1.0 after 1043 pull requests, rama ends a five-year gestation with a release-train promise, and Bun's AI-powered Rust port comes with a $165k invoice. Each entry carries maintenance, latest-release, and adoption signals."
+tags:
+  - rust
+  - ai
+  - llm
+  - agents
+  - newsletter
+  - roundup
+slug: 2026-07-13-rust-ai-weekly-4
+---
+
+Welcome back to **Rust & AI Weekly**, the curated, vetted sweep of crates and tools showing up where Rust meets AI. Today's issue: copper-rs hits 1.0 after 1043 pull requests, rama ends a five-year gestation with a release-train promise, and Bun's AI-powered Rust port comes with a $165k invoice. The theme this week is **infrastructure growing up**: two long-gestating foundations crossed their stability lines within four days of each other, and the price of porting an entire runtime to Rust turned out to be a number you can put in a budget, not a moonshot. On schedule this time, too.
+
+*(Status lines reflect public signals as of July 13, 2026; stars and downloads are approximate and move fast.)*
+
+[![Rust & AI Crate Radar, tools mapped by Adopt / Trial / Assess / Hold, this week's snapshot](/images/radar/2026-07-13-radar.png)](/radar)
+
+*This week's radar: six new entries join the map, and GuardianDB earns its returning ring. [Explore the interactive version](/radar).*
+
+## Pick of the week
+
+[**copper-rs 1.0.0**](https://www.copper-robotics.com/whats-new/copper-rs-v100) — Guillaume Binet's deterministic robotics runtime (think "game engine for robots": one scheduler, zero-alloc data-oriented core, replay your entire robot from logs) went stable on July 3, after 1043 pull requests and a two-year public slog through rc territory. The 1.0 promise is the point: semver guarantees on the API surface, so the certification-and-replay story robotics teams actually need can finally rest on something that won't shift under them. The release itself is dense (named runtime thread pools, CPU affinity controls, a `cu_memmon` heap monitor with a strict mode for realtime paths, keyframes across PID controllers and flight tasks, a ROS2 bridge that now matches CDR expectations). If your AI roadmap includes anything embodied, this is the Rust substrate to evaluate first. Go deeper with the [release notes archive](https://github.com/copper-project/copper-rs/wiki/Copper-Release-Notes), which doubles as a two-year case study in how to walk an API to stability in public.
+<br/>*Maintenance: actively maintained (Copper Project, with Copper Robotics as commercial steward) · Latest: v1.0.0 (Jul 3) · Adoption: **Trial**; niche if you have no robots, category-defining if you do*
+
+## Networking & infrastructure
+
+[**rama 0.3**](https://plabayo.tech/blog/rama-0-3) — Glen De Cauwsemaecker's network service framework shipped its biggest release in five years of work, four days after copper's 1.0. Rama wants to be the foundation for proxies, gateways, clients and servers, and its commercial partners already run it for LLM harnesses and AI proxy gateways, which is exactly where the Rust-meets-AI traffic flows through. Honest caveats, stated by the author himself: migrating from 0.2 is "easily a day's work", and partners mostly still pin a commit on main. The new promise of two-to-eight-week release trains is what would move this up the radar; watch whether it holds. Glen's [Rama 101 series](https://plabayo.tech/blog/rama-101-1-https-clients-and-abstractions) is the right on-ramp, and he's talking at the London Rust Project Group on July 23.
+<br/>*Maintenance: actively maintained (Plabayo, full-time, two core maintainers) · Latest: v0.3.0 (Jul 7) · Adoption: **Assess**; production-proven via pinned commits, but the release discipline is a week old*
+
+[**Sōzu 2.1**](https://www.clever.cloud/blog/company/2026/07/01/sozu-2-1-0-udp-load-balancer-programmable-edge/) — Clever Cloud's hot-reconfigurable reverse proxy adds UDP load balancing, rounding out the programmable-edge story beyond HTTP. The stewardship profile is the quiet appeal: a cloud provider running its own proxy in production is the opposite of a bus factor of one.
+<br/>*Maintenance: actively maintained (Clever Cloud) · Latest: v2.1.0 (Jul 2026) · Adoption: **Trial**; corporate steward with production skin in the game*
+
+[**apalis**](https://github.com/geofmureithi/apalis) — Go-land spent this week talking about [River 0.40](https://github.com/riverqueue/river), its Postgres-backed job queue; the Rust seat at that table is apalis. Tower-style middleware for jobs, a Postgres backend with NOTIFY-driven low-latency fetching, and a 1.0 release candidate that's been grinding toward stable. If you're already on sqlx and Postgres, this is the boring-in-a-good-way choice for background work.
+<br/>*Maintenance: actively maintained (geofmureithi) · Latest: v1.0.0-rc series (apalis-postgres updated May 2026) · Adoption: **Trial**; rust-alternative-to River, and it holds the comparison*
+
+## Data & local-first
+
+[**GuardianDB**](https://www.willsearch.com.br/blog/2026/07/04/meet-guardiandbs-new-postgresql-compatibility-layer/) — Third mention, and the arc is the story: issue #2 flagged the P2P local-first database as promising, issue #3 noted it rebased onto Iroh 1.0 within a fortnight of iroh's stable cut, and now it ships a PostgreSQL compatibility layer, so existing tools and drivers can speak to it over the wire protocol they already know. Each move widens the exit door, which is precisely what an Assess-ring project should be doing to earn a promotion. Not there yet; watch the next release.
+<br/>*Maintenance: actively developed · Latest: PostgreSQL compat layer (Jul 4) · Adoption: **Assess**, holding; the compatibility bet is the right kind of ambition*
+
+## Language watch
+
+- **Rust 1.97.0** — released July 9: the v0 symbol mangling scheme lands on stable, Cargo gets stabilized warning controls (deny warnings without invalidating the build cache), and integer primitives grow `bit_width` and friends. The mangling change is the one to note for anyone shipping profiling or debugging tooling.
+- **RFC 3981: registry tokens in the OS credential store by default** — new RFC this week. Plaintext `credentials.toml` has been a quiet supply-chain liability for years; if you run a private registry, go add your voice.
+- **"Let the OS handle stack growth"** — compiler MCP entered final comment period this week; a proposal with real implications for how Rust behaves under deep recursion.
+- **`slice_split_once`** — tracking issue in final comment period this week; a small ergonomic win that ends a lot of hand-rolled `splitn` calls.
+
+## In brief
+
+[**apis-saltans**](https://crates.io/crates/apis-saltans-core) — TWiR's Crate of the Week: a Zigbee implementation with a coordinator API, self-suggested by author Richard Neumann; smart-home agents want exactly this seam · [**RootAsRole 4.0**](https://github.com/LeChatP/RootAsRole/releases/tag/v4.0.0) — a Rust take on privilege escalation with role-based execution, a major release for the sudo-skeptical · [**logdrain**](https://thekeeper.io/blog/logdrain-log-template-mining-in-rust/) — embeddable log-template mining (the Drain algorithm family) in Rust; young, but observability pipelines will want it · [**mqtt-typed-client 0.2**](https://holovskyi.github.io/blog/typed-mqtt-topics-for-rust/) — type-safe MQTT topics on rumqttc, written up by its author Holovskyi.
+
+## Elsewhere
+
+- Jarred Sumner wrote up [rewriting Bun in Rust](https://bun.com/blog/bun-in-rust), the controversial AI-powered port of the Zig-built JavaScript runtime. The headline number: roughly $165k of Claude Fable usage at API rates. Go Weekly filed it under "elsewhere in the ecosystem"; for this newsletter it's the main event, because it prices the machine-assisted rewrite for everyone else's planning meeting.
+- Microsoft shipped the [Go-powered TypeScript 7.0 compiler](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/), ten times faster, and Steve Francia [argued this makes Go the agentic default](https://spf13.com/p/go-the-agentic-language/). Worth reading with a critical eye: the Rust seats at the JS-tooling table (swc, oxc, Rolldown) were occupied before the port started, and the interesting split is compilers-as-ports (Go's win here) versus toolchains-built-Rust-native from day one.
+- Chris Watson's [goshot](https://github.com/watzon/goshot) turns code into shareable screenshots in Go; the Rust seat at that table is [silicon](https://github.com/Aloxaf/silicon), which has quietly done the same job for years. No verdict needed, just a reminder that the Rust answer often predates the question.
+
+## A thought for the week
+
+Issue #3 watched the agent seam standardize. This week the money showed up. A runtime port that would have been a two-year staffing conversation now has an invoice: $165k of model usage, plus the humans reviewing it. The TypeScript compiler got ported wholesale. The leadership question has quietly inverted: it used to be "can we afford the rewrite", and it's becoming "given the rewrite is affordable, which target language leaves us maintainable afterwards". That second question is where Rust's pitch sharpens, because a borrow checker is the one code reviewer that reads every line the machine writes. Budget for the port; interrogate the after.
+
+## Before I go
+
+This issue shipped on schedule, which after last time's two-week confession feels worth a quiet note rather than a victory lap. One gap observation from the cross-community sweep: Go has httpSMS turning an Android phone into an SMS gateway, and Rust has no credible seat at that table. Free project idea; the radar will be watching.
+
+That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me; reader picks shape the list.
+
+Keep shipping,
+Decebal

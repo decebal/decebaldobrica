@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-07-08'
+export const RADAR_GENERATED_AT = '2026-07-13'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 3
+export const RADAR_ISSUE = 4
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -289,5 +289,37 @@ export const crateRadarTools: RadarTool[] = [
     ring: 'Assess', maintenance: 'actively developed, small team, pre-1.0', latest: 'BYO-connector transport layer (Jun 2026)',
     mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
     note: 'typed record hub for MCU-to-cloud dataflows; swap transports via 3 traits (~40 lines); std + no_std/Embassy',
+  },
+  {
+    name: 'copper-rs', url: 'https://github.com/copper-project/copper-rs', category: 'agentic/robotics', quadrant: 'agentic',
+    ring: 'Trial', maintenance: 'actively maintained (Copper Project / Copper Robotics; Guillaume Binet)', latest: 'v1.0.0 (Jul 3, 2026)',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
+    note: 'deterministic robotics runtime ("game engine for robots") hits 1.0 after 1043 PRs; semver promise, keyframes, cu_memmon heap monitor, ROS2 bridge; the Rust substrate for physical AI',
+  },
+  {
+    name: 'rama', url: 'https://github.com/plabayo/rama', category: 'networking/framework', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'actively maintained (Plabayo full-time; Glen De Cauwsemaecker + Brecht Stamper)', latest: 'v0.3.0 (Jul 7, 2026)',
+    adopters: 'commercial partners in data extraction, security, AI (LLM harness, AI proxy gateways), cloud infra',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
+    note: 'network service framework for proxies/clients/servers, five years in; 0.2 to 0.3 migration is a real day of work and partners still pin main, but 2-8 week release trains now promised',
+  },
+  {
+    name: 'Sōzu', url: 'https://github.com/sozu-proxy/sozu', category: 'networking/load-balancer', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (Clever Cloud)', latest: 'v2.1.0 (Jul 2026)',
+    adopters: 'Clever Cloud production edge',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
+    note: 'hot-reconfigurable reverse proxy adds UDP load balancing for the programmable edge; corporate steward with production skin in the game',
+  },
+  {
+    name: 'apalis', url: 'https://github.com/geofmureithi/apalis', category: 'infra/background-jobs', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (geofmureithi)', latest: 'v1.0.0-rc (2026; apalis-postgres updated May 2026)',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
+    note: 'the Rust seat at the Postgres-job-queue table Go-land calls River; tower-style middleware, Postgres NOTIFY low-latency fetch, nearing 1.0',
+  },
+  {
+    name: 'GuardianDB', url: 'https://www.willsearch.com.br/blog/2026/07/04/meet-guardiandbs-new-postgresql-compatibility-layer/', category: 'data/p2p', quadrant: 'data',
+    ring: 'Assess', maintenance: 'actively developed', latest: 'PostgreSQL compatibility layer (Jul 2026)',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #4 (2026-07-13)', returning: true,
+    note: 'P2P/local-first database on Iroh now speaks PostgreSQL wire protocol; third mention, still early, but the compatibility bet widens the exit door',
   },
 ]

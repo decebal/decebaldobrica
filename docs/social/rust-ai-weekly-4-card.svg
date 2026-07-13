@@ -1,0 +1,43 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans, Inter, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <clipPath id="cardClip"><rect x="0" y="0" width="1200" height="760" rx="24"/></clipPath>
+  </defs>
+  <g clip-path="url(#cardClip)">
+    <rect x="0" y="0" width="1200" height="760" fill="#0d1117"/>
+    <rect x="0" y="0" width="12" height="760" fill="url(#accent)"/>
+  </g>
+  <rect x="0.75" y="0.75" width="1198.5" height="758.5" rx="24" fill="none" stroke="#1e2633" stroke-width="1.5"/>
+  <text x="62" y="92" font-size="22" font-weight="700" fill="#f97316">ISSUE #4 · NEWSLETTER + LIVE RADAR</text>
+  <text x="60" y="168" font-size="62" font-weight="800" fill="#f5f7fa">Rust &amp; AI Weekly #4</text>
+  <text x="60" y="218" font-size="26" fill="#9aa7b4">A vetted sweep of where Rust meets AI — 42 crates &amp; tools, placed by verdict.</text>
+  
+  <rect x="60.0" y="268" width="289.8" height="84" rx="12" fill="#4ade80"/>
+  <text x="204.9" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">12</text>
+  <text x="204.9" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Adopt</text>
+  <rect x="357.8" y="268" width="410.6" height="84" rx="12" fill="#60a5fa"/>
+  <text x="563.1" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">17</text>
+  <text x="563.1" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Trial</text>
+  <rect x="776.4" y="268" width="265.7" height="84" rx="12" fill="#fbbf24"/>
+  <text x="909.2" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">11</text>
+  <text x="909.2" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Assess</text>
+  <rect x="1050.0" y="268" width="90.0" height="84" rx="12" fill="#f87171"/>
+  <text x="1095.0" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">2</text>
+  <text x="1095.0" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Hold</text>
+  
+  <rect x="60" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="94" cy="440" r="7" fill="#60a5fa"/>
+  <text x="114" y="449" font-size="30" font-weight="700" fill="#f5f7fa">copper-rs</text>
+  <text x="86" y="496" font-size="20" fill="#94a3b8">Deterministic robotics</text><text x="86" y="528" font-size="20" fill="#94a3b8">runtime hits 1.0 —</text><text x="86" y="560" font-size="20" fill="#94a3b8">Pick of the week</text>
+  <rect x="428" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="462" cy="440" r="7" fill="#fbbf24"/>
+  <text x="482" y="449" font-size="30" font-weight="700" fill="#f5f7fa">rama</text>
+  <text x="454" y="496" font-size="20" fill="#94a3b8">The framework behind AI</text><text x="454" y="528" font-size="20" fill="#94a3b8">proxy gateways ships 0.3,</text><text x="454" y="560" font-size="20" fill="#94a3b8">five years in</text>
+  <rect x="796" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="830" cy="440" r="7" fill="#60a5fa"/>
+  <text x="850" y="449" font-size="30" font-weight="700" fill="#f5f7fa">apalis</text>
+  <text x="822" y="496" font-size="20" fill="#94a3b8">The Rust seat at Go's</text><text x="822" y="528" font-size="20" fill="#94a3b8">Postgres-job-queue</text><text x="822" y="560" font-size="20" fill="#94a3b8">table, nearing 1.0</text>
+  <text x="60" y="694" font-size="26" font-weight="700" fill="#f5f7fa">Explore the live radar →</text><text x="392" y="694" font-size="26" font-weight="700" fill="#f97316">decebaldobrica.com/radar</text>
+</svg>
