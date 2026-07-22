@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-07-13'
+export const RADAR_GENERATED_AT = '2026-07-20'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 4
+export const RADAR_ISSUE = 5
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -260,10 +260,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'kache', url: 'https://github.com/kunobi-ninja/kache', category: 'dev-tools/build-cache', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; 0.8→0.9 inside two weeks)', latest: 'v0.9.0 (Jul 2026)',
+    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; three minor releases in five weeks)', latest: 'v0.10.0 (Jul 2026)',
     adopters: 'young vs. entrenched sccache',
-    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08)', returning: true,
-    note: 'verdict upgraded Assess→Trial: correctness work landed (content-hashed static libs, self-healing index, ReFS zero-copy restores); near-zero exit cost',
+    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20)', returning: true,
+    note: 'verdict holds at Trial: 0.10 adds instant download dedup (no more polling) on top of content-hashed static libs and self-healing index; near-zero exit cost',
   },
   {
     name: 'Test That!', url: 'https://hovinen.me/announcements/2026/06/24/introducing-test-that.html', category: 'dev-tools/testing', quadrant: 'dev',
@@ -318,8 +318,43 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'GuardianDB', url: 'https://www.willsearch.com.br/blog/2026/07/04/meet-guardiandbs-new-postgresql-compatibility-layer/', category: 'data/p2p', quadrant: 'data',
-    ring: 'Assess', maintenance: 'actively developed', latest: 'PostgreSQL compatibility layer (Jul 2026)',
-    mentions: 'Rust & AI Weekly #2 (2026-06-22); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #4 (2026-07-13)', returning: true,
-    note: 'P2P/local-first database on Iroh now speaks PostgreSQL wire protocol; third mention, still early, but the compatibility bet widens the exit door',
+    ring: 'Assess', maintenance: 'actively developed', latest: 'Guardian Sentinel TUI (Jul 2026)',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #4 (2026-07-13); Rust & AI Weekly #5 (2026-07-20)', returning: true,
+    note: 'P2P/local-first database on Iroh; after the PostgreSQL wire layer it now ships Guardian Sentinel, a terminal UI for operating nodes; fourth mention, verdict holds at Assess',
+  },
+  {
+    name: 'bullmq-official', url: 'https://bullmq.io/news/260712/rust-release/', category: 'infra/background-jobs', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (Taskforce.sh Inc., SOC 2 certified; Manuel Astudillo)', latest: 'v1.1.0 (Jul 15, 2026; three releases in first week)',
+    adopters: 'interop with Node/Python/PHP/Elixir BullMQ deployments out of the box',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
+    note: 'official Rust BullMQ runs the exact same battle-tested Lua scripts as the Node reference; benchmarks match or beat Node from day one; the Redis seat next to apalis at the Postgres table',
+  },
+  {
+    name: 'Grok Build', url: 'https://github.com/xai-org/grok-build', category: 'agentic/coding-agent', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'maintained by xAI; repo synced from monorepo, no external contributions', latest: 'open-sourced Jul 15, 2026 (Apache 2.0)',
+    adopters: 'xAI grok CLI users; community fork (gork-build) strips vendor telemetry',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
+    note: '~845k lines of production Rust coding-agent harness + TUI, ACP support; open source but closed governance, so read it more than you fork it',
+  },
+  {
+    name: 'Topcoat', url: 'https://github.com/tokio-rs/topcoat', category: 'dev-tools/web-framework', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'actively developed (tokio-rs org)', latest: 'announced Jul 2026, early-stage',
+    adopters: 'none yet; Tokio stewardship from day one',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
+    note: 'batteries-included full-stack: async server components query the DB directly, $() expressions type-check as Rust and transpile to JS, no wasm bundle; the strongest steward a week-old framework could ask for',
+  },
+  {
+    name: 'cochlea', url: 'https://github.com/richer-richard/cochlea', category: 'agentic/audio', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'brand new, solo maintainer', latest: 'v0.1.0 (Jul 2026, 9 crates)',
+    adopters: 'none yet; cochlea probe works on any WAV/FLAC as the adoption wedge',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
+    note: 'headless deterministic audio engine for AI agents: compose scores as data, render byte-identical PCM, assert on features via DSL; ships an MCP server; no realtime path by design',
+  },
+  {
+    name: 'Turso Database', url: 'https://github.com/tursodatabase/turso', category: 'data/database', quadrant: 'data',
+    ring: 'Assess', maintenance: 'very actively maintained (Turso; 260+ contributors; DST + fuzzing + formal methods)', latest: 'SQLite rewrite out of beta; Postgres-in-Rust announced (Jul 2026)',
+    adopters: 'Turso Cloud',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
+    note: 'positioning as the LLVM of databases: one Rust core, pluggable SQL frontends compiled to VDBE bytecode; SQLite frontend is real today, the Postgres one is an ambition with a pgmicro proof of concept',
   },
 ]
