@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-07-20'
+export const RADAR_GENERATED_AT = '2026-08-03'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 5
+export const RADAR_ISSUE = 6
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -260,10 +260,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'kache', url: 'https://github.com/kunobi-ninja/kache', category: 'dev-tools/build-cache', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; three minor releases in five weeks)', latest: 'v0.10.0 (Jul 2026)',
+    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; five minor releases since June)', latest: 'v0.12.0 (Jul 29, 2026)',
     adopters: 'young vs. entrenched sccache',
-    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20)', returning: true,
-    note: 'verdict holds at Trial: 0.10 adds instant download dedup (no more polling) on top of content-hashed static libs and self-healing index; near-zero exit cost',
+    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03)', returning: true,
+    note: 'verdict holds at Trial: 0.11 added broader compiler coverage and libc-aware keys, 0.12 adds pluggable remotes, smarter GC, sharper diagnostics; near-zero exit cost',
   },
   {
     name: 'Test That!', url: 'https://hovinen.me/announcements/2026/06/24/introducing-test-that.html', category: 'dev-tools/testing', quadrant: 'dev',
@@ -345,10 +345,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'cochlea', url: 'https://github.com/richer-richard/cochlea', category: 'agentic/audio', quadrant: 'agentic',
-    ring: 'Assess', maintenance: 'brand new, solo maintainer', latest: 'v0.1.0 (Jul 2026, 9 crates)',
+    ring: 'Assess', maintenance: 'very active, solo maintainer (0.1 to 0.3 in three weeks)', latest: 'v0.3.0 (Jul 22, 2026)',
     adopters: 'none yet; cochlea probe works on any WAV/FLAC as the adoption wedge',
-    mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
-    note: 'headless deterministic audio engine for AI agents: compose scores as data, render byte-identical PCM, assert on features via DSL; ships an MCP server; no realtime path by design',
+    mentions: 'Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03)', returning: true,
+    note: 'headless deterministic audio engine for AI agents; 0.3.0 adds melody read-back, MFCC timbre features, a master limiter, and MIDI import; verdict holds at Assess',
   },
   {
     name: 'Turso Database', url: 'https://github.com/tursodatabase/turso', category: 'data/database', quadrant: 'data',
@@ -356,5 +356,33 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'Turso Cloud',
     mentions: 'Rust & AI Weekly #5 (2026-07-20)', returning: false,
     note: 'positioning as the LLVM of databases: one Rust core, pluggable SQL frontends compiled to VDBE bytecode; SQLite frontend is real today, the Postgres one is an ambition with a pgmicro proof of concept',
+  },
+  {
+    name: 'syn', url: 'https://github.com/dtolnay/syn', category: 'dev-tools/proc-macros', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'actively maintained (David Tolnay; 2.x line still receiving parallel releases)', latest: 'v3.0.3 (Jul 2026; 3.0.0 landed Jul 18)',
+    adopters: 'underneath serde_derive, thiserror, async-trait, and most derive macros in the ecosystem',
+    mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
+    note: 'first major in three years; ten new non-exhaustive *Modifiers structs reserve room for in-flight language RFCs so future syntax lands without another major; budget the migration, and watch for duplicate syn majors bloating your dependency tree',
+  },
+  {
+    name: 'SeaORM', url: 'https://github.com/SeaQL/sea-orm', category: 'data/orm', quadrant: 'data',
+    ring: 'Trial', maintenance: 'actively maintained (SeaQL, Chris Tsang; 278 contributors)', latest: 'v2.0.0 (Jul 20, 2026; after 43 release candidates)',
+    stars: '~9.8k', downloads: '~22M', adopters: 'wide production use; Seaography GraphQL layer on top',
+    mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
+    note: 'largest release in project history: dense entity format, entity-first schema sync, nested ActiveModel, typed COLUMN constants, sync API, Arrow/Parquet; the 1.0 API still works, so migration is incremental',
+  },
+  {
+    name: 'crimson-crab', url: 'https://github.com/singhpratech/crimson-crab', category: 'agentic/client', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'brand new, solo maintainer (singhpratech), fast cadence', latest: 'v0.2.x (Jul 2026; typed schemars schemas landed in 0.2.0)',
+    adopters: 'none named; ships an rmcp-based MCP server template',
+    mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
+    note: 'Claude-only Rust SDK: panic-free by compile-time lint gate, forward-compatible wire enums, tokio-free public API, wasm32 support; deliberately deep where rig and genai are broad',
+  },
+  {
+    name: 'flodl', url: 'https://flodl.dev', category: 'inference/training', quadrant: 'inference',
+    ring: 'Assess', maintenance: 'actively developed, solo (self-described human direction, AI implementation)', latest: 'v0.7.0 (Jul 29, 2026)',
+    adopters: 'none named',
+    mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
+    note: 'distributed training across mismatched GPUs (DDP, DiLoCo) with a recursive dashboard portal and single-file HTML export; the 0.7.0 post publicly documents five of its own instruments measuring the wrong thing, which is rare measurement honesty',
   },
 ]
