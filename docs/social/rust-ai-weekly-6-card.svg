@@ -1,0 +1,40 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans, Inter, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" rx="24" fill="#0d1117"/>
+  <rect x="0" y="80" width="12" height="600" fill="url(#accent)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="758.5" rx="24" fill="none" stroke="#1e2633" stroke-width="1.5"/>
+  <text x="62" y="92" font-size="22" font-weight="700" fill="#f97316">ISSUE #6 · NEWSLETTER + LIVE RADAR</text>
+  <text x="60" y="168" font-size="62" font-weight="800" fill="#f5f7fa">Rust &amp; AI Weekly #6</text>
+  <text x="60" y="218" font-size="26" fill="#9aa7b4">A vetted sweep of where Rust meets AI — 51 crates &amp; tools, placed by verdict.</text>
+
+  <rect x="60.0" y="268" width="256.3" height="84" rx="12" fill="#4ade80"/>
+  <text x="188.2" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">13</text>
+  <text x="188.2" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Adopt</text>
+  <rect x="324.3" y="268" width="374.6" height="84" rx="12" fill="#60a5fa"/>
+  <text x="511.6" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">19</text>
+  <text x="511.6" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Trial</text>
+  <rect x="706.9" y="268" width="335.1" height="84" rx="12" fill="#fbbf24"/>
+  <text x="874.5" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">17</text>
+  <text x="874.5" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Assess</text>
+  <rect x="1050.0" y="268" width="90.0" height="84" rx="12" fill="#f87171"/>
+  <text x="1095.0" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">2</text>
+  <text x="1095.0" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Hold</text>
+
+  <rect x="60" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="94" cy="440" r="7" fill="#4ade80"/>
+  <text x="114" y="449" font-size="30" font-weight="700" fill="#f5f7fa">syn 3.0</text>
+  <text x="86" y="496" font-size="20" fill="#94a3b8">First major in 3 years of</text><text x="86" y="528" font-size="20" fill="#94a3b8">the parser under every</text><text x="86" y="560" font-size="20" fill="#94a3b8">derive macro — Pick of the week</text>
+  <rect x="428" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="462" cy="440" r="7" fill="#60a5fa"/>
+  <text x="482" y="449" font-size="30" font-weight="700" fill="#f5f7fa">SeaORM 2.0</text>
+  <text x="454" y="496" font-size="20" fill="#94a3b8">Stable after 43 RCs —</text><text x="454" y="528" font-size="20" fill="#94a3b8">the 1.0 API still works, so</text><text x="454" y="560" font-size="20" fill="#94a3b8">migration is incremental</text>
+  <rect x="796" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
+  <circle cx="830" cy="440" r="7" fill="#fbbf24"/>
+  <text x="850" y="449" font-size="30" font-weight="700" fill="#f5f7fa">crimson-crab</text>
+  <text x="822" y="496" font-size="20" fill="#94a3b8">A Claude SDK that can't</text><text x="822" y="528" font-size="20" fill="#94a3b8">panic — unwrap denied</text><text x="822" y="560" font-size="20" fill="#94a3b8">at compile time</text>
+  <text x="60" y="694" font-size="26" font-weight="700" fill="#f5f7fa">Explore the live radar →</text><text x="392" y="694" font-size="26" font-weight="700" fill="#f97316">decebaldobrica.com/radar</text>
+</svg>

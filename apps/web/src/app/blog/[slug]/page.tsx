@@ -12,6 +12,8 @@ import { extractText } from '@/components/blog/extractText'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
 import { Badge } from '@decebal/ui/badge'
+import fs from 'node:fs'
+import path from 'node:path'
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -35,6 +37,18 @@ export async function generateStaticParams() {
   }))
 }
 
+/**
+ * Social card resolution: a post gets /images/social/<slug>.png when that file
+ * exists (the per-issue card generated at publish time), otherwise the site's
+ * default opengraph image. Without an explicit og:image, LinkedIn/X render
+ * imageless link cards — public/opengraph-image.png is NOT auto-wired by
+ * Next.js (the file convention only applies inside app/).
+ */
+function getSocialImage(slug: string): string {
+  const socialPath = path.join(process.cwd(), 'public', 'images', 'social', `${slug}.png`)
+  return fs.existsSync(socialPath) ? `/images/social/${slug}.png` : '/opengraph-image.png'
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = await getBlogPost(slug)
@@ -45,11 +59,28 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     }
   }
 
+  const socialImage = getSocialImage(slug)
+
   return {
     title: post.title,
     description: post.description,
     authors: [{ name: post.author }],
     keywords: post.tags,
+    openGraph: {
+      type: 'article',
+      url: `/blog/${slug}`,
+      title: post.title,
+      description: post.description,
+      publishedTime: post.date,
+      authors: [post.author],
+      images: [{ url: socialImage, width: 1200, height: 760, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [socialImage],
+    },
     ...(post.canonicalUrl && {
       alternates: {
         canonical: post.canonicalUrl,
