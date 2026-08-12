@@ -1,10 +1,11 @@
 # Launch pack — Rust & AI Weekly #7
 
 Live URL (verify 200 first): https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7
+Source file: `apps/web/content/blog/2026-08-11-rust-ai-weekly-7.mdx` (already renamed to match the slug — no `git mv` needed)
 Canonical for syndication (dev.to / Hashnode / Medium): same URL.
 
 Assets:
-- Radar image: `apps/web/public/images/radar/2026-08-11-radar.png` (55 tools, issue #7)
+- Radar image: `apps/web/public/images/radar/2026-08-11-radar.png` (56 tools, issue #7)
 - Issue card (X / LinkedIn / OG): `docs/social/rust-ai-weekly-7-card.png` (source: `rust-ai-weekly-7-card.svg`); 1250px copy at `apps/web/public/images/social/2026-08-11-rust-ai-weekly-7.png`
 - Hook card (standalone LinkedIn/X image for the "thought for the week"): `docs/social/publish-the-audit.png` (source: `publish-the-audit.svg`, plus `publish-the-audit.html` for the Playwright path)
 
@@ -21,7 +22,7 @@ Assets:
 ```html
 <p>Welcome back to <strong>Rust &amp; AI Weekly</strong>, the curated, vetted sweep of crates and tools showing up where Rust meets AI. Today's issue: webrtc-rs ships its Sans-I/O rewrite and grades its own roadmap, FalkorDB moves 80,000 lines of graph engine to Rust for GraphRAG, and a btop for your Claude Code context window. The theme this week is <strong>publish the audit</strong>: the lead story ships a scorecard of its own January promises, including the ones it broke; the graph database rewrite counted its test scenarios before it was allowed to count benchmarks; and even the Rust project itself wrote down the rules for auditing AI-written contributions. Roadmaps age; audits compound.</p>
 <p><em>(Status lines reflect public signals as of August 11, 2026; stars and downloads are approximate and move fast.)</em></p>
-<p>[[[ DROP 2026-08-11-radar.png HERE — caption: This week's radar: four new entries join the map, and kache logs yet another return visit. Link caption to https://decebaldobrica.com/radar ]]]</p>
+<p>[[[ DROP 2026-08-11-radar.png HERE — caption: This week's radar: five new entries join the map, and kache logs yet another return visit. Link caption to https://decebaldobrica.com/radar ]]]</p>
 <h2>Pick of the week</h2>
 <p><a href="https://webrtc.rs/blog/2026/07/31/announcing-webrtc-v0.20.0.html"><strong>webrtc 0.20</strong></a> — the most complete batteries-included Rust WebRTC implementation shipped the first stable release of its ground-up rewrite, and it matters to this newsletter for a simple reason: WebRTC is the transport under most real-time voice and video AI agents, and until now this option was a Tokio-coupled callback maze. The new architecture is Sans-I/O: the protocol state machines live in a separate <code>rtc</code> core you can test by feeding bytes and advancing a virtual clock, and the async crate on top is a thin driver with one handler trait replacing six-plus callback registrations. That design is a quiet vindication of <a href="https://github.com/algesten/str0m">str0m</a>, the sans-I/O Rust WebRTC stack that has been arguing this shape for years and already powers production SFUs. The <code>Runtime</code> trait became a genuine extension point late in the cycle, so runtime choice is per connection (Tokio, smol, or one you wrote yourself) rather than per binary, and the benchmarks come with receipts: data channels beat Pion by 1.7 to 3.2x in multi-connection aggregate at roughly a quarter of the CPU cycles per byte, while the release post admits plainly that single-connection default config still loses to Go's scheduler. What earns the pick, though, is the scorecard section: the team lined up January's published design against what shipped, and printed the misses next to the wins (no stream API, <code>&amp;self</code> instead of the promised <code>&amp;mut self</code>, an unfilled browser-interop matrix, two metrics simply unmeasured). The migration from 0.17.x is a real port, not a version bump, and 0.17.x is now bug-fix-only, so this belongs on a calendar the way syn 3 did last issue. Go deeper with <a href="https://webrtc.rs/blog/2026/07/18/from-13-mbps-to-beating-pion">From 13 Mbps to Beating Pion</a>, the performance war story behind the throughput table.</p>
 <p><em>Maintenance: actively maintained (webrtc-rs org; Sans-I/O rtc core underneath) · Latest: v0.20.2 (Aug 11, 2026; 0.20.0 landed Jul 31, two patches since, and a 0.21 alpha already tagged) · Adoption: <strong>Trial</strong>; the architecture is right and the receipts are honest, but the stable line is two weeks old and still taking patches, so port a non-critical service first</em></p>
@@ -31,6 +32,8 @@ Assets:
 <h2>Agents &amp; AI</h2>
 <p><a href="https://github.com/arian-shamaei/anthropometer"><strong>amtr</strong></a> — Arian Shamaei built a btop-style monitor that attaches to a Claude Code session and shows, live, exactly what is in the model's context window: a context map, cache economics, and subagent activity. Every team running coding agents eventually asks "what is actually in the context right now", and until now the honest answer was a shrug. The recursive twist is that amtr was itself vibe-coded in Claude Code, which means the complete token-level record of its own construction sits on disk in the very format it reads, and the repo ships a <a href="https://github.com/arian-shamaei/anthropometer/tree/main/docs/autopsy">forensic autopsy</a> of that build: 152 hours 41 minutes across 1,235 turns, roughly $1,046, and for every fresh token the model read it re-read about 120,000 from cache, a ~98% hit rate overall. That autopsy is the most concrete public accounting of what a long agentic build actually costs that I have seen, and it is worth reading before your next planning conversation about agent budgets.</p>
 <p><em>Maintenance: brand new, solo maintainer (Arian Shamaei) · Latest: v0.1.5 (Jul 30, 2026) · Adoption: <strong>Assess</strong>; a 0.1.x tool, but context observability is a category your team already needs, and the autopsy is required reading either way</em></p>
+<p><a href="https://github.com/jyjeanne/okf-rs"><strong>okf-rs</strong></a> — Jeremy JEANNE's Rust CLI attacks the problem amtr measures. An agent asked "who calls this function?" greps, opens half a dozen files, and pays full file size in context tokens to answer what is fundamentally a lookup. okf-rs precomputes it: <code>generate</code> walks a repo with tree-sitter and emits an Open Knowledge Format bundle, one plain Markdown file per module, struct, function, or method, each carrying a YAML header, a signature, and cross-linked callers and callees. The design choices are the interesting part. Output is deterministic, so identical source produces byte-identical files and the bundle is git-diffable and reviewable in a PR. Nothing proprietary reads it back: it is Markdown that renders on GitHub, so no runtime, no vector store, and no SDK sits between you and the artifact. No LLM is involved in producing it either, which keeps the optional AI enrichment genuinely optional rather than load-bearing. The payoff is <code>okf-mcp</code>, a stdio MCP server exposing <code>graph_callers</code>, <code>graph_callees</code>, <code>graph_cycles</code>, and a composite <code>explore</code> query to any MCP client, so the expensive parsing happens once at generate time instead of being re-paid on every question. Jeremy's headline figure, and it is his own estimate rather than an independent benchmark, is a single question on his codebase costing roughly 6,000 tokens read by hand against about 15 through <code>graph_callers</code>. Treat the multiplier as directional; the structural argument under it holds either way. The honest cautions: this is one maintainer carrying a very large surface (eleven languages, LSP disambiguation, Tantivy-backed search, DITA round-tripping, a PR-review GitHub Action), it installs from git rather than crates.io, and every number in the announcement is self-reported. It earns a place in this week's theme anyway, because the write-up records that dogfooding on its own roughly 850-concept codebase caught a real DITA bug a hand-written fixture would never have surfaced.</p>
+<p><em>Maintenance: brand new, solo maintainer (Jeremy JEANNE); MIT/Apache-2.0 · Latest: announced Aug 1, 2026; installs via <code>cargo install --git</code> · Adoption: <strong>Assess</strong>; the bundle format is the low-risk half (delete the directory and you are out), maintainer concentration is the real risk, so wire it into one repo's CI and see whether your agents' token curve actually flattens</em></p>
 <p><a href="https://github.com/GCWing/BitFun"><strong>BitFun</strong></a> — a desktop agent suite pairing a Rust agent runtime with a Tauri shell: a Code Agent, a general-purpose Cowork Agent, and Computer Use, with the interesting design bet that the agent builds a live interface per task (a chart, a board, a form) and binds the conversation to that interface's state. The performance claim worth noting is a resident cross-turn index the project says cuts search time by up to 94.6% on Chromium-scale trees, roughly 36x on average. Claims is the operative word: the project is at 0.2.17 after a burst of releases, and every number here is self-reported, including a 98.67% cache hit rate on a SWE-Bench-Pro run. It lands on the radar because the Rust-runtime-plus-Tauri-shell shape is becoming the default architecture for desktop agents (goose made the same call with TypeScript up top), and BitFun is the most complete open example of it this week.</p>
 <p><em>Maintenance: actively developed (GCWing) · Latest: v0.2.17 (Aug 2026) · Adoption: <strong>Assess</strong>; try the installer, read the runtime, and treat every benchmark claim as unverified until someone reproduces it</em></p>
 <h2>Language watch</h2>
@@ -49,7 +52,7 @@ Assets:
 <li>Lukas Herman wrote up <a href="https://pulsebeam.dev/blog/moving-to-thread-per-core">how PulseBeam cut its WebRTC SFU's P99.99 latency from 70ms to 10ms</a> by moving from Tokio work-stealing to thread-per-core, gaining 25% capacity on the way. Read it next to this issue's lead: their SFU runs on str0m with a per-thread <code>LocalRuntime</code>, and webrtc 0.20's dedicated-reactor benchmark tells the same story from the library side. On latency-bound real-time paths, scheduler choice is the architecture.</li>
 </ul>
 <h2>A thought for the week</h2>
-<p>The strongest pattern this week is not a crate, it is a genre: the self-audit. webrtc-rs printed its January roadmap next to what shipped and labeled the gaps. FalkorDB refused to benchmark until the test suite said the rewrite was correct. flodl did the same thing two issues ago with its own instruments. The reason this matters to engineering leaders is that roadmaps are cheap to write and expensive to check, so almost nobody checks them in public, and the teams that do are handing you their most reliable signal for free. When you evaluate a dependency, or a vendor, or for that matter a quarterly plan, ask for the column that lists what was promised and did not ship. Teams that publish that column have already done the hardest part of engineering management, which is telling the truth on a schedule.</p>
+<p>The strongest pattern this week is not a crate, it is a genre: the self-audit. webrtc-rs printed its January roadmap next to what shipped and labeled the gaps. FalkorDB refused to benchmark until the test suite said the rewrite was correct. okf-rs published the bug its own dogfooding found. flodl did the same thing two issues ago with its own instruments. The reason this matters to engineering leaders is that roadmaps are cheap to write and expensive to check, so almost nobody checks them in public, and the teams that do are handing you their most reliable signal for free. When you evaluate a dependency, or a vendor, or for that matter a quarterly plan, ask for the column that lists what was promised and did not ship. Teams that publish that column have already done the hardest part of engineering management, which is telling the truth on a schedule.</p>
 <h2>Before I go</h2>
 <p>The quote of the week comes from Koosha on the Rust users forum, abandoning a macro experiment because "the macro rules were turning into a turing complete rust syntax parser". Every proc-macro author has lived that sentence; it is also, quietly, the case for syn 3 from last issue.</p>
 <p>Also worth your time: Sylvain Kerkour wrote up <a href="https://kerkour.com/firecracker-sandboxing-rust">how Firecracker microVMs sandbox untrusted code and AI agents</a> under the hood. If you run agent-generated code anywhere near production, this is the isolation layer to understand.</p>
@@ -59,21 +62,29 @@ Assets:
 
 ---
 
-## X hook (267 chars)
+## X hook (271 chars)
 
 Attach: `docs/social/rust-ai-weekly-7-card.png`
 
 > Rust & AI Weekly #7 is out: publish the audit.
 >
-> webrtc-rs ships its Sans-I/O rewrite and grades its own January roadmap, misses included. FalkorDB moves 80k lines of graph engine to Rust. A btop for your Claude Code context window.
+> webrtc-rs ships its Sans-I/O rewrite and grades its own January roadmap, misses included. FalkorDB moves 80k lines of graph engine to Rust. Two Rust tools go after your agent's context bill.
 >
 > https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7
 
-### Optional X follow-up (thread reply)
+### X thread replies (optional, post in order)
+
+**Reply 1 — the measurement**
 
 > The amtr autopsy is the number I keep thinking about: 152h41m, 1,235 turns, ~$1,046, and for every token the model read fresh it re-read ~120,000 from cache.
 >
 > A 98% cache hit rate is not a footnote. It's the economics of long agentic builds.
+
+**Reply 2 — the fix**
+
+> okf-rs goes at the same problem from the other end: tree-sitter your repo into a deterministic Markdown call-graph bundle, then serve it over MCP.
+>
+> "Who calls this?" stops being a grep-and-read and becomes one lookup. Parse once at generate time instead of re-paying per question.
 
 ## LinkedIn hook
 
@@ -89,13 +100,31 @@ Attach: `docs/social/publish-the-audit.png`
 >
 > So when you evaluate a dependency, a vendor, or a quarterly plan, ask for the column listing what was promised and did not ship. Teams that publish that column have already done the hardest part of engineering management: telling the truth on a schedule.
 >
-> Issue #7 of Rust & AI Weekly has the verdicts, plus a live radar of 55 crates rated Adopt/Trial/Assess/Hold:
+> Issue #7 of Rust & AI Weekly has the verdicts, plus a live radar of 56 crates rated Adopt/Trial/Assess/Hold:
+>
+> https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7
+
+### Alternate LinkedIn post (context economics angle — use if the audit angle underperforms, or schedule mid-week)
+
+Attach: `docs/social/rust-ai-weekly-7-card.png`
+
+> Your coding agent's real bottleneck is probably not model capability. It's that it keeps paying full price to re-read things it already knows.
+>
+> Two Rust tools in this week's issue come at that from opposite ends.
+>
+> One attaches to a live agent session and shows you exactly what is in the context window right now: the map, the cache economics, the subagents. Its author then published a forensic autopsy of building it — 152 hours, 1,235 turns, and for every token the model read fresh, roughly 120,000 re-read from cache.
+>
+> The other stops the re-reading. It parses your repo once into a plain Markdown call-graph bundle, then serves it to any agent over MCP. "Who calls this function?" changes from grep-open-and-skim-six-files into one lookup. The expensive work happens at build time, not per question.
+>
+> The pattern worth stealing, whichever tools you use: measure the context budget before you optimise it, and move repeated lookups out of the token path entirely. Both are ordinary engineering discipline applied to a new cost centre.
+>
+> Verdicts on both, plus a radar of 56 Rust and AI crates rated Adopt/Trial/Assess/Hold:
 >
 > https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7
 
 ## r/rust + TWiR blurb
 
-> Rust & AI Weekly #7: engineering-leadership verdicts on webrtc 0.20 (the Sans-I/O rewrite, plus its self-graded roadmap), FalkorDB's 80k-line Rust graph engine, amtr (a btop for Claude Code context windows), and BitFun, plus a radar of 55 tools rated Adopt/Trial/Assess/Hold.
+> Rust & AI Weekly #7: engineering-leadership verdicts on webrtc 0.20 (the Sans-I/O rewrite, plus its self-graded roadmap), FalkorDB's 80k-line Rust graph engine, amtr (a btop for Claude Code context windows), okf-rs (codebase to deterministic Markdown call-graph bundle, served over MCP), and BitFun, plus a radar of 56 tools rated Adopt/Trial/Assess/Hold.
 > https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7
 
 ## dev.to / Hashnode notes
@@ -104,6 +133,12 @@ Attach: `docs/social/publish-the-audit.png`
 - Canonical URL: `https://decebaldobrica.com/blog/2026-08-11-rust-ai-weekly-7`
 - Cover image: `docs/social/rust-ai-weekly-7-card.png`
 - Tags: rust, ai, webrtc, opensource
+
+## Reader-pick credit
+
+okf-rs came in as a reader pick from the Medium write-up. Worth a reply to Jeremy JEANNE once the issue is live (he explicitly asked for feedback on whether the approach holds up on other codebases), and worth noting in issue #8's intro that reader picks are landing — it's the cheapest way to get more of them.
+
+Not independently verified before publication: okf-rs's repo state (stars, contributor count, release tags), whether `okf-cli`/`okf-mcp` are on crates.io, and the 11-language coverage claim. The entry is written to survive all three being off, since every number is attributed to the author, but a five-minute repo check before you hit publish would tighten it.
 
 ---
 

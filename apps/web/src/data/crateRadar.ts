@@ -407,6 +407,13 @@ export const crateRadarTools: RadarTool[] = [
     note: 'btop-style live monitor for what is actually in a Claude Code session context window: context map, cache economics, subagents; ships a forensic autopsy of its own vibe-coded construction (152h41m, 1,235 turns, ~$1,046, ~98% cache hit rate)',
   },
   {
+    name: 'okf-rs', url: 'https://github.com/jyjeanne/okf-rs', category: 'agentic/code-knowledge', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'brand new, solo maintainer (Jeremy JEANNE); MIT/Apache-2.0', latest: 'announced Aug 1, 2026; installs via cargo install --git (not on crates.io)',
+    adopters: 'none named; dogfooded on its own ~850-concept codebase',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
+    note: 'tree-sitter codebase to deterministic, git-diffable Markdown call-graph bundle (Open Knowledge Format) plus an okf-mcp stdio server exposing graph_callers/callees/cycles/explore to any MCP client; precomputes the lookups agents currently pay full file size to answer; author-estimated ~6,000 tokens by hand vs ~15 via graph_callers; huge surface for one maintainer',
+  },
+  {
     name: 'BitFun', url: 'https://github.com/GCWing/BitFun', category: 'agentic/desktop', quadrant: 'agentic',
     ring: 'Assess', maintenance: 'actively developed (GCWing)', latest: 'v0.2.17 (Aug 2026)',
     adopters: 'none named',

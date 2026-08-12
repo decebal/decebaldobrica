@@ -9,20 +9,20 @@
   <rect x="0.75" y="0.75" width="1198.5" height="758.5" rx="24" fill="none" stroke="#1e2633" stroke-width="1.5"/>
   <text x="62" y="92" font-size="22" font-weight="700" fill="#f97316">ISSUE #7 · NEWSLETTER + LIVE RADAR</text>
   <text x="60" y="168" font-size="62" font-weight="800" fill="#f5f7fa">Rust &amp; AI Weekly #7</text>
-  <text x="60" y="218" font-size="26" fill="#9aa7b4">A vetted sweep of where Rust meets AI — 55 crates &amp; tools, placed by verdict.</text>
+  <text x="60" y="218" font-size="26" fill="#9aa7b4">A vetted sweep of where Rust meets AI — 56 crates &amp; tools, placed by verdict.</text>
 
-  <rect x="60.0" y="268" width="245.5" height="84" rx="12" fill="#4ade80"/>
-  <text x="182.7" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">13</text>
-  <text x="182.7" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Adopt</text>
-  <rect x="313.5" y="268" width="371.0" height="84" rx="12" fill="#60a5fa"/>
-  <text x="499.0" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">20</text>
-  <text x="499.0" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Trial</text>
-  <rect x="692.5" y="268" width="371.0" height="84" rx="12" fill="#fbbf24"/>
-  <text x="878.0" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">20</text>
-  <text x="878.0" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Assess</text>
-  <rect x="1071.5" y="268" width="68.5" height="84" rx="12" fill="#f87171"/>
-  <text x="1105.7" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">2</text>
-  <text x="1105.7" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Hold</text>
+  <rect x="60.0" y="268" width="239.5" height="84" rx="12" fill="#4ade80"/>
+  <text x="179.8" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">13</text>
+  <text x="179.8" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Adopt</text>
+  <rect x="307.5" y="268" width="368.5" height="84" rx="12" fill="#60a5fa"/>
+  <text x="491.7" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">20</text>
+  <text x="491.7" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Trial</text>
+  <rect x="684.0" y="268" width="386.9" height="84" rx="12" fill="#fbbf24"/>
+  <text x="877.4" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">21</text>
+  <text x="877.4" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Assess</text>
+  <rect x="1078.9" y="268" width="62.0" height="84" rx="12" fill="#f87171"/>
+  <text x="1109.9" y="306" text-anchor="middle" font-size="30" font-weight="700" fill="#0d1117">2</text>
+  <text x="1109.9" y="332" text-anchor="middle" font-size="16" font-weight="600" fill="#0d1117" opacity="0.75">Hold</text>
 
   <rect x="60" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
   <circle cx="94" cy="440" r="7" fill="#60a5fa"/>
@@ -34,7 +34,7 @@
   <text x="454" y="496" font-size="20" fill="#94a3b8">80k lines of graph engine</text><text x="454" y="528" font-size="20" fill="#94a3b8">in Rust — tests green</text><text x="454" y="560" font-size="20" fill="#94a3b8">before benchmarks counted</text>
   <rect x="796" y="392" width="344.0" height="216" rx="16" fill="#111826" stroke="#263041" stroke-width="1.5"/>
   <circle cx="830" cy="440" r="7" fill="#fbbf24"/>
-  <text x="850" y="449" font-size="30" font-weight="700" fill="#f5f7fa">amtr</text>
-  <text x="822" y="496" font-size="20" fill="#94a3b8">A btop for your Claude</text><text x="822" y="528" font-size="20" fill="#94a3b8">Code context window,</text><text x="822" y="560" font-size="20" fill="#94a3b8">plus a 153-hour autopsy</text>
-  <text x="60" y="694" font-size="26" font-weight="700" fill="#f5f7fa">Explore the live radar →</text><text x="392" y="694" font-size="26" font-weight="700" fill="#f97316">decebaldobrica.com/radar</text>
+  <text x="850" y="449" font-size="30" font-weight="700" fill="#f5f7fa">amtr + okf-rs</text>
+  <text x="822" y="496" font-size="20" fill="#94a3b8">Measure the context</text><text x="822" y="528" font-size="20" fill="#94a3b8">budget, then stop</text><text x="822" y="560" font-size="20" fill="#94a3b8">paying it twice</text>
+  <text x="60" y="694" font-size="26" font-weight="700" fill="#f5f7fa">Explore the live radar →</text><text x="424" y="694" font-size="26" font-weight="700" fill="#f97316">decebaldobrica.com/radar</text>
 </svg>
