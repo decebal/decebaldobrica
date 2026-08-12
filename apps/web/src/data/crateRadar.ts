@@ -408,10 +408,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'okf-rs', url: 'https://github.com/jyjeanne/okf-rs', category: 'agentic/code-knowledge', quadrant: 'agentic',
-    ring: 'Assess', maintenance: 'brand new, solo maintainer (Jeremy JEANNE); MIT/Apache-2.0', latest: 'announced Aug 1, 2026; installs via cargo install --git (not on crates.io)',
-    adopters: 'none named; dogfooded on its own ~850-concept codebase',
+    ring: 'Assess', maintenance: 'one human maintainer (Jeremy JEANNE) directing coding agents; zero external contributors; MIT/Apache-2.0', latest: 'v0.4.0 (Aug 7, 2026; four releases in ten days, then quiet)',
+    adopters: 'none; no independent technical reception; 71★',
     mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
-    note: 'tree-sitter codebase to deterministic, git-diffable Markdown call-graph bundle (Open Knowledge Format) plus an okf-mcp stdio server exposing graph_callers/callees/cycles/explore to any MCP client; precomputes the lookups agents currently pay full file size to answer; author-estimated ~6,000 tokens by hand vs ~15 via graph_callers; huge surface for one maintainer',
+    note: 'tree-sitter codebase to deterministic, git-diffable Markdown call-graph bundle (Open Knowledge Format) served over MCP; the Markdown-as-artifact bet is a real distinction from the SQLite/vector-index norm, but this is not a new category (CodeGraph 66k★, tokensave is its Rust port, OKF is Google’s format) and he ships his own gap analysis saying so; headline ~400x is a self-labelled rule-of-thumb, while the measured win is collapsing 13 graph_* tools into one graph(relation=) after finding schema registration can cost more than it saves; not on crates.io and both workspace names are taken there',
   },
   {
     name: 'BitFun', url: 'https://github.com/GCWing/BitFun', category: 'agentic/desktop', quadrant: 'agentic',
