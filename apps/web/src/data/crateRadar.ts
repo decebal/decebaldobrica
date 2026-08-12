@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-08-03'
+export const RADAR_GENERATED_AT = '2026-08-11'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 6
+export const RADAR_ISSUE = 7
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -260,10 +260,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'kache', url: 'https://github.com/kunobi-ninja/kache', category: 'dev-tools/build-cache', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; five minor releases since June)', latest: 'v0.12.0 (Jul 29, 2026)',
+    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; six minor releases since June)', latest: 'v0.13.0 (Aug 2026)',
     adopters: 'young vs. entrenched sccache',
-    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03)', returning: true,
-    note: 'verdict holds at Trial: 0.11 added broader compiler coverage and libc-aware keys, 0.12 adds pluggable remotes, smarter GC, sharper diagnostics; near-zero exit cost',
+    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03); Rust & AI Weekly #7 (2026-08-11)', returning: true,
+    note: 'verdict holds at Trial: 0.13 keys the env vars proc-macros read, closing a cache-correctness hole; sixth minor since June, near-zero exit cost',
   },
   {
     name: 'Test That!', url: 'https://hovinen.me/announcements/2026/06/24/introducing-test-that.html', category: 'dev-tools/testing', quadrant: 'dev',
@@ -384,5 +384,33 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'none named',
     mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
     note: 'distributed training across mismatched GPUs (DDP, DiLoCo) with a recursive dashboard portal and single-file HTML export; the 0.7.0 post publicly documents five of its own instruments measuring the wrong thing, which is rare measurement honesty',
+  },
+  {
+    name: 'webrtc', url: 'https://github.com/webrtc-rs/webrtc', category: 'networking/webrtc', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (webrtc-rs org; Sans-I/O rtc core underneath)', latest: 'v0.20.2 (Aug 11, 2026; 0.20.0 landed Jul 31)',
+    adopters: 'appr.tc built on it; v0.17.x line now bug-fix-only',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
+    note: 'first stable of the Sans-I/O, runtime-agnostic rewrite: one handler trait replaces callback hell, pluggable Runtime trait (Tokio/smol/bring-your-own per connection), data channels beat Pion on aggregate throughput and per-byte CPU; vindicates str0m’s sans-I/O design; migration from 0.17.x is a real port, so schedule it',
+  },
+  {
+    name: 'FalkorDB (Rust engine)', url: 'https://github.com/FalkorDB/falkordb-rs-next-gen', category: 'data/graph', quadrant: 'data',
+    ring: 'Assess', maintenance: 'actively developed (FalkorDB; Dvir Dukhan and Avi Avni; humans reviewed every change, agents did bounded work)', latest: 'preview engine at C-parity (post Aug 3, 2026)',
+    adopters: 'FalkorDB users (GraphRAG/knowledge graphs); Rust engine is a preview, not the default',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
+    note: '80k lines of Rust, 357 PRs, validated against 1,585 TCK scenarios and 1,322 flow tests before perf work was allowed to matter; GraphBLAS sparse-matrix graph DB for GraphRAG',
+  },
+  {
+    name: 'amtr', url: 'https://github.com/arian-shamaei/anthropometer', category: 'dev-tools/observability', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'brand new, solo maintainer (Arian Shamaei)', latest: 'v0.1.5 (Jul 30, 2026)',
+    adopters: 'none yet',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
+    note: 'btop-style live monitor for what is actually in a Claude Code session context window: context map, cache economics, subagents; ships a forensic autopsy of its own vibe-coded construction (152h41m, 1,235 turns, ~$1,046, ~98% cache hit rate)',
+  },
+  {
+    name: 'BitFun', url: 'https://github.com/GCWing/BitFun', category: 'agentic/desktop', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'actively developed (GCWing)', latest: 'v0.2.17 (Aug 2026)',
+    adopters: 'none named',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
+    note: 'desktop agent suite on a Rust runtime with a Tauri shell: Code Agent, Cowork Agent, Computer Use; resident cross-turn index claims ~36x average search speedup on Chromium-scale trees, and 98.67% cache hit on SWE-Bench-Pro; all figures self-reported',
   },
 ]

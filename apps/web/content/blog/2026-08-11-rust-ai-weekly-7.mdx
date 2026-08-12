@@ -1,0 +1,72 @@
+---
+title: 'Rust & AI Weekly #7: publish the audit'
+date: '2026-08-11T12:00:00.000Z'
+author: Decebal D.
+description: "Today's issue: webrtc-rs ships its Sans-I/O rewrite and grades its own roadmap, FalkorDB moves 80,000 lines of graph engine to Rust for GraphRAG, and a btop for your Claude Code context window. Each entry carries maintenance, latest-release, and adoption signals."
+tags:
+  - rust
+  - ai
+  - llm
+  - agents
+  - newsletter
+  - roundup
+slug: 2026-08-11-rust-ai-weekly-7
+---
+
+Welcome back to **Rust & AI Weekly**, the curated, vetted sweep of crates and tools showing up where Rust meets AI. Today's issue: webrtc-rs ships its Sans-I/O rewrite and grades its own roadmap, FalkorDB moves 80,000 lines of graph engine to Rust for GraphRAG, and a btop for your Claude Code context window. The theme this week is **publish the audit**: the lead story ships a scorecard of its own January promises, including the ones it broke; the graph database rewrite counted its test scenarios before it was allowed to count benchmarks; and even the Rust project itself wrote down the rules for auditing AI-written contributions. Roadmaps age; audits compound.
+
+*(Status lines reflect public signals as of August 11, 2026; stars and downloads are approximate and move fast.)*
+
+[![Rust & AI Crate Radar, tools mapped by Adopt / Trial / Assess / Hold, this week's snapshot](/images/radar/2026-08-11-radar.png)](/radar)
+
+*This week's radar: four new entries join the map, and kache logs yet another return visit. [Explore the interactive version](/radar).*
+
+## Pick of the week
+
+[**webrtc 0.20**](https://webrtc.rs/blog/2026/07/31/announcing-webrtc-v0.20.0.html) — the most complete batteries-included Rust WebRTC implementation shipped the first stable release of its ground-up rewrite, and it matters to this newsletter for a simple reason: WebRTC is the transport under most real-time voice and video AI agents, and until now this option was a Tokio-coupled callback maze. The new architecture is Sans-I/O: the protocol state machines live in a separate `rtc` core you can test by feeding bytes and advancing a virtual clock, and the async crate on top is a thin driver with one handler trait replacing six-plus callback registrations. That design is a quiet vindication of [str0m](https://github.com/algesten/str0m), the sans-I/O Rust WebRTC stack that has been arguing this shape for years and already powers production SFUs. The `Runtime` trait became a genuine extension point late in the cycle, so runtime choice is per connection (Tokio, smol, or one you wrote yourself) rather than per binary, and the benchmarks come with receipts: data channels beat Pion by 1.7 to 3.2x in multi-connection aggregate at roughly a quarter of the CPU cycles per byte, while the release post admits plainly that single-connection default config still loses to Go's scheduler. What earns the pick, though, is the scorecard section: the team lined up January's published design against what shipped, and printed the misses next to the wins (no stream API, `&self` instead of the promised `&mut self`, an unfilled browser-interop matrix, two metrics simply unmeasured). The migration from 0.17.x is a real port, not a version bump, and 0.17.x is now bug-fix-only, so this belongs on a calendar the way syn 3 did last issue. Go deeper with [From 13 Mbps to Beating Pion](https://webrtc.rs/blog/2026/07/18/from-13-mbps-to-beating-pion), the performance war story behind the throughput table.
+<br/>*Maintenance: actively maintained (webrtc-rs org; Sans-I/O rtc core underneath) · Latest: v0.20.2 (Aug 11, 2026; 0.20.0 landed Jul 31, two patches since, and a 0.21 alpha already tagged) · Adoption: **Trial**; the architecture is right and the receipts are honest, but the stable line is two weeks old and still taking patches, so port a non-critical service first*
+
+## Data & graphs
+
+[**FalkorDB's Rust engine**](https://www.falkordb.com/blog/rewriting-falkordb-in-rust/) — the graph database that anchors a lot of GraphRAG stacks published the story of rewriting its core in Rust, and Dvir Dukhan and Avi Avni put the receipts in the first paragraph: 80,000 lines of Rust, 357 merged pull requests, 1,585 TCK scenarios and 1,322 flow tests green, on an engine built over GraphBLAS sparse matrix algebra. The discipline is the story. The team held the order in the post's own subtitle, "make it work, make it stable, then make it fast": correctness was measured against the C engine's own suite before performance was allowed to matter, and the spring optimization work (columnar batch execution, string interning, fused traversals) then brought the Rust engine to parity or better. The AI angle cuts both ways: this is infrastructure for knowledge graphs and GraphRAG, and it was built with coding agents taking the bounded work while, in the team's words, humans made every design decision and reviewed every change. That sentence is doing a lot of quiet work as a template for how teams should describe agent-assisted rewrites. Note the honest caveat they include too: everything in the post runs today, but the Rust engine is still a preview, and the code has since moved into the [main FalkorDB repo](https://github.com/FalkorDB/FalkorDB).
+<br/>*Maintenance: actively developed (FalkorDB team; Dvir Dukhan and Avi Avni; human review on every change) · Latest: preview engine at C-parity (post published Aug 3, 2026) · Adoption: **Assess**; it is a preview by the team's own label, so watch for the release that makes it the default before betting production graphs on it*
+
+## Agents & AI
+
+[**amtr**](https://github.com/arian-shamaei/anthropometer) — Arian Shamaei built a btop-style monitor that attaches to a Claude Code session and shows, live, exactly what is in the model's context window: a context map, cache economics, and subagent activity. Every team running coding agents eventually asks "what is actually in the context right now", and until now the honest answer was a shrug. The recursive twist is that amtr was itself vibe-coded in Claude Code, which means the complete token-level record of its own construction sits on disk in the very format it reads, and the repo ships a [forensic autopsy](https://github.com/arian-shamaei/anthropometer/tree/main/docs/autopsy) of that build: 152 hours 41 minutes across 1,235 turns, roughly $1,046, and for every fresh token the model read it re-read about 120,000 from cache, a ~98% hit rate overall. That autopsy is the most concrete public accounting of what a long agentic build actually costs that I have seen, and it is worth reading before your next planning conversation about agent budgets.
+<br/>*Maintenance: brand new, solo maintainer (Arian Shamaei) · Latest: v0.1.5 (Jul 30, 2026) · Adoption: **Assess**; a 0.1.x tool, but context observability is a category your team already needs, and the autopsy is required reading either way*
+
+[**BitFun**](https://github.com/GCWing/BitFun) — a desktop agent suite pairing a Rust agent runtime with a Tauri shell: a Code Agent, a general-purpose Cowork Agent, and Computer Use, with the interesting design bet that the agent builds a live interface per task (a chart, a board, a form) and binds the conversation to that interface's state. The performance claim worth noting is a resident cross-turn index the project says cuts search time by up to 94.6% on Chromium-scale trees, roughly 36x on average. Claims is the operative word: the project is at 0.2.17 after a burst of releases, and every number here is self-reported, including a 98.67% cache hit rate on a SWE-Bench-Pro run. It lands on the radar because the Rust-runtime-plus-Tauri-shell shape is becoming the default architecture for desktop agents (goose made the same call with TypeScript up top), and BitFun is the most complete open example of it this week.
+<br/>*Maintenance: actively developed (GCWing) · Latest: v0.2.17 (Aug 2026) · Adoption: **Assess**; try the installer, read the runtime, and treat every benchmark claim as unverified until someone reproduces it*
+
+## Language watch
+
+- **Polonius alpha is on nightly** — the [next iteration of the borrow checker](https://blog.rust-lang.org/2026/08/04/enabling-polonius-alpha-on-nightly/) was enabled on nightly this week (Aug 4); it accepts more correct programs, and the team wants real-world reports before stabilization.
+- **rust-lang/rust adopted an LLM policy** — [announced Aug 5](https://blog.rust-lang.org/inside-rust/2026/08/05/rust-langrust-is-adopting-an-llm-policy/); the ecosystem's newsletters cheered it, and the sharper read is that it is a management document: it makes contributors accountable for AI-assisted changes rather than banning or blessing the tools.
+- **wasm32-wasip3 toward Tier 2** — the [compiler MCP](https://github.com/rust-lang/compiler-team/issues/1001) entered final comment period this week; wasip3 brings the component-model async story with it.
+- **Atomics go const, asm! gets wider** — [const atomic operations](https://github.com/rust-lang/rust/pull/160079) merged this week, and [passing 128-bit integers via vector registers with `asm!` on x86](https://github.com/rust-lang/rust/pull/159525) was stabilized.
+
+## In brief
+
+[**kache 0.13.0**](https://github.com/kunobi-ninja/kache/releases/tag/v0.13.0) — sixth minor since June: cache keys now include the env vars proc-macros read, closing a correctness hole most build caches ignore; Trial verdict from issue #3 holds · [**kobe**](https://kunobi.ninja/blog/kobe-101-leasing-kubernetes-clusters) — same Kunobi stable as kache: a Rust operator that keeps pools of pre-warmed ephemeral clusters and hands them out as TTL-enforced leases, so CI gets a clean isolated cluster in seconds instead of minutes · [**index_type**](https://crates.io/crates/index_type) — TWiR 663's Crate of the Week, self-suggested by Roee Shoshani: strongly typed indices for collections, so a `UserIdx` never indexes the orders table · [**mvis 0.5.0**](https://dev.to/sicklefire/mvis-v050-new-release-5997) — sicklefire's terminal memory visualizer grows a CI/CD layer: JSON/CSV export, differential leak detection, growth-rate monitoring · [**Proxelar 0.5.1**](https://crates.io/crates/proxelar) — Emanuele Micheletti's Rust intercepting proxy (HTTP/HTTPS/WebSocket, Lua scripting) adds sessions, rules, and more capture modes · [**mirador 1.0.0**](https://github.com/jchultarsky/mirador/releases/tag/v1.0.0) — jchultarsky's personal terminal dashboard hits 1.0 · [**multicalc 0.9.0**](https://github.com/kmolan/multicalc-rust/releases/tag/v0.9.0) — scientific computation for embedded and robotics systems, by kmolan · [**RSigma 0.20.0**](https://github.com/timescale/rsigma/releases/tag/v0.20.0) — Mostafa Moradian's single-binary Sigma detection toolkit (parser, linter, evaluator, correlation engine, MCP and LSP servers), shipped alongside his candid two-part [State of RSigma](https://mostafa.dev/the-state-of-rsigma-7ba0a99020d9), itself a small entry in this week's publish-the-audit genre.
+
+## Elsewhere
+
+- Go-land's desktop story moved: [Wails v3 landed in beta](https://v3.wails.io/blog/wails-v3-beta/) by Lea Anthony, with multi-window support and experimental mobile, via Golang Weekly. The Rust seat at that table is Tauri, sitting at 2.11.5 and several major versions into stability; this issue's BitFun ships on it. For once the Rust side is the incumbent.
+- Charm's [Fantasy](https://github.com/charmbracelet/fantasy) turned up in Golang Weekly: a Go library for building AI agents across multiple providers and models behind one API. The Rust answer is rig, which has held Trial on this radar since issue #1 and has the named production adopters Fantasy is still collecting.
+- Lukas Herman wrote up [how PulseBeam cut its WebRTC SFU's P99.99 latency from 70ms to 10ms](https://pulsebeam.dev/blog/moving-to-thread-per-core) by moving from Tokio work-stealing to thread-per-core, gaining 25% capacity on the way. Read it next to this issue's lead: their SFU runs on str0m with a per-thread `LocalRuntime`, and webrtc 0.20's dedicated-reactor benchmark tells the same story from the library side. On latency-bound real-time paths, scheduler choice is the architecture.
+
+## A thought for the week
+
+The strongest pattern this week is not a crate, it is a genre: the self-audit. webrtc-rs printed its January roadmap next to what shipped and labeled the gaps. FalkorDB refused to benchmark until the test suite said the rewrite was correct. flodl did the same thing two issues ago with its own instruments. The reason this matters to engineering leaders is that roadmaps are cheap to write and expensive to check, so almost nobody checks them in public, and the teams that do are handing you their most reliable signal for free. When you evaluate a dependency, or a vendor, or for that matter a quarterly plan, ask for the column that lists what was promised and did not ship. Teams that publish that column have already done the hardest part of engineering management, which is telling the truth on a schedule.
+
+## Before I go
+
+The quote of the week comes from Koosha on the Rust users forum, abandoning a macro experiment because "the macro rules were turning into a turing complete rust syntax parser". Every proc-macro author has lived that sentence; it is also, quietly, the case for syn 3 from last issue.
+
+Also worth your time: Sylvain Kerkour wrote up [how Firecracker microVMs sandbox untrusted code and AI agents](https://kerkour.com/firecracker-sandboxing-rust) under the hood. If you run agent-generated code anywhere near production, this is the isolation layer to understand.
+
+That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me; reader picks shape the list.
+
+Keep shipping,
+Decebal
