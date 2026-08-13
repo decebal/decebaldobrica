@@ -92,7 +92,7 @@ Attach: `docs/social/publish-the-audit.png`
 
 > Every engineering team publishes a roadmap. Almost none publish the audit.
 >
-> This week the Rust WebRTC stack shipped the first stable release of a rewrite it designed in public back in January. The release post does something rare: it lines up the original design next to what actually shipped, and prints the misses. No stream API. `&self` where they promised `&mut self`. A browser-interop matrix with one cell filled. Two success metrics simply marked unmeasured.
+> This week the Rust WebRTC stack shipped the first stable release of a rewrite it designed in public back in January. The release post does something rare: it lines up the original design next to what actually shipped, and prints the misses. No stream API. &self where they promised &mut self. A browser-interop matrix with one cell filled. Two success metrics simply marked unmeasured.
 >
 > Same week, FalkorDB published its Rust rewrite: 80,000 lines, 357 PRs, and a rule that no benchmark counted until 1,585 test scenarios from the old C engine were green.
 >
