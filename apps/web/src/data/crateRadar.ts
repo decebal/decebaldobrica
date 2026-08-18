@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-08-11'
+export const RADAR_GENERATED_AT = '2026-08-17'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 7
+export const RADAR_ISSUE = 8
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -260,10 +260,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'kache', url: 'https://github.com/kunobi-ninja/kache', category: 'dev-tools/build-cache', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; six minor releases since June)', latest: 'v0.13.0 (Aug 2026)',
+    ring: 'Trial', maintenance: 'very actively maintained (Kunobi; seven minor releases since June)', latest: 'v0.14.0 (Aug 12, 2026)',
     adopters: 'young vs. entrenched sccache',
-    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03); Rust & AI Weekly #7 (2026-08-11)', returning: true,
-    note: 'verdict holds at Trial: 0.13 keys the env vars proc-macros read, closing a cache-correctness hole; sixth minor since June, near-zero exit cost',
+    mentions: 'Radar Digest (2026-06-15); Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #5 (2026-07-20); Rust & AI Weekly #6 (2026-08-03); Rust & AI Weekly #7 (2026-08-11); Rust & AI Weekly #8 (2026-08-17)', returning: true,
+    note: 'verdict holds at Trial: 0.14 adds debuggable restores and cross-clone convergence, so a cache miss is now explainable rather than mysterious; seventh minor since June, near-zero exit cost',
   },
   {
     name: 'Test That!', url: 'https://hovinen.me/announcements/2026/06/24/introducing-test-that.html', category: 'dev-tools/testing', quadrant: 'dev',
@@ -380,10 +380,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'flodl', url: 'https://flodl.dev', category: 'inference/training', quadrant: 'inference',
-    ring: 'Assess', maintenance: 'actively developed, solo (self-described human direction, AI implementation)', latest: 'v0.7.0 (Jul 29, 2026)',
+    ring: 'Assess', maintenance: 'actively developed, solo (self-described human direction, AI implementation)', latest: 'AMD GPU support announced (Aug 2026; 0.7.0 line)',
     adopters: 'none named',
-    mentions: 'Rust & AI Weekly #6 (2026-08-03)', returning: false,
-    note: 'distributed training across mismatched GPUs (DDP, DiLoCo) with a recursive dashboard portal and single-file HTML export; the 0.7.0 post publicly documents five of its own instruments measuring the wrong thing, which is rare measurement honesty',
+    mentions: 'Rust & AI Weekly #6 (2026-08-03); Rust & AI Weekly #8 (2026-08-17)', returning: true,
+    note: 'verdict holds at Assess: distributed training across mismatched GPUs (DDP, DiLoCo), and AMD support turns the heterogeneity thesis from mixed-NVIDIA into genuinely mixed-vendor; still solo, still pre-1.0, and the measurement honesty remains the reason to read it',
   },
   {
     name: 'webrtc', url: 'https://github.com/webrtc-rs/webrtc', category: 'networking/webrtc', quadrant: 'dev',
@@ -419,5 +419,40 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'none named',
     mentions: 'Rust & AI Weekly #7 (2026-08-11)', returning: false,
     note: 'desktop agent suite on a Rust runtime with a Tauri shell: Code Agent, Cowork Agent, Computer Use; resident cross-turn index claims ~36x average search speedup on Chromium-scale trees, and 98.67% cache hit on SWE-Bench-Pro; all figures self-reported',
+  },
+  {
+    name: 'fearless_simd', url: 'https://github.com/linebender/fearless_simd', category: 'inference/simd', quadrant: 'inference',
+    ring: 'Trial', maintenance: 'actively maintained (Linebender; Shnatsel driving releases)', latest: 'v0.7.0 (Aug 12, 2026; v1.0 targeted for early September)',
+    adopters: 'a dozen-plus direct dependents on crates.io; 1000+ repos directly or transitively',
+    mentions: 'Rust & AI Weekly #8 (2026-08-17)', returning: false,
+    note: 'takes unsafe out of SIMD: the compiler tracks which intrinsics belong to which instruction set, so the crate itself carries orders of magnitude less unsafe than the alternatives; 0.7 completes type coverage with 64-bit integers, adds an explicit SSE2 level, and makes every operation reachable through traits; zero dependencies and a 2-second cold build; API frozen ahead of 1.0, so speak now',
+  },
+  {
+    name: 'OXVG', url: 'https://github.com/noahbald/oxvg', category: 'dev-tools/svg', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (Noah Bald; Devon Govett of Parcel contributing)', latest: 'v0.0.7 (Aug 9, 2026)',
+    stars: '~604★', adopters: 'Parcel uses it as its default SVG optimisation path',
+    mentions: 'Rust & AI Weekly #8 (2026-08-17)', returning: false,
+    note: 'Rust SVG toolchain positioned as a drop-in SVGO replacement (with an svgo-config converter), now growing an SVGR-compatible JSX transformer in 0.0.7; usable from CLI, Node NAPI, wasm, or Rust; Trial for the optimiser Parcel already ships, Assess for the week-old JSX path',
+  },
+  {
+    name: 'grit-datatype', url: 'https://singhpratech.github.io/grit-datatype/', category: 'inference/quantization', quadrant: 'inference',
+    ring: 'Assess', maintenance: 'new, solo maintainer (singhpratech, also crimson-crab/ferrovec)', latest: 'GRIT 1.1 (Aug 2026)',
+    adopters: 'none named',
+    mentions: 'Rust & AI Weekly #8 (2026-08-17)', returning: false,
+    note: 'zero-dependency descriptor type for quantized tensors (MXFP4/GPTQ/AWQ-style): a 64-byte POD header plus an O(1) bounds check, so a mismatched scale plane or zero-point convention fails loudly instead of producing plausible garbage; author self-suggested it for Crate of the Week, and adoption depends on runtimes agreeing to carry the descriptor',
+  },
+  {
+    name: 'vairedb', url: 'https://github.com/matteobovetti/vairedb', category: 'data/analytics', quadrant: 'data',
+    ring: 'Assess', maintenance: 'brand new, solo (Matteo Bovetti)', latest: 'v0.1.0 (Aug 2026)',
+    adopters: 'none',
+    mentions: 'Rust & AI Weekly #8 (2026-08-17)', returning: false,
+    note: 'cloud-native distributed analytical database at its first tagged release; noted for the record rather than recommended, and it enters a category where DataFusion and Databend already have years of production mileage',
+  },
+  {
+    name: 'kobe', url: 'https://github.com/kunobi-ninja/kobe', category: 'dev-tools/kubernetes', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'very actively maintained (Kunobi; same stable as kache)', latest: 'v0.39.0 (Aug 12, 2026)',
+    adopters: 'none named',
+    mentions: 'Rust & AI Weekly #7 (2026-08-11); Rust & AI Weekly #8 (2026-08-17)', returning: true,
+    note: 'Rust operator that keeps pools of pre-warmed ephemeral Kubernetes clusters and hands them out as TTL-enforced leases; 0.39 hardens the lease lifecycle, which is exactly the part that bites when a lease expires mid-test',
   },
 ]

@@ -24,57 +24,29 @@ export interface BlogPost {
 const BLOG_CONTENT_DIR = path.join(process.cwd(), 'content', 'blog')
 
 /**
- * Get all blog posts
- * Returns posts sorted by date (newest first)
+ * A post is a draft (and therefore invisible to the site) if either:
+ *   - the filename starts with `_`, or
+ *   - the frontmatter says `draft: true`.
+ *
+ * Drafts never appear in listings, RSS, tags or static params, and the article
+ * route refuses to render them. Publishing is a one-line frontmatter change or
+ * dropping the underscore; the filename itself is not the source of truth.
  */
-export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  // Check if content directory exists
-  if (!fs.existsSync(BLOG_CONTENT_DIR)) {
-    console.warn('Blog content directory not found:', BLOG_CONTENT_DIR)
-    return []
-  }
-
-  const files = fs.readdirSync(BLOG_CONTENT_DIR).filter((file) => file.endsWith('.mdx'))
-
-  const posts = files.map((file) => {
-    const filePath = path.join(BLOG_CONTENT_DIR, file)
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
-
-    const { data, content } = matter(fileContent)
-    const stats = readingTime(content)
-
-    return {
-      slug: data.slug || file.replace('.mdx', ''),
-      title: data.title || 'Untitled',
-      description: data.description || '',
-      date: data.date || new Date().toISOString(),
-      author: data.author || 'Decebal Dobrica',
-      tags: data.tags || [],
-      content,
-      readingTime: stats.text,
-      canonicalUrl: data.canonicalUrl,
-    } as BlogPost
-  })
-
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+function isDraftFileName(fileName: string): boolean {
+  return fileName.startsWith('_')
 }
 
-/**
- * Get a single blog post by slug
- */
-export async function getBlogPost(slug: string): Promise<BlogPost | null> {
-  const filePath = path.join(BLOG_CONTENT_DIR, `${slug}.mdx`)
+/** The canonical slug for a post: frontmatter wins, filename is the fallback. */
+function slugFor(fileName: string, data: Record<string, unknown>): string {
+  return (data.slug as string) || fileName.replace(/^_+/, '').replace('.mdx', '')
+}
 
-  if (!fs.existsSync(filePath)) {
-    return null
-  }
-
-  const fileContent = fs.readFileSync(filePath, 'utf-8')
+function toPost(fileName: string, fileContent: string): BlogPost & { draft: boolean } {
   const { data, content } = matter(fileContent)
   const stats = readingTime(content)
 
   return {
-    slug: data.slug || slug,
+    slug: slugFor(fileName, data),
     title: data.title || 'Untitled',
     description: data.description || '',
     date: data.date || new Date().toISOString(),
@@ -83,7 +55,57 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
     content,
     readingTime: stats.text,
     canonicalUrl: data.canonicalUrl,
+    draft: isDraftFileName(fileName) || data.draft === true,
   }
+}
+
+function readAllPosts(): (BlogPost & { draft: boolean })[] {
+  if (!fs.existsSync(BLOG_CONTENT_DIR)) {
+    console.warn('Blog content directory not found:', BLOG_CONTENT_DIR)
+    return []
+  }
+
+  return fs
+    .readdirSync(BLOG_CONTENT_DIR)
+    .filter((file) => file.endsWith('.mdx'))
+    .map((file) => toPost(file, fs.readFileSync(path.join(BLOG_CONTENT_DIR, file), 'utf-8')))
+}
+
+/**
+ * Get all published blog posts
+ * Returns posts sorted by date (newest first). Drafts are excluded.
+ */
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  return readAllPosts()
+    .filter((post) => !post.draft)
+    .map(({ draft: _draft, ...post }) => post)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
+
+/**
+ * Get a single published blog post by slug.
+ *
+ * Resolves on the frontmatter `slug`, not the filename, so a post is reachable
+ * at the URL it advertises in listings and RSS regardless of what the file is
+ * called. Drafts resolve to null.
+ */
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+  // Fast path: the common case where filename and slug agree.
+  const directPath = path.join(BLOG_CONTENT_DIR, `${slug}.mdx`)
+  if (fs.existsSync(directPath)) {
+    const post = toPost(`${slug}.mdx`, fs.readFileSync(directPath, 'utf-8'))
+    if (!post.draft && post.slug === slug) {
+      const { draft: _draft, ...rest } = post
+      return rest
+    }
+  }
+
+  // Fall back to matching on the frontmatter slug.
+  const match = readAllPosts().find((post) => !post.draft && post.slug === slug)
+  if (!match) return null
+
+  const { draft: _draft, ...rest } = match
+  return rest
 }
 
 /**
