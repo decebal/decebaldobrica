@@ -2,52 +2,56 @@
 
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
+import { collectExceptionContext, normalizeUnknownReason, toCapturableError } from '../exceptions'
 
 /**
- * Global error handler that captures unhandled errors and promise rejections
- * and sends them to PostHog
+ * Captures unhandled errors and promise rejections.
+ *
+ * posthog-js captures both natively, but it loads its exception-autocapture bundle from its
+ * asset host, which ad blockers and strict CSPs routinely block - leaving error tracking
+ * silently switched off for a chunk of real users. So this handler stays armed regardless, and
+ * the resulting duplicates are collapsed in `before_send` (see DEDUPE_WINDOW_MS in
+ * `exceptions.ts`) rather than by disabling one of the two paths.
+ *
+ * Third-party noise is not filtered here either: `before_send` is the single chokepoint that
+ * drops it, so every drop gets counted and reported instead of vanishing.
  */
 export function PostHogErrorHandler() {
   useEffect(() => {
-    // Handler for unhandled errors
+    if (typeof window === 'undefined') return
+
     const errorHandler = (event: ErrorEvent) => {
-      if (posthog) {
-        posthog.capture('$exception', {
-          $exception_type: event.error?.name || 'Error',
-          $exception_message: event.message,
-          $exception_stack_trace_raw: event.error?.stack || '',
+      posthog.captureException(
+        toCapturableError(event.error ?? event.message, 'Error'),
+        collectExceptionContext({
+          $exception_level: 'error',
+          $exception_handled: false,
           $exception_source: event.filename,
           $exception_lineno: event.lineno,
           $exception_colno: event.colno,
-          $exception_level: 'error',
-          $exception_handled: false,
-          page: window.location.pathname,
+          capture_source: 'window.onerror',
         })
-      }
+      )
     }
 
-    // Handler for unhandled promise rejections
     const rejectionHandler = (event: PromiseRejectionEvent) => {
-      if (posthog) {
-        const error = event.reason
+      const reason = normalizeUnknownReason(event.reason)
 
-        posthog.capture('$exception', {
-          $exception_type: error?.name || 'UnhandledRejection',
-          $exception_message: error?.message || error?.toString() || 'Unhandled promise rejection',
-          $exception_stack_trace_raw: error?.stack || '',
+      posthog.captureException(
+        toCapturableError(event.reason, 'UnhandledRejection'),
+        collectExceptionContext({
           $exception_level: 'error',
           $exception_handled: false,
-          rejection_type: 'unhandledrejection',
-          page: window.location.pathname,
+          capture_source: 'window.onunhandledrejection',
+          rejection_reason_type: reason.type,
+          rejection_reason_raw: reason.raw,
         })
-      }
+      )
     }
 
-    // Add event listeners
     window.addEventListener('error', errorHandler)
     window.addEventListener('unhandledrejection', rejectionHandler)
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener('error', errorHandler)
       window.removeEventListener('unhandledrejection', rejectionHandler)

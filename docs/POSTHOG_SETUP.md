@@ -37,7 +37,7 @@ Add to your `.env.local` file:
 ```bash
 # PostHog Analytics
 NEXT_PUBLIC_POSTHOG_KEY=phc_your_api_key_here
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
 
 # For self-hosted PostHog (optional)
 # NEXT_PUBLIC_POSTHOG_HOST=https://your-posthog-instance.com
@@ -230,7 +230,7 @@ Add to any sensitive form:
 
 ### 1. Access Your PostHog Dashboard
 
-Visit: `https://app.posthog.com/project/YOUR_PROJECT_ID`
+Visit: `https://eu.posthog.com/project/YOUR_PROJECT_ID`
 
 ### 2. Key Dashboards to Create
 

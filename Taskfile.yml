@@ -126,6 +126,12 @@ tasks:
     cmds:
       - '{{.PKG_MANAGER}} run test:coverage'
 
+  pkg:analytics:test:
+    desc: Test analytics package (exception filter + suppression rules)
+    dir: packages/analytics
+    cmds:
+      - '{{.PKG_MANAGER}} test'
+
   pkg:newsletter:test:
     desc: Test newsletter package
     dir: packages/newsletter

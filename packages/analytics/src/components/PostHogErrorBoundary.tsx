@@ -3,6 +3,7 @@
 import posthog from 'posthog-js'
 import type React from 'react'
 import { Component, type ReactNode } from 'react'
+import { collectExceptionContext } from '../exceptions'
 
 interface Props {
   children: ReactNode
@@ -27,17 +28,19 @@ export class PostHogErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Track error in PostHog as $exception event
+    // captureException parses the stack into frames so PostHog can group and symbolicate it,
+    // which `capture('$exception', ...)` with a raw string cannot do.
     if (typeof window !== 'undefined' && posthog) {
-      posthog.capture('$exception', {
-        $exception_type: error.name,
-        $exception_message: error.message,
-        $exception_stack_trace_raw: error.stack || '',
-        $exception_level: 'error',
-        $exception_handled: true,
-        componentStack: errorInfo.componentStack,
-        page: window.location.pathname,
-      })
+      posthog.captureException(
+        error,
+        collectExceptionContext({
+          $exception_level: 'error',
+          $exception_handled: true,
+          capture_source: 'react-error-boundary',
+          component_stack: errorInfo.componentStack,
+          react_error_digest: (error as Error & { digest?: string }).digest,
+        })
+      )
     }
 
     console.error('Error caught by boundary:', error, errorInfo)

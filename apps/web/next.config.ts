@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
   },
   // Externalize native packages for server-side use with Turbopack/Bun
   serverExternalPackages: ['chromadb'],
+
+  // Readable stack traces in PostHog error tracking. Off by default because it publishes the
+  // source maps alongside the bundle - see docs/OBSERVABILITY.md for the posthog-cli upload
+  // flow that gets symbolicated stacks without exposing them.
+  productionBrowserSourceMaps: process.env.UPLOAD_SOURCEMAPS === 'true',
 }
 
 export default nextConfig

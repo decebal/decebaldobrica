@@ -155,7 +155,7 @@ useEffect(() => {
 ```bash
 # Ensure these are set in .env.local
 NEXT_PUBLIC_POSTHOG_KEY=phc_your_key_here
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
 ```
 
 ### 2. Verify PostHog Initialization

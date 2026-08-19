@@ -1,4 +1,5 @@
 import posthog from 'posthog-js'
+import { createExceptionBeforeSend, getSuppressionCounts } from './exceptions'
 
 let analyticsInitialized = false
 
@@ -15,7 +16,8 @@ export function initAnalytics() {
   }
 
   const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
-  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
+  // Region matters: an EU project key is rejected by US cloud (app.posthog.com)
+  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com'
 
   if (!apiKey) {
     console.warn('⚠️  PostHog not configured. Set NEXT_PUBLIC_POSTHOG_KEY to enable analytics')
@@ -42,10 +44,28 @@ export function initAnalytics() {
       // Performance
       capture_performance: true,
 
+      // Error tracking - capture natively so PostHogErrorHandler stands down and incidents
+      // are not reported twice, and drop third-party noise before it leaves the browser
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: false,
+      },
+      error_tracking: {
+        captureExtensionExceptions: false,
+      },
+      before_send: createExceptionBeforeSend(posthog),
+
       // Storage
       persistence: 'localStorage+cookie',
 
       loaded: (posthog) => {
+        // Support hook: run `__posthogSuppressions()` in the console to see what the exception
+        // noise filter has dropped on this page
+        ;(
+          window as Window & { __posthogSuppressions?: () => Record<string, number> }
+        ).__posthogSuppressions = getSuppressionCounts
+
         if (process.env.NODE_ENV === 'development') {
           posthog.debug() // Enable debug mode in development
         }
@@ -407,5 +427,21 @@ export const recordingControls = {
     }
   },
 }
+
+export {
+  DUPLICATE_RULE,
+  SUPPRESSION_EVENT,
+  SUPPRESSION_RULES,
+  collectExceptionContext,
+  createExceptionBeforeSend,
+  exceptionBeforeSend,
+  getSuppressionCounts,
+  isThirdPartyNoise,
+  matchExceptionSuppression,
+  matchSuppressionRule,
+  normalizeUnknownReason,
+  shouldDropException,
+  toCapturableError,
+} from './exceptions'
 
 export default posthog

@@ -17,7 +17,8 @@ export function initAnalytics() {
   }
 
   const apiKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
-  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
+  // Region matters: an EU project key is rejected by US cloud (app.posthog.com)
+  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com'
 
   if (!apiKey) {
     console.warn('⚠️  PostHog not configured. Set NEXT_PUBLIC_POSTHOG_KEY to enable analytics')

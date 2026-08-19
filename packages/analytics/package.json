@@ -4,11 +4,14 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
+    "./exceptions": "./src/exceptions.ts",
+    "./server": "./src/server.ts",
     "./components/*": "./src/components/*.tsx"
   },
   "scripts": {
     "lint": "biome check .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "bun test"
   },
   "dependencies": {
     "posthog-js": "^1.179.3",

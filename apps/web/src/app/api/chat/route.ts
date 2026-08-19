@@ -1,7 +1,11 @@
 import { PORTFOLIO_CONTEXT } from '@/lib/portfolioContext'
 import { createGroq } from '@ai-sdk/groq'
+import {
+  captureServerException,
+  flushServerAnalytics,
+  getServerAnalytics,
+} from '@decebal/analytics/server'
 import { convertToCoreMessages, streamText } from 'ai'
-import { PostHog } from 'posthog-node'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -10,13 +14,8 @@ const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
 })
 
-// Initialize PostHog for server-side tracking
-let posthog: PostHog | null = null
-if (process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_DISABLED !== 'true') {
-  posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-  })
-}
+// Shared server-side PostHog client - see @decebal/analytics/server
+const posthog = getServerAnalytics()
 
 export async function POST(req: Request) {
   const conversationId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -102,7 +101,7 @@ export async function POST(req: Request) {
             },
           })
 
-          await posthog.shutdown()
+          await flushServerAnalytics()
         }
       },
     })
@@ -123,8 +122,17 @@ export async function POST(req: Request) {
           timestamp: new Date().toISOString(),
         },
       })
-      await posthog.shutdown()
+      await flushServerAnalytics()
     }
+
+    // Also report it as an exception so it shows up in error tracking, not only as an event
+    await captureServerException(error, {
+      route: '/api/chat',
+      method: 'POST',
+      routeType: 'route',
+      distinctId: conversationId,
+      extra: { conversation_id: conversationId },
+    })
 
     return new Response(
       JSON.stringify({
