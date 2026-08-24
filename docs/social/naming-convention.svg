@@ -1,0 +1,23 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" font-family="DejaVu Sans, Inter, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb923c"/><stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" rx="24" fill="#0d1117"/>
+  <rect x="0" y="80" width="12" height="600" fill="url(#accent)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="758.5" rx="24" fill="none" stroke="#1e2633" stroke-width="1.5"/>
+
+  <text x="62" y="112" font-size="22" font-weight="700" fill="#f97316">WHERE THE BOUNDARY IS DRAWN</text>
+
+  <text x="60" y="252" font-size="58" font-weight="800" fill="#f5f7fa">A boundary nobody can</text>
+  <text x="60" y="326" font-size="58" font-weight="800" fill="#f5f7fa">enforce is just</text>
+  <text x="60" y="430" font-size="58" font-weight="800" fill="#f97316">a naming convention.</text>
+
+  <rect x="60" y="498" width="1080" height="1.5" fill="#263041"/>
+
+  <text x="60" y="562" font-size="26" fill="#9aa7b4">Name the three your system depends on most. For each one, say what</text>
+  <text x="60" y="602" font-size="26" fill="#9aa7b4">would physically stop a violation.</text>
+
+  <text x="60" y="694" font-size="26" font-weight="700" fill="#f5f7fa">Rust &amp; AI Weekly #9 →</text><text x="404" y="694" font-size="26" font-weight="700" fill="#f97316">decebaldobrica.com/radar</text>
+</svg>

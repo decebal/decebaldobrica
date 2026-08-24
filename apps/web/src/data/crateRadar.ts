@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-08-17'
+export const RADAR_GENERATED_AT = '2026-08-24'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 8
+export const RADAR_ISSUE = 9
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -298,10 +298,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'rama', url: 'https://github.com/plabayo/rama', category: 'networking/framework', quadrant: 'dev',
-    ring: 'Assess', maintenance: 'actively maintained (Plabayo full-time; Glen De Cauwsemaecker + Brecht Stamper)', latest: 'v0.3.0 (Jul 7, 2026)',
+    ring: 'Trial', maintenance: 'actively maintained (Plabayo full-time; Glen De Cauwsemaecker + Brecht Stamper)', latest: 'v0.4.0 (Aug 21, 2026; six weeks after 0.3)',
     adopters: 'commercial partners in data extraction, security, AI (LLM harness, AI proxy gateways), cloud infra',
-    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
-    note: 'network service framework for proxies/clients/servers, five years in; 0.2 to 0.3 migration is a real day of work and partners still pin main, but 2-8 week release trains now promised',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13); Rust & AI Weekly #9 (2026-08-24)', returning: true,
+    note: 'UPGRADE Assess to Trial: in #4 the open question was whether the promised 2-8 week release train would hold, and 0.4 landed at six weeks. 0.4 adds system-proxy and PAC support, running PAC JavaScript inside a wasmtime sandbox so a crashing JS engine cannot take the process down, plus ttRPC, proto-free gRPC codegen macros, and streamed HAR export. Still breaking changes between minors, so pin and read the changelog',
   },
   {
     name: 'Sōzu', url: 'https://github.com/sozu-proxy/sozu', category: 'networking/load-balancer', quadrant: 'dev',
@@ -454,5 +454,33 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'none named',
     mentions: 'Rust & AI Weekly #7 (2026-08-11); Rust & AI Weekly #8 (2026-08-17)', returning: true,
     note: 'Rust operator that keeps pools of pre-warmed ephemeral Kubernetes clusters and hands them out as TTL-enforced leases; 0.39 hardens the lease lifecycle, which is exactly the part that bites when a lease expires mid-test',
+  },
+  {
+    name: 'syd', url: 'https://gitlab.exherbo.org/sydbox/sydbox', category: 'agentic/sandboxing', quadrant: 'agentic',
+    ring: 'Trial', maintenance: 'actively developed, solo but long-running (Ali Polatel; 195 releases; OpenSSF best-practices badge)', latest: 'v3.58.0 (Aug 2026)',
+    downloads: '~495k/month', adopters: 'packaged for Alpine, Arch, Exherbo and Gentoo; syd-oci variant runs under Docker/Podman/CRI-O',
+    mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
+    note: 'application kernel in Rust: implements a subset of the Linux kernel interface in user space and executes syscalls on behalf of the sandboxed process, so it does not carry the TOCTTOU hole that trapping sandboxes do. Runs as an unprivileged user with no SETUID and no eBPF, over Seccomp-BPF/Notify plus Landlock (ABI up to 7) and optional namespaces. Ioctl sandboxing is documented as the way to contain AI/ML workloads while still allowing PTY, DRM and KVM, which makes it the most direct answer available to "what confines the coding agent I let run shell commands". GPL-3.0, so it is a tool you run, not a library you link; Linux >= 5.19 only',
+  },
+  {
+    name: 'OxiSH', url: 'https://github.com/djc/oxish', category: 'security/ssh', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'new public release after 20 months of private work (Dirkjan Ochtman; Trifecta Tech Foundation contributed, funded by the Sovereign Tech Agency)', latest: 'announced Aug 13, 2026',
+    adopters: 'none; author is about to start dogfooding on his own server',
+    mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
+    note: 'memory-safe SSH server with a sans-I/O protocol core and a pluggable crypto backend (graviola by default, aws-lc-rs for portability and FIPS mode). Deliberately tiny algorithm set: hybrid post-quantum mlkem768x25519-sha256 key exchange, Ed25519 and ecdsa-sha2-nistp256 keys, AES-128-GCM, SHA-256. Author maintains rustls, Quinn and Hickory DNS, reviewed historic OpenSSH CVEs while designing, and says plainly it is not production-ready: no forwarding, no scp/sftp, no password auth, no Windows, no external audit funded yet',
+  },
+  {
+    name: 'tokio_with_wasm', url: 'https://github.com/cunarist/tokio-with-wasm', category: 'dev-tools/wasm', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'actively maintained, small team (Dong-Hyun "Danny" Kim / Cunarist; also Rinf)', latest: 'v0.9.0 (2026)',
+    downloads: '~1.6M all-time', adopters: 'Rinf (Rust-in-Flutter) is the reference consumer',
+    mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
+    note: 'This Week in Rust 665 Crate of the Week, self-suggested: drop-in tokio modules for wasm32 browser targets, where threads, time, file IO and network IO are all restricted. Lets one codebase target native and browser, which is the plumbing you need to run the same Rust agent or inference glue server-side and client-side. It is a compatibility shim over web APIs, not real tokio, so the semantics differ where the browser makes them differ',
+  },
+  {
+    name: 'cargo-pgo', url: 'https://github.com/Kobzol/cargo-pgo', category: 'dev-tools/build', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'maintained, solo (Jakub Beránek / Kobzol, who also runs rustc perf triage)', latest: 'v0.2.9',
+    adopters: 'used across the Rust performance community; rustc itself is PGO-built',
+    mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
+    note: 'rust-alternative-to Go\'s built-in PGO (go build -pgo): a cargo subcommand that wires up instrumentation, profile merging and BOLT so profile-guided optimisation is three commands instead of a research project. Surfaced by pairing Daniel Lemire\'s Go PGO measurements with this week\'s rustc stabilisation of -Zprofile-sample-use. The honest gap is that Go ships PGO in the toolchain and Rust does not: this is a third-party subcommand, BOLT is Linux-only, and the whole thing is worthless without a representative workload to profile',
   },
 ]
