@@ -29,7 +29,7 @@ Read this section, decide, and stop. Everything after it is the evidence.
 | Anything a customer or regulator sees | A maintained DOM framework with a published lifecycle | It is the only class of option that can produce an accessibility conformance report and a support-window answer without a new engineering programme | React or Angular means TypeScript. Dioxus means an annual migration you have to budget |
 | Desktop or mobile wrapper | Tauri 2.11.5 | Two published external audits, a capability model an auditor can read, and 10.3M downloads a quarter | The Linux GTK3 binding chain, and webview media capture you must verify per platform |
 | Per-frame crypto, media pipelines, heavy compute | `wasm-bindgen` in a Worker | Infrastructure-grade, 125M downloads a quarter, and genuinely the best tool for the job | Nothing. This is where Rust in the browser wins outright |
-| The whole UI, hand-rolled on `web-sys` | Nothing. Do not | See "The no-framework instinct, priced" below | Your team becomes the framework maintainer, and four maturity axes fail at once |
+| The whole UI, hand-rolled on `web-sys` | Nothing. Do not | ARIA-heavy pages already average 59.1 detectable errors against 42 without it, and the best accessible component library in Rust ships 340 downloads a quarter | Your team becomes the framework maintainer, four maturity axes fail at once, and the DOM path gets *slower* than the framework you skipped |
 
 **Five findings that decide the verdicts:**
 
@@ -102,7 +102,9 @@ This is the section to read if your team is Rust-fluent and the pre-1.0 framewor
 
 Start with what is true. Vanilla-B has the best stewardship numbers in this entire report: 125M downloads a quarter, Rust-org adjacent, effectively infrastructure. For a bounded compute surface it is the correct choice and no framework improves on it.
 
-The problem is what "no framework" means once the surface is a product. You do not delete the framework. You inherit the job of writing one, and the parts you inherit are the parts that carry the compliance weight:
+**The performance premise inverts, which is worth knowing before the argument starts.** WebAssembly has no direct DOM access, so every DOM operation is a call back through JavaScript, and the deciding variable is not which runtime is faster but how often data crosses that boundary per operation. Frequent small crossings, which is exactly what per-node DOM manipulation is, erase the compiled-code advantage. Frameworks handle this by batching. Hand-written `web-sys` code crosses per call unless you build the batching yourself, and the framework you skipped had already done it: in `js-framework-benchmark`-style DOM tests, Leptos and Dioxus land competitive with SolidJS and ahead of React. So "skip the framework for speed" gets you a slower DOM path than the framework, while the genuine wasm win (CPU-bound work, roughly the 2–3× range on the right workload) is available either way from a Worker.
+
+The bigger problem is what "no framework" means once the surface is a product. You do not delete the framework. You inherit the job of writing one, and the parts you inherit are the parts carrying the compliance weight:
 
 | What a framework was doing for you | What you now own | Which axis it breaks |
 |---|---|---|
@@ -112,17 +114,40 @@ The problem is what "no framework" means once the surface is a product. You do n
 | i18n, pluralization, date and number formats, RTL | An internal i18n layer | 6, 9 |
 | SSR and hydration for first paint | Client-only rendering, or your own SSR | 8 |
 | Error boundaries, devtools, component inspection | Printf debugging | 9 |
-| A third-party accessible component library | A bespoke widget set with no ACR precedent | **6 (kill shot)**, 9 |
+| A third-party accessible component library | A bespoke widget set, tested by nobody but you | **6 (kill shot)**, 9 |
 | An upstream that publishes advisories | Nobody. There is no feed for your fork | 4 |
 
-The maturity inversion is the part teams miss. Choosing no framework does not reduce framework risk, it moves that risk from an upstream you can audit, benchmark, sponsor, and eventually leave, into a codebase with a bus factor of your team, no external audit, no advisory feed, no accessibility conformance precedent, no hiring pool, and no upgrade path off it. Axes 1, 3, 6 and 9 fail simultaneously, and axis 6 is a kill shot on its own. Procurement cannot buy a fork. A reviewer asking for an ACR on a bespoke widget set is asking your team to fund the manual assistive-technology testing that an off-the-shelf accessible component library already amortized across thousands of customers.
+**The accessibility row is not a theoretical risk, and the industry has already measured it.** The [2026 WebAIM Million](https://webaim.org/projects/million/) found that home pages using ARIA averaged **59.1 detectable errors against 42 on pages without it**, roughly 17 extra barriers, and that the error count scales with the number of ARIA attributes present. More specifically: of the home pages carrying an ARIA `menu`, **22% had broken it** through missing markup or missing interactions. WebAIM is careful that ARIA-heavy pages are also more complex pages, so this is correlation rather than proof of causation. It still describes the outcome accurately. Hand-authored ARIA, at industry scale, produces more barriers than it removes, and the maxim it earned is "no ARIA is better than bad ARIA."
+
+Look at one pattern to see why. The APG's combobox requires `aria-expanded`, `aria-controls`, a `listbox` popup, `option` children with `aria-selected`, and then **two different focus models depending on popup type**: `aria-activedescendant` on the textbox while DOM focus stays put, except for dialog popups, which do not support `aria-activedescendant` and take real DOM focus instead. Add the four popup types, the autocomplete variants, the ARIA 1.0 legacy pattern user agents still support, and per-engine behavioural differences across Chrome, Firefox, Safari and Edge. That is one widget. React Aria ships behaviour, ARIA semantics, i18n and adaptive interactions for 40-plus patterns, maintained by a vendor whose day job includes publishing conformance documentation.
+
+**One correction to a claim that gets made loosely, including in the first draft of this report.** Component libraries mostly do *not* hand you an accessibility conformance report. An ACR describes a product with a defined interface, and a library's conformance depends on how you compose it, which is why Adobe publishes ACRs for products (VPAT 2.x, WCAG 2.2 AA, EN 301 549) while React Spectrum documents accessibility per component, and IBM Carbon records per-component status against its own checklist. What a maintained library actually amortizes is the pattern implementation and the assistive-technology testing behind it. You still author your ACR. The difference is whether each row cites a widget thousands of teams exercise daily or one your team wrote last quarter.
+
+**Then check what the Rust component supply actually looks like** (crates.io, August 26 2026, and this is axis 9 in one table):
+
+| Crate | Latest | Last updated | 90-day downloads |
+|---|---|---|---|
+| `thaw` (Leptos UI kit, healthiest of the set) | 0.4.8 | 2025-08-03 | 10,244 |
+| `radix-leptos` (Radix port, claims 57+ components and WAI-ARIA) | 0.9.0 | 2025-09-22 | **340** |
+| `dioxus-components` | 0.1.2 | 2025-11-18 | 1,222 |
+| `dioxus-primitives` | 0.0.0 placeholder | 2025-04-13 | 332 |
+| `leptonic` | 0.5.0 | 2024-02-01 | 249 |
+| `leptos_aria` (React Aria port) | 0.0.0 | **2023-02-08** | 8 |
+
+The most accessibility-serious option in Rust is a Radix port at 340 downloads a quarter that has not shipped in eleven months, targeting the framework this report just downgraded. The React Aria port is a three-year-old placeholder. So Vanilla-B is short by two steps rather than one: no framework, and no component library either.
+
+The maturity inversion is the part teams miss. Choosing no framework does not reduce framework risk, it moves that risk from an upstream you can audit, benchmark, sponsor, and eventually leave, into a codebase with a bus factor of your team, no external audit, no advisory feed, no accessibility testing anyone else runs, no hiring pool, and no upgrade path off it. Axes 1, 3, 6 and 9 fail together, and axis 6 is a kill shot alone.
+
+**Google is the existence proof for "we will do accessibility ourselves later."** Flutter's web target renders to canvas, so it maintains a parallel semantics tree mirrored into DOM elements (`flt-semantics-host` and friends) positioned pixel-perfectly over the painted widgets. It works, and the cost of it is public: accessibility is **off by default for performance**, gated behind an invisible "Enable accessibility" button, with a long-standing race-condition bug where screen readers announce that button anyway. Text fields announce as "edit, blank" because no `<label>` element exists. Custom widgets without an explicit role are silent. Flutter 3.32 rebuilt semantics compilation to make it 80% faster to build, which tells you what the ongoing maintenance load looks like when a well-funded team owns the mirror instead of using the platform's own tree. Chrome's HTML-in-Canvas origin trial from I/O 2026 exists specifically to end this pattern.
 
 There is also a quieter cost. A hand-rolled UI layer is the least reviewable code in your repo, because every reviewer has to learn your abstractions before they can see the bug. A pre-1.0 framework's breaking change is at least *legible*: it has release notes, a migration guide, and other people hitting it the same week.
 
+**The build-versus-buy arithmetic, since this decision usually gets made on instinct.** One TCO framework worth borrowing sets two thresholds: build when recurring maintenance would exceed roughly 0.3 engineer-years annually or when you must ship platform SDKs and enterprise theming, and buy when your constraint is headcount and time to market, with fewer than about six full-time frontend engineers as the cutoff and a three-year buy-side TCO around $120k to $300k. Price your own version honestly, including the manual assistive-technology testing per widget, and put the number next to the migration tax of the framework you were avoiding. The recurring failure mode is documented: DIY component libraries routinely under-invest in performance, testing and accessibility, which turns an intended advantage into a slow system that is expensive to sustain and fragile to change.
+
 **So where does the maintained ladder actually go?** In descending order of how much lifecycle you get on paper:
 
-1. **TypeScript with React or Angular.** Pick Angular when a written support window has to appear in a questionnaire, since it publishes 18 months per major with a 6-plus-12 split. Pick React when the deciding factor is the component and accessibility ecosystem, plus security backports to every affected major with no cutoff. Either one gives you an accessible component library with existing conformance reports, which is the single largest axis-6 cost you can delete with a dependency choice.
-2. **Dioxus, if Rust-first is a hard product requirement.** Trial rather than Adopt, and only on the DOM target. Pair it with exact pinned versions, a breaking-change ledger, migration capacity written into the roadmap, and an upstream enterprise support conversation. Dioxus explicitly invites that conversation and lists enterprise support in its funding mix, which makes it the one Rust UI framework where "buy a support window" is even a question you can ask.
+1. **TypeScript with React or Angular.** Pick Angular when a written support window has to appear in a questionnaire, since it publishes 18 months per major with a 6-plus-12 split. Pick React when the deciding factor is the component and accessibility ecosystem, plus security backports to every affected major with no cutoff. Either one gives you a maintained accessible component library with per-component documentation and assistive-technology testing you would otherwise fund yourself, which is the single largest axis-6 cost deletable by a dependency choice.
+2. **Dioxus, if Rust-first is a hard product requirement.** Trial rather than Adopt, and only on the DOM target. Pair it with exact pinned versions, a breaking-change ledger, migration capacity written into the roadmap, and an upstream enterprise support conversation. Dioxus explicitly invites that conversation and lists enterprise support in its funding mix, which makes it the one Rust UI framework where "buy a support window" is a question you can even ask. Budget for primitives: `dioxus-primitives` is a placeholder and `dioxus-components` moves 1,222 downloads a quarter, so the accessible-widget work lands on you or on a wrapped JavaScript library.
 3. **Tauri as the shell**, because the audits exist and the capability model is readable.
 4. **`wasm-bindgen` confined to Workers**, doing the per-frame crypto and the media pipeline, behind a maintained UI. This is Vanilla-B in its correct job, and it is a real win rather than a consolation prize.
 
@@ -257,6 +282,9 @@ Six findings from that table have each changed a design decision in practice.
 - **No named enterprise reference customers for Dioxus, and no 1.0 date for the full framework.**
 - **No sourced governance or lifecycle artifacts for Svelte, Solid or Qwik** in this pass. An unfinished axis, not a negative verdict.
 - **No head-to-head bundle-size table.** Every public number is a hello-world or an anecdote. Yours has to be measured.
+- **No conformance results published by any Rust UI component library.** `radix-leptos` claims WAI-ARIA compliance in its README and ships no test evidence, which is a claim rather than a result.
+- **No reproducible `web-sys` DOM microbenchmark.** The boundary-crossing cost is well documented in principle, and per-call `setAttribute` overhead against a batched transfer is not published. The framework-level numbers in `js-framework-benchmark` are the closest available evidence.
+- **No named engineering retrospective on migrating off a bespoke frontend framework.** The build-versus-buy cost models exist, and the first-person postmortem did not surface in this pass.
 
 ## The thought at the end
 
