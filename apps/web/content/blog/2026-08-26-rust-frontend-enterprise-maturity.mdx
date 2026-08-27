@@ -1,0 +1,331 @@
+---
+title: 'Rust frontend frameworks and enterprise maturity: Dioxus, Tauri, and the vanilla baseline'
+date: '2026-08-26T12:00:00.000Z'
+author: Decebal D.
+description: 'A stewardship-first maturity report on the Rust frontend stack — Dioxus, Tauri, Leptos, Yew, egui, Iced, raw wasm-bindgen — scored against the JavaScript baseline it has to displace, with the standard practices for closing each gap, the price of the no-framework instinct, and a compatibility matrix for the security controls a verified-meeting product needs on the guest and the host.'
+tags:
+  - rust
+  - frontend
+  - dioxus
+  - tauri
+  - webassembly
+  - security
+  - architecture
+slug: 2026-08-26-rust-frontend-enterprise-maturity
+---
+
+Most framework comparisons measure the wrong thing. They benchmark render throughput, count GitHub stars, and then a procurement reviewer asks three questions the benchmark cannot answer: what is your accessibility conformance report, how long does the current major receive security fixes, and who patches a CVE in the render layer on a Friday. This report scores the Rust frontend stack the way the *Rust & AI Weekly* radar scores crates. Stewardship first, features last, with an Adopt / Trial / Assess / Hold verdict and a metadata block naming who pays for the code, what shipped last, and when.
+
+*(Version and download figures pulled from the crates.io API on August 26, 2026. Everything else links to a primary source. Vendor blogs were used to find leads and then discarded, because the Rust frontend space in 2026 is full of content-marketing pages citing Leptos 0.6.)*
+
+## Bottom line
+
+Read this section, decide, and stop. Everything after it is the evidence.
+
+**The recommendation, by surface:**
+
+| Surface | Choose | Why | What it costs you |
+|---------|--------|-----|-------------------|
+| Anything a customer or regulator sees | A maintained DOM framework with a published lifecycle | It is the only class of option that can produce an accessibility conformance report and a support-window answer without a new engineering programme | React or Angular means TypeScript. Dioxus means an annual migration you have to budget |
+| Desktop or mobile wrapper | Tauri 2.11.5 | Two published external audits, a capability model an auditor can read, and 10.3M downloads a quarter | The Linux GTK3 binding chain, and webview media capture you must verify per platform |
+| Per-frame crypto, media pipelines, heavy compute | `wasm-bindgen` in a Worker | Infrastructure-grade, 125M downloads a quarter, and genuinely the best tool for the job | Nothing. This is where Rust in the browser wins outright |
+| The whole UI, hand-rolled on `web-sys` | Nothing. Do not | ARIA-heavy pages already average 59.1 detectable errors against 42 without it, and the best accessible component library in Rust ships 340 downloads a quarter | Your team becomes the framework maintainer, four maturity axes fail at once, and the DOM path gets *slower* than the framework you skipped |
+
+**Five findings that decide the verdicts:**
+
+1. **No Rust UI framework publishes a support window.** Angular publishes 18 months per major. React backports security fixes to every affected major with no cutoff. Electron publishes latest-3-majors. Dioxus, Leptos, Yew, egui and Iced publish nothing, and two independent research passes went looking for a policy, an RFC, or even a maintainer comment discussing one. Neither found any. Cheapest artifact to produce, most expensive to fake, and every enterprise buyer reads it first.
+2. **Tauri is the only audited candidate.** Radically Open Security audited v1 in 2022 and delivered a v2 penetration test in 2024, both published in-repo, NLnet/NGI funded. No independent audit exists for Dioxus, Leptos, Yew, egui, Iced, AccessKit, or `wasm-bindgen` itself. Anyone who claims otherwise should be asked for the PDF. Wasmi shows the counterfactual: its interpreter got a Runtime Verification audit in 2025, sponsored by the Stellar Development Foundation, so audits in this ecosystem are fundable when somebody decides to fund one.
+3. **Leptos drops from Trial to Assess** on its maintainer's own May 2026 statement that it is now lightly maintained. Anyone in production on 0.8 owns bug-fix duty starting now.
+4. **A web biometric SDK is a DOM custom element, which eliminates the Rust native renderers outright.** egui and Blitz cannot host a third-party web component at any maturity level. For a verified-meeting product, that constraint decides the frontend before performance is discussed.
+5. **The guest and the host need different stacks, and the asymmetry is the design.** A guest installs nothing, so assurance is capped at what a browser can prove. A host can install, which unlocks OS device attestation. Same server-side enforcement behind both, and no assurance claim allowed to outrun the surface that earned it.
+
+**The trap we expect to walk into.** A Rust-fluent team, told that Dioxus is pre-1.0 and Leptos is lightly maintained, reaches the obvious conclusion: skip the framework, write `wasm-bindgen` and `web-sys` directly, own less. That instinct is right about the compute layer and wrong about the UI, and it does not remove framework risk. It relocates that risk into a codebase with a bus factor of your team, no external audit, no advisory feed, no accessibility precedent, and no hiring pool. Priced out below.
+
+**What to do next, each item an artifact rather than an opinion:**
+
+- Run the evidence pass in the next section against your own lockfile and keep the output. `cargo audit`, `cargo deny check`, a CycloneDX SBOM, `twiggy top` on your real bundle.
+- Build the breaking-change ledger for the last three minors of every candidate you are seriously considering. One hour from release notes, and it is your true annual dependency cost.
+- Decide who owns the LTS you do not have. Pinned versions plus a funded internal fork, an upstream support contract, or a maintained JavaScript framework. Choosing none of the three is choosing the first one by accident.
+- Publish an accessibility conformance report from the VPAT 2.5 INT template for whatever you ship, and wire `axe-core` into CI as the regression floor rather than as the evidence.
+- Turn off the Dioxus CLI's opt-out telemetry in your images and write down that you did.
+
+## How this report is scored
+
+Nine axes. Each names the artifact that answers it, because an axis you cannot evidence is an axis you are guessing at.
+
+| # | Axis | Primary evidence, not opinion |
+|---|------|-------------------------------|
+| 1 | Stewardship and bus factor | `git shortlog -sne --since=12.months` on the upstream, the funding page, org sponsors, OpenSSF best-practices badge |
+| 2 | Release cadence and semver honesty | crates.io or npm version history with dates, the breaking-change list per minor, whether a migration guide exists |
+| 3 | Support window | The *published* policy. Angular and Electron have one. Dioxus, Leptos, Tauri and egui do not, which means you are the LTS |
+| 4 | Security posture | External audit PDFs in-repo, advisory count and fix latency, `cargo audit` and `cargo deny` against *your* lockfile |
+| 5 | Supply chain | Transitive dependency count, unmaintained-crate advisories in the tree, whether an SBOM generates from the lockfile |
+| 6 | Accessibility | A screen-reader matrix you ran yourself, plus a VPAT 2.5 report you could publish. Not a Cargo feature flag named `accessibility` |
+| 7 | Enterprise operations | Code signing and notarization, MSI/MSIX, auto-update with rollback, crash symbolication, telemetry policy and its opt-out |
+| 8 | Measured cost | Wasm or binary size, cold start, resident memory, build wall-clock, measured in *your* repo and never quoted from a hello-world |
+| 9 | Hiring and handover | Can a TypeScript team maintain it, are the docs LLM-ingestible, is there a third-party component supply |
+
+**Three kill-shot axes.** Any red here is a Hold regardless of the other six: accessibility on a customer-facing surface, code-signing plus update on a distributed binary, and an unpatchable advisory sitting in your dependency tree. A framework that scores well elsewhere and cannot pass a procurement accessibility review is a prototype, not a candidate.
+
+**The evidence pass, so anyone can re-run it:**
+
+```bash
+cargo audit                            # RustSec against YOUR lockfile, not the upstream's
+cargo deny check                       # advisories + licenses + duplicate versions
+cargo tree -i glib -e no-dev           # who drags the GTK3 chain into your build
+cargo cyclonedx --format json          # the SBOM your procurement questionnaire asks for
+git shortlog -sne --since=12.months    # bus factor, run inside each upstream clone
+gh api repos/tauri-apps/tauri/security-advisories --jq '.[].summary'
+twiggy top pkg/app_bg.wasm             # where the bytes actually went
+```
+
+## The radar
+
+| Candidate | Latest (crates.io / npm, Aug 26 2026) | 90-day downloads | Verdict |
+|-----------|----------------------------------------|------------------|---------|
+| **Tauri**, desktop and mobile shell | 2.11.5 (updated 2026-07-01) | 10.3M | **Adopt** |
+| **Dioxus**, web and fullstack | 0.7.10 (updated 2026-07-31) | 859k | **Trial** |
+| Dioxus Native / Blitz | 0.7.x, rapid churn | ~6.6k/month | **Assess** |
+| **Leptos** | 0.8.20 (updated 2026-07-18) | 1.24M | **Assess** ↓ downgraded |
+| Yew | 0.23.0 (updated 2026-03-10) | 358k | **Hold** |
+| egui | 0.36.1 (updated 2026-08-07) | 5.0M | **Trial** internal · **Hold** customer-facing |
+| Iced | 0.14.0 (updated 2025-12-07) | 676k | **Assess** |
+| Vanilla-A, TypeScript + React in the browser | React 19.2.8 (2026-07-21) | — | **Adopt** *(baseline)* |
+| Vanilla-B, `wasm-bindgen` + `web-sys`, no framework | 0.2.127 (updated 2026-08-08) | 125M | **Trial** in a Worker · **Hold** as a UI strategy |
+| Electron, the incumbent shell | 8-week majors | — | **Adopt, with a treadmill** |
+
+"Vanilla" is ambiguous in the way that matters, so this report scores two of them. **Vanilla-A** is the incumbent every Rust proposal competes against: TypeScript and React in a browser, wrapped in Electron when it has to be a desktop app. **Vanilla-B** is the Rust control group, `wasm-bindgen` and `web-sys` with no framework at all, which separates "Rust in the browser" from "a pre-1.0 Rust UI framework." The two verdicts on Vanilla-B are not a hedge. They describe two different jobs.
+
+## The no-framework instinct, priced
+
+This is the section to read if your team is Rust-fluent and the pre-1.0 framework story just made everyone reach for `web-sys`.
+
+Start with what is true. Vanilla-B has the best stewardship numbers in this entire report: 125M downloads a quarter, Rust-org adjacent, effectively infrastructure. For a bounded compute surface it is the correct choice and no framework improves on it.
+
+**The performance premise inverts, which is worth knowing before the argument starts.** WebAssembly has no direct DOM access, so every DOM operation is a call back through JavaScript, and the deciding variable is not which runtime is faster but how often data crosses that boundary per operation. Frequent small crossings, which is exactly what per-node DOM manipulation is, erase the compiled-code advantage. Frameworks handle this by batching. Hand-written `web-sys` code crosses per call until you build the batching yourself, and the framework you skipped had already built it. What I can't hand you is a number: Dioxus, Leptos, Yew and Sycamore all have implementations in the official `js-framework-benchmark` suite, and I have not verified their figures in the current Chrome 150 run, so treat any specific ranking you see quoted — including the widely repeated claim that they beat React — as unverified. The mechanism is the argument, not the leaderboard. Meanwhile the genuine wasm win, CPU-bound work at roughly 2–3× on the right workload, is available from a Worker either way.
+
+**`wasm-bindgen` has no external audit either, and that cuts both ways.** `web-sys` is mechanically generated from WebIDL definitions, which removes a large class of hand-written binding bugs, and no RustSec advisory targets the crate. It has also never been audited, and it sits under every Rust web frontend in this report, so "we only depend on infrastructure" doesn't buy you an audited dependency. One caution on how these claims travel: a research pass handed me CVE-2026-25541 as a `wasm-bindgen` vulnerability. It's an integer overflow in `bytes`. Look up the ID before you put it in a risk register.
+
+The bigger problem is what "no framework" means once the surface is a product. You do not delete the framework. You inherit the job of writing one, and the parts you inherit are the parts carrying the compliance weight:
+
+| What a framework was doing for you | What you now own | Which axis it breaks |
+|---|---|---|
+| Routing, history, deep links, scroll restoration | An internal router | 1, 9 |
+| Forms, validation, submission, error surfaces | An internal form layer | 1, 6 |
+| Focus management, keyboard traps, ARIA roles and live regions, reduced-motion | Every accessibility semantic, per widget, hand-audited | **6 (kill shot)** |
+| i18n, pluralization, date and number formats, RTL | An internal i18n layer | 6, 9 |
+| SSR and hydration for first paint | Client-only rendering, or your own SSR | 8 |
+| Error boundaries, devtools, component inspection | Printf debugging | 9 |
+| A third-party accessible component library | A bespoke widget set, tested by nobody but you | **6 (kill shot)**, 9 |
+| An upstream that publishes advisories | Nobody. There is no feed for your fork | 4 |
+
+**The accessibility row is not a theoretical risk, and the industry has already measured it.** The [2026 WebAIM Million](https://webaim.org/projects/million/) found that home pages using ARIA averaged **59.1 detectable errors against 42 on pages without it**, roughly 17 extra barriers, and that the error count scales with the number of ARIA attributes present. More specifically: of the home pages carrying an ARIA `menu`, **22% had broken it** through missing markup or missing interactions. WebAIM is careful that ARIA-heavy pages are also more complex pages, so this is correlation rather than proof of causation. It still describes the outcome accurately. Hand-authored ARIA, at industry scale, produces more barriers than it removes, and the maxim it earned is "no ARIA is better than bad ARIA."
+
+Look at one pattern to see why. The APG's combobox requires `aria-expanded`, `aria-controls`, a `listbox` popup, `option` children with `aria-selected`, and then **two different focus models depending on popup type**: `aria-activedescendant` on the textbox while DOM focus stays put, except for dialog popups, which do not support `aria-activedescendant` and take real DOM focus instead. Add the four popup types, the autocomplete variants, the ARIA 1.0 legacy pattern user agents still support, and per-engine behavioural differences across Chrome, Firefox, Safari and Edge. That is one widget. React Aria ships behaviour, ARIA semantics, i18n and adaptive interactions for 40-plus patterns, maintained by a vendor whose day job includes publishing conformance documentation.
+
+**One correction to a claim that gets made loosely, including in the first draft of this report.** Component libraries mostly do *not* hand you an accessibility conformance report. An ACR describes a product with a defined interface, and a library's conformance depends on how you compose it, which is why Adobe publishes ACRs for products (VPAT 2.x, WCAG 2.2 AA, EN 301 549) while React Spectrum documents accessibility per component, and IBM Carbon records per-component status against its own checklist. What a maintained library actually amortizes is the pattern implementation and the assistive-technology testing behind it. You still author your ACR. The difference is whether each row cites a widget thousands of teams exercise daily or one your team wrote last quarter.
+
+**Then check what the Rust component supply actually looks like** (crates.io, August 26 2026, and this is axis 9 in one table):
+
+| Crate | Latest | Last updated | 90-day downloads |
+|---|---|---|---|
+| `thaw` (Leptos UI kit, healthiest of the set) | 0.4.8 | 2025-08-03 | 10,244 |
+| `radix-leptos` (Radix port, claims 57+ components and WAI-ARIA) | 0.9.0 | 2025-09-22 | **340** |
+| `dioxus-components` | 0.1.2 | 2025-11-18 | 1,222 |
+| `dioxus-primitives` | 0.0.0 placeholder | 2025-04-13 | 332 |
+| `leptonic` | 0.5.0 | 2024-02-01 | 249 |
+| `leptos_aria` (React Aria port) | 0.0.0 | **2023-02-08** | 8 |
+
+The most accessibility-serious option in Rust is a Radix port at 340 downloads a quarter that has not shipped in eleven months, targeting the framework this report just downgraded. The React Aria port is a three-year-old placeholder. So Vanilla-B is short by two steps rather than one: no framework, and no component library either.
+
+**The hiring axis, on the weakest evidence in this report, and flagged as such.** Third-party trackers put open Rust roles at 606 as of February 2026, average salary around $130,292 (a 15.5% premium), and time-to-hire at 4 to 7 weeks for mid-level and 8 to 14 for senior systems work, against 3 to 5 weeks for typical IT roles. None of that is frontend-specific, and the numbers come from analyst blogs rather than Stack Overflow or a Rust Foundation survey. Wasm-specific postings are scarcer still: on the order of 150 listings mentioning Wasm on LinkedIn and roughly a dozen naming Rust and Wasm together on Indeed. Treat the shape as real and the precision as unreliable. If a hand-rolled Rust UI layer is the thing a new hire must learn before shipping, that hiring premium compounds with a bespoke-abstraction premium nobody has measured.
+
+The maturity inversion is the part teams miss. Choosing no framework does not reduce framework risk, it moves that risk from an upstream you can audit, benchmark, sponsor, and eventually leave, into a codebase with a bus factor of your team, no external audit, no advisory feed, no accessibility testing anyone else runs, no hiring pool, and no upgrade path off it. Axes 1, 3, 6 and 9 fail together, and axis 6 is a kill shot alone.
+
+**Google is the existence proof for "we will do accessibility ourselves later."** Flutter's web target renders to canvas, so it maintains a parallel semantics tree mirrored into DOM elements (`flt-semantics-host` and friends) positioned pixel-perfectly over the painted widgets. It works, and the cost of it is public: accessibility is **off by default for performance**, gated behind an invisible "Enable accessibility" button, with a long-standing race-condition bug where screen readers announce that button anyway. Text fields announce as "edit, blank" because no `<label>` element exists. Custom widgets without an explicit role are silent. Flutter 3.32 rebuilt semantics compilation to make it 80% faster to build, which tells you what the ongoing maintenance load looks like when a well-funded team owns the mirror instead of using the platform's own tree. Chrome's HTML-in-Canvas origin trial from I/O 2026 exists specifically to end this pattern.
+
+There is also a quieter cost. A hand-rolled UI layer is the least reviewable code in your repo, because every reviewer has to learn your abstractions before they can see the bug. A pre-1.0 framework's breaking change is at least *legible*: it has release notes, a migration guide, and other people hitting it the same week.
+
+**The build-versus-buy arithmetic, since this decision usually gets made on instinct.** One TCO framework worth borrowing sets two thresholds: build when recurring maintenance would exceed roughly 0.3 engineer-years annually or when you must ship platform SDKs and enterprise theming, and buy when your constraint is headcount and time to market, with fewer than about six full-time frontend engineers as the cutoff and a three-year buy-side TCO around $120k to $300k. Price your own version honestly, including the manual assistive-technology testing per widget, and put the number next to the migration tax of the framework you were avoiding. The recurring failure mode is documented: DIY component libraries routinely under-invest in performance, testing and accessibility, which turns an intended advantage into a slow system that is expensive to sustain and fragile to change.
+
+**So where does the maintained ladder actually go?** In descending order of how much lifecycle you get on paper:
+
+1. **TypeScript with React or Angular.** Pick Angular when a written support window has to appear in a questionnaire, since it publishes 18 months per major with a 6-plus-12 split. Pick React when the deciding factor is the component and accessibility ecosystem, plus security backports to every affected major with no cutoff. Either one gives you a maintained accessible component library with per-component documentation and assistive-technology testing you would otherwise fund yourself, which is the single largest axis-6 cost deletable by a dependency choice.
+2. **Dioxus, if Rust-first is a hard product requirement.** Trial rather than Adopt, and only on the DOM target. Pair it with exact pinned versions, a breaking-change ledger, and migration capacity written into the roadmap. One correction to a hope I had in an earlier draft: **you cannot currently buy a support window.** Dioxus lists enterprise support in its funding mix and its investor profile describes a paid deployment platform as future work, but no published offering, price, SLA, or named support customer exists. Tauri's own statutes at the Commons Conservancy describe a project running on a nil budget. Ask, by all means, and plan as though the answer is no. Budget for primitives too: `dioxus-primitives` is a `0.0.0` placeholder and `dioxus-components` moves 1,222 downloads a quarter, so accessible-widget work lands on your team or on a wrapped JavaScript library.
+3. **Tauri as the shell**, because the audits exist and the capability model is readable.
+4. **`wasm-bindgen` confined to Workers**, doing the per-frame crypto and the media pipeline, behind a maintained UI. This is Vanilla-B in its correct job, and it is a real win rather than a consolation prize.
+
+For a Rust team the framing is simple: put Rust where Rust is unarguably better, which is the compute, and stop paying for it in the layer where the compliance evidence lives.
+
+## The Rust candidates
+
+### Tauri 2.11.5 — Adopt, as the shell
+
+Tauri is the only candidate in this report with a published external audit, and it has two. [Radically Open Security audited v1 in 2022](https://github.com/tauri-apps/tauri/blob/dev/audits/Radically_Open_Security-v1-report.pdf) and delivered a v2 penetration-test report dated Amsterdam, August 7 2024, [published in-repo as a PDF](https://github.com/tauri-apps/tauri/blob/dev/audits/Radically_Open_Security-v2-report.pdf) and funded by NLnet via NGI. The findings were not cosmetic. The mobile development server exposed the developer's disk to the local network without authentication, Android dev mode skipped certificate validation, and the isolation pattern's IPC signing key was extractable from JavaScript. All of them closed before v2 stable. Findings published, severity owned, fixes shipped ahead of the stable tag: that is what a healthy security process looks like from the outside. On top of it, the project [documents its own release discipline](https://v2.tauri.app/security/ecosystem/), including internal review of security-relevant PRs before minor and major releases, signed commits, and mandatory maintainer approval.
+
+The capability model is the enterprise draw. Every filesystem path and native feature a frontend can reach is declared in configuration, so an auditor reads a manifest instead of grepping a codebase. The cost of that model is real: a missing capability surfaces as a silently rejected promise rather than a loud error, so budget onboarding time for it.
+
+The axis-5 finding you must own: on Linux, Tauri's webview inherits the gtk-rs GTK3 binding chain, which carries `RUSTSEC-2024-0412`, `-0413` and `-0416` (unmaintained GTK3 bindings) plus [`RUSTSEC-2024-0429`](https://rustsec.org/advisories/), an unsoundness in `glib::VariantStrIter` **with no patched version available**. Not a Tauri defect, upstream GTK3 bindings being end-of-life, but it lands in your `cargo audit` output and therefore in your risk register. Document it with a `cargo deny` exception that names the reason and expires.
+
+Worth knowing what that costs before you assume it's unavoidable: `cargo audit` against the Dioxus-web codebase this report came out of reports **371 crates, zero vulnerabilities, zero warnings**. The GTK3 chain is not a tax on Rust web frontends. It arrives the day you add a Tauri desktop target on Linux, which makes it a scoped, dated decision rather than ambient risk.
+
+*Maintenance: active, multi-maintainer, Commons Conservancy programme, audits externally funded (NLnet/NGI) · Latest: 2.11.5 (Jul 1, 2026), v2 stable since Oct 2, 2024 · Adoption: **Adopt** as the shell around a web surface, being the only candidate whose security claims survive contact with a published pen-test report.*
+
+### Dioxus 0.7.10 — Trial, with the tax written down
+
+Dioxus is the most interesting Rust UI project and it is not an Adopt. What it has going for it is genuine: a funded team (Satellite.im, FutureWei, Y Combinator, GitHub Accelerator, roughly $500k tracked), a [0.7 release](https://dioxuslabs.com/blog/release-070/) with 350-plus merged PRs shipping hot-patching, a WGPU native renderer, automatic Tailwind and a first-party `llms.txt`, and an [0.8 roadmap](https://github.com/DioxusLabs/dioxus/discussions/5024) that reads like a team who knows which parts are weak: native platform APIs, cross-platform parity, bug fixing.
+
+Production references exist, and they are thinner than the framework deserves. A RustNL 2023 talk describes a "full production app that's being shipped with Lexus today," and the project's investor profile names Huawei shipping production apps plus an Airbus and European Space Agency collision-avoidance system. Conference talks and a company profile, not engineering case studies, and none of them establish whether the surface is customer-facing. Call them publicly claimed rather than verified.
+
+Axes 2 and 3 keep it at Trial. [The 0.7 migration guide](https://dioxuslabs.com/learn/0.7/migration/to_07/) lists breaking changes to form submissions, asset options, custom server-function errors, the prelude, the default server-function codec, owned event listener types, and the outright removal of the `dioxus-lib` crate. Normal for a pre-1.0 minor, which is the point. At roughly two minors a year a migration becomes an annual line item, and the 1.0 on the roadmap covers *a subset of the API for library authors* rather than the framework you would ship. There is no support window, no security-advisory process to point a reviewer at, and no named enterprise reference customer.
+
+One item that surfaces in a policy review and that almost nobody flags: **the 0.7 CLI ships opt-out telemetry.** It reports invoked commands with arguments stripped, per-stage build timings, heartbeats, and crash reports with local paths stripped. The mechanism is legitimate and the rationale is reasonable, since the CLI grew into a bundler and hot-patcher and rare panics were invisible in GitHub issues. Opt-out still means your CI images and developer laptops phone home until someone turns it off. Turn it off in the image and record it: `dx config set disable-telemetry true`, or `DX_TELEMETRY_ENABLED=false`, or build the CLI with the `disable-telemetry` feature.
+
+*Maintenance: small full-time team, corporate and VC funded, single dominant maintainer · Latest: 0.7.10 (Jul 31, 2026), 0.8 cycle open · Adoption: **Trial** for a web or fullstack surface you own end to end. Not Adopt, because of pre-1.0 breaking minors, no support window, no external audit, and no published reference customer.*
+
+### Dioxus Native / Blitz — Assess
+
+The WGPU-backed HTML/CSS renderer is the most ambitious thing in Rust UI and the least ready. `dioxus-native` sits at 0.7.x with roughly 6.6k downloads a month, the [Blitz repo](https://github.com/DioxusLabs/blitz) carries the bleeding edge, and accessibility is wired through AccessKit in `blitz-shell` and on by default. On-by-default is not conformance. No published screen-reader matrix exists, so no NVDA, JAWS, VoiceOver or Orca results, and the API docs still carry a "features that are not guaranteed to be supported" surface. For anything customer-facing this is the axis-6 kill shot until someone publishes test results.
+
+*Maintenance: same team as Dioxus, rapid churn, git ahead of crates.io · Latest: 0.7.x · Adoption: **Assess**. Prototype-grade for a product surface, interesting for internal tools where you control the audience.*
+
+### Leptos 0.8.20 — Assess, downgraded from Trial
+
+The clearest verdict change in this report, and it comes from the maintainer rather than a benchmark. The [May 2026 status update](https://github.com/leptos-rs/leptos/issues/4707) says plainly that Leptos is not abandoned but will be **lightly maintained** going forward, that it already does what its author set out to do, that maintaining a popular open-source project is draining, and that a `leptos_0.9` branch of cleanup and semver-breaking fixes is moving slowly.
+
+That candour is what this radar rewards. It is also the same virtue that earned OxiSH an honest Assess in *Weekly #9* rather than a punishment. Candour does not change the operational consequence: on the best fine-grained-reactivity SSR framework in Rust, **you now own bug-fix duty**. Any team already in production on 0.8 should be budgeting a maintained internal fork rather than waiting for 0.9.
+
+*Maintenance: light, by the maintainer's own statement (May 2026) · Latest: 0.8.20 (Jul 18, 2026) · Adoption: **Assess**, downgraded. Technically the strongest web-only option in Rust, and the weakest stewardship story among the actively used ones.*
+
+### Yew 0.23.0 — Hold
+
+Oldest, largest community, most third-party material, slowest cadence. Version 0.23.0 landed in March 2026 with 358k downloads over 90 days against Leptos's 1.24M, and virtual-DOM diffing where the rest of the field moved to signals. Yew is where you land when your constraint is "the most tutorials exist for it," which is not an enterprise-maturity argument.
+
+*Maintenance: community, slow · Latest: 0.23.0 (Mar 10, 2026) · Adoption: **Hold** for new work.*
+
+### egui 0.36.1 and Iced 0.14.0 — internal tools only
+
+egui is genuinely healthy on stewardship: 0.36.1 in August 2026, 5.0M downloads over 90 days, well-known commercial usage in Rerun. Iced is slower (0.14.0, December 2025) with a distinct Elm-ish architecture and a smaller ecosystem.
+
+Give egui its due on accessibility, because the blanket dismissal is unfair. It ships optional AccessKit support that implements the native accessibility APIs on Windows and macOS, on by default in `eframe`, and a maintainer-linked demo shows it driving Narrator back in 2022. What doesn't exist is a conformance result: no NVDA, JAWS, VoiceOver or Orca matrix, no coverage table, no ACR. Iced's accessibility issue has been open since October 2020. And a platform accessibility tree, however good, still cannot host a DOM custom element, which is the constraint that decides the verified-meeting case below.
+
+*egui — Maintenance: active, well-used commercially · Latest: 0.36.1 (Aug 7, 2026) · Adoption: **Trial** for internal tooling and debug surfaces, **Hold** for anything a customer or a regulator sees.*
+*Iced — Latest: 0.14.0 (Dec 7, 2025) · Adoption: **Assess**.*
+
+## The JavaScript comparison
+
+You cannot score Rust maturity without scoring what it has to displace, and the JavaScript field changed in 2026 in a way that raised the bar.
+
+**React 19.2.x — Adopt.** The governance story moved: the [React Foundation launched February 24, 2026](https://react.dev/blog/2026/02/24/the-react-foundation) under the Linux Foundation, with React, React Native and JSX out of Meta's ownership, platinum members including Amazon, Microsoft, Vercel, Expo, Callstack, Huawei and Meta, and a five-year Meta commitment of over $3M plus engineering. Technical governance sits with maintainers via a provisional leadership council, separate from the board. For a risk register the relevant fact is older than the foundation: [security fixes are backported to every affected major, with no security-only phase and no hard cutoff](https://react.dev/versions). Latest line is 19.2.8 (July 21, 2026). There is no React 20.
+
+**Angular 22 — Adopt, when what you want is the policy.** Angular publishes the most formal lifecycle in the field: 18 months per major, 6 months active plus 12 months LTS taking only critical and security fixes, weekly patches, one to three minors per major. As of 2026, 22.1.2 shipped August 13, Angular 21 is in active support, 20 is in LTS. Downstream libraries peg their own windows to it. If your procurement questionnaire has a row for vendor support lifecycle, Angular fills it in without a conversation.
+
+**Vue 3 — Adopt, and read the EOL precedent.** Vue 2 went EOL at the end of 2023 and the core team endorsed a commercial continuation, pointing users at HeroDevs Never-Ending Support built and maintained by Vue core team members. The pattern is the point, not the version.
+
+**Svelte 5, Solid, Qwik — Assess, on thin evidence.** These surfaced no primary governance or lifecycle artifacts in this pass. Absence of evidence is an unfinished axis, recorded as such, rather than a negative verdict.
+
+**Electron — Adopt, with a treadmill.** [Majors every 8 weeks](https://www.electronjs.org/blog/8-week-cadence) tracking Chromium, and [support for the latest 3 stable lines only](https://www.electronjs.org/docs/latest/tutorial/electron-timelines), where the newest gets all fixes and older lines get backports as bandwidth allows. Roughly a 24-week support life per major, so mandate an upgrade every two majors (about 16 weeks) to keep one version of slack. Most Electron CVE exposure is inherited Chromium and V8, so remediation is version-mapping rather than patching. Pinning to the oldest supported line is the worst available posture: least backport coverage, zero buffer to EOL.
+
+**The comparison that matters.** Angular and Electron publish a support window. React publishes indefinite security backports. Vue proved a commercial EOL path with core-team endorsement. Not one Rust UI framework in this report publishes any of the three, and that single row is the enterprise-maturity gap. It says nothing about code quality in Rust.
+
+The adjacent non-web options (Flutter, Kotlin Multiplatform, .NET MAUI, Capacitor) are deliberately out of scope, for one reason: the security section below turns on hosting a DOM-based SDK, and each of those changes that constraint rather than satisfying it.
+
+## Closing the gaps with standard practice
+
+Every gap above has an established answer. None requires inventing process.
+
+**1. Accessibility: publish an ACR, gate with axe, prove with assistive tech.** The procurement artifact is an Accessibility Conformance Report produced from ITI's VPAT template. The VPAT is the blank form, the ACR is the completed document, and vendors without one are routinely disqualified at RFI stage. VPAT 2.5 (November 2023) aligns to WCAG 2.2 and ships WCAG, Section 508, EU (EN 301 549) and INT editions. Publish INT. It retired "Supports with Exceptions" for "Partially Supports" and added an explanation column, formalizing a written justification per row. In CI, `axe-core` is the regression floor, covering WCAG 2.0, 2.1 and 2.2 at A through AAA and analyzing the rendered DOM including Shadow DOM. Do not let its pass rate drive your conformance claims. Deque's own study of 13,000-plus pages reports both numbers, and the gap between them is the whole point: **57.38% of issue volume**, but automated issues found for only **16 of the 50 WCAG 2.1 Level AA success criteria** — 32% of the criteria your ACR has a row for. Even within a covered criterion the rate varies, with Focus Order and Keyboard both around 47%. Guided and semi-automated testing pushes toward 80%, and the rest is manual and assistive-technology work. Note also that `axe-core` targets HTML, so a Rust *native* renderer needs a platform-accessibility-tree ruleset instead, which is why Blitz and egui are Hold for customer-facing surfaces. Regulatory clock, for planning: DOJ's ADA Title II rules require WCAG 2.1 AA, with deadlines extended in April 2026 to April 26 2027 for entities serving 50,000-plus and April 26 2028 for smaller ones.
+
+**2. Support window: accept that you are the LTS, then fund it.** No Rust UI framework offers one. JavaScript solved this commercially, with HeroDevs Never-Ending Support shipping drop-in replacements that preserve the exact public API for EOL Angular v4 through v19, AngularJS, Vue 2 and 20-plus other stacks, with severity-mapped SLAs and HIPAA, PCI, SOC 2 and FedRAMP framing. Nothing equivalent exists for Dioxus, Leptos or egui. The substitutes, in ascending cost: pin exact versions and commit the lockfile with no automatic updates, budget a maintained internal fork for the framework you depend on most (now the correct default for Leptos 0.8), buy an upstream support contract where the maintainers offer one, and write a standing upgrade allowance into team capacity. A pre-1.0 dependency without that allowance silently becomes a rewrite.
+
+**3. Missing external audit: the funded-audit route is real and it worked.** Tauri did not pay for its own pen-test. NLnet and NGI did, and the Sovereign Tech Agency and Trifecta Tech Foundation fund the same class of work elsewhere in the Rust ecosystem. If you depend on a Rust UI framework at a level where an audit is load-bearing, the leverage is co-funding one with the maintainers and requiring the report be published in-repo, exactly as Tauri's is. Cheaper signals to demand meanwhile: an OpenSSF best-practices badge, an OpenSSF Scorecard run against the upstream repo, and a security-advisory process you can point a reviewer at.
+
+**4. Supply chain: a four-step ladder, roughly one engineering day.** Run `cargo audit` in report-only mode for two weeks to learn your exposure without blocking merges. Switch to `cargo deny` blocking high and critical advisories, with license policy in `deny.toml`. Generate an SBOM in the *release* workflow, CycloneDX via `cargo-cyclonedx` as the default since that is what commercial scanners and procurement questionnaires accept, adding SPDX only when a contract demands it, and noting that `cargo-cyclonedx` invokes Cargo internally so it should never be pointed at an untrusted project. Add `cargo-vet` only if your criticality warrants audit-sharing. Generate the SBOM on release, never on demand, because a stale SBOM is worse than none. The compliance drivers are no longer hypothetical: the EU Cyber Resilience Act requires manufacturers to maintain SBOMs for connected products, CISA mandates machine-readable SPDX or CycloneDX for federal software, and DORA and NIS2 questionnaires ask directly.
+
+**5. Measured cost: measure it, and use the maintainer's own numbers as the floor.** Dioxus documents the arc honestly for its TodoMVC example: 32 MB in debug, **2.36 MB** in release, down to **310 kB** with the stable `opt-level = "z"` / LTO / single-codegen-unit / abort-on-panic configuration, and **234 kB** with nightly `build-std` and friends, after `wasm-opt -Oz`. That is a todo list. Scale your expectation accordingly, then build your own artifact and apply `wasm-opt -Oz` (10 to 30% typical, and skipping it leaves you 2 to 3 times larger than necessary), `strip = true` (DWARF can double a binary), a panic strategy, brotli on the wire, `twiggy top` to find where the bytes went, and Lighthouse for the number a user experiences. For cross-framework rendering claims use `js-framework-benchmark`-style harnesses and compare Rust frameworks against each other, since WASM-versus-JS memory numbers are measured differently enough to mislead.
+
+**6. Migration tax: keep a breaking-change ledger.** For each candidate, list the breaking changes of the last three minors and the engineer-days each cost. That table is your real annual dependency cost, the only defensible input to a build-versus-buy conversation, and an hour's work from release notes.
+
+## Security-practice compatibility: verified meetings, guest and host
+
+Here a generic maturity table stops being useful. A verified-meeting product, meaning two parties in a call where liveness and identity are proven rather than asserted, imposes constraints that eliminate most of the field before performance comes up. The controls it needs, in ascending difficulty:
+
+1. **Liveness at the door.** A biometric SDK capture gate before the room opens, API secret server-side, verdict fail-closed.
+2. **Session integrity.** A room-scoped, single-use, short-TTL token in an `HttpOnly; SameSite=Strict; Secure` cookie, unreachable from JavaScript.
+3. **Media-path integrity.** DTLS fingerprint pinning out of band, so a compromised signaling node cannot silently MitM "encrypted P2P" media. Requires reading the SDP-negotiated fingerprint from the running peer connection.
+4. **Entry stream-binding.** The face that passed the scan is the face on the streamed track. Strongly, this means the SDK scans *the same* `MediaStreamTrack` that gets added to the peer connection.
+5. **Continuous liveness.** The face stays a live human, and a peer that stops proving it gets dropped, which needs something in the media path with authority.
+6. **Content confidentiality past the middlebox.** Once anything sits in the media path, frame-level encryption separates "the SFU routes ciphertext" from "the SFU sees the picture."
+
+Columns below are the four surfaces such a product can be built on. Rows are the controls.
+
+| Control | Browser + TS/React | Browser + Rust/wasm | Tauri webview | Rust native renderer (egui / Blitz) |
+|---|---|---|---|---|
+| Host a DOM-based biometric SDK (a custom element such as `<iproov-me>`) | ✅ native | ✅ via `web-sys` | ✅ (webview *is* a DOM) | ❌ **no DOM, no SDK** |
+| Strict CSP without `unsafe-eval` | ✅ | ⚠️ needs `'wasm-unsafe-eval'` | ⚠️ same, plus the custom-protocol origin | n/a |
+| `HttpOnly; SameSite=Strict` session cookie | ✅ | ✅ | ⚠️ origin is a custom protocol (`https://tauri.localhost` on Android), so `SameSite` and CORS assumptions need re-testing | n/a (no cookie jar) |
+| `getUserMedia` camera and mic | ✅ | ✅ | ⚠️ **platform-fragmented** | ❌ (native capture crate instead) |
+| DTLS fingerprint read from SDP for pinning | ✅ | ✅ | ✅ | ✅ (native stack exposes it directly) |
+| `getDisplayMedia` screen share | ✅ | ✅ | ⚠️ no official plugin, forced picker | ❌ |
+| Frame-level E2EE (`RTCRtpScriptTransform` plus SFrame) | ✅ | ✅ **and this is where wasm wins** | ✅ where the webview supports it | ❌ |
+| OS-level device attestation (App Attest / Play Integrity) | ❌ | ❌ | ✅ **only here** | ✅ |
+| Host a protected, self-defending third-party SDK unmodified | ✅ | ✅ if kept out of the bundle graph | ✅ | ❌ |
+| Obfuscate your own UI logic | ✅ mature tooling, commercial and open | ❌ **no obfuscator targets wasm** | ✅ for the JS half only | ❌ |
+| Byte-exact integrity (SRI) on what you ship | ✅ | ⚠️ hash the loader *and* the `.wasm`, last step | ⚠️ custom-protocol origin, no CDN hash | n/a |
+| Bundle secret-leak scanning | grep `dist/` | ⚠️ grep skips binaries — `strings` the `.wasm` too | both | binary scan |
+
+Six findings from that table have each changed a design decision in practice.
+
+**The DOM requirement eliminates the native renderers, full stop.** A browser-delivered biometric SDK is a custom element. egui renders pixels through WGPU and Blitz renders its own HTML/CSS tree without a JavaScript engine, so neither can host a third-party web component, and no amount of maturity elsewhere fixes it. If your liveness vendor ships a web SDK, your frontend has a DOM. This is the hardest constraint in the report, and it makes the Rust-native-GUI branch of the radar irrelevant to this product class rather than merely immature.
+
+**Rust in the browser costs one CSP line, and it is defensible.** WebAssembly is blocked under a CSP unless `script-src` includes `'wasm-unsafe-eval'` (Chrome 97+, Firefox 102+, Safari 16+). The argument that wins the security review is precision: `'wasm-unsafe-eval'` permits `WebAssembly.compile`, `instantiate` and `compileStreaming`, and not `eval` or `new Function`, so you get WebAssembly without opening the JavaScript eval hole. Two policy-authoring gotchas. First, `'unsafe-eval'` anywhere in the policy **overrides** `'wasm-unsafe-eval'`, so a lax legacy directive silently widens you. Second, some toolchains' JS glue still calls `new Function`, which would force the full `'unsafe-eval'`; `wasm-bindgen` output is well-behaved here and Emscripten-derived bundles frequently are not. If you ship the call surface as an embedded widget inside someone else's page, their CSP decides whether your wasm runs at all.
+
+**Tauri buys attestation and pays for it in media-capture fragility.** This trade decides the guest-versus-host architecture. On the plus side, a native host app is the only surface that can reach App Attest or Play Integrity, which is the one credible answer to "client-side liveness sampling is only as trusted as the client." On the minus side, camera and screen capture are genuinely platform-fragmented, though a correction is due here to a widely repeated claim I made in an earlier draft. **WKWebView is no longer the `getUserMedia` blocker.** WebKit exposed it to embedding apps in iOS 14.3, automatically, where the host app can natively capture audio or video and satisfies Apple's media-capture authorization requirements, with the same user prompt Safari shows. The stale framing comes from [wry #85](https://github.com/tauri-apps/wry/issues/85) and [WebKit bug 208667](https://bugs.webkit.org/show_bug.cgi?id=208667), both years old. What is still live is *screen* capture: on macOS the embedder has to delegate `requestDisplayCapturePermissionForOrigin` and drive `SCContentSharingPicker` before `getDisplayMedia` works at all, and double permission prompts were a recent-enough irritant to be tracked in [wry #1195](https://github.com/tauri-apps/wry/issues/1195). On Linux, WebKitGTK below 2.42 lacks the DisplayCapture path entirely, so the working configuration depends on which WebKitGTK your users' distro shipped. Safari-family webviews also withhold host ICE candidates until camera permission is granted, so you need TURN and an early `getUserMedia` call. Android's WebView has a two-layer permission model where the OS prompt succeeding does not mean the WebView got access, needs `MODIFY_AUDIO_SETTINGS` or the microphone returns `NotReadableError`, and requires the `tauri.localhost` origin in your CSP or media access is silently blocked. Screen share is worse: no official Tauri capture plugin, [`getDisplayMedia` forces the system picker with no source-id API](https://github.com/tauri-apps/tauri/issues/11272), and Windows apps using `contentProtected` have shipped a black-screen bug. Never assume the Tauri webview is a browser for media purposes. Gate every media capability behind a runtime `navigator.mediaDevices` capability check with a per-platform fallback, and verify each target webview yourself.
+
+**Frame-level E2EE is the one row where Rust and wasm are strictly the better tool.** The old `createEncodedStreams()` API is dead and removed from the spec. The standards-track replacement is `RTCRtpScriptTransform`: Safari 15.4, Firefox 117, Chrome 141, and MDN records it as Baseline since October 2025, so this is settled ground. Native `SFrameTransform` is not. Chromium's own shipping thread said plainly in August 2025 that "SFrame has not been shipped by any browser yet," and the interface has since dropped out of the Web Platform specification index, so writing SFrame yourself inside a script-transform worker is the only route — [RFC 9605](https://www.rfc-editor.org/rfc/rfc9605.html) is the spec you implement against. A per-frame cryptographic hot path in a Worker is precisely the shape of workload where compiling Rust to wasm beats hand-written JavaScript, which is Vanilla-B doing its correct job regardless of what renders your UI. Two supply notes before you plan on crates: an `sframe` crate exists with no maintenance signals worth betting on, and on the key-management side `mls-rs` claims full RFC 9420 conformance while stating it has not had a third-party audit, with OpenMLS shipping 2026 security fixes credited to external research. Watch `generateKeyFrame` too, which Safari and Firefox both have and which are not fully compatible, with open items in the W3C WebRTC working group. One honesty note for the marketing copy: if you hold the keys, this is not zero-knowledge E2EE, and it protects users against middleboxes rather than against you.
+
+**The guest and the host need different answers.** A guest joins from a link on an unknown device and must not be asked to install anything, which forces a browser surface, which forces a DOM, and caps achievable assurance at what a browser can prove: no OS attestation, self-reported client state, liveness that decays rather than enforces. A host can reasonably be asked to install, which unlocks device attestation, a native media pipeline that reads DTLS fingerprints directly, and screen capture that does not depend on a webview's mood. So the correct architecture is not one stack. It is a browser surface for the guest and an optional native host app, with the same server-side enforcement behind both, and every assurance claim scoped to the surface that earned it. A control the guest path cannot enforce is a badge rather than a feature.
+
+**Secret-leak scanning has to cover the wasm binary, and the usual gate doesn't.** A CI gate that greps `dist/` for API keys is a solved problem in a JavaScript build. A Rust and wasm build puts string literals inside a `.wasm` module that `wasm-opt` will happily shrink and never sanitize. Worse, the gate you already have probably skips it silently. The one on the codebase behind this report runs `grep -rIlE` over the bundle directory, and `-I` tells grep to ignore binary files, so the `.wasm` was never in scope. Nothing failed, nothing warned. Run `strings` over the module in the same gate, and treat any binary that is not scanned as unscanned.
+
+## Code protection and integrity checks, as constraints
+
+Most framework comparisons stop at the browser API surface. A product that ships protected client code has a second constraint layer, and it lands on the frontend choice rather than on the security team. If your biometric or payment SDK arrives obfuscated, self-defending, and integrity-checked, then whatever renders your UI has to host that artifact without touching a byte of it, under a CSP the SDK can live with, in a pipeline that never re-minifies it.
+
+**Obfuscators protect JavaScript and TypeScript. None of them protect your wasm.** That is true of the commercial tier and the open one alike. Jscrambler's Code Integrity is described by its own docs as a JavaScript protection technology, with transforms that operate on JS language constructs, a file intake of JS and HTML, and a compatibility model expressed in browser versions. [Fortimus](https://github.com/wolven-tech/fortimus), the MIT-licensed self-hostable alternative built in Rust on `oxc`, targets JS and TS as well: it ships *as* WebAssembly, which is a delivery detail of the engine, not protection applied to wasm output. So the moment UI logic moves from TypeScript into Rust compiled to wasm, it leaves the reach of every tool in this category. You inherit compilation as obscurity, which is real but shallow — `strings` still lists your literals — and you lose the runtime half outright: no self-defending checksums, no anti-monkey-patch detection, no domain lock, no tamper telemetry. If a threat model relies on those, a Rust/wasm UI is a downgrade nobody costs at decision time.
+
+**One eval-based transform deletes the CSP argument for wasm.** Section above says Rust in the browser costs exactly one directive, `'wasm-unsafe-eval'`, which grants no JavaScript eval. That holds only while nothing else on the page needs `'unsafe-eval'`, because per MDN the broader keyword **overrides** the narrower one. Obfuscation is a common way to acquire it: eval-string reconstruction is a documented transform option in this space, and enabling it forces `'unsafe-eval'` globally, which re-opens the hole for everything on the page. The good news is that it's avoidable by configuration rather than by argument. Fortimus exposes a `browser-no-eval` target explicitly for CSP-compliant browsers, and the Jscrambler profile behind the SDK I work with runs thirteen AST-level transforms — variable masking, string concealing, dot-to-bracket, function reordering and outlining, control-flow flattening, anti-tampering — with no eval packer among them. Pick AST transforms, then prove it with a report-only CSP header before anyone widens `script-src`.
+
+**Anti-tampering turns your bundler into a hazard.** Self-defending code checksums itself at runtime, and Subresource Integrity is byte-exact by design: one byte of difference and the browser refuses to execute. Both mechanisms therefore treat your build pipeline as an attacker. Re-minifying a vendored SDK, transpiling it, running it back through a bundler, or letting a CDN auto-optimise the path all produce the same outcome, which is a runtime failure in production rather than a build error you can see. The rule that follows is unglamorous and load-bearing: load the protected artifact from its own immutable URL with `crossorigin` set, because SRI needs CORS to verify at all, and keep it out of the app's bundle graph. That constrains asset pipelines directly, including Dioxus's `dx` asset optimisation, Vite and Rollup plugins, and any second minify pass a deployment target adds for you.
+
+**Anything appended after protection breaks both checks.** Here is the pattern worth naming, because it is easy to build and hard to debug. A pipeline obfuscates the SDK, then appends an integrity payload — HMACs computed over the protected bytes — to the end of the same file. Now the self-defence check sees a file that no longer matches what it was protected as, so anti-tampering has to be disabled for that one file or the runtime defends against its own release. And any hash a vendor published before the append is wrong by construction. Two rules cover it: compute integrity hashes on the final bytes you actually serve, as the last step, and write the protect-then-append ordering down where the next person will find it, because the failure surfaces as a self-defence trigger on a customer's machine rather than as a red build.
+
+**Protection runs in CI, so the unprotected path is the one you test.** Obfuscation credentials belong in CI, not on laptops, which means local development exercises an unprotected bundle and the protected artifact appears late. A test suite that only ever loads the development build cannot catch an anti-tampering misconfiguration — it is the same failure as a test that passes because it never ran. Add one integration run against the protected artifact, in CI, and treat its absence as a gap rather than as a green pipeline.
+
+**Compliance counts scripts, not modules.** For anything in a payment-page context, PCI DSS 6.4.3 has been mandatory since 31 March 2025 and asks for three things: a method confirming each script is authorised, a method assuring each script's integrity, and an inventory with written justification for why each one is necessary. The unit of accounting is the script, so a wasm module is inventoried and hashed through the JS loader that fetches and instantiates it. That loader becomes the compliance artifact, which is one more reason to keep it small, boring, and unbundled. Note also what obfuscating your own code does *not* do: it satisfies none of 6.4.3, which is about knowing and verifying every script on the page rather than protecting yours.
+
+**And the checks you already run may narrow silently when the bundle becomes a binary.** Two from this codebase. `cargo audit` is genuinely clean, 371 crates and zero vulnerabilities, so Rust's supply-chain story here is strong. The secret-scan gate is the cautionary one: it greps the built bundle for backend key material, it has already been hardened once against a grep exit code that made it report clean on macOS while real secrets sat in the bundle, and it still runs with `-I`, which skips binary files. The `.wasm` was out of scope the whole time. A JavaScript-era gate does not automatically survive the move to a compiled frontend, and nothing tells you when it stops covering the thing it was written for.
+
+## What this report could not establish
+
+Two independent research passes went after these, both restricted to primary sources. What survived as a gap is listed here rather than filled by inference.
+
+- **No independent security audit exists for Dioxus, Leptos, Yew, egui, Iced, AccessKit or `wasm-bindgen`.** Tauri is the sole audited candidate. No in-progress NLnet, NGI, Sovereign Tech Agency, Prossimo or OpenSSF engagement surfaced for the others either.
+- **No screen-reader conformance results for any Rust renderer.** egui has AccessKit on Windows and macOS plus a 2022 Narrator demo, which is the strongest evidence in the set and still not a conformance matrix. No NVDA, JAWS, VoiceOver or Orca outcomes are published for AccessKit, Blitz, egui or Iced.
+- **No OpenSSF Scorecard results or best-practices badges** located for any of the Rust UI repositories. That is "not found," not "does not exist" — a live Scorecard run would settle it.
+- **No verified benchmark figures.** Dioxus, Leptos, Yew and Sycamore all have implementations in the official `js-framework-benchmark` suite, and I did not verify their numbers in the current Chrome 150 run. The frequently quoted "beats React" claim is unverified here.
+- **No reproducible `web-sys` DOM microbenchmark.** `wasm-bindgen` publishes boundary benchmarks including DOM property access, and the 2018 thunk figures (8 ms raw against 9 ms via `wasm-bindgen` per million calls) are too old to quote for current browsers. Per-call `setAttribute` overhead against a batched transfer remains unpublished.
+- **No production bundle-size report.** The Dioxus TodoMVC numbers above come from maintainer docs for an example app. Nobody has published a shipped application's post-`wasm-opt`, compressed size alongside a description of what the app does.
+- **No component library publishes conformance evidence.** `radix-leptos` claims WAI-ARIA compliance in a README. Conformance reports stay product-scoped across every vendor checked, which is the correction this report already carries.
+- **No first-person retrospective on migrating off a bespoke frontend framework**, in either direction, with cost figures attached.
+- **No frontend-specific hiring data.** The Rust-wide figures quoted above come from analyst blogs, not from Stack Overflow, State of JS, or a Rust Foundation survey.
+- **No sourced governance or lifecycle artifacts for Svelte, Solid or Qwik.** An unfinished axis, not a negative verdict.
+- **No 1.0 date for the full Dioxus framework**, and the named production references are conference-talk and company-profile claims rather than case studies.
+
+## The thought at the end
+
+The Rust frontend field in 2026 has excellent code and almost no lifecycle. Dioxus ships a hot-patching cross-platform renderer that would have been science fiction three years ago, and it cannot tell a procurement reviewer how long 0.7 receives security fixes, because nobody has decided. Leptos offers the most elegant reactive model available in the language, and its maintainer has said in public, with more candour than most vendors manage, that it is now lightly maintained. Tauri is the outlier for an instructive reason: it went and got audited, published the findings including the embarrassing ones, and wrote its release-review process down.
+
+Angular can tell you the date its current major stops receiving security fixes. React can tell you that every affected major gets a backport, indefinitely. Those are published commitments rather than better engineering, they are the cheapest thing on this list to produce and the most expensive to fake, and an enterprise buyer reads them first. The ecosystem's next unlock is one framework publishing a support window and then honouring it for two years.
+
+Until then the defensible posture is the boring one. Adopt the shell that has been audited. Trial the framework whose migration tax you have measured and written into your capacity plan. Keep the surface a customer touches on a DOM that has an accessibility tree and an accessible component library behind it. Put Rust in the Worker doing the per-frame crypto rather than in the button in the toolbar. And never claim an assurance the guest's browser cannot prove.

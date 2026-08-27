@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en" data-palette="#86b6ef,#5598e7,#2a78d6,#1c5cab">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rust frontend enterprise maturity — decision report</title>
+<meta name="description" content="Which frontend stack for a verified-meeting product: Dioxus, Tauri, Leptos, egui, raw wasm-bindgen, and the JavaScript baseline, scored on stewardship rather than benchmarks.">
+<style>
+  :root {
+    color-scheme: light;
+    --page:            #f9f9f7;
+    --surface-1:       #fcfcfb;
+    --text-primary:    #0b0b0b;
+    --text-secondary:  #52514e;
+    --text-muted:      #898781;
+    --grid:            #e1e0d9;
+    --baseline:        #c3c2b7;
+    --border:          rgba(11, 11, 11, 0.10);
+    /* ordinal verdict ramp: Hold -> Adopt. Validated light+dark, --ordinal. */
+    --ord-1:           #86b6ef;
+    --ord-2:           #5598e7;
+    --ord-3:           #2a78d6;
+    --ord-4:           #1c5cab;
+    --seq-fill:        #2a78d6;
+    --seq-fill-soft:   #86b6ef;
+    --good:            #0ca30c;
+    --warning:         #fab219;
+    --serious:         #ec835a;
+    --critical:        #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:           #0d0d0d;
+      --surface-1:      #1a1a19;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255, 255, 255, 0.10);
+      --seq-fill:       #3987e5;
+      --seq-fill-soft:  #1c5cab;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:           #0d0d0d;
+    --surface-1:      #1a1a19;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255, 255, 255, 0.10);
+    --seq-fill:       #3987e5;
+    --seq-fill-soft:  #1c5cab;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font: 16px/1.62 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 120px; }
+
+  /* ---------- page chrome ---------- */
+  .topbar { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .kicker { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  h1 { font-size: 34px; line-height: 1.16; letter-spacing: -0.02em; margin: 10px 0 14px; font-weight: 700; }
+  .thesis { font-size: 18px; color: var(--text-secondary); margin: 0 0 8px; max-width: 68ch; }
+  .byline { font-size: 13px; color: var(--text-muted); margin: 14px 0 0; }
+  button.theme {
+    font: 12px system-ui, sans-serif; color: var(--text-secondary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; cursor: pointer;
+  }
+  h2 {
+    font-size: 22px; letter-spacing: -0.01em; margin: 56px 0 6px; font-weight: 680;
+    padding-top: 22px; border-top: 1px solid var(--grid);
+  }
+  h3 { font-size: 16px; margin: 30px 0 6px; font-weight: 650; }
+  .sub { color: var(--text-secondary); font-size: 14.5px; margin: 0 0 18px; max-width: 74ch; }
+  p { margin: 0 0 16px; max-width: 78ch; }
+  a { color: var(--seq-fill); text-underline-offset: 2px; }
+  ul { padding-left: 20px; max-width: 78ch; }
+  li { margin-bottom: 9px; }
+  code {
+    font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 5px;
+  }
+
+  /* ---------- cards ---------- */
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px 22px 18px; margin: 20px 0 8px;
+  }
+  .card h3 { margin-top: 0; }
+  .card-note { font-size: 13px; color: var(--text-muted); margin: 14px 0 0; }
+
+  /* ---------- stat tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 14px; margin: 26px 0 8px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .tile .label { font-size: 12.5px; color: var(--text-secondary); line-height: 1.4; }
+  .tile .value { font-size: 34px; font-weight: 680; letter-spacing: -0.02em; margin: 6px 0 2px; }
+  .tile .foot { font-size: 12px; color: var(--text-muted); }
+
+  /* ---------- verdict lanes ---------- */
+  .lanes { display: grid; grid-template-columns: 190px repeat(4, 1fr); gap: 0; }
+  .lane-head { font-size: 12px; color: var(--text-secondary); padding: 0 0 8px; text-align: center; }
+  .lane-head.rowlab { text-align: left; }
+  .lane-row {
+    display: grid; grid-column: 1 / -1; align-items: center;
+    grid-template-columns: 190px repeat(4, 1fr); /* fallback where subgrid is missing */
+    grid-template-columns: subgrid;
+  }
+  .lane-name { font-size: 13.5px; padding: 7px 12px 7px 0; color: var(--text-primary); }
+  .lane-name small { display: block; color: var(--text-muted); font-size: 11.5px; }
+  .cell { position: relative; height: 34px; border-left: 1px solid var(--grid); }
+  .cell:last-child { border-right: 1px solid var(--grid); }
+  .dot {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 15px; height: 15px; border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--surface-1);
+  }
+  .dot.o1 { background: var(--ord-1); } .dot.o2 { background: var(--ord-2); }
+  .dot.o3 { background: var(--ord-3); } .dot.o4 { background: var(--ord-4); }
+  .dot.ghost { background: none; border: 2px dashed var(--text-muted); box-shadow: none; opacity: 0.75; }
+  .moved {
+    position: absolute; top: 50%; height: 2px; background: var(--text-muted);
+    opacity: 0.5; transform: translateY(-50%);
+  }
+  .lane-tag {
+    position: absolute; top: 50%; left: calc(50% + 14px); transform: translateY(-50%);
+    font-size: 11px; color: var(--text-secondary); white-space: nowrap;
+  }
+  .group-label {
+    grid-column: 1 / -1; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--text-muted); padding: 16px 0 6px;
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 16px 0 0; font-size: 12.5px; color: var(--text-secondary); }
+  .legend span.key { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  /* ---------- horizontal bar charts ---------- */
+  .bars { display: grid; grid-template-columns: 172px 1fr; gap: 10px 14px; align-items: center; }
+  .bars .blab { font-size: 13px; color: var(--text-primary); text-align: right; }
+  .bars .blab small { display: block; color: var(--text-muted); font-size: 11px; }
+  .track {
+    position: relative; height: 22px;
+    background-image: repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 25%);
+  }
+  .bar {
+    height: 18px; background: var(--seq-fill);
+    border-radius: 0 4px 4px 0; position: relative; top: 2px;
+    display: flex; align-items: center;
+  }
+  .bar.soft { background: var(--seq-fill-soft); }
+  .bar-val {
+    position: absolute; left: calc(100% + 8px); font-size: 12px; color: var(--text-secondary);
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .bar-val.inside { left: auto; right: 8px; color: #fff; }
+  .bar.soft .bar-val.inside { color: var(--text-primary); }
+  .stack { display: flex; gap: 2px; align-items: center; }
+  .zero-mark { display: inline-flex; align-items: center; gap: 8px; height: 18px; font-size: 12px; color: var(--text-secondary); }
+  .zero-mark .ic { color: var(--critical); }
+  .zero-mark .pip { width: 4px; height: 18px; background: var(--critical); border-radius: 2px; }
+  .openended { display: flex; align-items: center; }
+  .openended .arrow { color: var(--seq-fill); font-size: 15px; margin-left: 2px; }
+  .axis {
+    grid-column: 2; display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--baseline);
+    padding-top: 5px; margin-top: 4px; font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- status chips ---------- */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+    color: var(--text-secondary); white-space: nowrap;
+  }
+  .chip .ic { font-size: 12px; line-height: 1; }
+  .ic.good { color: var(--good); } .ic.warn { color: var(--warning); }
+  .ic.serious { color: var(--serious); } .ic.crit { color: var(--critical); }
+
+  /* ---------- matrix ---------- */
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  thead th { font-size: 12px; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--baseline); }
+  tbody th { font-weight: 500; color: var(--text-primary); }
+  /* Matrix cells: verdict token on line one, qualifier as subtext below it, so a
+     long caveat wraps inside its own cell instead of widening the column. */
+  table.matrix { table-layout: fixed; }
+  table.matrix col.ctrl { width: 27%; }
+  td.st { white-space: normal; }
+  td.st .v { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+  td.st .note {
+    display: block; margin-top: 3px; color: var(--text-muted);
+    font-size: 11.5px; line-height: 1.35; white-space: normal;
+  }
+  tbody td.st:hover { box-shadow: inset 0 0 0 1px var(--baseline); }
+  .m-ok    { background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .m-warn  { background: color-mix(in srgb, var(--warning) 16%, transparent); }
+  .m-no    { background: color-mix(in srgb, var(--critical) 12%, transparent); }
+  .m-na    { color: var(--text-muted); }
+  caption { text-align: left; font-size: 13px; color: var(--text-secondary); padding-bottom: 10px; }
+
+  details.tableview { margin: 16px 0 0; }
+  details.tableview summary {
+    font-size: 12.5px; color: var(--text-secondary); cursor: pointer;
+    padding: 4px 0;
+  }
+  details.tableview table { margin-top: 10px; }
+  details.tableview td, details.tableview th { font-size: 12.5px; padding: 6px 9px; }
+
+  /* ---------- decision flow ---------- */
+  .flow { display: grid; gap: 12px; }
+  .flow-row {
+    display: grid; grid-template-columns: 1fr auto 1.1fr; align-items: center; gap: 14px;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  }
+  .flow-q { font-size: 14px; }
+  .flow-arrow { color: var(--text-muted); font-size: 18px; }
+  .flow-a { font-size: 14px; font-weight: 600; }
+  .flow-a small { display: block; font-weight: 400; color: var(--text-secondary); font-size: 12.5px; margin-top: 3px; }
+
+  .sources { font-size: 13px; color: var(--text-secondary); }
+  .sources a { display: inline-block; margin-right: 4px; }
+  footer.doc { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--grid); font-size: 12.5px; color: var(--text-muted); }
+
+  @media (forced-colors: active) {
+    .bar, .dot, .m-ok, .m-warn, .m-no { border: 1px solid CanvasText; forced-color-adjust: none; }
+  }
+  @media (max-width: 720px) {
+    .lanes { grid-template-columns: 130px repeat(4, 1fr); }
+    .bars { grid-template-columns: 120px 1fr; }
+    .flow-row { grid-template-columns: 1fr; }
+    .flow-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="topbar">
+  <div class="kicker">Decision report · frontend platform</div>
+  <button class="theme" id="themeBtn" type="button">Switch theme</button>
+</div>
+
+<h1>Rust frontend enterprise maturity</h1>
+<p class="thesis">Which stack carries a verified-meeting product: Dioxus, Tauri, Leptos, egui, raw <code>wasm-bindgen</code>, or the JavaScript baseline it has to displace. Scored on stewardship, not benchmarks, because the questions that stop a deal are about lifecycles and conformance reports.</p>
+<p class="byline">Decebal D. · 26 August 2026 · versions and download counts read from the crates.io API on the same day</p>
+
+<h2>Four numbers that decide it</h2>
+<p class="sub">If you read nothing else, read these. Each one is checkable.</p>
+
+<div class="tiles">
+  <div class="tile">
+    <div class="label">Rust UI frameworks publishing a support window</div>
+    <div class="value">0</div>
+    <div class="foot">Angular publishes 18 months. React backports without a cutoff.</div>
+  </div>
+  <div class="tile">
+    <div class="label">Published external audits across every Rust candidate</div>
+    <div class="value">2</div>
+    <div class="foot">Both Tauri's, both by Radically Open Security, NLnet-funded.</div>
+  </div>
+  <div class="tile">
+    <div class="label">Detectable accessibility errors per page, ARIA present vs absent</div>
+    <div class="value">59 / 42</div>
+    <div class="foot">WebAIM Million 2026, one million home pages.</div>
+  </div>
+  <div class="tile">
+    <div class="label">Quarterly downloads of the best accessible Rust component library</div>
+    <div class="value">340</div>
+    <div class="foot"><code>radix-leptos</code>, last release September 2025.</div>
+  </div>
+  <div class="tile">
+    <div class="label">WCAG 2.1 AA success criteria with any automated coverage</div>
+    <div class="value">16 / 50</div>
+    <div class="foot">Deque's own study. The 57% figure counts issue volume, not criteria.</div>
+  </div>
+</div>
+
+<h2>Where each option sits</h2>
+<p class="sub">A tech radar drawn in polar coordinates hides its labels and implies precision it doesn't have. Thoughtworks says so themselves: position inside a ring carries no meaning. So this is the same two encodings in lanes, where every name gets equal room and movement is visible.</p>
+
+<div class="card">
+  <h3>Adoption verdicts</h3>
+  <div class="lanes" role="img" aria-label="Verdict lanes. Adopt: Tauri, React with TypeScript, Electron. Trial: Dioxus, egui for internal tools, wasm-bindgen in a worker. Assess: Dioxus Native, Leptos moved down from Trial, Iced. Hold: Yew, egui for customer-facing surfaces, wasm-bindgen as a UI strategy.">
+    <div class="lane-head rowlab">Candidate</div>
+    <div class="lane-head">Hold</div>
+    <div class="lane-head">Assess</div>
+    <div class="lane-head">Trial</div>
+    <div class="lane-head">Adopt</div>
+
+    <div class="group-label">Shells</div>
+    <div class="lane-row">
+      <div class="lane-name">Tauri 2.11.5 <small>audited twice, capability model</small></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"><span class="dot o4"></span></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">Electron <small>8-week majors, 3 lines supported</small></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"><span class="dot o4"></span></div>
+    </div>
+
+    <div class="group-label">Rust web frameworks</div>
+    <div class="lane-row">
+      <div class="lane-name">Dioxus 0.7.10 <small>funded team, pre-1.0 minors</small></div>
+      <div class="cell"></div><div class="cell"></div>
+      <div class="cell"><span class="dot o3"></span></div>
+      <div class="cell"></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">Leptos 0.8.20 <small>maintainer: lightly maintained</small></div>
+      <div class="cell"></div>
+      <div class="cell">
+        <span class="moved" style="left:50%; width:100%"></span>
+        <span class="dot o2"></span>
+        <span class="lane-tag">moved down from Trial</span>
+      </div>
+      <div class="cell"><span class="dot ghost"></span></div>
+      <div class="cell"></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">Yew 0.23.0 <small>slowest cadence, virtual DOM</small></div>
+      <div class="cell"><span class="dot o1"></span></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+
+    <div class="group-label">Rust native renderers</div>
+    <div class="lane-row">
+      <div class="lane-name">Dioxus Native / Blitz <small>no screen-reader results</small></div>
+      <div class="cell"></div>
+      <div class="cell"><span class="dot o2"></span></div>
+      <div class="cell"></div><div class="cell"></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">egui 0.36.1 <small>internal tools vs customer-facing</small></div>
+      <div class="cell"><span class="dot o1"></span><span class="lane-tag">customer</span></div>
+      <div class="cell"></div>
+      <div class="cell"><span class="dot o3"></span><span class="lane-tag">internal</span></div>
+      <div class="cell"></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">Iced 0.14.0 <small>last release Dec 2025</small></div>
+      <div class="cell"></div>
+      <div class="cell"><span class="dot o2"></span></div>
+      <div class="cell"></div><div class="cell"></div>
+    </div>
+
+    <div class="group-label">Baselines</div>
+    <div class="lane-row">
+      <div class="lane-name">React 19.2 + TypeScript <small>Linux Foundation since Feb 2026</small></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"><span class="dot o4"></span></div>
+    </div>
+    <div class="lane-row">
+      <div class="lane-name">wasm-bindgen 0.2.127 <small>worker vs whole UI</small></div>
+      <div class="cell"><span class="dot o1"></span><span class="lane-tag">as the UI</span></div>
+      <div class="cell"></div>
+      <div class="cell"><span class="dot o3"></span><span class="lane-tag">in a worker</span></div>
+      <div class="cell"></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="key"><span class="swatch" style="background:var(--ord-1)"></span> Hold</span>
+    <span class="key"><span class="swatch" style="background:var(--ord-2)"></span> Assess</span>
+    <span class="key"><span class="swatch" style="background:var(--ord-3)"></span> Trial</span>
+    <span class="key"><span class="swatch" style="background:var(--ord-4)"></span> Adopt</span>
+    <span class="key"><span class="swatch" style="border:2px dashed var(--text-muted); background:none"></span> previous verdict</span>
+  </div>
+  <p class="card-note">Two candidates carry two verdicts, because the same code does two different jobs. egui is fine behind an internal tool and disqualified in front of a customer. <code>wasm-bindgen</code> is the right choice inside a worker and the wrong one as a UI layer.</p>
+</div>
+
+<h2>The gap in one chart</h2>
+<p class="sub">Support window per major version, in months. This is the row that stops procurement, and it doesn't measure code quality.</p>
+
+<div class="card">
+  <h3>Published support window, months per major</h3>
+  <div class="bars">
+    <div class="blab">Angular 22 <small>self-published policy</small></div>
+    <div class="track">
+      <div class="stack">
+        <div class="bar" style="width:33%"><span class="bar-val inside">6 active</span></div>
+        <div class="bar soft" style="width:65%"><span class="bar-val inside">+12 security-only = 18</span></div>
+      </div>
+    </div>
+
+    <div class="blab">React 19.2 <small>no cutoff</small></div>
+    <div class="track">
+      <div class="openended">
+        <div class="bar" style="width:88%; background:linear-gradient(to right, var(--seq-fill) 60%, var(--seq-fill-soft));"><span class="bar-val inside">backports to every affected major</span></div>
+        <span class="arrow" aria-hidden="true">▸</span>
+      </div>
+    </div>
+
+    <div class="blab">Vue 3 <small>commercial LTS after EOL</small></div>
+    <div class="track">
+      <div class="openended">
+        <div class="bar soft" style="width:74%"><span class="bar-val inside">vendor-provided, core-team endorsed</span></div>
+        <span class="arrow" aria-hidden="true">▸</span>
+      </div>
+    </div>
+
+    <div class="blab">Electron <small>latest 3 stable lines</small></div>
+    <div class="track">
+      <div class="bar" style="width:29%"><span class="bar-val">≈5.5 months, tiered backports</span></div>
+    </div>
+
+    <div class="blab">Tauri 2.x <small>audited, no window</small></div>
+    <div class="track"><div class="zero-mark"><span class="pip"></span><span class="ic" aria-hidden="true">✕</span><span>none published</span></div></div>
+
+    <div class="blab">Dioxus 0.7 <small>pre-1.0</small></div>
+    <div class="track"><div class="zero-mark"><span class="pip"></span><span class="ic" aria-hidden="true">✕</span><span>none published</span></div></div>
+
+    <div class="blab">Leptos 0.8 <small>lightly maintained</small></div>
+    <div class="track"><div class="zero-mark"><span class="pip"></span><span class="ic" aria-hidden="true">✕</span><span>none published</span></div></div>
+
+    <div class="blab">Yew · egui · Iced</div>
+    <div class="track"><div class="zero-mark"><span class="pip"></span><span class="ic" aria-hidden="true">✕</span><span>none published</span></div></div>
+
+    <div class="axis"><span>0</span><span>6</span><span>12</span><span>18 months</span></div>
+  </div>
+
+  <div class="legend">
+    <span class="key"><span class="swatch" style="background:var(--seq-fill); border-radius:2px"></span> Active support</span>
+    <span class="key"><span class="swatch" style="background:var(--seq-fill-soft); border-radius:2px"></span> Security-only or vendor-provided</span>
+    <span class="key"><span class="ic crit">✕</span> No published policy</span>
+  </div>
+
+  <details class="tableview">
+    <summary>Show data table</summary>
+    <table>
+      <thead><tr><th>Project</th><th>Active</th><th>Security-only</th><th>Total</th><th>Source of the commitment</th></tr></thead>
+      <tbody>
+        <tr><th>Angular 22</th><td>6 months</td><td>12 months</td><td>18 months</td><td>Published lifecycle policy</td></tr>
+        <tr><th>React 19.2</th><td>current line</td><td>every affected major</td><td>No cutoff</td><td>Published versions policy</td></tr>
+        <tr><th>Vue 3 / Vue 2</th><td>current line</td><td>commercial, post-EOL</td><td>Open-ended, paid</td><td>Vendor, endorsed by core team</td></tr>
+        <tr><th>Electron</th><td>latest line</td><td>2 prior lines, as bandwidth allows</td><td>≈24 weeks</td><td>Published timelines page</td></tr>
+        <tr><th>Tauri, Dioxus, Leptos, Yew, egui, Iced</th><td>—</td><td>—</td><td>None published</td><td>No policy exists</td></tr>
+      </tbody>
+    </table>
+  </details>
+  <p class="card-note">Electron's short window isn't neglect. It tracks Chromium, so the treadmill is the price of a browser engine. Plan an upgrade every two majors and you keep one version of slack.</p>
+</div>
+
+<h2>Stewardship, measured</h2>
+<p class="sub">Downloads don't prove quality. They do tell you how many other people will hit your bug before you do, and how fast an upstream answer arrives. Two facets, because shells and infrastructure operate two orders of magnitude above UI frameworks and one shared axis would flatten the frameworks into nothing.</p>
+
+<div class="card">
+  <h3>Rust UI frameworks — downloads, last 90 days</h3>
+  <div class="bars">
+    <div class="blab">egui <small>0.36.1 · Aug 2026</small></div>
+    <div class="track"><div class="bar" style="width:100%"><span class="bar-val inside">4,959,720</span></div></div>
+    <div class="blab">Leptos <small>0.8.20 · Jul 2026</small></div>
+    <div class="track"><div class="bar" style="width:25%"><span class="bar-val">1,244,993</span></div></div>
+    <div class="blab">Dioxus <small>0.7.10 · Jul 2026</small></div>
+    <div class="track"><div class="bar" style="width:17%"><span class="bar-val">858,841</span></div></div>
+    <div class="blab">Iced <small>0.14.0 · Dec 2025</small></div>
+    <div class="track"><div class="bar" style="width:14%"><span class="bar-val">675,915</span></div></div>
+    <div class="blab">Yew <small>0.23.0 · Mar 2026</small></div>
+    <div class="track"><div class="bar" style="width:7%"><span class="bar-val">357,544</span></div></div>
+    <div class="axis"><span>0</span><span>2.5M</span><span>5M</span></div>
+  </div>
+
+  <h3 style="margin-top:34px">Shells and infrastructure — downloads, last 90 days</h3>
+  <div class="bars">
+    <div class="blab">wasm-bindgen <small>0.2.127 · Aug 2026</small></div>
+    <div class="track"><div class="bar" style="width:100%"><span class="bar-val inside">125,014,774</span></div></div>
+    <div class="blab">Tauri <small>2.11.5 · Jul 2026</small></div>
+    <div class="track"><div class="bar" style="width:8%"><span class="bar-val">10,297,769</span></div></div>
+    <div class="blab">AccessKit <small>0.24.1 · Jun 2026</small></div>
+    <div class="track"><div class="bar" style="width:5%"><span class="bar-val">5,771,322</span></div></div>
+    <div class="axis"><span>0</span><span>60M</span><span>125M</span></div>
+  </div>
+  <p class="card-note">Read the second facet as the reason Vanilla-B tempts a Rust team: <code>wasm-bindgen</code> is infrastructure, and it deserves the trust its numbers imply. The next chart is where that trust stops transferring.</p>
+</div>
+
+<h2>What "no framework" actually costs</h2>
+<p class="sub">A Rust-fluent team, told Dioxus breaks every minor and Leptos is lightly maintained, reaches for <code>web-sys</code> directly. Reasonable instinct. The chart below is the supply of accessible components waiting on the other side of that decision.</p>
+
+<div class="card">
+  <h3>Rust UI component libraries — downloads, last 90 days, with release recency</h3>
+  <div class="bars">
+    <div class="blab">thaw <small>Leptos kit</small></div>
+    <div class="track"><div class="bar" style="width:100%"><span class="bar-val inside">10,244 · last release Aug 2025</span></div></div>
+    <div class="blab">dioxus-components</div>
+    <div class="track"><div class="bar" style="width:12%"><span class="bar-val">1,222 · Nov 2025</span></div></div>
+    <div class="blab">radix-leptos <small>the WAI-ARIA one</small></div>
+    <div class="track"><div class="bar" style="width:3.3%"><span class="bar-val">340 · Sep 2025</span></div></div>
+    <div class="blab">dioxus-primitives</div>
+    <div class="track"><div class="bar" style="width:3.2%"><span class="bar-val">332 · 0.0.0 placeholder, Apr 2025</span></div></div>
+    <div class="blab">leptonic</div>
+    <div class="track"><div class="bar" style="width:2.4%"><span class="bar-val">249 · Feb 2024</span></div></div>
+    <div class="blab">leptos_aria <small>React Aria port</small></div>
+    <div class="track"><div class="bar" style="width:0.4%"><span class="bar-val">8 · Feb 2023</span></div></div>
+    <div class="axis"><span>0</span><span>5,000</span><span>10,000</span></div>
+  </div>
+
+  <div class="legend">
+    <span class="key"><span class="ic warn">▲</span> Stale: no stable release in 6 months (thaw, dioxus-components, radix-leptos)</span>
+    <span class="key"><span class="ic crit">✕</span> Dormant: over a year (dioxus-primitives, leptonic, leptos_aria)</span>
+  </div>
+  <p class="card-note">Nothing in this set has shipped a stable release inside six months. For comparison, React Aria covers more than 40 patterns with behaviour, ARIA semantics, internationalisation and adaptive interaction, maintained by a vendor whose day job includes publishing conformance documents.</p>
+</div>
+
+<div class="card">
+  <h3>The work you inherit, and the axis it breaks</h3>
+  <table>
+    <caption>Skipping the framework doesn't delete these. It moves them into a codebase only your team reviews.</caption>
+    <thead><tr><th>What the framework was doing</th><th>What you now own</th><th>Fails</th></tr></thead>
+    <tbody>
+      <tr><th>Routing, history, deep links, scroll restoration</th><td>An internal router</td><td class="st"><span class="v"><span class="ic warn">▲</span> stewardship, hiring</span></td></tr>
+      <tr><th>Forms, validation, error surfaces</th><td>An internal form layer</td><td class="st"><span class="v"><span class="ic warn">▲</span> stewardship, a11y</span></td></tr>
+      <tr><th>Focus management, ARIA roles, live regions, reduced motion</th><td>Every semantic, per widget, hand-audited</td><td class="st"><span class="v"><span class="ic crit">✕</span> accessibility</span></td></tr>
+      <tr><th>i18n, plurals, date and number formats, RTL</th><td>An internal i18n layer</td><td class="st"><span class="v"><span class="ic warn">▲</span> a11y, hiring</span></td></tr>
+      <tr><th>SSR and hydration for first paint</th><td>Client-only rendering, or your own SSR</td><td class="st"><span class="v"><span class="ic warn">▲</span> measured cost</span></td></tr>
+      <tr><th>A maintained accessible component library</th><td>A bespoke widget set nobody else tests</td><td class="st"><span class="v"><span class="ic crit">✕</span> accessibility, hiring</span></td></tr>
+      <tr><th>An upstream that publishes advisories</th><td>Nobody. There's no feed for your fork</td><td class="st"><span class="v"><span class="ic crit">✕</span> security posture</span></td></tr>
+    </tbody>
+  </table>
+  <p class="card-note">The performance premise inverts too. Wasm can't touch the DOM directly, so per-node work pays a boundary crossing every time. Frameworks batch. Hand-written <code>web-sys</code> doesn't until you build it. What this report won't give you is a ranking: all four Rust frameworks have implementations in the official <code>js-framework-benchmark</code> suite, their current Chrome 150 figures went unverified here, and the widely quoted "beats React" line is unverified with them. The mechanism is the argument. The genuine wasm win, CPU-bound work at roughly 2–3× on the right workload, is available from a worker either way.</p>
+</div>
+
+<h2>Security controls, by surface</h2>
+<p class="sub">A verified-meeting product needs specific controls, and most of the field is eliminated before performance comes up. Rows are the controls. Columns are the four surfaces you could build on.</p>
+
+<div class="card">
+  <table class="matrix">
+    <caption>Guest and host need different columns, and that asymmetry is the architecture rather than a compromise.</caption>
+    <colgroup><col class="ctrl"><col><col><col><col></colgroup>
+    <thead>
+      <tr>
+        <th>Control</th>
+        <th>Browser + TypeScript</th>
+        <th>Browser + Rust/wasm</th>
+        <th>Tauri webview</th>
+        <th>Rust native renderer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Host a DOM biometric SDK (<code>&lt;iproov-me&gt;</code>)</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> native</span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> via web-sys</span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> webview is a DOM</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span> no DOM, no SDK</span></td>
+      </tr>
+      <tr>
+        <th>Strict CSP with no <code>unsafe-eval</code></th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> default</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> one directive</span><span class="note">Needs <code>'wasm-unsafe-eval'</code>, which grants no JS eval.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> one directive</span><span class="note">Same, plus the custom protocol origin.</span></td>
+        <td class="st m-na">n/a</td>
+      </tr>
+      <tr>
+        <th><code>HttpOnly; SameSite=Strict</code> session cookie</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> re-test</span><span class="note">The origin is a custom protocol, <code>tauri.localhost</code> on Android, so SameSite and CORS assumptions shift.</span></td>
+        <td class="st m-na">n/a, no cookie jar</td>
+      </tr>
+      <tr>
+        <th><code>getUserMedia</code> camera and microphone</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> conditional</span><span class="note">Exposed since iOS 14.3, where the host app can natively capture and meets Apple's authorisation requirements.</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span> no web API</span><span class="note">Capture goes through a native crate instead.</span></td>
+      </tr>
+      <tr>
+        <th>DTLS fingerprint from SDP, for pinning</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> direct</span></td>
+      </tr>
+      <tr>
+        <th><code>getDisplayMedia</code> screen share</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span> not by default</span><span class="note">The embedder must delegate capture permission. WebKitGTK below 2.42 has no path at all.</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>Frame-level E2EE: script transform + SFrame</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> best fit</span><span class="note">Per-frame crypto in a Worker is where wasm beats JS.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> engine-dependent</span><span class="note">Only where that platform's webview supports the transform.</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>OS device attestation (App Attest, Play Integrity)</th>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> only here</span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+      </tr>
+      <tr>
+        <th>Host a protected, self-defending third-party SDK unmodified</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> conditional</span><span class="note">Only if it stays out of the bundle graph. A re-minify breaks the self-check.</span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>Obfuscate your own UI logic</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> mature</span><span class="note">Commercial and open tooling, AST transforms, runtime guards.</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span> no tool</span><span class="note">Every obfuscator in this category targets JS/TS. Compilation is obscurity without the runtime half.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> JS half only</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>Byte-exact integrity (SRI) on what you ship</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two artifacts</span><span class="note">Hash the loader and the <code>.wasm</code>, as the last build step.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> local origin</span><span class="note">Custom-protocol assets carry no CDN-published hash.</span></td>
+        <td class="st m-na">n/a</td>
+      </tr>
+      <tr>
+        <th>Secret-leak scanning of the shipped bundle</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> grep dist/</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two passes</span><span class="note">A <code>grep -rI</code> gate skips binaries, so the <code>.wasm</code> goes unscanned. Add <code>strings</code>.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two passes</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> binary scan</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="card-note"><code>RTCRtpScriptTransform</code> is settled: Safari 15.4, Firefox 117, Chrome 141, Baseline since October 2025. Native <code>SFrameTransform</code> is not — Chromium's shipping thread said in August 2025 that no browser had shipped it, and the interface has since left the specification index. So frame encryption is code you write inside a script-transform worker, against RFC 9605. A per-frame crypto hot path is exactly where Rust compiled to wasm beats hand-written JavaScript, whatever renders the buttons. Crate supply is thin: an <code>sframe</code> crate exists with no maintenance signals, and <code>mls-rs</code> claims full RFC 9420 conformance while stating it has had no third-party audit.</p>
+  <p class="card-note">One correction against an earlier draft of this report: WKWebView stopped being the <code>getUserMedia</code> blocker in iOS 14.3, when WebKit began exposing it to embedding apps that can natively capture and satisfy Apple's authorisation requirements. The frequently cited wry #85 and WebKit bug 208667 are years stale. Screen capture is the live constraint.</p>
+</div>
+
+<h2>Code protection as a constraint</h2>
+<p class="sub">A product shipping protected client code has a second constraint layer, and it lands on the frontend choice rather than on the security team.</p>
+
+<div class="card">
+  <table class="matrix">
+    <caption>Six constraints that a browser-API comparison doesn't surface.</caption>
+    <colgroup><col class="ctrl"><col></colgroup>
+    <thead><tr><th>Constraint</th><th>What it does to the decision</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>Obfuscators cover JS and TS, never your wasm</th>
+        <td>Commercial and open tooling alike operate on JS language constructs. Moving UI logic into Rust removes it from the category: you keep compilation as obscurity, and you lose self-defending checksums, anti-monkey-patch detection, domain locks and tamper telemetry.</td>
+      </tr>
+      <tr>
+        <th>One eval-based transform deletes the wasm CSP argument</th>
+        <td><code>'unsafe-eval'</code> overrides <code>'wasm-unsafe-eval'</code>, so an eval-string transform anywhere on the page re-opens the hole. Avoidable by configuration: pick a no-eval target and AST transforms, then prove it with a report-only header.</td>
+      </tr>
+      <tr>
+        <th>Anti-tampering makes the bundler a hazard</th>
+        <td>Self-defence checksums and SRI are both byte-exact. Re-minifying, transpiling or re-bundling a protected SDK fails at runtime in production rather than in the build. Load it from its own immutable URL with <code>crossorigin</code>, outside the bundle graph.</td>
+      </tr>
+      <tr>
+        <th>Anything appended after protection breaks both checks</th>
+        <td>Obfuscate, then append an integrity payload, and the self-check no longer matches its own release while any pre-append hash is wrong by construction. Hash the final served bytes last, and document the ordering.</td>
+      </tr>
+      <tr>
+        <th>Protection runs in CI, so the unprotected path is the tested one</th>
+        <td>Credentials live in CI, so local development exercises an unprotected bundle. One integration run against the protected artifact, or the anti-tamper misconfiguration ships.</td>
+      </tr>
+      <tr>
+        <th>Compliance counts scripts, not modules</th>
+        <td>PCI DSS 6.4.3, mandatory since 31 March 2025, wants script authorisation, script integrity and an inventory with written justification. A wasm module is inventoried through its JS loader, which makes that loader the compliance artifact. Obfuscating your own code satisfies none of it.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="card-note">Two checks from the codebase behind this report, for calibration. <code>cargo audit</code> is clean at 371 crates and zero vulnerabilities. The secret-scan gate greps the built bundle for backend key material, has already been hardened once against an exit code that made it report clean while real secrets sat in the bundle, and still runs with <code>-I</code> — which skips binaries, so the <code>.wasm</code> was never in scope. A JavaScript-era gate does not survive the move to a compiled frontend on its own, and nothing announces when it stops covering the thing it was written for.</p>
+</div>
+
+<h2>The recommendation</h2>
+
+<div class="flow">
+  <div class="flow-row">
+    <div class="flow-q">A customer or a regulator will see this surface</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="flow-a">Maintained DOM framework
+      <small>React or Angular for the published lifecycle and the accessible component supply. Dioxus if Rust-first is non-negotiable, on the DOM target, with the migration tax in the roadmap.</small>
+    </div>
+  </div>
+  <div class="flow-row">
+    <div class="flow-q">It ships as a desktop or mobile app</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="flow-a">Tauri as the shell
+      <small>Two published audits and a capability manifest an auditor can read. Verify camera and screen capture on every target webview yourself, and document the GTK3 advisories in <code>deny.toml</code> with an expiry.</small>
+    </div>
+  </div>
+  <div class="flow-row">
+    <div class="flow-q">Per-frame crypto, a media pipeline, heavy compute</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="flow-a">Rust in a worker
+      <small><code>wasm-bindgen</code> earns its 125M downloads here. SFrame inside <code>RTCRtpScriptTransform</code> is the reference case.</small>
+    </div>
+  </div>
+  <div class="flow-row">
+    <div class="flow-q">A guest joins from a link on a device you don't control</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="flow-a">Browser surface, and cap the claim
+      <small>No install means no OS attestation, self-reported client state, liveness that decays instead of enforcing. Say that plainly rather than shipping a badge that implies more.</small>
+    </div>
+  </div>
+  <div class="flow-row">
+    <div class="flow-q">A host who can be asked to install something</div>
+    <div class="flow-arrow" aria-hidden="true">→</div>
+    <div class="flow-a">Native app, same server-side enforcement
+      <small>Attestation, direct fingerprint access, capture that doesn't depend on a webview's mood. Enforcement lives on the server either way.</small>
+    </div>
+  </div>
+</div>
+
+<h2>Closing the gaps</h2>
+<ul>
+  <li><strong>Accessibility.</strong> Publish an ACR from the VPAT 2.5 INT template. Wire <code>axe-core</code> into CI as the regression floor, not as the evidence: Deque's own study of 13,000-plus pages reports 57.4% of issue volume but automated coverage of only 16 of the 50 WCAG 2.1 AA success criteria, which is the number your ACR has rows for. Guided testing reaches roughly 80%. The rest is manual and assistive-technology work.</li>
+  <li><strong>Component libraries don't hand you an ACR.</strong> A conformance report describes a product with a defined interface, so Adobe publishes ACRs for products while React Spectrum documents accessibility per component and IBM Carbon records per-component status. What you buy is the pattern implementation and the AT testing behind it. You still write the report.</li>
+  <li><strong>Support window.</strong> Nobody in Rust publishes one, so pick who owns yours: pinned versions plus a funded internal fork, an upstream support contract, or a maintained JavaScript framework. Choose none of the three and you've chosen the first by accident.</li>
+  <li><strong>Audits.</strong> Tauri didn't pay for its own pen-test — NLnet did, via NGI. Co-funding one and requiring in-repo publication is the available lever. Cheaper signals meanwhile: an OpenSSF badge, a Scorecard run, a security-advisory process you can point at.</li>
+  <li><strong>Supply chain.</strong> <code>cargo audit</code> in report-only mode for two weeks, then <code>cargo deny</code> blocking high and critical, then a CycloneDX SBOM generated in the release workflow, then <code>cargo vet</code> only if criticality warrants it. A stale SBOM is worse than none.</li>
+  <li><strong>Measured cost.</strong> Build your own artifact and measure it. Dioxus documents the arc for its TodoMVC example: 2.36 MB in release, 310 kB with the stable size configuration, 234 kB on nightly, after <code>wasm-opt -Oz</code>. That's a todo list, so scale the expectation before anyone quotes a hello world at you.</li>
+  <li><strong>Migration tax.</strong> List the breaking changes of the last three minors per candidate, with engineer-days attached. An hour from release notes, and it's the only defensible input to build-versus-buy.</li>
+</ul>
+
+<h2>What this report can't establish</h2>
+<p class="sub">Two independent research passes went after these, primary sources only. What stayed a gap is listed rather than filled by inference.</p>
+<ul>
+  <li>No independent security audit exists for Dioxus, Leptos, Yew, egui, Iced, AccessKit or <code>wasm-bindgen</code>. No in-progress NLnet, NGI, Sovereign Tech Agency or Prossimo engagement surfaced either. Wasmi got one in 2025, sponsored by the Stellar Development Foundation, so the funding route exists.</li>
+  <li>No screen-reader conformance results for any Rust renderer. egui's AccessKit support on Windows and macOS plus a 2022 Narrator demo is the strongest evidence in the set, and it still isn't a conformance matrix.</li>
+  <li>No OpenSSF Scorecard result or best-practices badge located for any Rust UI repository. Not found rather than absent.</li>
+  <li>No verified benchmark numbers. Dioxus, Leptos, Yew and Sycamore all have implementations in the official <code>js-framework-benchmark</code> suite; their figures in the current Chrome 150 run went unverified here, so the popular "beats React" line stays unverified too.</li>
+  <li>No reproducible <code>web-sys</code> DOM microbenchmark. The 2018 thunk numbers are too old to quote, and per-call overhead against a batched transfer isn't published.</li>
+  <li>No production bundle-size report. The Dioxus figures above describe a TodoMVC example from maintainer docs: 2.36 MB release, 310 kB with the stable size configuration, 234 kB on nightly.</li>
+  <li>No component library publishes conformance evidence. <code>radix-leptos</code> claims WAI-ARIA compliance in a README, and conformance reports stay product-scoped across every vendor checked.</li>
+  <li>No first-person retrospective, in either direction, on migrating off a bespoke frontend framework with cost figures attached.</li>
+  <li>No frontend-specific hiring data. Rust-wide figures (606 open roles in February 2026, about a 15% salary premium, 4–14 weeks to hire) come from analyst blogs, not surveys.</li>
+  <li>No purchasable support contract. Dioxus lists enterprise support as an intention with no published offering or price, and Tauri's statutes describe a project on a nil budget.</li>
+</ul>
+
+<h2>Sources</h2>
+<p class="sources">
+  <a href="https://webaim.org/projects/million/">WebAIM Million 2026</a> ·
+  <a href="https://github.com/tauri-apps/tauri/blob/dev/audits/Radically_Open_Security-v2-report.pdf">Tauri ROS v2 audit</a> ·
+  <a href="https://github.com/tauri-apps/tauri/blob/dev/audits/Radically_Open_Security-v1-report.pdf">ROS v1 audit</a> ·
+  <a href="https://v2.tauri.app/security/ecosystem/">Tauri security process</a> ·
+  <a href="https://github.com/leptos-rs/leptos/issues/4707">Leptos status update, May 2026</a> ·
+  <a href="https://dioxuslabs.com/blog/release-070/">Dioxus 0.7</a> ·
+  <a href="https://dioxuslabs.com/learn/0.7/migration/to_07/">Dioxus 0.7 migration</a> ·
+  <a href="https://github.com/DioxusLabs/dioxus/discussions/5024">Dioxus 0.8 roadmap</a> ·
+  <a href="https://react.dev/blog/2026/02/24/the-react-foundation">React Foundation</a> ·
+  <a href="https://react.dev/versions">React versions policy</a> ·
+  <a href="https://www.electronjs.org/docs/latest/tutorial/electron-timelines">Electron timelines</a> ·
+  <a href="https://www.electronjs.org/blog/8-week-cadence">Electron cadence</a> ·
+  <a href="https://rustsec.org/advisories/">RustSec advisories</a> ·
+  <a href="https://github.com/tauri-apps/wry/issues/85">wry #85, WKWebView getUserMedia</a> ·
+  <a href="https://bugs.webkit.org/show_bug.cgi?id=208667">WebKit bug 208667</a> ·
+  <a href="https://github.com/tauri-apps/tauri/issues/11272">tauri #11272, screen share picker</a> ·
+  <a href="https://www.rfc-editor.org/rfc/rfc9605.html">RFC 9605, SFrame</a> ·
+  <a href="https://github.com/DioxusLabs/blitz">Blitz</a> ·
+  <a href="https://docs.flutter.dev/ui/accessibility/web-accessibility">Flutter web accessibility</a>
+</p>
+
+<h2>How this was researched</h2>
+<p>Registry figures come from the crates.io API. Everything else traces to a primary source: audit PDFs, maintainer statements, GitHub issues, standards documents, vendor lifecycle pages. Three external research passes fed this report and every claim that changes a verdict was re-checked against its source before landing, which caught two errors worth naming. One pass reported CVE-2026-25541 as a <code>wasm-bindgen</code> vulnerability; it is an integer overflow in <code>bytes</code>. Another reported that Rust frameworks are absent from <code>js-framework-benchmark</code>; the suite carries Dioxus, Leptos, Yew and Sycamore implementations among 185 keyed entries. Two claims in earlier drafts of this report were wrong in the same way and are corrected above: WKWebView's <code>getUserMedia</code> status, and a benchmark ranking taken from a forum comment.</p>
+<p>The supply-chain number is local rather than quoted: <code>cargo audit</code> against the Dioxus-web codebase behind this report reports 371 crates and zero vulnerabilities. The GTK3 advisories discussed above arrive with a Tauri desktop target on Linux, not with Rust on the web.</p>
+
+<footer class="doc">
+  Charts are plain HTML and CSS, so every value sits in the text layer and reflows with the page. Colours come from an ordinal ramp validated in both modes; status colours always ship with an icon and a label, never colour alone. Companion prose: the blog post of the same date.
+</footer>
+
+</div>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  btn.addEventListener('click', () => {
+    const root = document.documentElement;
+    const dark = getComputedStyle(root).getPropertyValue('--page').trim() === '#0d0d0d';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+</script>
+</body>
+</html>
