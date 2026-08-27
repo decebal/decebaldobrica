@@ -175,6 +175,15 @@ export const artifacts: Artifact[] = [
     linkLabel: 'View on GitHub',
   },
   {
+    badge: 'All-Rust template · MIT',
+    title: 'wolven-tech/rust-v2',
+    code: 'cargo xtask ci',
+    description:
+      'All-Rust, event-sourced monorepo using AllSource as its only datastore. Axum API, Dioxus SPA and SSG frontends, shared crates, and one Rust gate for formatting, clippy, tests, styles, and WASM boundaries.',
+    href: 'https://github.com/wolven-tech/rust-v2',
+    linkLabel: 'View on GitHub',
+  },
+  {
     badge: 'Agent tooling',
     title: 'wolven-tech/mcp-log-server',
     code: 'mix run',
