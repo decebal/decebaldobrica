@@ -105,7 +105,7 @@ function getSectionStyle(type: TOCSection['type']) {
     case 'tool':
       return {
         icon: Wrench,
-        color: 'text-gray-400',
+        color: 'text-gray-200',
         bg: 'bg-gray-400/10',
         border: 'border-gray-400/30',
       }
@@ -119,7 +119,7 @@ function getSectionStyle(type: TOCSection['type']) {
     default:
       return {
         icon: List,
-        color: 'text-gray-400',
+        color: 'text-gray-200',
         bg: 'bg-gray-400/10',
         border: 'border-gray-400/30',
       }
@@ -170,17 +170,19 @@ export function BlogTOC({ content }: BlogTOCProps) {
           sectionStartIndex = i
         } else if (h3Match?.[1] && currentH2) {
           const title = h3Match[1].trim()
+          const children = currentH2.children ?? []
+          currentH2.children = children
           const child: TOCSection = {
-            id: `section-${parsedSections.length - 1}-${currentH2.children!.length}`,
+            id: `section-${parsedSections.length - 1}-${children.length}`,
             title,
             level: 3,
             type: detectSectionType(title),
             readingTime: 0,
           }
-          currentH2.children!.push(child)
+          children.push(child)
         }
       } else {
-        sectionContent += line + '\n'
+        sectionContent += `${line}\n`
       }
     }
 
@@ -254,6 +256,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
 
   // Add IDs to headings
   useEffect(() => {
+    if (content.length === 0) return
     // Wait a bit for content to render
     const timer = setTimeout(() => {
       const articleContent = document.querySelector('article .prose')
@@ -358,7 +361,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
       >
         <div className="relative">
           {/* Progress ring */}
-          <svg className="w-16 h-16 -rotate-90">
+          <svg className="w-16 h-16 -rotate-90" aria-hidden="true">
             <circle
               cx="32"
               cy="32"
@@ -430,7 +433,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-white transition-colors p-2"
+                  className="text-gray-200 hover:text-white transition-colors p-2"
                   type="button"
                   aria-label="Close"
                 >
@@ -441,7 +444,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
               {/* Progress bar */}
               <div className="px-6 py-4 border-b border-white/10 bg-white/5">
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-gray-400">Reading Progress</span>
+                  <span className="text-gray-200">Reading Progress</span>
                   <div className="flex items-center gap-2 text-brand-teal font-medium">
                     <Clock className="h-4 w-4" />
                     <span>{formatTime(timeRemaining)} left</span>
@@ -455,7 +458,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                     transition={{ duration: 0.5 }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                <div className="flex items-center justify-between text-xs text-gray-300 mt-2">
                   <span>{Math.round(progress)}% complete</span>
                   <span>{formatTime(totalReadingTime)} total</span>
                 </div>
@@ -497,11 +500,11 @@ export function BlogTOC({ content }: BlogTOCProps) {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-gray-300">
                               {formatTime(section.readingTime)}
                             </span>
                             {hasChildren && (
-                              <div className="text-gray-400">
+                              <div className="text-gray-200">
                                 {isExpanded ? (
                                   <ChevronDown className="h-4 w-4" />
                                 ) : (
@@ -523,7 +526,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                               className="overflow-hidden"
                             >
                               <div className="ml-8 mt-1 space-y-1 border-l-2 border-gray-800 pl-4">
-                                {section.children!.map((child) => {
+                                {section.children?.map((child) => {
                                   const childActive = activeSection === child.id
                                   return (
                                     <button
@@ -531,7 +534,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                                       onClick={() => scrollToSection(child.id)}
                                       className={`
                                         w-full text-left p-2 rounded text-sm transition-colors
-                                        ${childActive ? 'text-brand-teal bg-brand-teal/10' : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'}
+                                        ${childActive ? 'text-brand-teal bg-brand-teal/10' : 'text-gray-200 hover:text-gray-300 hover:bg-white/5'}
                                       `}
                                       type="button"
                                     >
@@ -581,7 +584,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
             {/* Progress */}
             <div className="mb-6 p-4 bg-white/5 rounded-lg border border-white/10">
               <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-400">Progress</span>
+                <span className="text-gray-200">Progress</span>
                 <div className="flex items-center gap-2 text-brand-teal font-medium">
                   <Clock className="h-4 w-4" />
                   <span>{formatTime(timeRemaining)} left</span>
@@ -626,7 +629,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                           {section.title}
                         </div>
                       </div>
-                      <span className="text-xs text-gray-500 flex-shrink-0">
+                      <span className="text-xs text-gray-300 flex-shrink-0">
                         {formatTime(section.readingTime)}
                       </span>
                     </button>
@@ -641,7 +644,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                           className="overflow-hidden"
                         >
                           <div className="ml-7 mt-1 space-y-1">
-                            {section.children!.map((child) => {
+                            {section.children?.map((child) => {
                               const childActive = activeSection === child.id
                               return (
                                 <button
@@ -649,7 +652,7 @@ export function BlogTOC({ content }: BlogTOCProps) {
                                   onClick={() => scrollToSection(child.id)}
                                   className={`
                                     w-full text-left p-2 rounded text-sm transition-colors
-                                    ${childActive ? 'text-brand-teal' : 'text-gray-400 hover:text-gray-300'}
+                                    ${childActive ? 'text-brand-teal' : 'text-gray-200 hover:text-gray-300'}
                                   `}
                                   type="button"
                                 >

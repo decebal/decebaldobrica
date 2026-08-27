@@ -77,13 +77,13 @@ export function RadarBanner({ variant = 'card' }: RadarBannerProps) {
         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-300">
           Every tool I feature, mapped by verdict
           <RingDots />
-          <span className="text-gray-400">· {TOOL_COUNT} tools</span>
+          <span className="text-gray-200">· {TOOL_COUNT} tools</span>
         </p>
       </div>
 
       {/* CTA */}
       <Link href="/radar" className="shrink-0">
-        <Button className="bg-brand-teal text-white hover:bg-brand-teal/80">
+        <Button className="bg-brand-teal text-brand-darknavy hover:bg-brand-teal/80">
           Explore the radar
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>

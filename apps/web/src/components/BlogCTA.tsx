@@ -46,7 +46,7 @@ export function BlogCTA({ postTitle }: BlogCTAProps) {
             {/* Social Links */}
             <div className="flex flex-wrap gap-3 justify-center md:justify-start">
               <Link href="/contact?category=Blog+Post" onClick={handleGetInTouch}>
-                <Button className="bg-brand-teal hover:bg-brand-teal/80 text-white">
+                <Button className="bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy">
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Get in Touch
                 </Button>

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: 'Rust & AI Crate Radar',
   description:
     'A living Tech Radar of the Rust + AI ecosystem — agent SDKs, inference engines, vector/RAG crates, and dev tooling — each vetted for maintenance and adoption and placed by an Adopt / Trial / Assess / Hold verdict. Updated as new issues of the Rust Systems & Agentic AI newsletter ship.',
+  alternates: { canonical: '/radar' },
   openGraph: {
     title: 'Rust & AI Crate Radar',
     description:

@@ -6,6 +6,7 @@ import { GlowButton } from '@decebal/ui/glow-button'
 import { NeonButton } from '@decebal/ui/neon-button'
 import { ShimmerButton } from '@decebal/ui/shimmer-button'
 import { FileText, Github, Linkedin, Mail } from 'lucide-react'
+import Image from 'next/image'
 import React, { useEffect } from 'react'
 
 const AboutPage = () => {
@@ -29,11 +30,15 @@ const AboutPage = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-8">
                 <div className="text-center lg:text-left">
-                  <div className="relative mx-auto lg:mx-0 w-48 h-48 rounded-full overflow-hidden border-4 border-brand-teal mb-6 shadow-lg shadow-brand-teal/20 animate-fade-in">
-                    <img
+                  <div className="relative mx-auto mb-6 h-48 w-48 overflow-hidden rounded-full border-4 border-brand-teal shadow-lg shadow-brand-teal/20 lg:mx-0">
+                    <Image
                       src="/images/avatar.jpg"
                       alt={config.name}
-                      className="w-full h-full object-cover"
+                      width={192}
+                      height={192}
+                      sizes="192px"
+                      priority
+                      className="h-full w-full object-cover"
                     />
                   </div>
                   <h1 className="text-3xl font-bold text-brand-heading animate-fade-in">
@@ -49,7 +54,8 @@ const AboutPage = () => {
                     href={config.socialLinks.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Decebal Dobrica on GitHub"
                   >
                     <Github size={24} />
                   </a>
@@ -57,13 +63,15 @@ const AboutPage = () => {
                     href={config.socialLinks.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Decebal Dobrica on LinkedIn"
                   >
                     <Linkedin size={24} />
                   </a>
                   <a
                     href={`mailto:${config.contact.email}`}
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Email Decebal Dobrica"
                   >
                     <Mail size={24} />
                   </a>
@@ -109,17 +117,17 @@ const AboutPage = () => {
                       Wolven Tech
                     </a>
                     , a Rust-only technical advisory practice. I've architected and shipped 1M+
-                    lines of production Rust across four event-sourced platforms, including
-                    desktop AI tooling, gRPC microservices, embedded analytics engines, and WASM
-                    frontends. I authored AllSource, an embedded Rust event store with WAL and
-                    Parquet columnar storage built for 24/7 throughput, plus AllFrame, the Rust
-                    framework that powers it.
+                    lines of production Rust across four event-sourced platforms, including desktop
+                    AI tooling, gRPC microservices, embedded analytics engines, and WASM frontends.
+                    I authored AllSource, an embedded Rust event store with WAL and Parquet columnar
+                    storage built for 24/7 throughput, plus AllFrame, the Rust framework that powers
+                    it.
                   </p>
                   <p>
                     Currently <strong>Senior Software Engineer at iProov</strong>, building
-                    deepfake-detection and liveness-verification features that protect ~5M
-                    biometric transactions per year, while modernising the JS/WASM stack (Biome,
-                    Bun, buf.build) for 30%+ CI/CD gains. Previously{' '}
+                    deepfake-detection and liveness-verification features that protect ~5M biometric
+                    transactions per year, while modernising the JS/WASM stack (Biome, Bun,
+                    buf.build) for 30%+ CI/CD gains. Previously{' '}
                     <strong>Technical Lead at Ebury</strong>,{' '}
                     <strong>Engineering Manager at Tellimer</strong>, and{' '}
                     <strong>Technical Lead at Breakout Clips</strong>, with{' '}
@@ -129,8 +137,8 @@ const AboutPage = () => {
                   <p>
                     Wolven Tech is my operating vehicle for specialist Rust engagements: HFT, HPC,
                     trading, and 24/7 platforms where microseconds and state integrity matter.
-                    Typical outcomes vs. equivalent TypeScript services: 6–10× memory reduction,
-                    8× smaller release binaries, 5× faster startup. I also lead 0→1 AI-augmented
+                    Typical outcomes vs. equivalent TypeScript services: 6–10× memory reduction, 8×
+                    smaller release binaries, 5× faster startup. I also lead 0→1 AI-augmented
                     product delivery. The clearest example: a production AI document-parsing
                     platform on AWS Bedrock + SageMaker that powered multiple fintech analytics
                     products and cut AWS cost by 75%.
@@ -219,7 +227,9 @@ const AboutPage = () => {
                     <div className="relative mb-12">
                       <div className="absolute -left-[7px] top-2 h-4 w-4 rounded-full bg-brand-teal glow-sm" />
                       <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-brand-teal/20 hover:border-brand-teal/40 transition-colors">
-                        <h3 className="text-xl font-semibold text-white">Senior Software Engineer</h3>
+                        <h3 className="text-xl font-semibold text-white">
+                          Senior Software Engineer
+                        </h3>
                         <p className="text-brand-teal mb-2">
                           iProov · Full-time · Nov 2025 - Present
                         </p>
@@ -270,9 +280,8 @@ const AboutPage = () => {
                             Platform Sprint, Advisor
                           </li>
                           <li>
-                            Public Rust: monorepo-meta on crates.io (Tokio + tmux task
-                            orchestrator, ~2.7 MB binary), wolven-tech/rust-v1 production
-                            template, mcp-log-server
+                            Public Rust: monorepo-meta on crates.io (Tokio + tmux task orchestrator,
+                            ~2.7 MB binary), wolven-tech/rust-v1 production template, mcp-log-server
                           </li>
                           <li>
                             Tech stack: Rust (Tokio, Axum, Tonic, Arrow/Parquet, DataFusion,
@@ -327,12 +336,12 @@ const AboutPage = () => {
                         </p>
                         <ul className="text-white text-sm space-y-1 list-disc list-inside">
                           <li>
-                            Delivered Rust smart-contract and wallet-feature optimizations on
-                            Solana driving sustainable growth
+                            Delivered Rust smart-contract and wallet-feature optimizations on Solana
+                            driving sustainable growth
                           </li>
                           <li>
-                            Cut 3rd-party blockchain stack costs by 60% through indexer
-                            optimisation and chain selection
+                            Cut 3rd-party blockchain stack costs by 60% through indexer optimisation
+                            and chain selection
                           </li>
                           <li>Tech stack: Rust, Solana, Anchor</li>
                         </ul>
@@ -409,10 +418,13 @@ const AboutPage = () => {
                           Public-auction analytics platform on Azure with multi-layered RBAC.
                         </p>
                         <ul className="text-white text-sm space-y-1 list-disc list-inside">
-                          <li>Designed a multi-layered RBAC system enabling fine-grained feature access</li>
                           <li>
-                            Increased access efficiency 40% by centralising public auction data
-                            into an Azure-based platform
+                            Designed a multi-layered RBAC system enabling fine-grained feature
+                            access
+                          </li>
+                          <li>
+                            Increased access efficiency 40% by centralising public auction data into
+                            an Azure-based platform
                           </li>
                           <li>Tech stack: Python, React, Azure</li>
                         </ul>
@@ -431,7 +443,10 @@ const AboutPage = () => {
                           Run + FFmpeg.
                         </p>
                         <ul className="text-white text-sm space-y-1 list-disc list-inside">
-                          <li>Cut video-rendering latency 30% via FFmpeg + GCP Cloud Run + Pub/Sub pipeline</li>
+                          <li>
+                            Cut video-rendering latency 30% via FFmpeg + GCP Cloud Run + Pub/Sub
+                            pipeline
+                          </li>
                           <li>
                             Reduced CI/CD infra cost 40% with a Pulumi IaC pipeline and ephemeral
                             preview environments

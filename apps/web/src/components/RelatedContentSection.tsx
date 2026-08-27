@@ -71,7 +71,7 @@ export function RelatedBlogPosts({
               </h3>
             </div>
             <p className="text-white/80 text-sm line-clamp-2 mb-4">{post.description}</p>
-            <div className="flex items-center gap-4 text-xs text-white/60">
+            <div className="flex items-center gap-4 text-xs text-white/80">
               <span>{formatDate(post.date)}</span>
               {post.readingTime && (
                 <span className="flex items-center gap-1">
@@ -135,7 +135,7 @@ export function RelatedCaseStudies({
             <div className="flex flex-wrap gap-3">
               {study.metrics.slice(0, 3).map((metric) => (
                 <div key={metric.label} className="bg-brand-teal/10 px-3 py-1 rounded-full text-xs">
-                  <span className="text-white/70">{metric.label}:</span>{' '}
+                  <span className="text-white/85">{metric.label}:</span>{' '}
                   <span className="text-brand-teal font-medium">{metric.value}</span>
                 </div>
               ))}

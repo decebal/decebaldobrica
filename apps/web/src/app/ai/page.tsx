@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     'Claude',
     'AI-assisted development',
   ],
+  alternates: { canonical: '/ai' },
   openGraph: {
     title: `AI Engineer, Architect & Leader | ${config.name}`,
     description: 'AI engineer specializing in GenAI adoption, RAG systems, and LLM integration.',

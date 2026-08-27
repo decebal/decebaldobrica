@@ -1,125 +1,60 @@
-'use client'
+import { ArrowRight, ExternalLink } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-import { config } from '@/lib/personalConfig'
-import { FEATURE_FLAGS, useFeatureFlag } from '@decebal/booking/client/useFeatureFlag'
-import { ChevronDown, Play } from 'lucide-react'
-import React, { useState } from 'react'
-import { GlowButton } from './ui/glow-button'
-import { NeonButton } from './ui/neon-button'
-import { SpotlightCard } from './ui/spotlight-card'
-
-const HeroSection = () => {
-  const [showVideo, setShowVideo] = useState(false)
-
-  // Use PostHog feature flag for homepage video
-  const isHomepageVideoEnabled = useFeatureFlag(FEATURE_FLAGS.ENABLE_HOMEPAGE_VIDEO)
-
-  const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about')
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
-  return (
-    <section className="min-h-screen pt-20 flex flex-col justify-center relative pb-20">
-      <div className="section-container flex flex-col md:flex-row items-center">
-        <div className="flex-1 md:pr-8 mb-10 md:mb-0">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in text-white">
-            Hello, I'm <span className="text-brand-teal">{config.name}</span>
-          </h1>
-          <p
-            className="text-xl md:text-2xl mb-4 text-gray-300 animate-fade-in"
-            style={{ animationDelay: '0.2s' }}
+const HeroSection = () => (
+  <section className="flex min-h-[min(860px,100svh)] items-center pb-20 pt-28">
+    <div className="section-container grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div>
+        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+          Decebal Dobrica · Founder, Wolven Tech
+        </p>
+        <h1 className="max-w-4xl text-4xl font-bold leading-[1.05] text-white md:text-6xl">
+          Rust systems and agentic AI, built for production.
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-200 md:text-xl">
+          I design event-sourced backends, durable agent memory, and AI-assisted engineering
+          systems. Published work includes AllSource and 1M+ lines of production Rust across
+          fintech, identity, SaaS, and Web3.
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/work"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-teal px-6 py-3 font-semibold text-brand-darknavy transition-colors hover:bg-brand-teal/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
           >
-            {config.tagline}
-          </p>
-          <p
-            className="text-base md:text-lg mb-8 text-gray-400 animate-fade-in max-w-2xl"
-            style={{ animationDelay: '0.3s' }}
+            View current work
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          <a
+            href="https://wolventech.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/30 px-6 py-3 font-semibold text-white transition-colors hover:border-brand-teal hover:text-brand-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
           >
-            I architect event-sourced backends and AI-accelerated platforms that cut memory 6–10×
-            and infrastructure cost up to 75%.
-          </p>
-          <div
-            className="flex flex-col sm:flex-row gap-4 animate-fade-in"
-            style={{ animationDelay: '0.4s' }}
-          >
-            <GlowButton
-              onClick={() => {
-                window.location.href = '/work'
-              }}
-            >
-              Read the case studies
-            </GlowButton>
-            <NeonButton
-              onClick={() => {
-                window.location.href = '/contact?category=Homepage+Hero'
-              }}
-            >
-              Book a discovery call
-            </NeonButton>
-          </div>
-        </div>
-        <div className="flex-1 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <SpotlightCard className="max-w-sm md:max-w-md mx-auto">
-            {isHomepageVideoEnabled ? (
-              // Video feature enabled - show video player
-              !showVideo ? (
-                <div className="relative aspect-video">
-                  <img
-                    src="/images/avatar.jpg"
-                    alt="Video thumbnail"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowVideo(true)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors rounded-lg group"
-                  >
-                    <div className="bg-brand-teal rounded-full p-3 flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
-                      <Play className="text-white w-8 h-8" />
-                    </div>
-                  </button>
-                </div>
-              ) : (
-                <div className="aspect-video">
-                  <video
-                    controls
-                    autoPlay
-                    className="w-full h-full rounded-lg"
-                    src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
-                  >
-                    <track kind="captions" label="English" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              )
-            ) : (
-              // Video feature disabled - show static image only
-              <div className="aspect-video">
-                <img
-                  src="/images/avatar.jpg"
-                  alt={config.name}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            )}
-          </SpotlightCard>
+            Hire through Wolven Tech
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+          </a>
         </div>
       </div>
-      <div className="absolute bottom-8 md:bottom-12 left-0 right-0 flex justify-center animate-bounce">
-        <button
-          type="button"
-          onClick={scrollToAbout}
-          className="bg-white/10 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white/20 transition-colors"
-          aria-label="Scroll to about section"
-        >
-          <ChevronDown className="text-brand-teal" />
-        </button>
-      </div>
-    </section>
-  )
-}
+
+      <figure className="mx-auto w-full max-w-md">
+        <div className="overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-3 shadow-2xl shadow-black/30">
+          <Image
+            src="/images/avatar.jpg"
+            alt="Decebal Dobrica"
+            width={720}
+            height={720}
+            sizes="(max-width: 1024px) 80vw, 38vw"
+            priority
+            className="aspect-square w-full rounded-2xl object-cover"
+          />
+        </div>
+        <figcaption className="mt-4 text-center text-sm text-gray-200">
+          Principal engineer, product builder, and open-source maintainer.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+)
 
 export default HeroSection

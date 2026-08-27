@@ -1,7 +1,15 @@
 import Footer from '@/components/Footer'
 import Gallery from '@/components/Gallery'
 import TestimonialSection from '@/components/TestimonialSection'
+import type { Metadata } from 'next'
 import React from 'react'
+
+export const metadata: Metadata = {
+  title: 'Engineering Leadership Testimonials',
+  description:
+    'Recommendations from product and engineering leaders who worked directly with Decebal Dobrica.',
+  alternates: { canonical: '/testimonials' },
+}
 
 const galleryImages = [
   {
@@ -75,6 +83,17 @@ const TestimonialsPage = () => {
   return (
     <div className="min-h-screen relative">
       <main className="pt-24 pb-16">
+        <header className="section-container pt-12">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+            References
+          </p>
+          <h1 className="max-w-4xl text-4xl font-bold text-white md:text-6xl">
+            What engineering and product leaders say
+          </h1>
+          <p className="mt-4 max-w-3xl text-lg leading-8 text-gray-200">
+            Direct recommendations from people who managed or shipped alongside me.
+          </p>
+        </header>
         <TestimonialSection />
 
         {/* Gallery Section */}

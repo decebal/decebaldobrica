@@ -211,7 +211,7 @@ function PricingContent() {
                     ((tier.id === 'premium' && !isPremiumEnabled) ||
                       (tier.id === 'founding' && !isFoundingEnabled)) && (
                       <div className="flex justify-center mb-3">
-                        <span className="inline-block bg-brand-teal text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                        <span className="inline-block bg-brand-teal text-brand-darknavy text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                           Coming Soon
                         </span>
                       </div>

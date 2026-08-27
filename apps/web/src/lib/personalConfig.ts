@@ -3,13 +3,16 @@ import personalData from '@/config/personal.json'
 export interface PersonalConfig {
   name: string
   tagline: string
+  metaDescription: string
   email: string
   website: string
   domain: string
   oldBlog?: string
+  wolvenTechUrl: string
   ethAddress?: string
   socialLinks: {
     github: string
+    githubWolvenTech?: string
     linkedin: string
     twitter: string
   }

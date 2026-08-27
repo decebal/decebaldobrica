@@ -1,5 +1,6 @@
 import { caseStudies } from '@/data/caseStudies'
 import { getAllBlogPosts } from '@/lib/blogPosts'
+import { serviceOfferings } from '@/lib/serviceOfferings'
 import type { MetadataRoute } from 'next'
 
 const siteUrl = 'https://decebaldobrica.com'
@@ -10,8 +11,10 @@ const staticPages = [
   '/ai',
   '/blog',
   '/contact',
-  '/newsletter/pricing',
+  '/cookies',
+  '/open-source',
   '/radar',
+  '/refunds',
   '/rust',
   '/services',
   '/services/architecture-docs',
@@ -19,6 +22,8 @@ const staticPages = [
   '/services/engineering-leadership',
   '/services/technical-writing',
   '/smart-contracts',
+  '/privacy',
+  '/terms',
   '/testimonials',
   '/work',
 ] as const
@@ -28,8 +33,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticEntries: MetadataRoute.Sitemap = staticPages.map((path) => ({
     url: `${siteUrl}${path}`,
-    changeFrequency: path === '' || path === '/blog' ? 'weekly' : 'monthly',
-    priority: path === '' ? 1 : path === '/blog' || path === '/work' ? 0.8 : 0.7,
+  }))
+
+  const serviceEntries: MetadataRoute.Sitemap = serviceOfferings.map((offering) => ({
+    url: `${siteUrl}/services/${offering.slug}`,
   }))
 
   const postEntries: MetadataRoute.Sitemap = posts
@@ -37,15 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .map((post) => ({
       url: `${siteUrl}/blog/${post.slug}`,
       lastModified: new Date(post.date),
-      changeFrequency: 'monthly',
-      priority: 0.7,
     }))
 
   const workEntries: MetadataRoute.Sitemap = caseStudies.map((study) => ({
     url: `${siteUrl}/work/${study.slug}`,
-    changeFrequency: 'monthly',
-    priority: 0.7,
   }))
 
-  return [...staticEntries, ...postEntries, ...workEntries]
+  return [...staticEntries, ...serviceEntries, ...postEntries, ...workEntries]
 }

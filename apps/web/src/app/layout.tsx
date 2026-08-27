@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar'
 import ScrollToTop from '@/components/ScrollToTop'
 import TexturedBackground from '@/components/TexturedBackground'
 import { config } from '@/lib/personalConfig'
+import { jsonLd, personSchema, websiteSchema } from '@/lib/structuredData'
 import { PostHogErrorBoundary } from '@decebal/analytics/components/PostHogErrorBoundary'
 import { PostHogErrorHandler } from '@decebal/analytics/components/PostHogErrorHandler'
 import { PostHogPageView } from '@decebal/analytics/components/PostHogPageView'
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: config.name }],
   creator: config.name,
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || config.website),
+  metadataBase: new URL(config.website),
   verification: {
     google: 'dQcVJ8_5hQJB50WG52tkVVQZLFT9bGm8q0yHyQRmY2Y',
   },
@@ -58,11 +59,13 @@ export const metadata: Metadata = {
     siteName: `${config.name} - ${config.professional.title}`,
     title: `${config.name} - ${config.professional.title}`,
     description: metaDescription,
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 760, alt: config.name }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${config.name} - ${config.professional.title}`,
     description: metaDescription,
+    images: ['/opengraph-image.png'],
   },
 }
 
@@ -73,6 +76,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd(personSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema()) }}
+        />
+      </head>
       <body className={inter.className}>
         <Providers>
           <PostHogErrorBoundary>

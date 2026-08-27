@@ -21,7 +21,7 @@ interface TagPageProps {
 export async function generateStaticParams() {
   const tags = await getAllTags()
   return tags.map((tag) => ({
-    tag: encodeURIComponent(tag),
+    tag,
   }))
 }
 
@@ -34,6 +34,8 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   return {
     title: `${tag} - Blog`,
     description: `Browse ${filteredPosts.length} blog posts about ${tag}`,
+    alternates: { canonical: `/blog/tag/${encodeURIComponent(tag)}` },
+    robots: { index: false, follow: true },
   }
 }
 
@@ -97,7 +99,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
               <div className="mb-8 relative">
                 <div className="flex items-center gap-2 mb-2">
                   <Tag className="h-4 w-4 text-brand-teal/60" />
-                  <span className="text-sm text-gray-400">Filter by topic:</span>
+                  <span className="text-sm text-gray-200">Filter by topic:</span>
                 </div>
                 <div className="overflow-x-auto scrollbar-hide">
                   <div className="flex gap-2 pb-2">
@@ -142,7 +144,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                           </CardDescription>
                         </div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mt-4">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-200 mt-4">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
                           <span>{formatDate(post.date)}</span>
@@ -207,7 +209,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                       // Show ellipsis
                       if (page === currentPage - 2 || page === currentPage + 2) {
                         return (
-                          <span key={page} className="text-gray-400 px-2">
+                          <span key={page} className="text-gray-200 px-2">
                             ...
                           </span>
                         )
@@ -225,7 +227,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                         }
                         className={`px-4 py-2 rounded-lg transition-colors ${
                           page === currentPage
-                            ? 'bg-brand-teal text-white'
+                            ? 'bg-brand-teal text-brand-darknavy'
                             : 'bg-white/5 text-gray-300 hover:bg-white/10'
                         }`}
                       >
@@ -249,7 +251,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
 
             {/* Page Info */}
             {totalPages > 1 && (
-              <div className="mt-4 text-center text-gray-400 text-sm">
+              <div className="mt-4 text-center text-gray-200 text-sm">
                 Showing {startIndex + 1}-{Math.min(endIndex, allFilteredPosts.length)} of{' '}
                 {allFilteredPosts.length} posts
               </div>

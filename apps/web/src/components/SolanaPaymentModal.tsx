@@ -165,7 +165,7 @@ const SolanaPaymentModal = ({
           <Button
             onClick={checkPayment}
             disabled={checkingPayment || loading}
-            className="bg-brand-teal hover:bg-brand-teal/90 text-white"
+            className="bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy"
           >
             {checkingPayment ? 'Checking...' : 'Check Payment'}
           </Button>

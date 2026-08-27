@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     'fintech',
     'blockchain development',
   ],
+  alternates: { canonical: '/smart-contracts' },
   openGraph: {
     title: `Blockchain Architect & Smart Contract Engineer | ${config.name}`,
     description: 'Blockchain architect specializing in Solana, Ethereum, and DeFi solutions.',

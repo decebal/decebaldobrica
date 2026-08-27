@@ -1,5 +1,3 @@
-'use client'
-
 import Footer from '@/components/Footer'
 import {
   type RelatedBlogPost,
@@ -8,9 +6,8 @@ import {
   type RelatedCaseStudy,
 } from '@/components/RelatedContentSection'
 import { config } from '@/lib/personalConfig'
-import { NeonButton } from '@decebal/ui/neon-button'
-import { ShimmerButton } from '@decebal/ui/shimmer-button'
 import { ArrowRight, FileText, Github, Linkedin, Mail } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
@@ -73,23 +70,25 @@ export function ProfileLandingPage({
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-8">
                 <div className="text-center lg:text-left">
-                  <div className="relative mx-auto lg:mx-0 w-48 h-48 rounded-full overflow-hidden border-4 border-brand-teal mb-6 shadow-lg shadow-brand-teal/20 animate-fade-in">
-                    <img
+                  <div className="relative mx-auto mb-6 h-48 w-48 overflow-hidden rounded-full border-4 border-brand-teal shadow-lg shadow-brand-teal/20 lg:mx-0">
+                    <Image
                       src="/images/avatar.jpg"
                       alt={config.name}
-                      className="w-full h-full object-cover"
+                      width={192}
+                      height={192}
+                      sizes="192px"
+                      priority
+                      className="h-full w-full object-cover"
                     />
                   </div>
-                  <h1 className="text-3xl font-bold text-brand-heading animate-fade-in">
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand-teal">
                     {config.name}
-                  </h1>
-                  <p className="text-lg text-brand-teal mt-2 animate-fade-in font-medium">
-                    {specialty}
                   </p>
-                  <p className="text-sm text-brand-paragraph mt-1 animate-fade-in">{tagline}</p>
+                  <h1 className="mt-2 text-3xl font-bold text-brand-heading">{specialty}</h1>
+                  <p className="mt-2 text-sm text-brand-paragraph">{tagline}</p>
 
                   {/* Availability Status */}
-                  <div className="mt-4 animate-fade-in">
+                  <div className="mt-4">
                     <span className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 text-sm px-3 py-1 rounded-full border border-emerald-500/30">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -100,12 +99,13 @@ export function ProfileLandingPage({
                   </div>
                 </div>
 
-                <div className="flex justify-center lg:justify-start space-x-4 animate-fade-in">
+                <div className="flex justify-center gap-2 lg:justify-start">
                   <a
                     href={config.socialLinks.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Decebal Dobrica on GitHub"
                   >
                     <Github size={24} />
                   </a>
@@ -113,41 +113,42 @@ export function ProfileLandingPage({
                     href={config.socialLinks.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Decebal Dobrica on LinkedIn"
                   >
                     <Linkedin size={24} />
                   </a>
                   <a
                     href={`mailto:${config.contact.email}`}
-                    className="text-brand-heading hover:text-brand-teal transition-colors transform hover:scale-110 duration-200"
+                    className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
+                    aria-label="Email Decebal Dobrica"
                   >
                     <Mail size={24} />
                   </a>
                 </div>
 
                 <div className="flex flex-col space-y-4">
-                  <ShimmerButton
-                    className="w-full group flex items-center justify-center gap-2 text-white"
-                    onClick={() => window.open('/resume/decebal-dobrica-resume.pdf', '_blank')}
+                  <Link
+                    href="/resume/decebal-dobrica-resume.pdf"
+                    target="_blank"
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/25 px-4 py-3 font-semibold text-white transition-colors hover:border-brand-teal hover:text-brand-teal"
                   >
-                    <FileText className="w-5 h-5 transition-transform group-hover:scale-110" />
+                    <FileText className="h-5 w-5" />
                     <span>Download Resume</span>
-                  </ShimmerButton>
+                  </Link>
 
-                  <NeonButton
-                    className="w-full group"
-                    onClick={() => {
-                      window.location.href = `/contact?category=${encodeURIComponent(contactCategory)}`
-                    }}
+                  <Link
+                    href={`/contact?category=${encodeURIComponent(contactCategory)}`}
+                    className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand-teal px-4 py-3 font-semibold text-brand-darknavy transition-colors hover:bg-brand-teal/85"
                   >
-                    <Mail className="w-5 h-5 transition-transform group-hover:scale-110" />
+                    <Mail className="h-5 w-5" />
                     <span>{primaryCTAText}</span>
-                  </NeonButton>
+                  </Link>
                 </div>
 
                 {/* Other Expertise Links */}
                 <div className="hidden lg:block pt-4 border-t border-white/10">
-                  <p className="text-xs uppercase tracking-wider text-white/50 mb-3">
+                  <p className="text-xs uppercase tracking-wider text-white/75 mb-3">
                     Other Expertise
                   </p>
                   <div className="space-y-2">
@@ -155,7 +156,7 @@ export function ProfileLandingPage({
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="group flex items-center gap-2 text-sm text-white/70 hover:text-brand-teal transition-colors"
+                        className="group flex min-h-12 items-center gap-2 text-sm text-white/85 transition-colors hover:text-brand-teal"
                       >
                         {link.icon}
                         <span>{link.title}</span>
@@ -243,7 +244,7 @@ export function ProfileLandingPage({
                         {link.icon && <div className="text-brand-teal">{link.icon}</div>}
                         <div>
                           <h3 className="text-brand-heading font-medium">{link.title}</h3>
-                          <p className="text-white/60 text-sm">{link.tagline}</p>
+                          <p className="text-white/80 text-sm">{link.tagline}</p>
                         </div>
                       </div>
                       <ArrowRight className="w-5 h-5 text-brand-teal opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -260,15 +261,13 @@ export function ProfileLandingPage({
                 <p className="text-white/80 mb-6">
                   Let's discuss how I can help with your {specialty.toLowerCase()} needs.
                 </p>
-                <NeonButton
-                  className="group"
-                  onClick={() => {
-                    window.location.href = `/contact?category=${encodeURIComponent(contactCategory)}`
-                  }}
+                <Link
+                  href={`/contact?category=${encodeURIComponent(contactCategory)}`}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-brand-teal px-5 py-3 font-semibold text-brand-darknavy transition-colors hover:bg-brand-teal/85"
                 >
                   <span>{primaryCTAText}</span>
-                  <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
-                </NeonButton>
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
               </section>
             </div>
           </div>

@@ -220,7 +220,7 @@ const CaseStudiesPage = () => {
                 Download Pricing (PDF)
               </button>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-200">
               88% of B2B companies use case studies • Average company has 45 case studies • 79% rate
               them "extremely effective"
             </p>
@@ -243,11 +243,11 @@ const CaseStudiesPage = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-white mb-1">{example.company}</h3>
-                      <p className="text-sm text-gray-400">{example.industry}</p>
+                      <p className="text-sm text-gray-200">{example.industry}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-brand-teal">{example.metric}</div>
-                      <div className="text-xs text-gray-400">{example.detail}</div>
+                      <div className="text-xs text-gray-200">{example.detail}</div>
                     </div>
                   </div>
                   <p className="text-gray-300 mb-4">{example.description}</p>
@@ -263,7 +263,7 @@ const CaseStudiesPage = () => {
                   </div>
                   {example.revenue && (
                     <div className="mt-4 pt-4 border-t border-white/10">
-                      <span className="text-sm text-gray-400">Company Scale: </span>
+                      <span className="text-sm text-gray-200">Company Scale: </span>
                       <span className="text-sm text-white font-semibold">
                         {example.revenue} revenue
                       </span>
@@ -271,7 +271,7 @@ const CaseStudiesPage = () => {
                   )}
                   {example.cost && (
                     <div className="mt-4 pt-4 border-t border-white/10">
-                      <span className="text-sm text-gray-400">Cost Impact: </span>
+                      <span className="text-sm text-gray-200">Cost Impact: </span>
                       <span className="text-sm text-white font-semibold">{example.cost}/month</span>
                     </div>
                   )}
@@ -332,7 +332,7 @@ const CaseStudiesPage = () => {
                   >
                     {pkg.popular && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-brand-teal text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        <span className="bg-brand-teal text-brand-darknavy px-4 py-1 rounded-full text-sm font-semibold">
                           Most Popular
                         </span>
                       </div>
@@ -340,7 +340,7 @@ const CaseStudiesPage = () => {
 
                     <h3 className="text-2xl font-bold text-white mb-2">{pkg.name}</h3>
                     <div className="text-3xl font-bold text-brand-teal mb-1">{pkg.price}</div>
-                    <div className="text-sm text-gray-400 mb-2">{pkg.duration}</div>
+                    <div className="text-sm text-gray-200 mb-2">{pkg.duration}</div>
                     <div className="text-sm text-brand-teal mb-6">Ideal for: {pkg.ideal}</div>
 
                     <ul className="space-y-3 mb-8">
@@ -356,7 +356,7 @@ const CaseStudiesPage = () => {
                       <Button
                         className={`w-full ${
                           pkg.popular
-                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-white'
+                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy'
                             : 'bg-white/10 hover:bg-white/20 text-white'
                         }`}
                       >
@@ -404,7 +404,7 @@ const CaseStudiesPage = () => {
             <div className="space-y-6">
               <div className="brand-card p-6 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                  <span className="bg-brand-teal text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
+                  <span className="bg-brand-teal text-brand-darknavy w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
                     S
                   </span>
                   Situation
@@ -417,7 +417,7 @@ const CaseStudiesPage = () => {
 
               <div className="brand-card p-6 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                  <span className="bg-brand-teal text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
+                  <span className="bg-brand-teal text-brand-darknavy w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
                     T
                   </span>
                   Task
@@ -430,7 +430,7 @@ const CaseStudiesPage = () => {
 
               <div className="brand-card p-6 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                  <span className="bg-brand-teal text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
+                  <span className="bg-brand-teal text-brand-darknavy w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
                     A
                   </span>
                   Action
@@ -443,7 +443,7 @@ const CaseStudiesPage = () => {
 
               <div className="brand-card p-6 rounded-lg">
                 <h3 className="text-xl font-bold text-white mb-3 flex items-center">
-                  <span className="bg-brand-teal text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
+                  <span className="bg-brand-teal text-brand-darknavy w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">
                     R
                   </span>
                   Result
@@ -512,7 +512,7 @@ const CaseStudiesPage = () => {
                 </Button>
               </Link>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-200">
               Average turnaround: 2-3 weeks for full case studies
             </p>
           </div>

@@ -68,7 +68,7 @@ export default function UserMenu() {
           <div className="absolute right-0 mt-2 w-48 bg-brand-darknavy border border-white/10 rounded-lg shadow-lg z-50">
             <div className="p-3 border-b border-white/10">
               <p className="text-sm font-semibold text-white">{displayName}</p>
-              <p className="text-xs text-gray-400 truncate">Wallet Connected</p>
+              <p className="text-xs text-gray-200 truncate">Wallet Connected</p>
             </div>
 
             <div className="p-2">

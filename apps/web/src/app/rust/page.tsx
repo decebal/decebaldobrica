@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     'SQLx',
     'PostgreSQL',
   ],
+  alternates: { canonical: '/rust' },
   openGraph: {
     title: `Rust Developer & Contractor | ${config.name}`,
     description:

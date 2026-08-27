@@ -46,11 +46,11 @@ export default function ServicesNavigation({ currentPath }: ServicesNavigationPr
                 href={link.href}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
                   isActive
-                    ? 'bg-brand-teal text-white'
+                    ? 'bg-brand-teal text-brand-darknavy'
                     : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white'
                 }`}
               >
-                <span className={isActive ? 'text-white' : 'text-gray-400'}>{link.icon}</span>
+                <span className={isActive ? 'text-white' : 'text-gray-200'}>{link.icon}</span>
                 <div className="hidden md:block">
                   <div className="text-sm font-semibold">{link.label}</div>
                   <div className="text-xs opacity-75">{link.description}</div>

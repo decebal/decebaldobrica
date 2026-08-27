@@ -3,28 +3,13 @@
 
 'use client'
 
-import { SolanaWalletProvider } from '@/components/wallet/WalletProvider'
 import { createExceptionBeforeSend, getSuppressionCounts } from '@decebal/analytics/exceptions'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
-import { useState } from 'react'
 import { useEffect } from 'react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000, // 1 minute
-            refetchOnWindowFocus: false,
-          },
-        },
-      })
-  )
-
   // Initialize PostHog with cookieless tracking for privacy
   // Note: Ensure "Cookieless server hash mode" is enabled in PostHog Project Settings > Web analytics
   useEffect(() => {
@@ -109,9 +94,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <PostHogProvider client={posthog}>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-        <QueryClientProvider client={queryClient}>
-          <SolanaWalletProvider>{children}</SolanaWalletProvider>
-        </QueryClientProvider>
+        {children}
       </ThemeProvider>
     </PostHogProvider>
   )

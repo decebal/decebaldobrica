@@ -273,7 +273,7 @@ export function CryptoPaymentSelector({ amount, onSuccess, metadata }: CryptoPay
           <Button
             onClick={handleProceed}
             size="lg"
-            className="bg-brand-teal hover:bg-brand-teal/80 text-white"
+            className="bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy"
           >
             <Shield className="mr-2 h-5 w-5" />
             Proceed with {CRYPTO_PAYMENT_METHODS[selectedMethod].name}

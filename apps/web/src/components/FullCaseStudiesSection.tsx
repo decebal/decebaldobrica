@@ -1,5 +1,3 @@
-'use client'
-
 import { getAllCaseStudies } from '@/data/caseStudies'
 import { AlertCircle, ArrowRight, CheckCircle2, Lightbulb, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
@@ -11,9 +9,9 @@ const FullCaseStudiesSection = () => {
   return (
     <section id="work" className="py-20">
       <div className="section-container">
-        <h2 className="section-title">Case Studies</h2>
+        <h2 className="section-title">Production case studies</h2>
         <p className="section-subtitle">
-          Real transformations. Real results. See how I help teams move from chaos to clarity.
+          Constraints, architecture decisions, implementation work, and measured outcomes.
         </p>
 
         <div className="mt-16 space-y-16">
@@ -149,7 +147,7 @@ const FullCaseStudiesSection = () => {
             </p>
             <Link
               href="/contact?category=Case+Study+Interest"
-              className="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Schedule a Tactical Briefing
               <ArrowRight className="h-5 w-5" />

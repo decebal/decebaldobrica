@@ -40,7 +40,7 @@ export default function GlobalError({
           <button
             type="button"
             onClick={reset}
-            className="bg-brand-teal hover:bg-brand-teal/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+            className="bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy px-6 py-3 rounded-lg font-semibold transition-colors"
           >
             Try again
           </button>

@@ -118,7 +118,7 @@ const ArchitectureDocsPage = () => {
                   >
                     {pkg.popular && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-brand-teal text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        <span className="bg-brand-teal text-brand-darknavy px-4 py-1 rounded-full text-sm font-semibold">
                           Most Popular
                         </span>
                       </div>
@@ -138,7 +138,7 @@ const ArchitectureDocsPage = () => {
                       <Button
                         className={`w-full ${
                           pkg.popular
-                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-white'
+                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy'
                             : 'bg-white/10 hover:bg-white/20 text-white'
                         }`}
                       >

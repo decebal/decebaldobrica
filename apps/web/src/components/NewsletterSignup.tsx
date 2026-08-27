@@ -109,7 +109,7 @@ export function NewsletterSignup({
             <Button
               type="submit"
               disabled={status === 'loading'}
-              className="bg-brand-teal hover:bg-brand-teal/80 text-white font-semibold px-8"
+              className="bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy font-semibold px-8"
             >
               {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
             </Button>
@@ -212,7 +212,7 @@ export function NewsletterSignup({
           <Button
             type="submit"
             disabled={status === 'loading'}
-            className="w-full bg-brand-teal hover:bg-brand-teal/80 text-white font-semibold h-12 text-lg"
+            className="w-full bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy font-semibold h-12 text-lg"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe for Free'}
           </Button>

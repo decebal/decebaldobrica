@@ -1,6 +1,7 @@
 'use client'
 
 import { checkWalletAccess } from '@/actions/wallet-action'
+import { SolanaWalletProvider } from '@/components/wallet/WalletProvider'
 import { getPaymentConfig } from '@/lib/payments/config'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -14,7 +15,7 @@ interface ServicePaymentGateProps {
   children: React.ReactNode
 }
 
-export default function ServicePaymentGate({ serviceSlug, children }: ServicePaymentGateProps) {
+function ServicePaymentGateContent({ serviceSlug, children }: ServicePaymentGateProps) {
   const { publicKey, connected } = useWallet()
   const [hasAccess, setHasAccess] = useState(false)
   const [isChecking, setIsChecking] = useState(true)
@@ -137,7 +138,7 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
                 <button
                   type="button"
                   onClick={() => setShowPaymentModal(true)}
-                  className="bg-brand-teal hover:bg-brand-teal/90 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-all inline-flex items-center"
+                  className="bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy font-semibold px-8 py-4 rounded-lg text-lg transition-all inline-flex items-center"
                 >
                   <Unlock className="mr-2 h-5 w-5" />
                   Unlock Now
@@ -193,5 +194,13 @@ export default function ServicePaymentGate({ serviceSlug, children }: ServicePay
         />
       )}
     </>
+  )
+}
+
+export default function ServicePaymentGate(props: ServicePaymentGateProps) {
+  return (
+    <SolanaWalletProvider>
+      <ServicePaymentGateContent {...props} />
+    </SolanaWalletProvider>
   )
 }

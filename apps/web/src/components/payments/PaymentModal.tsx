@@ -165,7 +165,7 @@ export default function PaymentModal({
                 href={paymentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full bg-brand-teal hover:bg-brand-teal/90 text-white font-semibold px-6 py-3 rounded-lg mb-4 transition-all"
+                className="block w-full bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy font-semibold px-6 py-3 rounded-lg mb-4 transition-all"
               >
                 Open in Wallet App
               </a>

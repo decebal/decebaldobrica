@@ -3,6 +3,7 @@
 import { config } from '@/lib/personalConfig'
 import { Highlighter } from '@decebal/ui/highlighter'
 import { Coffee, Copy, Github, Linkedin, Mail, MapPin, Twitter } from 'lucide-react'
+import Link from 'next/link'
 import React, { useState } from 'react'
 
 const Footer = () => {
@@ -28,7 +29,8 @@ const Footer = () => {
                 href={config.socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-brand-teal transition-colors"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-gray-200 transition-colors hover:bg-white/5 hover:text-brand-teal"
+                aria-label="Decebal Dobrica on LinkedIn"
               >
                 <Linkedin size={20} />
               </a>
@@ -36,7 +38,8 @@ const Footer = () => {
                 href={config.socialLinks.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-brand-teal transition-colors"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-gray-200 transition-colors hover:bg-white/5 hover:text-brand-teal"
+                aria-label="Decebal Dobrica on X"
               >
                 <Twitter size={20} />
               </a>
@@ -44,7 +47,7 @@ const Footer = () => {
                 href={config.socialLinks.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-brand-teal transition-colors"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-lg text-gray-200 transition-colors hover:bg-white/5 hover:text-brand-teal"
                 aria-label="GitHub (personal)"
               >
                 <Github size={20} />
@@ -53,7 +56,7 @@ const Footer = () => {
                 href="https://github.com/wolven-tech"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-brand-teal transition-colors flex items-center gap-1 text-xs font-medium"
+                className="inline-flex min-h-12 items-center gap-1 rounded-lg px-3 text-xs font-medium text-gray-200 transition-colors hover:bg-white/5 hover:text-brand-teal"
                 aria-label="GitHub: Wolven Tech"
               >
                 <Github size={20} />
@@ -66,35 +69,78 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4 text-white">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/about" className="text-gray-400 hover:text-brand-teal transition-colors">
+                <Link
+                  href="/about"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
+                >
                   About Me
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/work" className="text-gray-400 hover:text-brand-teal transition-colors">
+                <Link
+                  href="/work"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
+                >
                   Case Studies
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   href="/services"
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
                 >
                   Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="text-gray-400 hover:text-brand-teal transition-colors">
+                <Link
+                  href="/blog"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
+                >
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
+                  href="/open-source"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
+                >
+                  Open Source
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/contact"
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
                 >
                   Contact
-                </a>
+                </Link>
+              </li>
+              <li className="flex flex-wrap gap-x-4 border-t border-white/10 pt-2">
+                <Link
+                  href="/privacy"
+                  className="inline-flex min-h-12 items-center text-sm text-gray-200 hover:text-brand-teal"
+                >
+                  Privacy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="inline-flex min-h-12 items-center text-sm text-gray-200 hover:text-brand-teal"
+                >
+                  Terms
+                </Link>
+                <Link
+                  href="/cookies"
+                  className="inline-flex min-h-12 items-center text-sm text-gray-200 hover:text-brand-teal"
+                >
+                  Cookies
+                </Link>
+                <Link
+                  href="/refunds"
+                  className="inline-flex min-h-12 items-center text-sm text-gray-200 hover:text-brand-teal"
+                >
+                  Refunds
+                </Link>
               </li>
             </ul>
           </div>
@@ -104,13 +150,13 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin className="mr-2 h-5 w-5 text-brand-teal shrink-0" />
-                <span className="text-gray-400">{config.contact.location}</span>
+                <span className="text-gray-200">{config.contact.location}</span>
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-5 w-5 text-brand-teal" />
                 <a
                   href={`mailto:${config.contact.email}`}
-                  className="text-gray-400 hover:text-brand-teal transition-colors"
+                  className="text-gray-200 hover:text-brand-teal transition-colors"
                 >
                   {config.contact.email}
                 </a>
@@ -130,7 +176,7 @@ const Footer = () => {
                     <button
                       type="button"
                       onClick={copyToClipboard}
-                      className="text-gray-400 hover:text-brand-teal transition-colors shrink-0"
+                      className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-gray-200 transition-colors hover:text-brand-teal"
                       title="Copy address"
                     >
                       <Copy className="h-4 w-4" />
@@ -147,7 +193,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-500">
+        <div className="border-t border-gray-800 pt-8 text-center text-gray-300">
           <p>
             &copy; {new Date().getFullYear()} {config.name}. All rights reserved.
           </p>

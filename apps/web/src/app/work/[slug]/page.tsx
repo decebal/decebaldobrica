@@ -6,6 +6,7 @@ import {
 } from '@/components/CaseStudyCharts'
 import Footer from '@/components/Footer'
 import { getAllCaseStudies, getCaseStudy } from '@/data/caseStudies'
+import { articleSchema, breadcrumbSchema, jsonLd } from '@/lib/structuredData'
 import {
   AlertCircle,
   ArrowLeft,
@@ -47,6 +48,14 @@ export async function generateMetadata({ params }: CaseStudyPageProps): Promise<
   return {
     title: study.title,
     description: study.tagline,
+    alternates: { canonical: `/work/${slug}` },
+    openGraph: {
+      type: 'article',
+      url: `/work/${slug}`,
+      title: study.title,
+      description: study.tagline,
+      images: ['/opengraph-image.png'],
+    },
   }
 }
 
@@ -58,8 +67,24 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     notFound()
   }
 
+  const article = articleSchema({
+    title: study.title,
+    description: study.tagline,
+    path: `/work/${slug}`,
+  })
+  const breadcrumbs = breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Case studies', path: '/work' },
+    { name: study.title, path: `/work/${slug}` },
+  ])
+
   return (
     <div className="min-h-screen relative">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(article) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }}
+      />
       <main className="pt-24 pb-16">
         <div className="section-container max-w-6xl">
           {/* Back Button */}
@@ -403,7 +428,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
                           <div className="space-y-2 mb-3">
                             <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-400">Before:</span>
+                              <span className="text-gray-200">Before:</span>
                               <span className="text-red-400 font-mono">
                                 {typeof metric.before === 'number'
                                   ? metric.before.toLocaleString()
@@ -412,7 +437,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
                               </span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-400">After:</span>
+                              <span className="text-gray-200">After:</span>
                               <span className="text-green-400 font-mono font-bold">
                                 {typeof metric.after === 'number'
                                   ? metric.after.toLocaleString()
@@ -844,7 +869,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
             </p>
             <Link
               href={`/contact?category=${encodeURIComponent(`Case Study: ${study.title}`)}`}
-              className="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/80 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/80 text-brand-darknavy px-6 py-3 rounded-lg font-semibold transition-colors"
             >
               Schedule a Tactical Briefing
               <svg

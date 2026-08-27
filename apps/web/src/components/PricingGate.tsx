@@ -136,7 +136,7 @@ const PricingGate: React.FC<PricingGateProps> = ({ serviceName, children }) => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-brand-teal hover:bg-brand-teal/90 text-white py-3"
+                  className="w-full bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy py-3"
                 >
                   <Unlock className="mr-2 h-5 w-5" />
                   Unlock Pricing

@@ -1,180 +1,82 @@
-'use client'
-
 import { config } from '@/lib/personalConfig'
-import { Highlighter } from '@decebal/ui/highlighter'
-import NumberTicker from '@decebal/ui/number-ticker'
-import { Award, Briefcase, Code2, GraduationCap, Heart, TrendingUp, Zap } from 'lucide-react'
-import { motion } from 'motion/react'
-import React, { useEffect, useRef } from 'react'
+import { Briefcase, Code2, ExternalLink, Gauge, Network } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-const AboutSection = () => {
-  const sectionRef = useRef<HTMLElement>(null)
+const stats = [
+  { value: '15+', label: 'years shipping production software', icon: Briefcase },
+  { value: '1M+', label: 'lines of production Rust shipped', icon: Code2 },
+  { value: '75%', label: 'infrastructure cost reduction in a named case study', icon: Gauge },
+  { value: '25+', label: 'engineers led across delivery teams', icon: Network },
+]
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const elements = entry.target.querySelectorAll('.animate-on-scroll')
-            let i = 0
-            for (const el of elements) {
-              setTimeout(() => {
-                el.classList.add('animate-slide-up', 'opacity-100')
-              }, 150 * i)
-              i++
-            }
-          }
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current)
-      }
-    }
-  }, [])
-
-  const stats = [
-    { value: 15, label: 'Years shipping production code', icon: Briefcase, suffix: '+' },
-    { value: 1, label: 'Lines of production Rust', icon: Code2, suffix: 'M+' },
-    { value: 75, label: 'Infrastructure cost cut', icon: Zap, suffix: '%' },
-    { value: 3, label: 'Team velocity lift', icon: TrendingUp, suffix: '×' },
-  ]
-
-  return (
-    <section id="about" className="py-20" ref={sectionRef}>
-      <div className="section-container">
-        <h2 className="section-title">About Me</h2>
-        <p className="section-subtitle">{config.tagline}</p>
-
-        {/* Animated Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 mb-16">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              viewport={{ once: true }}
-              className="relative group"
-            >
-              <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-brand-teal/50 transition-all duration-300 hover:shadow-lg hover:shadow-brand-teal/20">
-                <stat.icon className="h-6 w-6 text-brand-teal mb-3" />
-                <div className="text-3xl font-bold text-white mb-1">
-                  <NumberTicker value={stat.value} />
-                  <span className="text-brand-teal">{stat.suffix}</span>
-                </div>
-                <div className="text-sm text-gray-300">{stat.label}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
-          <div className="order-2 md:order-1">
-            <div className="space-y-6">
-              <div className="flex gap-4 items-start animate-on-scroll opacity-0 transition-all duration-500">
-                <div className="bg-brand-teal text-white p-3 rounded-lg shadow-md shadow-brand-teal/20">
-                  <Briefcase size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    <Highlighter color="#03c9a9" action="underline" isView>
-                      Professional Experience
-                    </Highlighter>
-                  </h3>
-                  <p className="text-white">
-                    {config.professional.yearsExperience} years building fintech, SaaS, and Web3
-                    platforms — now concentrated on Rust systems engineering as founder of Wolven
-                    Tech. I've architected event-sourced platforms spanning native desktop (Tauri),
-                    gRPC microservices (Tonic + Axum), embedded analytics (Arrow + DataFusion), and
-                    WASM frontends (Leptos). Previously Technical Lead at Ebury and Software
-                    Architect at Tellimer.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start animate-on-scroll opacity-0 transition-all duration-500">
-                <div className="bg-brand-teal text-white p-3 rounded-lg shadow-md shadow-brand-teal/20">
-                  <GraduationCap size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    <Highlighter color="#03c9a9" action="underline" isView>
-                      Education & Certifications
-                    </Highlighter>
-                  </h3>
-                  <p className="text-white">
-                    B.Sc. in IT & Mathematics from {config.education.institution}. Linux/Unix system
-                    administration, Zend Certified PHP Engineer, Tech Leaders Fractional CTO
-                    certification. Continuous Rust practice: workspace-lint discipline, Criterion
-                    benchmarking, Edition 2024.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start animate-on-scroll opacity-0 transition-all duration-500">
-                <div className="bg-brand-teal text-white p-3 rounded-lg shadow-md shadow-brand-teal/20">
-                  <Award size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    <Highlighter color="#03c9a9" action="underline" isView>
-                      Technical Leadership
-                    </Highlighter>
-                  </h3>
-                  <p className="text-white">
-                    Led engineering teams of up to {config.achievements.teamSize} across Tellimer,
-                    Breakout Clips, Ebury, and multiple founder-mode startups. Expert in trunk-based
-                    delivery, monorepo strategy (Turborepo, Cargo workspaces, Meta orchestrator),
-                    and clean-architecture enforcement through CI. I help leaders see the
-                    architecture, then help teams earn it.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 items-start animate-on-scroll opacity-0 transition-all duration-500">
-                <div className="bg-brand-teal text-white p-3 rounded-lg shadow-md shadow-brand-teal/20">
-                  <Heart size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">
-                    <Highlighter color="#03c9a9" action="underline" isView>
-                      Technical Writing & Innovation
-                    </Highlighter>
-                  </h3>
-                  <p className="text-white">
-                    I write about Rust systems design, event sourcing, agentic AI workflows, and how
-                    small teams outbuild big ones. Public artifacts: monorepo-meta on crates.io, the
-                    wolven-tech/rust-v1 template, and the mcp-log-server. Wolven Tech is my current
-                    operating vehicle — a Rust-only advisory practice.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="order-1 md:order-2">
-            <div className="relative animate-on-scroll opacity-0 transition-all duration-500">
-              <div className="absolute -top-5 -left-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse" />
-              <div className="absolute -bottom-5 -right-5 w-24 h-24 bg-brand-teal/20 rounded-lg -z-10 animate-pulse" />
-              <img
-                src="/images/gallery/img-07.jpg"
-                alt="Professional portrait"
-                className="w-full h-auto rounded-lg shadow-lg object-cover border border-brand-teal/20 transition-transform duration-500 hover:scale-[1.02] hover:shadow-xl hover:shadow-brand-teal/30"
-              />
-            </div>
-          </div>
-        </div>
+const AboutSection = () => (
+  <section id="about" className="py-20">
+    <div className="section-container">
+      <div className="max-w-3xl">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+          Operating context
+        </p>
+        <h2 className="section-title text-left">Engineer, founder, and maintainer</h2>
+        <p className="text-lg leading-8 text-gray-200">
+          I lead Wolven Tech and build Rust systems, event-sourced products, and agentic AI
+          workflows. Claims below are scoped to the work described in linked case studies; they are
+          not generic promises for every project.
+        </p>
       </div>
-    </section>
-  )
-}
+
+      <dl className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-xl border border-white/15 bg-white/5 p-6">
+            <stat.icon className="mb-4 h-6 w-6 text-brand-teal" aria-hidden="true" />
+            <dd className="text-3xl font-bold text-white">{stat.value}</dd>
+            <dt className="mt-2 text-sm leading-6 text-gray-200">{stat.label}</dt>
+          </div>
+        ))}
+      </dl>
+
+      <div className="mt-14 grid items-center gap-12 lg:grid-cols-2">
+        <div className="space-y-6 text-base leading-8 text-gray-200">
+          <p>
+            Current work spans AllSource, an AI-native Rust event store; AllFrame, a Rust
+            application framework; and product engineering across the Wolven Tech portfolio. I work
+            directly in code, architecture, delivery systems, and product evidence.
+          </p>
+          <p>
+            Earlier roles covered fintech, identity, SaaS, and Web3 systems. That range is useful
+            when a team must connect low-level performance or reliability decisions to product and
+            operating constraints.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/about"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-white/25 px-5 py-3 font-semibold text-white hover:border-brand-teal hover:text-brand-teal"
+            >
+              Full background
+            </Link>
+            <a
+              href={config.wolvenTechUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-brand-teal/60 px-5 py-3 font-semibold text-brand-teal hover:bg-brand-teal/10"
+            >
+              Wolven Tech
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+
+        <Image
+          src="/images/gallery/img-07.jpg"
+          alt="Decebal Dobrica speaking at a technology event"
+          width={960}
+          height={720}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="w-full rounded-xl border border-white/15 object-cover shadow-xl"
+        />
+      </div>
+    </div>
+  </section>
+)
 
 export default AboutSection

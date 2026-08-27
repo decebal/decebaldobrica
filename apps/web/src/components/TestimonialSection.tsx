@@ -318,17 +318,22 @@ const TestimonialSection = () => {
           </button>
 
           {/* Pagination Dots */}
-          <div className="flex justify-center mt-8 space-x-2">
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
             {testimonials.map((testimonial, index) => (
               <button
                 type="button"
                 key={testimonial.id}
                 onClick={() => setActiveIndex(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === activeIndex ? 'bg-brand-teal' : 'bg-white/20'
-                }`}
+                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
                 aria-label={`Go to testimonial ${index + 1}`}
-              />
+              >
+                <span
+                  aria-hidden="true"
+                  className={`h-3 w-3 rounded-full ${
+                    index === activeIndex ? 'bg-brand-teal' : 'bg-white/40'
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </div>

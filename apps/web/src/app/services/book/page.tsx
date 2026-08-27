@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import BookServiceRedirect from './BookServiceRedirect'
+
+export const metadata: Metadata = {
+  title: 'Continue to booking',
+  robots: { index: false, follow: true },
+}
 
 export default function BookServicePage() {
   return (
@@ -7,8 +13,7 @@ export default function BookServicePage() {
       fallback={
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Loading...</h1>
-            <p className="text-gray-300">Preparing your booking...</p>
+            <p className="text-xl font-semibold text-white">Preparing secure booking…</p>
           </div>
         </div>
       }

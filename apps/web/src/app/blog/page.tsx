@@ -5,8 +5,16 @@ import { config } from '@/lib/personalConfig'
 import { Badge } from '@decebal/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
 import { Calendar, ChevronLeft, ChevronRight, Clock, ExternalLink, Tag } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
+
+export const metadata: Metadata = {
+  title: 'Rust Systems & Agentic AI Articles',
+  description:
+    'Field notes on Rust systems, event sourcing, durable agent memory, agentic AI, and technical leadership.',
+  alternates: { canonical: '/blog' },
+}
 
 const POSTS_PER_PAGE = 10
 
@@ -44,7 +52,9 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
         <div className="section-container">
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-4xl font-bold text-brand-heading">Blog</h1>
+              <h1 className="text-4xl font-bold text-brand-heading">
+                Rust systems and agentic AI articles
+              </h1>
               <Link
                 href="/rss.xml"
                 className="text-brand-teal hover:underline flex items-center gap-1"
@@ -71,7 +81,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
             </div>
 
             <p className="text-xl text-gray-300 mb-4">
-              Thoughts, stories and ideas about technology, development and more.
+              Code, architecture decisions, and field notes from production engineering work.
             </p>
 
             {/* Tag Filter - Horizontal Scroll */}
@@ -79,7 +89,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
               <div className="mb-8 relative">
                 <div className="flex items-center gap-2 mb-2">
                   <Tag className="h-4 w-4 text-brand-teal/60" />
-                  <span className="text-sm text-gray-400">Filter by topic:</span>
+                  <span className="text-sm text-gray-200">Filter by topic:</span>
                 </div>
                 <div className="overflow-x-auto scrollbar-hide">
                   <div className="flex gap-2 pb-2">
@@ -109,7 +119,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
             {posts.length === 0 ? (
               <div className="text-center p-10 brand-card">
                 <p className="text-xl text-gray-300">No blog posts found.</p>
-                <p className="text-gray-400 mt-2">Check back soon for new content!</p>
+                <p className="text-gray-200 mt-2">Check back soon for new content!</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -128,7 +138,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                               </CardDescription>
                             </div>
                           </div>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mt-4">
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-200 mt-4">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
                               <span>{formatDate(post.date)}</span>
@@ -190,7 +200,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                       // Show ellipsis
                       if (page === currentPage - 2 || page === currentPage + 2) {
                         return (
-                          <span key={page} className="text-gray-400 px-2">
+                          <span key={page} className="text-gray-200 px-2">
                             ...
                           </span>
                         )
@@ -204,7 +214,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
                         href={page === 1 ? '/blog' : `/blog?page=${page}`}
                         className={`px-4 py-2 rounded-lg transition-colors ${
                           page === currentPage
-                            ? 'bg-brand-teal text-white'
+                            ? 'bg-brand-teal text-brand-darknavy'
                             : 'bg-white/5 text-gray-300 hover:bg-white/10'
                         }`}
                       >
@@ -228,7 +238,7 @@ const BlogPage = async ({ searchParams }: BlogPageProps) => {
 
             {/* Page Info */}
             {totalPages > 1 && (
-              <div className="mt-4 text-center text-gray-400 text-sm">
+              <div className="mt-4 text-center text-gray-200 text-sm">
                 Showing {startIndex + 1}-{Math.min(endIndex, allPosts.length)} of {allPosts.length}{' '}
                 posts
               </div>

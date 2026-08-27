@@ -1,19 +1,15 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { BlogCTA } from '@/components/BlogCTA'
 import { BlogTOC } from '@/components/BlogTOC'
 import Footer from '@/components/Footer'
 import { RadarBanner, shouldShowRadarBanner } from '@/components/RadarBanner'
-import {
-  Terminal,
-  TerminalCommand,
-  TerminalLine,
-  TerminalOutput,
-} from '@/components/blog/Terminal'
+import { Terminal, TerminalCommand, TerminalLine, TerminalOutput } from '@/components/blog/Terminal'
 import { extractText } from '@/components/blog/extractText'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
+import { articleSchema, breadcrumbSchema, jsonLd } from '@/lib/structuredData'
 import { Badge } from '@decebal/ui/badge'
-import fs from 'node:fs'
-import path from 'node:path'
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -81,11 +77,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.description,
       images: [socialImage],
     },
-    ...(post.canonicalUrl && {
-      alternates: {
-        canonical: post.canonicalUrl,
-      },
-    }),
+    alternates: {
+      canonical: post.canonicalUrl || `/blog/${slug}`,
+    },
   }
 }
 
@@ -98,9 +92,27 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const showRadar = shouldShowRadarBanner(post.tags)
+  const socialImage = getSocialImage(slug)
+  const article = articleSchema({
+    title: post.title,
+    description: post.description,
+    path: `/blog/${slug}`,
+    datePublished: post.date,
+    image: socialImage,
+  })
+  const breadcrumbs = breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    { name: post.title, path: `/blog/${slug}` },
+  ])
 
   return (
     <div className="min-h-screen relative">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(article) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }}
+      />
       <main className="pt-24 pb-16">
         <div className="section-container">
           <div className="max-w-4xl mx-auto">
@@ -118,7 +130,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{post.title}</h1>
 
               {/* Meta information */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-6">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-200 mb-6">
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
                   <span>{post.author}</span>
@@ -245,14 +257,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             title = lines[0].replace(/^#\s*/, '')
                             contentLines = lines.slice(1)
                           }
+                          const terminalLines = contentLines.map((line, index) => ({
+                            key: `${index}:${line}`,
+                            line,
+                          }))
 
                           return (
                             <Terminal title={title} user="user" host="localhost" path="~">
-                              {contentLines.map((line, idx) => {
+                              {terminalLines.map(({ key, line }) => {
                                 // Detect command lines (start with $ or >)
                                 if (line.startsWith('$ ') || line.startsWith('> ')) {
                                   return (
-                                    <TerminalCommand key={idx}>
+                                    <TerminalCommand key={key}>
                                       {line.replace(/^[$>]\s*/, '')}
                                     </TerminalCommand>
                                   )
@@ -264,7 +280,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                   line.includes('success')
                                 ) {
                                   return (
-                                    <TerminalOutput key={idx} variant="success">
+                                    <TerminalOutput key={key} variant="success">
                                       {line}
                                     </TerminalOutput>
                                   )
@@ -275,20 +291,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                                   line.includes('error')
                                 ) {
                                   return (
-                                    <TerminalOutput key={idx} variant="error">
+                                    <TerminalOutput key={key} variant="error">
                                       {line}
                                     </TerminalOutput>
                                   )
                                 }
                                 if (line.startsWith('⚠') || line.includes('warning')) {
                                   return (
-                                    <TerminalOutput key={idx} variant="warning">
+                                    <TerminalOutput key={key} variant="warning">
                                       {line}
                                     </TerminalOutput>
                                   )
                                 }
                                 // Default output
-                                return <TerminalLine key={idx}>{line}</TerminalLine>
+                                return <TerminalLine key={key}>{line}</TerminalLine>
                               })}
                             </Terminal>
                           )
@@ -315,7 +331,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         )
                       },
                       blockquote: ({ children }) => (
-                        <blockquote className="border-l-4 border-brand-teal pl-4 italic text-gray-400 my-4">
+                        <blockquote className="border-l-4 border-brand-teal pl-4 italic text-gray-200 my-4">
                           {children}
                         </blockquote>
                       ),

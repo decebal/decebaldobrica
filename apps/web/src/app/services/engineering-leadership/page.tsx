@@ -173,7 +173,7 @@ const EngineeringLeadershipPage = () => {
                 Download Service Guide (PDF)
               </button>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-200">
               Trusted by seed to Series B startups • No long-term contracts • Start in days, not
               weeks
             </p>
@@ -249,7 +249,7 @@ const EngineeringLeadershipPage = () => {
                   >
                     {pkg.popular && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-brand-teal text-white px-4 py-1 rounded-full text-sm font-semibold">
+                        <span className="bg-brand-teal text-brand-darknavy px-4 py-1 rounded-full text-sm font-semibold">
                           Most Popular
                         </span>
                       </div>
@@ -257,7 +257,7 @@ const EngineeringLeadershipPage = () => {
 
                     <h3 className="text-2xl font-bold text-white mb-2">{pkg.name}</h3>
                     <div className="text-3xl font-bold text-brand-teal mb-1">{pkg.price}</div>
-                    <div className="text-sm text-gray-400 mb-2">{pkg.commitment}</div>
+                    <div className="text-sm text-gray-200 mb-2">{pkg.commitment}</div>
                     <div className="text-sm text-brand-teal mb-6">Ideal for: {pkg.ideal}</div>
 
                     <ul className="space-y-3 mb-8">
@@ -273,7 +273,7 @@ const EngineeringLeadershipPage = () => {
                       <Button
                         className={`w-full ${
                           pkg.popular
-                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-white'
+                            ? 'bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy'
                             : 'bg-white/10 hover:bg-white/20 text-white'
                         }`}
                       >
@@ -350,7 +350,7 @@ const EngineeringLeadershipPage = () => {
                   Non-technical founders who need strategic technical guidance to build the right
                   product and hire the right team.
                 </p>
-                <ul className="space-y-2 text-sm text-gray-400">
+                <ul className="space-y-2 text-sm text-gray-200">
                   <li>• Seed to Series A</li>
                   <li>• 0-10 engineers</li>
                   <li>• Building MVP or scaling</li>
@@ -364,7 +364,7 @@ const EngineeringLeadershipPage = () => {
                   Companies scaling fast who need senior technical leadership but aren't ready for a
                   full-time engineering executive.
                 </p>
-                <ul className="space-y-2 text-sm text-gray-400">
+                <ul className="space-y-2 text-sm text-gray-200">
                   <li>• Series A-B</li>
                   <li>• 10-50 engineers</li>
                   <li>• Rapid growth phase</li>
@@ -378,7 +378,7 @@ const EngineeringLeadershipPage = () => {
                   Providing technical leadership across portfolio companies to accelerate velocity
                   and reduce risk.
                 </p>
-                <ul className="space-y-2 text-sm text-gray-400">
+                <ul className="space-y-2 text-sm text-gray-200">
                   <li>• Portfolio support</li>
                   <li>• Technical due diligence</li>
                   <li>• Value creation</li>
@@ -415,7 +415,7 @@ const EngineeringLeadershipPage = () => {
                 </Button>
               </Link>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-200">
               Deposits are fully refundable if we decide not to work together
             </p>
           </div>
