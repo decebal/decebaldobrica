@@ -192,6 +192,42 @@ export const artifacts: Artifact[] = [
     href: 'https://all-source-os.github.io/all-frame',
     linkLabel: 'View on GitHub',
   },
+  {
+    badge: 'Claude Code · Rust · MIT',
+    title: 'claude-healthline',
+    code: 'cargo install claude-healthline',
+    description:
+      'Never-blank Claude Code status line showing context pressure, live spend, agent-health signals, and MCP failures. Dependency-light Rust, built to stay responsive on every session update.',
+    href: 'https://github.com/decebal/claude-healthline',
+    linkLabel: 'View on GitHub',
+  },
+  {
+    badge: 'Claude Code · Reference',
+    title: 'decebal-claude-skills',
+    code: 'skills · hooks · rules · gates',
+    description:
+      'Claude Code skills, hooks, permission rules, MCP guidance, and project templates extracted from daily work across more than 25 Rust, TypeScript, Go, Elixir, Svelte, and Next.js projects.',
+    href: 'https://github.com/decebal/decebal-claude-skills',
+    linkLabel: 'View on GitHub',
+  },
+  {
+    badge: 'Claude Code · Skills',
+    title: 'curated-claude-skills',
+    code: '12 skills · memory · proof · binaries',
+    description:
+      'A deliberately small Claude skill set chosen for capabilities a one-line prompt cannot supply: cross-session memory, proof artifacts, dependency-aware task graphs, and real tooling.',
+    href: 'https://github.com/decebal/curated-claude-skills',
+    linkLabel: 'View on GitHub',
+  },
+  {
+    badge: 'Claude Code · Dev Container',
+    title: 'devcontainers-best-practices',
+    code: 'copy .devcontainer/ + .claude/',
+    description:
+      'Hardened Claude Code development container with non-root execution, read-only agent configuration, managed deny rules, and default-deny network egress.',
+    href: 'https://github.com/decebal/devcontainers-best-practices',
+    linkLabel: 'View on GitHub',
+  },
 ]
 
 export type Step = { num: string; title: string; body: string }
@@ -238,6 +274,7 @@ export const socialLinks: SiteLink[] = [
   { label: 'decebaldobrica.com', href: 'https://decebaldobrica.com' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/decebaldobrica' },
   { label: 'github.com/wolven-tech', href: 'https://github.com/wolven-tech' },
+  { label: 'github.com/decebal', href: 'https://github.com/decebal' },
   { label: '@ddonprogramming', href: 'https://x.com/ddonprogramming' },
 ]
 

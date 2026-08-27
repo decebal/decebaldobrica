@@ -221,6 +221,15 @@ export default function HomePage() {
             </Card>
           ))}
         </div>
+        <a
+          href="https://github.com/decebal"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-rust-primary-2 hover:text-rust-amber"
+        >
+          Browse more open source on github.com/decebal
+          <ArrowUpRight className="h-4 w-4" />
+        </a>
       </section>
 
       {/* ─────────── PROCESS ─────────── */}
