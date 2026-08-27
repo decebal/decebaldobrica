@@ -48,6 +48,9 @@ export const metadata: Metadata = {
   authors: [{ name: config.name }],
   creator: config.name,
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || config.website),
+  verification: {
+    google: 'dQcVJ8_5hQJB50WG52tkVVQZLFT9bGm8q0yHyQRmY2Y',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
