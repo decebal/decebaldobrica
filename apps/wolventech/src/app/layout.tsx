@@ -8,7 +8,7 @@ import { Toaster } from '@decebal/ui/toaster'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' })
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.io'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.com'
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +41,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Decebal Dobrica', url: 'https://decebaldobrica.com' }],
   creator: 'Decebal Dobrica',
+  verification: {
+    google: 'EiVQtWIWBWldG5AX_g2KADcWWJPqYuMGOYlJ1h75USc',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
