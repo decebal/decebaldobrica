@@ -603,9 +603,30 @@
         <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
       </tr>
       <tr>
+        <th>Host a protected, self-defending third-party SDK unmodified</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> conditional</span><span class="note">Only if it stays out of the bundle graph. A re-minify breaks the self-check.</span></td>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>Obfuscate your own UI logic</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span> mature</span><span class="note">Commercial and open tooling, AST transforms, runtime guards.</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span> no tool</span><span class="note">Every obfuscator in this category targets JS/TS. Compilation is obscurity without the runtime half.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> JS half only</span></td>
+        <td class="st m-no"><span class="v"><span class="ic crit">✕</span></span></td>
+      </tr>
+      <tr>
+        <th>Byte-exact integrity (SRI) on what you ship</th>
+        <td class="st m-ok"><span class="v"><span class="ic good">✓</span></span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two artifacts</span><span class="note">Hash the loader and the <code>.wasm</code>, as the last build step.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> local origin</span><span class="note">Custom-protocol assets carry no CDN-published hash.</span></td>
+        <td class="st m-na">n/a</td>
+      </tr>
+      <tr>
         <th>Secret-leak scanning of the shipped bundle</th>
         <td class="st m-ok"><span class="v"><span class="ic good">✓</span> grep dist/</span></td>
-        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two passes</span><span class="note">Grep <code>dist/</code>, then <code>strings</code> the <code>.wasm</code>. <code>wasm-opt</code> shrinks literals without sanitising them.</span></td>
+        <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two passes</span><span class="note">A <code>grep -rI</code> gate skips binaries, so the <code>.wasm</code> goes unscanned. Add <code>strings</code>.</span></td>
         <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> two passes</span></td>
         <td class="st m-warn"><span class="v"><span class="ic warn">▲</span> binary scan</span></td>
       </tr>
@@ -613,6 +634,44 @@
   </table>
   <p class="card-note"><code>RTCRtpScriptTransform</code> is settled: Safari 15.4, Firefox 117, Chrome 141, Baseline since October 2025. Native <code>SFrameTransform</code> is not — Chromium's shipping thread said in August 2025 that no browser had shipped it, and the interface has since left the specification index. So frame encryption is code you write inside a script-transform worker, against RFC 9605. A per-frame crypto hot path is exactly where Rust compiled to wasm beats hand-written JavaScript, whatever renders the buttons. Crate supply is thin: an <code>sframe</code> crate exists with no maintenance signals, and <code>mls-rs</code> claims full RFC 9420 conformance while stating it has had no third-party audit.</p>
   <p class="card-note">One correction against an earlier draft of this report: WKWebView stopped being the <code>getUserMedia</code> blocker in iOS 14.3, when WebKit began exposing it to embedding apps that can natively capture and satisfy Apple's authorisation requirements. The frequently cited wry #85 and WebKit bug 208667 are years stale. Screen capture is the live constraint.</p>
+</div>
+
+<h2>Code protection as a constraint</h2>
+<p class="sub">A product shipping protected client code has a second constraint layer, and it lands on the frontend choice rather than on the security team.</p>
+
+<div class="card">
+  <table class="matrix">
+    <caption>Six constraints that a browser-API comparison doesn't surface.</caption>
+    <colgroup><col class="ctrl"><col></colgroup>
+    <thead><tr><th>Constraint</th><th>What it does to the decision</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>Obfuscators cover JS and TS, never your wasm</th>
+        <td>Commercial and open tooling alike operate on JS language constructs. Moving UI logic into Rust removes it from the category: you keep compilation as obscurity, and you lose self-defending checksums, anti-monkey-patch detection, domain locks and tamper telemetry.</td>
+      </tr>
+      <tr>
+        <th>One eval-based transform deletes the wasm CSP argument</th>
+        <td><code>'unsafe-eval'</code> overrides <code>'wasm-unsafe-eval'</code>, so an eval-string transform anywhere on the page re-opens the hole. Avoidable by configuration: pick a no-eval target and AST transforms, then prove it with a report-only header.</td>
+      </tr>
+      <tr>
+        <th>Anti-tampering makes the bundler a hazard</th>
+        <td>Self-defence checksums and SRI are both byte-exact. Re-minifying, transpiling or re-bundling a protected SDK fails at runtime in production rather than in the build. Load it from its own immutable URL with <code>crossorigin</code>, outside the bundle graph.</td>
+      </tr>
+      <tr>
+        <th>Anything appended after protection breaks both checks</th>
+        <td>Obfuscate, then append an integrity payload, and the self-check no longer matches its own release while any pre-append hash is wrong by construction. Hash the final served bytes last, and document the ordering.</td>
+      </tr>
+      <tr>
+        <th>Protection runs in CI, so the unprotected path is the tested one</th>
+        <td>Credentials live in CI, so local development exercises an unprotected bundle. One integration run against the protected artifact, or the anti-tamper misconfiguration ships.</td>
+      </tr>
+      <tr>
+        <th>Compliance counts scripts, not modules</th>
+        <td>PCI DSS 6.4.3, mandatory since 31 March 2025, wants script authorisation, script integrity and an inventory with written justification. A wasm module is inventoried through its JS loader, which makes that loader the compliance artifact. Obfuscating your own code satisfies none of it.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="card-note">Two checks from the codebase behind this report, for calibration. <code>cargo audit</code> is clean at 371 crates and zero vulnerabilities. The secret-scan gate greps the built bundle for backend key material, has already been hardened once against an exit code that made it report clean while real secrets sat in the bundle, and still runs with <code>-I</code> — which skips binaries, so the <code>.wasm</code> was never in scope. A JavaScript-era gate does not survive the move to a compiled frontend on its own, and nothing announces when it stops covering the thing it was written for.</p>
 </div>
 
 <h2>The recommendation</h2>
