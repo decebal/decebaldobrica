@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Book discovery',
   description:
     'Book a 30-minute discovery call with Wolven Tech to discuss Rust advisory, architecture review, or platform work.',
+  alternates: { canonical: '/contact' },
 }
 
 export default function ContactPage() {

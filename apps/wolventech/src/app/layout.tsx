@@ -61,6 +61,23 @@ export const metadata: Metadata = {
   },
 }
 
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${siteUrl}/#organization`,
+  name: 'Wolven Tech Advisory Ltd',
+  url: siteUrl,
+  founder: {
+    '@type': 'Person',
+    name: 'Decebal Dobrica',
+    url: 'https://decebaldobrica.com',
+  },
+  sameAs: [
+    'https://github.com/wolven-tech',
+    'https://find-and-update.company-information.service.gov.uk/company/16811183',
+  ],
+}
+
 export const viewport: Viewport = {
   themeColor: '#0b0d10',
 }
@@ -73,6 +90,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrains.variable} ${inter.className}`}>
+        <script
+          type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static JSON-LD from local organization data
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
         <Navbar />
         {children}
         <Footer />

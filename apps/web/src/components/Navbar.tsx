@@ -17,7 +17,7 @@ import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 import UserMenu from './UserMenu'
 
-const WOLVEN_TECH_URL = 'https://wolventech.io'
+const WOLVEN_TECH_URL = 'https://wolventech.com'
 
 const expertiseLinks = [
   {

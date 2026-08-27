@@ -13,6 +13,11 @@ import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
 import { ArrowUpRight, Check } from 'lucide-react'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 export default function HomePage() {
   return (

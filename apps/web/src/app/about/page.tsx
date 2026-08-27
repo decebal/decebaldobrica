@@ -101,7 +101,7 @@ const AboutPage = () => {
                   <p>
                     I'm a Rust engineering leader and the founder of{' '}
                     <a
-                      href="https://wolventech.io"
+                      href="https://wolventech.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-brand-teal hover:underline"

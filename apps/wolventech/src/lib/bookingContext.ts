@@ -45,7 +45,7 @@ export function buildBookingContextFromEnv(): BookingContext {
       fromAddress: process.env.EMAIL_FROM || 'discovery@wolventech.io',
       replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
       timeZone: 'Europe/London',
-      appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.io',
+      appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.com',
     },
   }
 

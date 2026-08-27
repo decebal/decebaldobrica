@@ -13,6 +13,10 @@ export default function Footer() {
       </div>
       <div>
         © {new Date().getFullYear()} Wolven Tech &nbsp;·&nbsp;{' '}
+        <a href="/products" className="text-rust-ink-soft underline-offset-4 hover:underline">
+          products
+        </a>
+        &nbsp;·&nbsp;{' '}
         <a
           href="https://github.com/wolven-tech"
           className="text-rust-ink-soft underline-offset-4 hover:underline"
