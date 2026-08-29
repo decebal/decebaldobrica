@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink } from 'lucide-react'
+import { ArrowRight, Download } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -7,34 +7,56 @@ const HeroSection = () => (
     <div className="section-container grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
       <div>
         <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
-          Decebal Dobrica · Founder, Wolven Tech
+          Principal Rust &amp; AI engineer · London / remote UK
         </p>
         <h1 className="max-w-4xl text-4xl font-bold leading-[1.05] text-white md:text-6xl">
-          Rust systems and agentic AI, built for production.
+          Rust and AI engineering for ambitious London teams.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-gray-200 md:text-xl">
-          I design event-sourced backends, durable agent memory, and AI-assisted engineering
-          systems. Published work includes AllSource and 1M+ lines of production Rust across
-          fintech, identity, SaaS, and Web3.
+          15+ years shipping production software and 1M+ lines of Rust across fintech, identity,
+          SaaS, and Web3. I join hard delivery problems as a hands-on principal engineer, technical
+          lead, or founding engineer.
         </p>
+
+        <ul className="mt-7 flex max-w-2xl flex-wrap gap-x-6 gap-y-2 border-y border-white/15 py-4 text-sm text-gray-100">
+          <li className="before:mr-2 before:text-brand-teal before:content-['/']">
+            London + remote UK
+          </li>
+          <li className="before:mr-2 before:text-brand-teal before:content-['/']">
+            Outside-IR35 contracts via Wolven Tech
+          </li>
+          <li className="before:mr-2 before:text-brand-teal before:content-['/']">
+            Select founding engineer roles
+          </li>
+        </ul>
+
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/work"
+            href="/contact?category=General+Consultation"
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-teal px-6 py-3 font-semibold text-brand-darknavy transition-colors hover:bg-brand-teal/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
           >
-            View current work
+            Discuss an engagement
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
           </Link>
-          <a
-            href="https://wolventech.com"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/work"
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/30 px-6 py-3 font-semibold text-white transition-colors hover:border-brand-teal hover:text-brand-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
           >
-            Hire through Wolven Tech
-            <ExternalLink className="h-4 w-4" aria-hidden="true" />
-          </a>
+            Review case studies
+          </Link>
         </div>
+        <a
+          href="/resume/decebal-dobrica-resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex min-h-12 items-center gap-2 text-sm font-semibold text-gray-100 hover:text-brand-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+        >
+          <Download className="h-4 w-4" aria-hidden="true" />
+          Download CV
+        </a>
+        <p className="max-w-2xl text-xs leading-5 text-gray-300">
+          Outside-IR35 status remains subject to client determination and actual working practices.
+        </p>
       </div>
 
       <figure className="mx-auto w-full max-w-md">
@@ -50,7 +72,7 @@ const HeroSection = () => (
           />
         </div>
         <figcaption className="mt-4 text-center text-sm text-gray-200">
-          Principal engineer, product builder, and open-source maintainer.
+          Decebal Dobrica · Founder, Wolven Tech · Open-source maintainer
         </figcaption>
       </figure>
     </div>

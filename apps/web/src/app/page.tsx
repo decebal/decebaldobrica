@@ -12,7 +12,7 @@ import { config } from '@/lib/personalConfig'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Rust Systems & Agentic AI Engineer',
+  title: 'Rust & AI Contract Engineer London | Decebal Dobrica',
   description: config.metaDescription,
   alternates: { canonical: '/' },
 }

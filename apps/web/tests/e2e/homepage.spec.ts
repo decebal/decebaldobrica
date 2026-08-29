@@ -37,7 +37,7 @@ test.describe('Homepage', () => {
     expect(hasHydrationError, `React errors detected:\n${errors.join('\n')}`).toBe(false)
 
     // Verify page loaded
-    await expect(page).toHaveTitle(/Rust Systems & Agentic AI Engineer/)
+    await expect(page).toHaveTitle(/Rust & AI Contract Engineer London/)
   })
 
   test('should display main content', async ({ page }) => {

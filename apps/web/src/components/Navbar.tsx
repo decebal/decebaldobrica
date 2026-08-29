@@ -140,11 +140,8 @@ const Navbar = () => {
           <Link href="/work" className="brand-nav-link">
             Case Studies
           </Link>
-          <Link href="/#how-i-work" className="brand-nav-link">
-            How I Work
-          </Link>
-          <Link href="/services" className="brand-nav-link">
-            Services
+          <Link href="/#services" className="brand-nav-link">
+            Work with me
           </Link>
           <Link href="/testimonials" className="brand-nav-link">
             Testimonials
@@ -215,18 +212,11 @@ const Navbar = () => {
                 Case Studies
               </Link>
               <Link
-                href="/#how-i-work"
+                href="/#services"
                 onClick={closeMobileMenu}
                 className="flex min-h-12 items-center rounded px-3 text-left text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
               >
-                How I Work
-              </Link>
-              <Link
-                href="/services"
-                onClick={closeMobileMenu}
-                className="flex min-h-12 items-center rounded px-3 text-left text-brand-heading transition-colors hover:bg-white/5 hover:text-brand-teal"
-              >
-                Services
+                Work with me
               </Link>
               <Link
                 href="/testimonials"
