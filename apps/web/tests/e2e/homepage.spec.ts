@@ -54,6 +54,32 @@ test.describe('Homepage', () => {
     }
   })
 
+  test('keeps evidence heading, metrics, and actions on shared desktop axes', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 })
+    await page.goto('/')
+
+    const intro = page.getByTestId('work-intro')
+    const cards = page.getByTestId('work-card')
+    await intro.scrollIntoViewIfNeeded()
+    await expect(cards).toHaveCount(3)
+
+    const introBox = await intro.boundingBox()
+    const cardBoxes = await cards.evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().x)
+    )
+    const metricTops = await page
+      .getByTestId('work-metrics')
+      .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().top))
+    const actionTops = await page
+      .getByTestId('work-card-cta')
+      .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().top))
+
+    expect(introBox).not.toBeNull()
+    expect(Math.abs((introBox?.x ?? 0) - (cardBoxes[0] ?? Number.NaN))).toBeLessThanOrEqual(1)
+    expect(Math.max(...metricTops) - Math.min(...metricTops)).toBeLessThanOrEqual(1)
+    expect(Math.max(...actionTops) - Math.min(...actionTops)).toBeLessThanOrEqual(1)
+  })
+
   test('should have working navigation', async ({ page }) => {
     await page.goto('/')
 
