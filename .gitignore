@@ -3,6 +3,7 @@ node_modules/
 .pnp
 .pnp.js
 bun.lockb
+target/
 
 # Per-machine Claude Code local settings (permissions etc. — not for the repo)
 .claude/settings.local.json
@@ -10,6 +11,8 @@ bun.lockb
 # Testing
 coverage/
 .nyc_output/
+.autoresearch/
+.seo-cache/
 
 # Next.js
 .next/
