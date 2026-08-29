@@ -1,164 +1,231 @@
-import { Button } from '@decebal/ui/button'
-import { ShimmerButton } from '@decebal/ui/shimmer-button'
-import {
-  BarChart,
-  Briefcase,
-  Clock,
-  Code,
-  Compass,
-  Database,
-  FileText,
-  Lightbulb,
-  MonitorSmartphone,
-  PenTool,
-  Terminal,
-  Users,
-} from 'lucide-react'
+import { ArrowRight, BriefcaseBusiness, Github, Rocket } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
 
-const services = [
+const engagementPaths = [
   {
-    icon: <Terminal className="h-8 w-8" />,
-    title: 'Rust Systems Advisory',
-    description:
-      'Rust-only technical advisory via Wolven Tech for founders and CTOs who need resilient, low-footprint backends. Event-sourced architectures, Tokio/Axum systems, WASM modules, and AI/agentic Rust. Four engagement models — DD, fractional architect, platform sprint, monthly advisor.',
-    teaser: 'Current focus · via Wolven Tech',
-    featured: true,
+    eyebrow: 'Contract delivery',
+    title: 'Outside-IR35 Rust & AI contract',
+    summary:
+      'For delivery-critical systems that need senior ownership without a long hiring cycle. I work through Wolven Tech as a hands-on principal engineer across architecture, implementation, and handover.',
+    outcomes: [
+      'Production Rust, event sourcing, platform and performance work',
+      'Agentic AI systems with durable memory, evals, and operational controls',
+      'Fast context acquisition inside an existing team and repository',
+    ],
+    href: '/contact?category=Rust+Systems+Advisory',
+    cta: 'Discuss a contract',
+    icon: BriefcaseBusiness,
   },
   {
-    icon: <Briefcase className="h-8 w-8" />,
-    title: 'Engineering Leadership Services',
-    description:
-      'Strategic technical leadership for SaaS & AI platforms. Full-stack architecture, team growth, and technology strategy.',
-    teaser: 'Retainer-based',
-    featured: true,
-  },
-  {
-    icon: <PenTool className="h-8 w-8" />,
-    title: 'Technical Writing & Case Studies',
-    description:
-      'Developer-focused content that drives SEO and leads. Blog posts, tutorials, and B2B case studies showcasing technical wins.',
-    teaser: 'Per article or retainer • Pricing on request',
-    featured: false,
-  },
-  {
-    icon: <FileText className="h-8 w-8" />,
-    title: 'Architecture Documentation',
-    description:
-      'Clear, maintainable system documentation. Architecture diagrams, API docs, and decision records that accelerate onboarding.',
-    teaser: 'Project-based pricing',
-    featured: false,
-  },
-  {
-    icon: <Code className="h-8 w-8" />,
-    title: 'Performance Optimization (Rust-forward)',
-    description:
-      '30%+ API improvements is the baseline. With Rust we’ve seen 6–10× memory reduction, 5× faster startup, 8× smaller binaries vs. equivalent TypeScript services. Database tuning, caching, zero-cost profiling (hotpath, Criterion).',
-    teaser: 'Fixed scope',
-    featured: false,
-  },
-  {
-    icon: <BarChart className="h-8 w-8" />,
-    title: 'Technical Due Diligence',
-    description:
-      'For VC firms and acquirers evaluating Rust-heavy or event-sourced portfolios. Workspace health, clippy/lint discipline, async architecture, test coverage, observability, operational maturity. 48-hour turnaround available.',
-    teaser: 'For VC firms',
-    featured: false,
-  },
-  {
-    icon: <Users className="h-8 w-8" />,
-    title: 'Team Acceleration',
-    description:
-      'Mentor engineering teams to ship faster and maintain velocity through proven development practices and GenAI-assisted workflows.',
-    teaser: 'Included in retainer',
-    featured: false,
+    eyebrow: 'Founding team',
+    title: 'Founding engineer',
+    summary:
+      'For pre-seed and seed founders who need a technical partner able to move between product decisions, first architecture, production code, delivery practice, and early engineering hires.',
+    outcomes: [
+      'Zero-to-one product and platform delivery with explicit trade-offs',
+      'Technical narrative for investors, diligence, and hiring',
+      'Founding-level ownership without disappearing into strategy decks',
+    ],
+    href: '/contact?category=Engineering+Leadership',
+    cta: 'Discuss a founding role',
+    icon: Rocket,
   },
 ]
 
-const ServicesSection = () => {
-  return (
-    <section id="services" className="py-16 md:py-24">
-      <div className="section-container">
-        <h2 className="section-title">How I Can Help</h2>
-        <p className="section-subtitle">
-          From engineering leadership to technical content creation—strategic expertise that
-          accelerates your startup's growth.
+const workflowStages = [
+  {
+    title: 'Discover',
+    body: 'Read repository state, constraints, and failure history before proposing change.',
+  },
+  {
+    title: 'Specify',
+    body: 'Turn desired outcomes into acceptance criteria and dependency-aware work.',
+  },
+  {
+    title: 'Build',
+    body: 'Keep scope narrow and make code, decisions, and progress inspectable.',
+  },
+  {
+    title: 'Verify',
+    body: 'Test behavior, then run only gates able to prove this change.',
+  },
+  {
+    title: 'Learn',
+    body: 'Freeze evaluators, keep measured improvements, and record failed experiments.',
+  },
+]
+
+const repositorySuites = [
+  {
+    provider: 'Claude Code',
+    name: 'decebal-claude-skills',
+    href: 'https://github.com/decebal/decebal-claude-skills',
+    detail: '54 skills · 20 Rust gate crates · 15 incident-backed rules',
+  },
+  {
+    provider: 'OpenAI Codex',
+    name: 'decebal-codex-skills',
+    href: 'https://github.com/decebal/decebal-codex-skills',
+    detail: '55 skills · 21 Rust gate crates · Chronis workflow',
+  },
+]
+
+const ServicesSection = () => (
+  <section id="services" aria-labelledby="services-title" className="relative scroll-mt-24">
+    <span id="how-i-work" className="absolute -top-24" aria-hidden="true" />
+    <div className="section-container">
+      <header className="max-w-4xl">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+          Work with me
         </p>
+        <h2
+          id="services-title"
+          className="mt-3 text-3xl font-bold leading-tight text-white md:text-5xl"
+        >
+          Ways to work together
+        </h2>
+        <p className="mt-5 max-w-3xl text-lg leading-8 text-gray-200">
+          Two focused paths for London and remote UK teams. Both combine hands-on engineering,
+          technical leadership, and an evidence-led delivery system.
+        </p>
+      </header>
 
-        {/* Featured Services */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {services
-            .filter((service) => service.featured)
-            .map((service) => (
-              <div
-                key={service.title}
-                className="brand-card p-8 rounded-lg hover-glow transition-all duration-300"
-              >
-                <div className="bg-brand-teal/20 rounded-lg p-4 inline-block mb-6 text-brand-teal">
-                  {service.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">{service.title}</h3>
-                <p className="text-gray-300 mb-4">{service.description}</p>
-                <p className="text-gray-200 text-sm mb-6 italic">{service.teaser}</p>
-                <Link href="/services">
-                  <ShimmerButton className="w-full">View Details & Pricing</ShimmerButton>
-                </Link>
-              </div>
-            ))}
-        </div>
+      <div className="mt-12 grid border-y border-white/15 lg:grid-cols-2 lg:divide-x lg:divide-white/15">
+        {engagementPaths.map((path, index) => (
+          <article
+            key={path.title}
+            data-testid="engagement-path"
+            className="py-9 lg:px-10 lg:first:pl-0 lg:last:pr-0"
+          >
+            <div className="flex items-center justify-between gap-6">
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-brand-teal">
+                {String(index + 1).padStart(2, '0')} / {path.eyebrow}
+              </p>
+              <path.icon className="h-6 w-6 text-brand-teal" aria-hidden="true" />
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold leading-tight text-white md:text-3xl">
+              {path.title}
+            </h3>
+            <p className="mt-4 max-w-xl leading-7 text-gray-200">{path.summary}</p>
+            <ul className="mt-7 space-y-3 border-l border-white/20 pl-5 text-sm leading-6 text-gray-100">
+              {path.outcomes.map((outcome) => (
+                <li key={outcome}>{outcome}</li>
+              ))}
+            </ul>
+            <Link
+              href={path.href}
+              className="group mt-8 inline-flex min-h-12 items-center gap-2 font-semibold text-brand-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+            >
+              {path.cta}
+              <ArrowRight
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </Link>
+          </article>
+        ))}
+      </div>
 
-        {/* Other Services */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services
-            .filter((service) => !service.featured)
-            .map((service) => (
-              <div
-                key={service.title}
-                className="brand-card p-6 rounded-lg hover-lift transition-all duration-300"
-              >
-                <div className="bg-brand-teal/10 rounded-lg p-3 inline-block mb-4 text-brand-teal">
-                  {service.icon}
-                </div>
-                <h3 className="text-lg font-bold mb-2 text-white">{service.title}</h3>
-                <p className="text-gray-300 text-sm mb-3">{service.description}</p>
-                <p className="text-gray-200 text-xs italic">{service.teaser}</p>
-              </div>
-            ))}
-        </div>
+      <div className="mt-16 grid items-center gap-10 border-b border-white/15 pb-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <figure>
+          <Image
+            src="/images/how-i-work-workflow.webp"
+            alt="A five-stage 3D workflow moving from repository inspection through planning, building, verification, and measured experiments"
+            width={1536}
+            height={1024}
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            className="h-auto w-full drop-shadow-[0_28px_45px_rgba(0,0,0,0.32)]"
+          />
+          <figcaption className="mt-2 text-center text-xs text-gray-300">
+            Inspect → plan → build → gate → improve
+          </figcaption>
+        </figure>
 
-        {/* CTA Section */}
-        <div className="mt-16 text-center">
-          <h3 className="text-2xl font-bold text-white mb-4">
-            Ready to accelerate your portfolio velocity?
-          </h3>
-          <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Whether you need engineering leadership, technical content, or architecture
-            documentation—let's discuss how I can help you ship faster and scale smarter.
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+            Delivery standard
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/services">
-              <Button
-                size="lg"
-                className="bg-brand-teal hover:bg-brand-teal/90 text-brand-darknavy"
+          <h3 className="mt-3 text-3xl font-semibold text-white">Evidence before confidence</h3>
+          <p className="mt-4 max-w-2xl leading-7 text-gray-200">
+            AI accelerates implementation; responsibility stays human. Scope, decisions, checks, and
+            learning remain visible from first inspection through handover.
+          </p>
+          <ol className="mt-8 border-t border-white/15">
+            {workflowStages.map((stage, index) => (
+              <li
+                key={stage.title}
+                className="grid gap-2 border-b border-white/15 py-4 sm:grid-cols-[3rem_7rem_1fr] sm:items-baseline"
               >
-                View All Services & Pricing
-              </Button>
-            </Link>
-            <Link href="/contact?category=General+Consultation">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-brand-teal/30 text-white hover:bg-brand-teal/10"
-              >
-                Schedule Consultation
-              </Button>
-            </Link>
-          </div>
+                <span className="font-mono text-xs text-brand-teal">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="font-semibold text-white">{stage.title}</span>
+                <span className="text-sm leading-6 text-gray-200">{stage.body}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
-    </section>
-  )
-}
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
+            Public evidence
+          </p>
+          <h3 className="mt-3 text-2xl font-semibold text-white">Inspect the working system</h3>
+          <p className="mt-3 max-w-md leading-7 text-gray-200">
+            Provider-specific craft backed by portable rules, project templates, Chronis history,
+            and executable Rust checks.
+          </p>
+        </div>
+        <div className="divide-y divide-white/15 border-y border-white/15">
+          {repositorySuites.map((suite) => (
+            <a
+              key={suite.name}
+              href={suite.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group grid min-h-24 gap-2 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal sm:grid-cols-[1fr_auto] sm:items-center"
+            >
+              <span>
+                <span className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-brand-teal">
+                  <Github className="h-4 w-4" aria-hidden="true" />
+                  {suite.provider}
+                </span>
+                <span className="mt-2 block text-lg font-semibold text-white group-hover:text-brand-teal">
+                  {suite.name}
+                </span>
+              </span>
+              <span className="text-sm text-gray-200 sm:text-right">
+                {suite.detail}
+                <span className="ml-2 text-brand-teal">↗</span>
+              </span>
+              <span className="sr-only">Inspect {suite.provider} suite</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-10 flex flex-col gap-5 border-t border-white/15 pt-8 md:flex-row md:items-center md:justify-between">
+        <p className="max-w-3xl text-xs leading-5 text-gray-300">
+          Outside-IR35 engagements remain subject to client determination, contract terms, and
+          actual working practices. Every project selects gates matching its real risks and delivery
+          contract.
+        </p>
+        <Link
+          href="/services"
+          className="group inline-flex min-h-12 shrink-0 items-center gap-2 font-semibold text-brand-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
+        >
+          Full services detail
+          <ArrowRight
+            className="h-4 w-4 transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
+      </div>
+    </div>
+  </section>
+)
 
 export default ServicesSection

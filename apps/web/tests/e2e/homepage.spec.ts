@@ -92,14 +92,18 @@ test.describe('Homepage', () => {
     }
   })
 
-  test('should show proof-backed workflow and both agent skill suites', async ({ page }) => {
+  test('should merge engagement paths and proof-backed workflow', async ({ page }) => {
     await page.goto('/')
 
-    const section = page.locator('#how-i-work')
+    const section = page.locator('#services')
     await expect(section).toBeVisible()
+    await expect(section.getByRole('heading', { name: 'Ways to work together' })).toBeVisible()
+    await expect(section.getByTestId('engagement-path')).toHaveCount(2)
+    await expect(section.getByRole('heading', { name: 'Founding engineer' })).toBeVisible()
     await expect(
-      section.getByRole('heading', { name: 'Evidence before confidence.' })
+      section.getByRole('heading', { name: 'Outside-IR35 Rust & AI contract' })
     ).toBeVisible()
+    await expect(section.getByRole('heading', { name: 'Evidence before confidence' })).toBeVisible()
     await expect(section.getByRole('img')).toHaveAttribute(
       'alt',
       /repository inspection through planning, building, verification, and measured experiments/
