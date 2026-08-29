@@ -21,12 +21,17 @@ export function personSchema() {
       name: config.professional.currentCompany,
       url: config.wolvenTechUrl,
     },
+    workLocation: {
+      '@type': 'Place',
+      name: 'London and remote UK',
+    },
     knowsAbout: [
       'Rust systems engineering',
       'Event sourcing',
       'AI agent memory',
       'Agentic AI architecture',
       'Technical leadership',
+      'Founding engineer and zero-to-one delivery',
     ],
   }
 }
