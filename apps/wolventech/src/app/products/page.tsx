@@ -1,4 +1,4 @@
-import { products } from '@/lib/products'
+import { portfolioHref, products } from '@/lib/products'
 import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Products built by Wolven Tech',
   description:
-    'AllSource, ChargeWindow, SolarQuote Check UK, and Move to Own UK: focused products built and operated by Wolven Tech.',
+    'Eight focused products from Wolven Tech, each with a defined buyer, useful outcome, proof route, and commercial model.',
   alternates: { canonical: '/products' },
 }
 
@@ -86,16 +86,30 @@ export default function ProductsPage() {
                   </dt>
                   <dd className="mt-1 text-rust-ink-soft">{product.outcome}</dd>
                 </div>
+                <div>
+                  <dt className="text-xs font-bold uppercase tracking-[0.12em] text-rust-muted">
+                    Access
+                  </dt>
+                  <dd className="mt-1 text-rust-ink-soft">{product.commercialModel}</dd>
+                </div>
               </dl>
-              <Button
-                asChild
-                className="w-max bg-rust-primary font-semibold text-white hover:bg-rust-primary-2"
-              >
-                <a href={product.href}>
-                  {product.cta}
-                  <ArrowUpRight className="ml-2 h-4 w-4" />
+              <div className="flex flex-wrap items-center gap-4">
+                <Button
+                  asChild
+                  className="w-max bg-rust-primary font-semibold text-white hover:bg-rust-primary-2"
+                >
+                  <a href={portfolioHref(product, 'product')}>
+                    {product.cta}
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+                <a
+                  className="inline-flex min-h-11 items-center text-sm font-semibold text-rust-primary-2 underline decoration-rust-line underline-offset-4 hover:decoration-rust-primary"
+                  href={portfolioHref(product, 'proof')}
+                >
+                  {product.proofLabel}
                 </a>
-              </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

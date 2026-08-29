@@ -86,6 +86,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link
+                  href="/products"
+                  className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
+                >
+                  Products
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/services"
                   className="inline-flex min-h-12 items-center text-gray-200 transition-colors hover:text-brand-teal"
                 >

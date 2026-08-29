@@ -13,6 +13,7 @@ const staticPages = [
   '/contact',
   '/cookies',
   '/open-source',
+  '/products',
   '/radar',
   '/refunds',
   '/rust',
