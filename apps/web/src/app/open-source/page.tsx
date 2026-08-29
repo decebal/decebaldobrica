@@ -4,9 +4,9 @@ import { ArrowRight, Github } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Open-source Rust & Claude Projects',
+  title: 'Open-source Rust & Agent Engineering Projects',
   description:
-    'Open-source work by Decebal Dobrica and Wolven Tech: Rust systems, Claude Code tooling, MCP infrastructure, and evaluated Rust examples.',
+    'Open-source work by Decebal Dobrica and Wolven Tech: Rust systems, agent engineering workflows, executable quality gates, MCP infrastructure, and evaluated Rust examples.',
   alternates: { canonical: '/open-source' },
 }
 
@@ -18,6 +18,14 @@ const projects = [
     description:
       'MIT-licensed all-Rust monorepo: Axum API, Dioxus frontends, event sourcing, and AllSource as the datastore.',
     topics: ['Rust', 'Axum', 'Dioxus', 'event sourcing'],
+  },
+  {
+    name: 'decebal-codex-skills',
+    href: 'https://github.com/decebal/decebal-codex-skills',
+    owner: 'Decebal Dobrica',
+    description:
+      'Codex-native skills, guides, hooks, policy, Chronis workflows, and 21 executable Rust gate crates for repeatable, reviewable agent work.',
+    topics: ['OpenAI Codex', 'skills', 'Rust gates', 'Chronis'],
   },
   {
     name: 'claude-healthline',
@@ -32,8 +40,8 @@ const projects = [
     href: 'https://github.com/decebal/decebal-claude-skills',
     owner: 'Decebal Dobrica',
     description:
-      'Claude Code skills, guides, and repository configuration used in practical agent workflows.',
-    topics: ['Claude Code', 'skills', 'agent workflow'],
+      'Claude Code skills, hooks, project templates, and 20 executable Rust gate crates extracted from practical workflows across more than 25 projects.',
+    topics: ['Claude Code', 'skills', 'Rust gates', 'agent workflow'],
   },
   {
     name: 'curated-claude-skills',
@@ -72,7 +80,7 @@ export default function OpenSourcePage() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Open-source Rust and Claude projects by Decebal Dobrica',
+    name: 'Open-source Rust and agent engineering projects by Decebal Dobrica',
     url: 'https://decebaldobrica.com/open-source',
     mainEntity: {
       '@type': 'ItemList',
@@ -95,11 +103,12 @@ export default function OpenSourcePage() {
               Maintained in public
             </p>
             <h1 className="mt-4 text-4xl font-bold text-white md:text-6xl">
-              Open-source Rust and Claude projects
+              Open-source Rust and agent engineering
             </h1>
             <p className="mt-6 text-xl leading-8 text-gray-200">
-              Current repositories I author or maintain with Wolven Tech. Descriptions and license
-              labels below follow their GitHub metadata; each repository remains the primary source.
+              Current repositories I author or maintain with Wolven Tech. They show both shipped
+              systems and the workflows used to make agent-assisted engineering inspectable. Each
+              repository remains the primary source.
             </p>
           </header>
 

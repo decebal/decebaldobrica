@@ -4,6 +4,7 @@
 import AboutSection from '@/components/AboutSection'
 import Footer from '@/components/Footer'
 import HeroSection from '@/components/HeroSection'
+import HowIWorkSection from '@/components/HowIWorkSection'
 import ServicesSection from '@/components/ServicesSection'
 import TestimonialSection from '@/components/TestimonialSection'
 import WorkSection from '@/components/WorkSection'
@@ -22,6 +23,7 @@ export default function HomePage() {
       <HeroSection />
       <AboutSection />
       <WorkSection />
+      <HowIWorkSection />
       <ServicesSection />
       <TestimonialSection />
       <Footer />

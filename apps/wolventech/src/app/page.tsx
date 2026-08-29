@@ -1,14 +1,7 @@
+import HowIWorkSection from '@/components/HowIWorkSection'
 import SectionHeader from '@/components/SectionHeader'
 import TerminalManifest from '@/components/TerminalManifest'
-import {
-  artifacts,
-  cases,
-  credentials,
-  proofPoints,
-  services,
-  socialLinks,
-  steps,
-} from '@/lib/content'
+import { artifacts, cases, credentials, proofPoints, services, socialLinks } from '@/lib/content'
 import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
@@ -183,6 +176,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <HowIWorkSection />
+
       {/* ─────────── ARTIFACTS ─────────── */}
       <section id="artifacts" className="mx-auto max-w-[1160px] scroll-mt-24 px-7 py-14">
         <SectionHeader
@@ -230,29 +225,6 @@ export default function HomePage() {
           Browse more open source on github.com/decebal
           <ArrowUpRight className="h-4 w-4" />
         </a>
-      </section>
-
-      {/* ─────────── PROCESS ─────────── */}
-      <section id="process" className="mx-auto max-w-[1160px] scroll-mt-24 px-7 py-14">
-        <SectionHeader
-          kicker="Process"
-          title="How a Wolven Tech engagement runs."
-          subtitle="No bloated discovery phase. No slide-ware deliverables. We're calibrated for teams that want to ship, not teams that want to plan to ship."
-        />
-        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-4">
-          {steps.map((step) => (
-            <div
-              key={step.num}
-              className="relative rounded-xl border border-rust-line bg-rust-surface p-6"
-            >
-              <span className="absolute -top-3 left-5 rounded-full bg-rust-primary px-2.5 py-[3px] text-[12px] font-bold tracking-widest text-white">
-                {step.num}
-              </span>
-              <h4 className="mt-2 text-[15px] font-semibold text-rust-ink">{step.title}</h4>
-              <p className="mt-1 text-[13.5px] leading-relaxed text-rust-ink-soft">{step.body}</p>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* ─────────── ABOUT ─────────── */}

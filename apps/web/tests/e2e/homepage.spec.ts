@@ -37,7 +37,7 @@ test.describe('Homepage', () => {
     expect(hasHydrationError, `React errors detected:\n${errors.join('\n')}`).toBe(false)
 
     // Verify page loaded
-    await expect(page).toHaveTitle(/Portfolio/)
+    await expect(page).toHaveTitle(/Rust Systems & Agentic AI Engineer/)
   })
 
   test('should display main content', async ({ page }) => {
@@ -64,5 +64,40 @@ test.describe('Homepage', () => {
       await page.waitForURL(/.*contact.*/)
       await expect(page).toHaveURL(/.*contact.*/)
     }
+  })
+
+  test('should show proof-backed workflow and both agent skill suites', async ({ page }) => {
+    await page.goto('/')
+
+    const section = page.locator('#how-i-work')
+    await expect(section).toBeVisible()
+    await expect(
+      section.getByRole('heading', { name: 'Evidence before confidence.' })
+    ).toBeVisible()
+    await expect(section.getByRole('img')).toHaveAttribute(
+      'alt',
+      /repository inspection through planning, building, verification, and measured experiments/
+    )
+    await expect(section.getByRole('link', { name: /Inspect Claude Code suite/ })).toHaveAttribute(
+      'href',
+      'https://github.com/decebal/decebal-claude-skills'
+    )
+    await expect(section.getByRole('link', { name: /Inspect OpenAI Codex suite/ })).toHaveAttribute(
+      'href',
+      'https://github.com/decebal/decebal-codex-skills'
+    )
+  })
+
+  test('should list both workflow suites in the open-source portfolio', async ({ page }) => {
+    await page.goto('/open-source')
+
+    await expect(page.getByRole('heading', { name: 'decebal-claude-skills' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'decebal-codex-skills' })).toBeVisible()
+
+    const codexProject = page.locator('article').filter({ hasText: 'decebal-codex-skills' })
+    await expect(codexProject.getByRole('link', { name: 'View repository' })).toHaveAttribute(
+      'href',
+      'https://github.com/decebal/decebal-codex-skills'
+    )
   })
 })

@@ -4,8 +4,8 @@ export const navLinks: NavLink[] = [
   { label: 'Products', href: '/products' },
   { label: 'Services', href: '/#services' },
   { label: 'Engagements', href: '/#engagements' },
+  { label: 'How I Work', href: '/#how-i-work' },
   { label: 'Open Source', href: '/#artifacts' },
-  { label: 'Process', href: '/#process' },
   { label: 'About', href: '/#about' },
 ]
 
@@ -211,12 +211,21 @@ export const artifacts: Artifact[] = [
     linkLabel: 'View on GitHub',
   },
   {
-    badge: 'Claude Code · Reference',
+    badge: 'Claude Code · Skills · Rust gates',
     title: 'decebal-claude-skills',
-    code: 'skills · hooks · rules · gates',
+    code: '54 skills · 20 Rust gate crates · 15 rules',
     description:
-      'Claude Code skills, hooks, permission rules, MCP guidance, and project templates extracted from daily work across more than 25 Rust, TypeScript, Go, Elixir, Svelte, and Next.js projects.',
+      'Claude Code skills, hooks, project templates, and incident-backed rules extracted from daily work across more than 25 projects. Includes executable Rust checks, SEO, and ASO tooling.',
     href: 'https://github.com/decebal/decebal-claude-skills',
+    linkLabel: 'View on GitHub',
+  },
+  {
+    badge: 'OpenAI Codex · Skills · Rust gates',
+    title: 'decebal-codex-skills',
+    code: '55 skills · 21 Rust gate crates · Chronis',
+    description:
+      'Codex-native skills, AGENTS.md guidance, hooks, policy examples, and Chronis execution. Includes SEO/ASO tooling and capped skill autoresearch with frozen evaluators.',
+    href: 'https://github.com/decebal/decebal-codex-skills',
     linkLabel: 'View on GitHub',
   },
   {
