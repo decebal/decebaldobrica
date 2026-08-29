@@ -7,44 +7,31 @@ test.describe('Homepage Mobile Issues', () => {
     { name: 'Samsung Galaxy S20', width: 360, height: 800 },
   ]
 
-  test.describe('Chevron Visibility on Mobile', () => {
+  test.describe('Hero actions on mobile', () => {
     for (const viewport of mobileViewports) {
-      test(`Chevron should be visible and not hidden behind hero image on ${viewport.name}`, async ({
+      test(`Primary action should remain separate from portrait on ${viewport.name}`, async ({
         page,
       }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height })
         await page.goto('/')
         await page.waitForLoadState('networkidle')
 
-        // Find the chevron button
-        const chevronButton = page
-          .locator('button')
-          .filter({ has: page.locator('svg.lucide-chevron-down') })
-          .first()
-        await chevronButton.waitFor({ state: 'visible', timeout: 5000 })
+        const hero = page.locator('main, body').locator('section').first()
+        const primaryAction = hero.getByRole('link', { name: 'Discuss an engagement' })
+        const portrait = hero.getByRole('img', { name: 'Decebal Dobrica' })
 
-        // Get the chevron button position
-        const chevronBox = await chevronButton.boundingBox()
-        expect(chevronBox).not.toBeNull()
+        await primaryAction.scrollIntoViewIfNeeded()
+        await expect(primaryAction).toBeVisible()
+        await expect(portrait).toBeVisible()
 
-        if (chevronBox) {
-          // Find the hero image
-          const heroImage = page.locator('img[alt*="Decebal"]').first()
-          const heroImageBox = await heroImage.boundingBox()
+        const actionBox = await primaryAction.boundingBox()
+        const portraitBox = await portrait.boundingBox()
+        expect(actionBox).not.toBeNull()
+        expect(portraitBox).not.toBeNull()
 
-          if (heroImageBox) {
-            // Chevron should be below the hero image (higher y value) - this is the key requirement
-            // User reported issue: "the chevron is displayed under the hero image" meaning BEHIND/HIDDEN
-            expect(chevronBox.y).toBeGreaterThan(heroImageBox.y + heroImageBox.height)
-
-            console.log(
-              `✓ ${viewport.name}: Chevron at y=${Math.round(chevronBox.y)}px is below hero image (ends at y=${Math.round(heroImageBox.y + heroImageBox.height)}px)`
-            )
-          }
-
-          // Note: We don't require the chevron to be fully visible above the fold
-          // On small screens, it's acceptable UX for the chevron to require slight scrolling
-          // The important fix is that it's no longer hidden BEHIND the hero image
+        if (actionBox && portraitBox) {
+          expect(portraitBox.y).toBeGreaterThanOrEqual(actionBox.y + actionBox.height)
+          expect(actionBox.height).toBeGreaterThanOrEqual(48)
         }
       })
     }

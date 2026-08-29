@@ -37,9 +37,9 @@ const TexturedBackground = () => {
           height="100%"
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
-          role="img"
+          aria-hidden="true"
+          focusable="false"
         >
-          <title>Diagonal Accent Line</title>
           <line x1="0" y1="100%" x2="100%" y2="0" stroke="rgba(3, 201, 169, 0.2)" strokeWidth="1" />
         </svg>
       </div>
