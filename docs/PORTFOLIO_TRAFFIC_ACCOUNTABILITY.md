@@ -55,7 +55,7 @@ emails, property details, quote inputs, financial inputs, or reef measurements.
 
 | Date | Bet | Channel | Tagged URL/content | Audience | Reach evidence | Activation evidence | Decision |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-08-30 | Portfolio | WolvenTech + founder directories | `product_directory` | Cross-product discovery | Prepared, not deployed | Unknown | Deploy after checks |
+| 2026-08-30 | Portfolio | WolvenTech + founder directories | `product_directory` | Cross-product discovery | Live directories and eight proof routes return 200; audience reach unknown | Unknown | Keep until tagged product evidence is available |
 
 ## Next organic assets
 
@@ -67,4 +67,3 @@ emails, property details, quote inputs, financial inputs, or reef measurements.
 - Viewing Ledger: one real-viewing walkthrough with fictional property details.
 - Edit Scope: one owner-rate worked scope and change-trigger walkthrough.
 - Sponsor Ledger: one four-issue sponsor fulfilment walkthrough.
-
