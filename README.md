@@ -59,7 +59,7 @@ Main portfolio website with blog, services, contact form, and newsletter signup.
 ### Wolven Tech (`apps/wolventech`)
 Rust-only technical advisory site with its own contact/booking flow.
 
-**URL:** https://wolventech.io
+**URL:** https://wolventech.com
 **Tech:** Next.js 15, React 18, TailwindCSS, shadcn/ui
 
 ### Admin dashboards (`apps/newsletter-admin`, `apps/services-admin`)
@@ -232,14 +232,16 @@ Auto-posting • Content Distribution • Engagement Tracking
 
 ## 🚀 Deployment
 
-### Vercel
+### Vercel and Fly.io
 
-Each app deploys separately:
+Portfolio remains on Vercel. WolvenTech runs on Fly.io:
 
 ```bash
 vercel --cwd apps/web          # Portfolio site
-vercel --cwd apps/wolventech   # Wolven Tech site
+flyctl deploy . --config apps/wolventech/fly.toml --remote-only --ha=false
 ```
+
+See [WOLVENTECH_FLY_DEPLOYMENT.md](./docs/WOLVENTECH_FLY_DEPLOYMENT.md).
 
 ## 📊 Features
 

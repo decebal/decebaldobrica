@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-08-24'
+export const RADAR_GENERATED_AT = '2026-08-31'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 9
+export const RADAR_ISSUE = 10
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -482,5 +482,41 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'used across the Rust performance community; rustc itself is PGO-built',
     mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
     note: 'rust-alternative-to Go\'s built-in PGO (go build -pgo): a cargo subcommand that wires up instrumentation, profile merging and BOLT so profile-guided optimisation is three commands instead of a research project. Surfaced by pairing Daniel Lemire\'s Go PGO measurements with this week\'s rustc stabilisation of -Zprofile-sample-use. The honest gap is that Go ships PGO in the toolchain and Rust does not: this is a third-party subcommand, BOLT is Linux-only, and the whole thing is worthless without a representative workload to profile',
+  },
+  {
+    name: 'cargo-acl (Cackle)', url: 'https://github.com/cackle-rs/cackle', category: 'security/supply-chain', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'maintained but slow-cadence, effectively solo (David Lattimore, who also writes the wild linker); 9 releases, 634 commits', latest: 'v0.9.1 (May 7, 2026)',
+    stars: '~274★', adopters: 'none named publicly; ships a GitHub Action (cackle-action)',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
+    note: 'code ACL checker: analyses every crate in the dependency tree for which API categories it actually reaches (net, fs, process, unsafe) and fails the build when a data-processing crate starts touching sockets. With bubblewrap installed it runs build scripts, tests and rustc itself inside a sandbox, and each build script gets its own sandbox config, which is the exact control the arrayref/proc-macro1 attack of 2026-08-20 defeated (a build script that downloaded and ran a remote payload). Linux only. The README is unusually honest that a determined attacker can circumvent detection and that this supplements rather than replaces review. Exit cost is zero (a CI job and a cackle.toml), entry cost is the config pass over your tree',
+  },
+  {
+    name: 'cargo-vet', url: 'https://mozilla.github.io/cargo-vet/', category: 'security/supply-chain', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (Mozilla); 9 official audit registries including Mozilla, Google and the Bytecode Alliance', latest: 'in continuous use; ecosystem measured Aug 12, 2026 by Light Squares',
+    adopters: '408 public repos incl. Firefox, Chromium, Tauri, Wasmtime; 326 of them import at least one audit feed',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
+    note: 'enforces that every active dependency is audited or explicitly exempted, so it can stop malicious code entering the build rather than reacting to a CVE later. Light Squares measured the real cost in 2026: adoption up 101% this year, but the median project carries 131 exemptions, the median fully-vetted project faces 8.7k changed lines of review per week (50k at p90), the median lag from a crates.io release to its first registry audit is 29 days, and 40% of adopted RustSec fix versions never got audited at all. Trial rather than Adopt precisely because of that burden: the safe-to-run gate in CI before any build step is the high-value slice, and full vetting is an FTE conversation',
+  },
+  {
+    name: 'swift-topomap', url: 'https://github.com/swiftlogicsystems/swifttopology', category: 'dev-tools/observability', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'brand new, single vendor (SwiftLogic Systems; Ankur Rathore self-suggested it); 44 commits, first open-source release', latest: 'v0.2.3-beta (Aug 2026)',
+    stars: '0★ at time of writing', adopters: 'none; validated by the vendor on Intel Xeon bare metal',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
+    note: 'This Week in Rust 666 Crate of the Week: a ratatui TUI that maps NUMA nodes, L3 cache boundaries and cores from a native sysfs parser (no libhwloc) and overlays live IPC and cache-miss counters via eBPF CO-RE, so you can tell a core that is computing from a core that is stalled on memory. Relevant to anyone whose inference server or tokenizer reads as 100% CPU without getting faster. Caveats: Linux and eBPF only, beta, zero external adopters, the documented install is curl-to-sudo of a release binary, and the credits state the architecture and kernel eBPF C were developed via AI pair programming with Gemini, which is a disclosure worth having and also a reason to read the kernel-adjacent code before running it as root',
+  },
+  {
+    // Display name abbreviated for the radar legend; published crate name is r3bl-rust-analyzer-mcp-server.
+    name: 'r3bl-ra-mcp-server', url: 'https://crates.io/crates/r3bl-rust-analyzer-mcp-server', category: 'agentic/mcp', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'actively maintained inside r3bl-open-core (Nazmul Idris)', latest: 'published on crates.io; design write-up dated Aug 22, 2026',
+    adopters: 'the author, driving Antigravity, Claude Code and Cursor against rust-analyzer',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
+    note: 'MCP server that bridges coding agents to a rust-analyzer LSP subprocess, so an agent asks the type system where a symbol is used instead of grepping. Notable less for the bridge than for the argument attached to it: Idris deliberately left Tokio out in favour of a synchronous three-thread pipeline over stdio, on the grounds that a 1:1 local pipe gets no benefit from a work-stealing multi-threaded runtime and pays for it in accidental complexity. Assess: useful today, single maintainer, and the interesting artefact is the reasoning rather than the code',
+  },
+  {
+    name: 'comrak', url: 'https://github.com/kivikakk/comrak', category: 'data/markdown', quadrant: 'data',
+    ring: 'Adopt', maintenance: 'actively maintained and partly funded (Asherah Connor / kivikakk; in scope of her paid work since Sep 2025)', latest: 'v0.54.x line (exact release date unverified this run)',
+    stars: '~1.7k★', adopters: 'wide; backs commonmarker (Ruby), MDEx (Elixir) and Python bindings, 148 crates depend on it',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
+    note: 'rust-alternative-to Goldmark 2.0 (Go), whose headline feature this week was position info on every AST node. Comrak is the Rust CommonMark/GFM parser that already reports sourcepos, builds a real mutable AST, and passes 652/652 CommonMark and 670/670 GFM tests. The AI-adjacent reason to care: RAG chunking that carries byte offsets lets you cite the exact source span rather than a whole document. It models cmark-gfm closely, which makes it predictable and slower than pulldown-cmark (the no-AST parser rustdoc uses); pick comrak when you need to walk or rewrite the tree, pulldown-cmark when you need throughput',
   },
 ]

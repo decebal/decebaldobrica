@@ -5,6 +5,8 @@
 **/node_modules
 .git
 .github
+.fastembed_cache
+proofshot-artifacts
 
 # Generated / build output
 **/.next
