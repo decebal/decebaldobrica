@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-08-31'
+export const RADAR_GENERATED_AT = '2026-09-07'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 10
+export const RADAR_ISSUE = 11
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -57,9 +57,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'rmcp', url: 'https://github.com/modelcontextprotocol/rust-sdk', category: 'agentic', quadrant: 'agentic',
-    ring: 'Adopt', maintenance: 'actively maintained (official MCP org)', latest: 'v1.7.0 (May 2026)',
-    stars: '~3.4k★', downloads: '~13M', adopters: 'canonical Rust MCP SDK',
-    mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false,
+    ring: 'Trial', maintenance: 'actively maintained (official MCP org; 4t145, jokemanfire, alexhancock)', latest: 'v3.2.0 (Aug 31, 2026)',
+    stars: '~3.9k★', downloads: '~13M', adopters: 'canonical Rust MCP SDK',
+    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07)', returning: true,
+    note: 'DOWNGRADED Adopt to Trial at #11, and not for anything wrong with the code. Fifteen weeks took this crate from 1.7.0 (May 13) to 3.2.0 (Aug 31): three majors, two migration guides, and a 1.8.0 whose own release notes open with a warning that it contains a source-breaking change and "should have been 2.0.0", so anyone on rmcp = "1.7" had Cargo resolve them into a failing build. 3.x tracks the MCP 2026-07-28 spec. Still the only official SDK and still the right choice; it is just not a crate you standardize on without pinning an exact version and booking migration capacity each quarter. The GitHub Releases tab has no notes past rmcp-v2.2.0, so the 3.x changelog lives in the repo and the migration discussions',
   },
   {
     name: 'rig', url: 'https://github.com/0xPlaygrounds/rig', category: 'agentic', quadrant: 'agentic',
@@ -457,9 +458,9 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'syd', url: 'https://gitlab.exherbo.org/sydbox/sydbox', category: 'agentic/sandboxing', quadrant: 'agentic',
-    ring: 'Trial', maintenance: 'actively developed, solo but long-running (Ali Polatel; 195 releases; OpenSSF best-practices badge)', latest: 'v3.58.0 (Aug 2026)',
+    ring: 'Trial', maintenance: 'actively developed, solo but long-running (Ali Polatel; 195+ releases; OpenSSF best-practices badge)', latest: 'v3.59.0 (Sep 1, 2026)',
     downloads: '~495k/month', adopters: 'packaged for Alpine, Arch, Exherbo and Gentoo; syd-oci variant runs under Docker/Podman/CRI-O',
-    mentions: 'Rust & AI Weekly #9 (2026-08-24)', returning: false,
+    mentions: 'Rust & AI Weekly #9 (2026-08-24); Rust & AI Weekly #11 (2026-09-07)', returning: true,
     note: 'application kernel in Rust: implements a subset of the Linux kernel interface in user space and executes syscalls on behalf of the sandboxed process, so it does not carry the TOCTTOU hole that trapping sandboxes do. Runs as an unprivileged user with no SETUID and no eBPF, over Seccomp-BPF/Notify plus Landlock (ABI up to 7) and optional namespaces. Ioctl sandboxing is documented as the way to contain AI/ML workloads while still allowing PTY, DRM and KVM, which makes it the most direct answer available to "what confines the coding agent I let run shell commands". GPL-3.0, so it is a tool you run, not a library you link; Linux >= 5.19 only',
   },
   {
@@ -518,5 +519,26 @@ export const crateRadarTools: RadarTool[] = [
     stars: '~1.7k★', adopters: 'wide; backs commonmarker (Ruby), MDEx (Elixir) and Python bindings, 148 crates depend on it',
     mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
     note: 'rust-alternative-to Goldmark 2.0 (Go), whose headline feature this week was position info on every AST node. Comrak is the Rust CommonMark/GFM parser that already reports sourcepos, builds a real mutable AST, and passes 652/652 CommonMark and 670/670 GFM tests. The AI-adjacent reason to care: RAG chunking that carries byte offsets lets you cite the exact source span rather than a whole document. It models cmark-gfm closely, which makes it predictable and slower than pulldown-cmark (the no-AST parser rustdoc uses); pick comrak when you need to walk or rewrite the tree, pulldown-cmark when you need throughput',
+  },
+  {
+    name: 'wasmi', url: 'https://github.com/wasmi-labs/wasmi', category: 'agentic/wasm-runtime', quadrant: 'agentic',
+    ring: 'Trial', maintenance: 'very actively developed but single-maintainer, and the funding ends in October 2026 (Robin Freyler / robbepop; Stellar Development Foundation sponsored full-time work from Oct 2024)', latest: 'v2.0.0 (Sep 1, 2026)',
+    adopters: 'Stellar Soroban, Ripple, Typst plugins, Zellij plugins, Josh, Firefly Zero',
+    mentions: 'Rust & AI Weekly #11 (2026-09-07)', returning: false,
+    note: 'Portable Wasm interpreter with no JIT, so it runs where W^X and mmap-exec are forbidden, and it meters fuel, which is the only way to put a hard bound on code you did not write. 2.0 is ~2.2x faster than 1.0 on the wasmi-benchmarks geomean (Apple M2 Pro) and now matches Wasm3 and Stitch, the fastest portable interpreters, while keeping module-related rather than instance-related bytecode so every instance of a module shares one IR. Four dispatch modes (direct-threaded, indirect-threaded, switch-loop, call-loop) behind an auto-dispatch feature; accumulator registers replace stack-slot decoding; lock-free append-only CodeMap so a call is zero look-ups. The most quotable finding is a deoptimization: Rust 1.92 enabled the DestinationPropagation MIR pass by default, which collapsed two dispatch paths into one csel and one branch site, wrecking branch prediction. Undoing that lifted CoreMark from ~2800 to over 4200, a ~50% win from the single most important "optimization" in the release, and the same pass had cost Stitch ~30%. Adoption cost is a real 1.0-to-2.0 migration (guide published); exit cost is low because the input is standard Wasm. Trial rather than Adopt purely on stewardship: Freyler is looking for sponsorship or a role that leaves room for Wasmi',
+  },
+  {
+    name: 'Kani', url: 'https://github.com/model-checking/kani', category: 'dev-tools/verification', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (AWS applied-science team; Rahul Kumar, Felipe Monteiro, Michael Tautschnig)', latest: 'v0.63.0 (2026)',
+    adopters: 'Firecracker and s2n-quic run proof harnesses on every change; the Rust std verification contest runs 16,748 harnesses in CI',
+    mentions: 'Rust & AI Weekly #11 (2026-09-07)', returning: false,
+    note: 'Bit-precise model checker for Rust with function contracts, loop contracts, quantifiers and stubbing. The reason it lands now is Autoharness, which generates proof harnesses at MIR level with no source changes: it enumerated the standard library and produced 16,748 harnesses (4,645 for unsafe functions, 1,126 for safe abstractions wrapping unsafe), of which 11,970 verified, against 725 hand-written Kani harnesses in the preceding fifteen months. The Rust Foundation write-up is unusually careful about weighting that number: only 989 functions are verified against full pre/postcondition contracts, and some verified unsafe functions passed only on unconstrained bit-valid inputs, which is triage signal rather than proof. The honest ceiling is generics, where Autoharness skips 9,600 functions because Rust monomorphizes at compile time, and concurrency, where the atomics and Arc challenges are still unsolved. Fifteen months of the campaign found zero previously unknown memory-safety bugs but did surface an incorrect SIMD shift result, missing unsafe annotations, wrong SAFETY comments and a panic-behaviour doc error',
+  },
+  {
+    name: 'buf_read_splitter', url: 'https://crates.io/crates/buf_read_splitter', category: 'data/streams', quadrant: 'data',
+    ring: 'Assess', maintenance: 'single author, small surface, reached 1.0.0 and says so (flo); MIT', latest: 'v1.0.0 (self-suggested Aug 28, 2026; exact publish date unverified this run)',
+    adopters: 'none named',
+    mentions: 'Rust & AI Weekly #11 (2026-09-07)', returning: false,
+    note: 'This Week in Rust 667 Crate of the Week, self-suggested: wraps a reader and splits it into sub-streams on a byte pattern, so each segment is itself a Read you consume to EOF before calling next(). The design detail worth stealing is Options::set_limit_read, a per-segment byte cap so a stream with no separator in it cannot quietly eat your heap: a bound enforced by default rather than by whoever remembers. Useful where you are framing a byte stream you do not control, which in this newsletter means SSE frames off an LLM endpoint or separator-delimited document chunking before embedding. Assess: tiny, one author, no named adopters, and the author is candid that the algorithm was harder than expected, which is usually where the remaining bugs live',
   },
 ]
