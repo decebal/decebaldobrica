@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-09-07'
+export const RADAR_GENERATED_AT = '2026-09-14'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 11
+export const RADAR_ISSUE = 12
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -151,11 +151,18 @@ export const crateRadarTools: RadarTool[] = [
     mentions: 'Rust & AI Weekly #1 (2026-06-19)', returning: false, note: 'one-to-watch / pre-1.0',
   },
   {
-    name: 'cuTile Rust', url: 'https://arxiv.org/abs/2606.15991', category: 'inference/GPU', quadrant: 'inference',
-    ring: 'Assess', maintenance: 'research artifact (arXiv, Jun 2026)', latest: 'paper + early code',
-    adopters: 'none yet',
-    mentions: 'Rust & AI Weekly #2 (2026-06-22)', returning: false,
-    note: 'memory-safe, data-race-free GPU kernels in Rust (B200 benchmarks) — watch-this-space, not yet a crate',
+    name: 'cuTile Rust', url: 'https://github.com/NVlabs/cutile-rs', category: 'inference/GPU', quadrant: 'inference',
+    ring: 'Trial', maintenance: 'actively developed (NVIDIA / NVlabs; Melih Elibol, Jared Roesch, Isaac Gelado, Eric Buehler, Michael Garland); five releases since May 16', latest: 'cutile 0.3.1 (Sep 2, 2026); NVIDIA announced CUDA Rust Sep 8',
+    stars: '~900★', adopters: 'Hugging Face Grout (Qwen3 inference engine); mistral.rs',
+    mentions: 'Rust & AI Weekly #2 (2026-06-22); Rust & AI Weekly #12 (2026-09-14)', returning: true,
+    note: 'UPGRADE Assess to Trial. In June this was an arXiv paper (Fearless Concurrency on the GPU) and a repo; today it is `cargo add cutile` on stable Rust 1.89+, NVIDIA has put a technical-blog announcement and a 2027-and-beyond commitment behind it, and it has two named adopters outside NVIDIA. Tile-based DSL: mutable tensors are partitioned into disjoint pieces before launch so the compiler, not the developer, proves there is no aliasing across the GPU launch boundary; kernels JIT through CUDA Tile IR. 0.3.0 made bounds-check placement provable at compile time or launch (flash-attention prefill within 2.5% of the unchecked floor). 0.3.1 ships breaking changes in a patch version to close soundness holes from a September audit (load_module_from_bytes and the *_tko ops are unsafe fn, DType is an unsafe trait, allocations return Result), and the changelog says so plainly: pin exact. Still Linux, CUDA 13.3, sm_80+, NVIDIA-only; exit cost is real because the kernel DSL is cutile-specific, softened by Tile IR being shared with the C++ and Python frontends',
+  },
+  {
+    name: 'cuda-oxide', url: 'https://github.com/NVlabs/cuda-oxide', category: 'inference/GPU', quadrant: 'inference',
+    ring: 'Assess', maintenance: 'actively developed (NVIDIA / NVlabs); 827 commits, early alpha', latest: 'no tagged release; installs from git with nightly-2026-04-03 (Sep 2026)',
+    stars: '~3k★', adopters: 'none named',
+    mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
+    note: 'The SIMT track of NVIDIA CUDA Rust: a custom rustc codegen backend that routes #[kernel] functions through Rust MIR, the community Pliron IR framework and LLVM IR down to PTX, so host and device code live in one file and build with one `cargo oxide build`. DisjointSlice hands each thread exclusive access to its own element, and #[launch_contract] lets the generated launcher validate a LaunchConfig against the kernel and hand back a proof the safe launch method requires. The cost is the toolchain: pinned nightly, LLVM 21+, clang headers, Linux, sm_80+, and shared memory still requires unsafe. NVIDIA calls it early alpha and says the nightly pin is the thing they most want to stop asking for. Read it, run the vecadd, do not ship it yet',
   },
 
   // ── Data & Search ──
@@ -488,8 +495,8 @@ export const crateRadarTools: RadarTool[] = [
     name: 'cargo-acl (Cackle)', url: 'https://github.com/cackle-rs/cackle', category: 'security/supply-chain', quadrant: 'dev',
     ring: 'Trial', maintenance: 'maintained but slow-cadence, effectively solo (David Lattimore, who also writes the wild linker); 9 releases, 634 commits', latest: 'v0.9.1 (May 7, 2026)',
     stars: '~274★', adopters: 'none named publicly; ships a GitHub Action (cackle-action)',
-    mentions: 'Rust & AI Weekly #10 (2026-08-31)', returning: false,
-    note: 'code ACL checker: analyses every crate in the dependency tree for which API categories it actually reaches (net, fs, process, unsafe) and fails the build when a data-processing crate starts touching sockets. With bubblewrap installed it runs build scripts, tests and rustc itself inside a sandbox, and each build script gets its own sandbox config, which is the exact control the arrayref/proc-macro1 attack of 2026-08-20 defeated (a build script that downloaded and ran a remote payload). Linux only. The README is unusually honest that a determined attacker can circumvent detection and that this supplements rather than replaces review. Exit cost is zero (a CI job and a cackle.toml), entry cost is the config pass over your tree',
+    mentions: 'Rust & AI Weekly #10 (2026-08-31); Rust & AI Weekly #12 (2026-09-14)', returning: true,
+    note: 'Second mention at #12 as the Rust seat opposite Go\'s gomodjail 2.0 (Akihiro Suda): both answer "which of my dependencies may touch the network or the filesystem" at build time by static analysis, and gomodjail 2.0 got there by demoting its 1.x runtime seccomp mode to legacy, so Go converged on Cackle\'s shape; verdict holds at Trial. Code ACL checker: analyses every crate in the dependency tree for which API categories it actually reaches (net, fs, process, unsafe) and fails the build when a data-processing crate starts touching sockets. With bubblewrap installed it runs build scripts, tests and rustc itself inside a sandbox, and each build script gets its own sandbox config, which is the exact control the arrayref/proc-macro1 attack of 2026-08-20 defeated (a build script that downloaded and ran a remote payload). Linux only. The README is unusually honest that a determined attacker can circumvent detection and that this supplements rather than replaces review. Exit cost is zero (a CI job and a cackle.toml), entry cost is the config pass over your tree',
   },
   {
     name: 'cargo-vet', url: 'https://mozilla.github.io/cargo-vet/', category: 'security/supply-chain', quadrant: 'dev',
@@ -540,5 +547,26 @@ export const crateRadarTools: RadarTool[] = [
     adopters: 'none named',
     mentions: 'Rust & AI Weekly #11 (2026-09-07)', returning: false,
     note: 'This Week in Rust 667 Crate of the Week, self-suggested: wraps a reader and splits it into sub-streams on a byte pattern, so each segment is itself a Read you consume to EOF before calling next(). The design detail worth stealing is Options::set_limit_read, a per-segment byte cap so a stream with no separator in it cannot quietly eat your heap: a bound enforced by default rather than by whoever remembers. Useful where you are framing a byte stream you do not control, which in this newsletter means SSE frames off an LLM endpoint or separator-delimited document chunking before embedding. Assess: tiny, one author, no named adopters, and the author is candid that the algorithm was harder than expected, which is usually where the remaining bugs live',
+  },
+  {
+    name: 'rustls', url: 'https://github.com/rustls/rustls', category: 'security/tls', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'actively maintained and funded (Joe Birr-Pixton full-time via ISRG Prossimo; co-maintainers Dirkjan Ochtman and Daniel McCarney); Cure53 audit 2020; OpenSSF best-practices badge', latest: 'v0.23.44 (Sep 7, 2026); 0.24.0-dev.1 published Jul 23, 1.0 to follow 0.24',
+    stars: '~7.6k★', adopters: 'Quinn, Hickory DNS, Linkerd (Buoyant), reqwest/hyper stacks; rustls-openssl-compat for C consumers',
+    mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
+    note: 'Ten years old this month (first commit May 2, 2016; 0.1.0 Aug 27, 2016). Entered the radar on the anniversary post because the stewardship story is the lesson: the 0.23 line has shipped 43 non-breaking releases since Feb 29, 2024 while adding FIPS-certified crypto, certificate compression, Encrypted ClientHello and post-quantum key exchange. The next breaking release, 0.24, moves buffering outside the library (a TlsInputBuffer trait, plaintext decrypted in place and returned as a borrow), adds session types for the handshake so async, blocking and completion-based callers share one API, splits post-handshake send and receive into two Send objects so full-duplex workloads can double throughput, and moves crypto providers into separate crates (rustls-aws-lc-rs, rustls-ring) so feature-unification panics go away. Adopt for the 0.23 line today; budget the 0.24 migration as a real port and expect 1.0 after it bakes',
+  },
+  {
+    name: 'tokio_rcu', url: 'https://github.com/roeeshoshani/tokio_rcu', category: 'infra/concurrency', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'brand new, solo (Roee Shoshani); 157 commits; MIT', latest: 'v0.1.3 (Sep 11, 2026)',
+    stars: '8★', adopters: 'none',
+    mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
+    note: 'This Week in Rust 668 Crate of the Week, self-suggested: user-space read-copy-update built around tokio\'s semantics. The quiescent state is tokio\'s on_after_task_poll hook, which works because RCU-protected pointers cannot be held across an await, so when the hook fires the thread provably holds none. Readers pay one atomic load; the author\'s divan benchmarks against arc-swap show reads about 3x faster and flat under contention, writes about 3x slower because they sleep through a grace period. The catch is the dependency chain: it needs tokio_unstable (the hook is not stable), Linux or Windows only (membarrier / FlushProcessWriteBuffers), and assumes one runtime per process. Assess: a well-reasoned primitive for read-mostly hot paths like routing tables and model registries, whose stability is gated on a tokio decision the author does not control',
+  },
+  {
+    name: 'oracledb', url: 'https://github.com/oracle/rust-oracledb', category: 'data/database-driver', quadrant: 'data',
+    ring: 'Assess', maintenance: 'brand new under Oracle Corporation stewardship (Anthony Tuininga, python-oracledb author); 9 commits in the public repo; three betas in four weeks; took over the crate name from Muhammed Durakovic\'s community thin driver (his 0.5 to 0.9.1 are yanked; it continues as oraclemcp-driver-cx)', latest: 'v26.0.0-beta.3 (Sep 8, 2026); beta.1 mid-Aug',
+    stars: '7★', adopters: 'none yet; Oracle-maintained',
+    mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
+    note: 'rust-alternative-to Go\'s go-oracledb, which Go Weekly 617 flagged as Oracle\'s first official pure-Go driver; the same week Oracle published beta.3 of the Rust one, and almost nobody noticed. Pure Rust thin driver speaking TNS directly, no Instant Client or OCI, Rust 1.89+, Oracle 12 through 26ai, with compressed fetch, statement caching, DRCP, VECTOR and JSON types, and an optional Arrow feature that returns query results as RecordBatches. Assess: an official vendor driver at beta.3 with a single-digit commit count is a stewardship signal and a maturity warning in the same sentence; the community driver it replaces is the fallback if the vendor loses interest. Watch for the sync-only API growing an async story',
   },
 ]
