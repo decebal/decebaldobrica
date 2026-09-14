@@ -84,21 +84,30 @@ export function articleSchema(input: {
   description: string
   path: string
   datePublished?: string
+  dateModified?: string
   image?: string
+  keywords?: string[]
+  wordCount?: number
 }) {
+  const url = `${config.website}${input.path}`
   return {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: input.title,
     description: input.description,
-    url: `${config.website}${input.path}`,
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     datePublished: input.datePublished,
+    dateModified: input.dateModified ?? input.datePublished,
     author: { '@id': PERSON_ID },
     publisher: { '@id': PERSON_ID },
     image: input.image
       ? `${config.website}${input.image}`
       : `${config.website}/opengraph-image.png`,
     inLanguage: 'en',
+    isPartOf: { '@id': WEBSITE_ID },
+    ...(input.keywords?.length ? { keywords: input.keywords.join(', ') } : {}),
+    ...(input.wordCount ? { wordCount: input.wordCount } : {}),
   }
 }
 

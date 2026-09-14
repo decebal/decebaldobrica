@@ -67,6 +67,11 @@ export const metadata: Metadata = {
     description: metaDescription,
     images: ['/opengraph-image.png'],
   },
+  alternates: {
+    types: {
+      'application/rss+xml': [{ url: '/rss.xml', title: `${config.name} - Blog` }],
+    },
+  },
 }
 
 export default function RootLayout({

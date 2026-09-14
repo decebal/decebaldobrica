@@ -18,7 +18,18 @@ export interface BlogPost {
   tags?: string[]
   coverImage?: string
   readingTime?: string
+  wordCount?: number
   canonicalUrl?: string // For imported posts from old blog
+  /**
+   * Search-facing overrides. `title` stays the on-page H1 and `description`
+   * stays the newsletter preview; when these are set they are what the page
+   * emits as <title> and meta description (and in OG/Twitter/JSON-LD), so the
+   * reader-facing hook and the search snippet can be different lengths.
+   */
+  seoTitle?: string
+  seoDescription?: string
+  /** ISO date of the last substantive edit; feeds article:modified_time and dateModified. */
+  updated?: string
 }
 
 const BLOG_CONTENT_DIR = path.join(process.cwd(), 'content', 'blog')
@@ -52,7 +63,11 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
       tags: data.tags || [],
       content,
       readingTime: stats.text,
+      wordCount: stats.words,
       canonicalUrl: data.canonicalUrl,
+      seoTitle: data.seoTitle,
+      seoDescription: data.seoDescription,
+      updated: data.updated,
     } as BlogPost
   })
 
@@ -82,7 +97,11 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
     tags: data.tags || [],
     content,
     readingTime: stats.text,
+    wordCount: stats.words,
     canonicalUrl: data.canonicalUrl,
+    seoTitle: data.seoTitle,
+    seoDescription: data.seoDescription,
+    updated: data.updated,
   }
 }
 

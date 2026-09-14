@@ -8,6 +8,7 @@ import { Terminal, TerminalCommand, TerminalLine, TerminalOutput } from '@/compo
 import { extractText } from '@/components/blog/extractText'
 import { getAllBlogPosts, getBlogPost } from '@/lib/blogPosts'
 import { formatDate } from '@/lib/blogPosts'
+import { config } from '@/lib/personalConfig'
 import { articleSchema, breadcrumbSchema, jsonLd } from '@/lib/structuredData'
 import { Badge } from '@decebal/ui/badge'
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react'
@@ -56,30 +57,50 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   const socialImage = getSocialImage(slug)
+  // Search-facing copy: the frontmatter may override the on-page title and the
+  // newsletter-preview description with snippet-length versions.
+  const seoTitle = post.seoTitle || post.title
+  const seoDescription = post.seoDescription || post.description
 
   return {
-    title: post.title,
-    description: post.description,
+    title: seoTitle,
+    description: seoDescription,
     authors: [{ name: post.author }],
     keywords: post.tags,
     openGraph: {
       type: 'article',
       url: `/blog/${slug}`,
-      title: post.title,
-      description: post.description,
+      title: seoTitle,
+      description: seoDescription,
       publishedTime: post.date,
+      modifiedTime: post.updated || post.date,
       authors: [post.author],
+      tags: post.tags,
       images: [{ url: socialImage, width: 1200, height: 760, alt: post.title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.description,
+      title: seoTitle,
+      description: seoDescription,
       images: [socialImage],
     },
     alternates: {
       canonical: post.canonicalUrl || `/blog/${slug}`,
     },
+  }
+}
+
+/** Internal links stay in the tab and keep the referrer; external ones open in a new tab. */
+function isInternalHref(href?: string): boolean {
+  if (!href) return false
+  if (href.startsWith('/') || href.startsWith('#')) return true
+  try {
+    return (
+      new URL(href).hostname.replace(/^www\./, '') ===
+      new URL(config.website).hostname.replace(/^www\./, '')
+    )
+  } catch {
+    return false
   }
 }
 
@@ -94,11 +115,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const showRadar = shouldShowRadarBanner(post.tags)
   const socialImage = getSocialImage(slug)
   const article = articleSchema({
-    title: post.title,
-    description: post.description,
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.description,
     path: `/blog/${slug}`,
     datePublished: post.date,
+    dateModified: post.updated,
     image: socialImage,
+    keywords: post.tags,
+    wordCount: post.wordCount,
   })
   const breadcrumbs = breadcrumbSchema([
     { name: 'Home', path: '/' },
@@ -216,16 +240,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       li: ({ children }) => (
                         <li className="text-gray-300 leading-relaxed">{children}</li>
                       ),
-                      a: ({ href, children }) => (
-                        <a
-                          href={href}
-                          className="text-brand-teal hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {children}
-                        </a>
-                      ),
+                      a: ({ href, children }) =>
+                        isInternalHref(href) ? (
+                          <a href={href} className="text-brand-teal hover:underline">
+                            {children}
+                          </a>
+                        ) : (
+                          <a
+                            href={href}
+                            className="text-brand-teal hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {children}
+                          </a>
+                        ),
                       code: ({ className, children }) => {
                         const isInline = !className
                         if (isInline) {
