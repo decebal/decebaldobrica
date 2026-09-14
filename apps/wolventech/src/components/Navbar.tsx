@@ -10,10 +10,7 @@ export default function Navbar() {
           aria-label="Wolven Tech home"
           className="flex items-center gap-2.5 text-base font-bold tracking-tight text-rust-ink hover:no-underline"
         >
-          <span
-            aria-hidden="true"
-            className="inline-block h-5 w-5 rounded-md bg-gradient-to-br from-[#ce422b] to-[#ffa657] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
-          />
+          <img src="/icon.svg" alt="" width={20} height={20} className="h-5 w-5 rounded-md" />
           <span>
             <span className="text-rust-primary-2">wolven</span>
             <span>-tech</span>

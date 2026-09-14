@@ -71,6 +71,7 @@ const organizationSchema = {
   description:
     'UK technical advisory and software development company focused on Rust systems, event sourcing, and production platforms.',
   url: siteUrl,
+  logo: `${siteUrl}/icon.svg`,
   identifier: {
     '@type': 'PropertyValue',
     propertyID: 'Companies House company number',
