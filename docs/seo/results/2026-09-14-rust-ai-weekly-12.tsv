@@ -1,0 +1,20 @@
+# post=apps/web/content/blog/2026-09-14-rust-ai-weekly-12.mdx
+# keyword=CUDA Rust secondary=cuTile Rust,rustls,Rust newsletter,GPU kernels in Rust
+# scorer=apps/web/scripts/seo-score.mjs (read-only); snapshots instead of git commits; hash = sha1 of the post
+commit	seo_score	word_count	status	description
+fa46e80	52.4	4079	keep	baseline (untouched post)
+ea8a532	67.2	4079	keep	add seoDescription (search snippet) with primary keyword, 120-160 chars
+cd5ec9a	73.7	4082	keep	name CUDA Rust in the three-hook opening (description and intro together)
+f632869	81.5	4083	keep	rename themed H2 "Inference & GPUs" to "GPU kernels in Rust"
+cb0ffef	88.4	4083	keep	add seoTitle with primary keyword
+affaf40	91.5	4083	keep	link the issue #9, #10 and #11 mentions to their posts (internal links)
+6755d36	93.5	4085	keep	describe the series as a Rust newsletter in the welcome sentence
+472f588	94.1	4086	keep	name CUDA Rust in the anchor paragraph where it is currently "this"
+f8a300a	94.7	4088	keep	name CUDA Rust in the cuda-oxide entry opening
+2568898	94.7	4095	discard	name CUDA Rust in the thought-for-the-week NVIDIA sentence
+57d3162	94.8	4087	keep	split the anchor opening sentence at the colon
+cad2198	94.9	4086	keep	split the "framing" sentence in the anchor
+edd4b6f	95.9	4086	keep	split the pick-of-the-week entry into two paragraphs at "Now the part that keeps this at Trial"
+f841cd7	95.9	4086	discard	add "gpu" tag
+1f694e0	88.0	4086	discard	longer seoTitle naming all three hooks
+b488d29	86.1	4086	discard	shorter seoDescription variant (control)
