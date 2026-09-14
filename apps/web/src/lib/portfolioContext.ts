@@ -31,7 +31,7 @@ Decebal Dobrica is a Software Architect and technology leader with over 15 years
 - QuantumForge: Launched platform in 3 weeks after 2-year delay via monorepo
 
 ### Contact
-- Email: discovery@decebaldobrica.com
+- Email: discovery@wolventech.com
 - Location: London
 - Phone: +447496412887
 - LinkedIn: linkedin.com/in/decebaldobrica

@@ -2,7 +2,7 @@
 
 **Engineering Leader | Full-Stack Architecture & Team Growth | SaaS & AI Platforms**
 
-- Email: discovery@decebaldobrica.com
+- Email: discovery@wolventech.com
 - LinkedIn: https://www.linkedin.com/in/decebaldobrica
 - Location: London
 - Phone: +447496412887

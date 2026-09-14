@@ -66,7 +66,7 @@ export async function sendMeetingConfirmation(
       subject: `Meeting Confirmed: ${meeting.type}`,
       html: htmlContent,
       text: textContent,
-      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
+      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || 'discovery@wolventech.com',
     })
 
     console.log('   Full response:', JSON.stringify(result, null, 2))

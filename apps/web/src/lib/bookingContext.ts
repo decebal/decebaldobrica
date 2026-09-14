@@ -36,9 +36,9 @@ export function buildBookingContextFromEnv(): BookingContext {
     rateLimiter,
     turnstile: createTurnstileVerifier(process.env.TURNSTILE_SECRET_KEY),
     config: {
-      ownerEmail: process.env.CALENDAR_OWNER_EMAIL || 'discovery@decebaldobrica.com',
+      ownerEmail: process.env.CALENDAR_OWNER_EMAIL || 'discovery@wolventech.com',
       fromAddress: process.env.EMAIL_FROM || 'noreply@decebaldobrica.com',
-      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM,
+      replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || 'discovery@wolventech.com',
       timeZone: personalConfig.contact?.timezone || 'America/New_York',
       appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://decebaldobrica.com',
     },

@@ -53,11 +53,8 @@ export function LegalDocument({
             <h2 className="text-xl font-semibold text-white">Questions</h2>
             <p className="mt-3 text-gray-200">
               Email{' '}
-              <a
-                className="text-brand-teal hover:underline"
-                href="mailto:discovery@decebaldobrica.com"
-              >
-                discovery@decebaldobrica.com
+              <a className="text-brand-teal hover:underline" href="mailto:discovery@wolventech.com">
+                discovery@wolventech.com
               </a>{' '}
               or review commercial services at{' '}
               <a className="text-brand-teal hover:underline" href="https://wolventech.com">
