@@ -65,8 +65,22 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': `${siteUrl}/#organization`,
-  name: 'Wolven Tech Advisory Ltd',
+  name: 'Wolven Tech',
+  legalName: 'WOLVEN TECH ADVISORY LTD',
+  alternateName: 'Wolven Tech Advisory Ltd',
+  description:
+    'UK technical advisory and software development company focused on Rust systems, event sourcing, and production platforms.',
   url: siteUrl,
+  identifier: {
+    '@type': 'PropertyValue',
+    propertyID: 'Companies House company number',
+    value: '16811183',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'business enquiries',
+    url: `${siteUrl}/contact`,
+  },
   founder: {
     '@type': 'Person',
     name: 'Decebal Dobrica',

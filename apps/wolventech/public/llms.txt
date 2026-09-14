@@ -1,0 +1,24 @@
+# Wolven Tech
+
+> Wolven Tech is a UK Rust technical advisory and software development practice operated by WOLVEN TECH ADVISORY LTD, company 16811183. It builds Rust systems and publishes separate software products.
+
+## Canonical pages
+
+- [Wolven Tech services and work](https://wolventech.com/)
+- [Products built by Wolven Tech](https://wolventech.com/products)
+- [Founder and operating approach](https://wolventech.com/#about)
+- [Public open-source artifacts](https://wolventech.com/#artifacts)
+- [Business contact](https://wolventech.com/contact)
+
+## Verified identity
+
+- [WOLVEN TECH ADVISORY LTD at Companies House](https://find-and-update.company-information.service.gov.uk/company/16811183)
+- [Wolven Tech GitHub organization](https://github.com/wolven-tech)
+- [Founder Decebal Dobrica](https://decebaldobrica.com/)
+
+## Scope
+
+- Wolven Tech is the operator, not the name of each product it builds.
+- Services include Rust architecture, technical due diligence, platform work, and advisory; current scope and terms are described on the website.
+- Product features, prices, availability, and policies belong to each linked product's own domain.
+- Case-study figures on the site describe specific work and should not be treated as guaranteed outcomes.

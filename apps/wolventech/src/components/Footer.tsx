@@ -10,6 +10,14 @@ export default function Footer() {
         >
           Decebal Dobrica
         </a>
+        <span className="block pt-2">
+          <a
+            href="https://find-and-update.company-information.service.gov.uk/company/16811183"
+            className="text-rust-ink-soft underline-offset-4 hover:underline"
+          >
+            WOLVEN TECH ADVISORY LTD · company 16811183
+          </a>
+        </span>
       </div>
       <div>
         © {new Date().getFullYear()} Wolven Tech &nbsp;·&nbsp;{' '}
