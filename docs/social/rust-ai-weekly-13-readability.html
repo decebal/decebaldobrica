@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rust &amp; AI Weekly #13: readability evidence</title>
+<style>body{max-width:960px;margin:40px auto;padding:0 24px;font:18px/1.6 system-ui;color:#222}a{color:#8d3508}img{max-width:100%;height:auto}figure{margin:24px 0}figcaption{font-size:14px}code{overflow-wrap:anywhere}a:focus-visible{outline:3px solid #a3440b}html{scroll-padding-top:20px}.skip{position:absolute;left:-10000px}.skip:focus{position:static}table{border-collapse:collapse;width:100%}th,td{text-align:left;border-bottom:1px solid #ddd;padding:8px}</style>
+<a class="skip" href="#main">Skip to report</a>
+<main id="main">
+<h1>Readers can scan release details without a page-long paragraph</h1>
+<p>Issue #13 now separates the case, release changes, limitations, and adoption verdict. The MDX article, newsletter HTML, launch mirror, and syndication copy share the edit.</p>
+<h2>The longest source paragraph fell from 614 words to 55</h2>
+<table><tr><th>Measure</th><th>Before</th><th>After</th></tr><tr><td>Rendered body words</td><td>4,370</td><td>2,837</td></tr><tr><td>Longest paragraph</td><td>614 words</td><td>55 words</td></tr><tr><td>Paragraphs over 100 words</td><td>13</td><td>0</td></tr><tr><td>Distinct link destinations</td><td>57</td><td>57, identical set</td></tr></table>
+<p>Before: commit <code>610c8170265f07fe53dfd7cefa8046150a410c95</code>. After: the commit containing this report; article blob <code>0523469286160ad9bd2263a4baddb47194c1c12e</code>. Counts use the rendered Markdown body, excluding frontmatter; list items remain separate blocks.</p>
+<h2>Substack preserves the paragraph gaps and lists</h2>
+<figure><img src="assets/weekly13-readability/substack-mobile.png" alt="Substack mobile preview showing separate dial9 paragraphs, a release subheading, and feature bullets" loading="lazy"><figcaption>Chrome tab 956351626, Substack post 216861797, mobile preview, 22 September 2026 around 11:28 UTC. Captured from the saved edited body; no mock page.</figcaption></figure>
+<figure><img src="assets/weekly13-readability/substack-email.png" alt="Substack email preview showing language-watch items and distinct In brief bullets" loading="lazy"><figcaption>Same post and browser tab, email preview, 22 September 2026 around 11:30 UTC. The preview recipient is Substack's placeholder. No test email was sent.</figcaption></figure>
+<h2>The edited draft and source can be checked directly</h2>
+<ol><li>Open <a href="../../apps/web/content/blog/2026-09-21-rust-ai-weekly-13.mdx">the full edited article</a> or <a href="rust-ai-weekly-13-substack.html">newsletter paste source</a>. <strong>Pass:</strong> dial9 has release and coverage subheadings; each crate has separate maintenance, latest, and adoption bullets.</li><li>Open <a href="https://ddonprogramming.substack.com/publish/post/216861797">the Substack editor</a> and Preview → Mobile or Email. <strong>Pass:</strong> the new opening, feature bullets, and two loaded images appear.</li><li>Compare the article with its launch HTML mirror. <strong>Pass:</strong> the same body is present, with absolute email links and the existing radar-image placeholder convention.</li></ol>
+<h2>Saved edits and public updates are different states</h2>
+<p>The Substack editor showed Saved after reload and an Update action for an already-published post. Preview screenshots prove the saved edit's rendering; they alone do not prove the public post was updated. Publication status is recorded in the accompanying launch notes.</p>
+<h2>Visual checks cover what source counts cannot</h2>
+<p>Both mobile and email previews display real paragraph spacing, distinct list items, working headings, the 3D hero, and the radar image. Source checks preserve all 57 link destinations, the 80-tool radar and its verdict totals, the slug, and existing X thread text.</p>
+<h2>What I have not checked</h2>
+<p>No delivered-email client test was performed. Existing benchmark and historical-source qualifications remain in the article; this pass does not rerun benchmarks or resolve previously unverified claims. Already-delivered emails cannot be changed by updating the web post.</p>
+</main>
+</html>

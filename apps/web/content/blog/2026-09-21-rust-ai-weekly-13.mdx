@@ -19,85 +19,261 @@ seoDescription: "dial9 0.5 is a flight recorder for Tokio you can run in product
 
 *The counters looked fine. The queue told another story.*
 
-Welcome back to **Rust & AI Weekly**, the curated, vetted Rust newsletter on the crates and tools showing up where Rust meets AI. Today's issue: dial9 records what Tokio is actually doing in production and no longer needs tokio_unstable to do it, the Rust project warns that prominent maintainers are being targeted through fake job calls, and This Week in Rust's Crate of the Week is a JPEG codec most companies cannot use without a licence conversation. The theme this week is **the counters looked fine**: every story below is a case where the summary view said healthy and the underlying record said otherwise. A runtime dashboard with idle workers and full queues. A LinkedIn profile that passes a glance. A freely available codec whose commercial terms still need a read. A release plan with no further breaking changes expected, followed by two breaking release candidates. Last week I asked you to find out who pays for each dependency. This week the ask is smaller and harder: stop reading the aggregate and go look at the log.
+A service at AWS was falling over at 90% CPU. Tokio's metrics showed idle workers and full queues. Russell Cohen built dial9 to see what happened between those measurements.
 
-*(Status lines reflect public signals as of September 22, 2026; stars and downloads are approximate and move fast.)*
+This week's **Rust & AI Weekly** covers dial9's 0.5 release, a warning about attacks on Rust maintainers, and five more dependency evaluations. Each crate has a verdict, release status, and the caveats I would check before using it.
+
+*Public signals checked September 22, 2026. Stars and downloads are approximate.*
 
 [![Rust & AI Crate Radar, tools mapped by Adopt / Trial / Assess / Hold, this week's snapshot](/images/radar/2026-09-21-radar.png)](/radar)
 
-*This week's radar: six entries, three new and three updates, bringing it to 80 tools: 14 Adopt, 33 Trial, 31 Assess and 2 Hold. [Explore the interactive version](/radar).*
+*Six entries this week: three new and three updates. The radar now covers 80 tools: 14 Adopt, 33 Trial, 31 Assess and 2 Hold. [Explore the interactive version](/radar).*
 
 ## The week's anchor
 
-On Thursday, September 17, the Rust blog published [Be alert: targeted attacks on prominent Rustaceans](https://blog.rust-lang.org/2026/09/17/targeted-attacks/), written by Adam Harvey for the crates.io team and the security response working group. The claim is specific: there is an ongoing campaign against rust-lang members and owners of popular crates, and the goal is to compromise their machines and accounts in order to publish malware under their names. The vector is not a phishing email. It is a video call about something good, a job, a contract, a collaboration, during which the target is asked to install a "missing audio codec" or run a command that has been placed on their clipboard. The attackers build new but plausible company profiles, LinkedIn presence included, so the cursory check comes back clean. The post links a June write-up by Matt Mastracci of a failed attempt of this shape against many prominent Rust developers, notes that the [arrayref compromise](https://blog.rust-lang.org/2026/08/20/supply-chain-attack-on-arrayref/) last month came through a similar route, and says plainly that nobody yet knows whether these are one campaign. The pattern is documented as DPRK tradecraft and is not Rust-specific; Go Weekly ran the same alert to its readers on Friday.
+On September 17, Adam Harvey published [Be alert: targeted attacks on prominent Rustaceans](https://blog.rust-lang.org/2026/09/17/targeted-attacks/) for the crates.io team and security response working group. Attackers are targeting rust-lang members and owners of popular crates to compromise their machines and publish malware through their accounts.
 
-The advice is unglamorous and correct: be the one who sets up the call, on a platform you already use; recheck MFA and login history; write to help@crates.io or security@rust-lang.org if anything looks off. The reason it belongs at the top of an issue about crates is that the last four issues of this newsletter have been about supply-chain controls that operate on the artifact: cargo-vet audits, cargo-acl capability checks, min-publish-age, the packaged lockfile on install. This attack goes around all of them. It compromises the person, and a person with publish rights produces a perfectly signed, perfectly audited-looking release. If you maintain something with more than a handful of dependents, this post is for you. If you depend on such people, and you do, the mitigation available to you is the one from [issue #10](/blog/2026-08-31-rust-ai-weekly-10): a publish-age delay and a build-time capability check, so that a compromised maintainer's release has to sit in public for a few days and cannot open a socket from a build script when it lands.
+The approach starts with a video call about a job, contract, or collaboration. During the call, the target is asked to install a “missing audio codec” or run a command placed on their clipboard. The attackers create plausible company profiles, including a LinkedIn presence, to survive a cursory check.
+
+The post links Matt Mastracci's June account of similar attempts and notes that August's [arrayref compromise](https://blog.rust-lang.org/2026/08/20/supply-chain-attack-on-arrayref/) used a similar route. Whether these belong to one campaign is unknown. The pattern is documented as DPRK tradecraft and crosses ecosystems; Go Weekly carried the alert on September 18.
+
+For maintainers, the Rust team's advice is concrete:
+
+- Set up the call yourself, on a platform you already use.
+- Recheck MFA and account login history.
+- Report concerns to help@crates.io or security@rust-lang.org.
+
+The supply-chain tools covered in recent issues, including cargo-vet, cargo-acl and publish-age delays, operate on releases and builds. They do not protect a maintainer's machine during a call.
+
+For consumers, the controls from [issue #10](/blog/2026-08-31-rust-ai-weekly-10) still help: delay fresh releases and check build-time capabilities. They can limit exposure to a compromised release, including an unexpected socket opened by a build script.
 
 ## Pick of the week
 
-[**dial9 0.5.1**](https://github.com/dial9-rs/dial9) — a flight recorder for Tokio, and the crate I have had on the series plan since March without a release worth leading with. Now there is one. Russell Cohen built dial9 to debug a service at AWS that fell over at 90% CPU while its runtime metrics insisted the workers were idle and the queues were full at the same time; the metrics were aggregates, and aggregates cannot tell you that the kernel took 18 milliseconds to schedule worker 47 after Tokio asked for it. dial9 records the events instead: every poll start and stop, every worker park and unpark with kernel timestamps, wake causality, sampled allocations with liveset tracking, frame-pointer CPU profiles, `tracing` spans, `getrusage` and TCP accept-queue depth, all into a rotating disk or memory buffer, or straight to S3, with overhead the project's [March introduction](https://tokio.rs/blog/2026-03-18-dial9) described as typically under 5%. That is the project's measurement, not an independently verified promise for your workload. The 0.5 release on August 26 (0.5.1 on September 17, this week) is a restructure rather than an increment: the crate was renamed from `dial9-tokio-telemetry` to `dial9`, Tokio became one `Source` among several so the profilers no longer pull in tokio at all, spans can be produced natively with `dial9_span!` and a Tower layer rather than through your tracing subscriber, a trigger mode keeps a ring buffer and flushes only when your code says something looks wrong, and the viewer can aggregate flamegraphs and span histograms across many trace files from many hosts and diff a slow operation against a fast one. The [0.5.1 release notes](https://github.com/dial9-rs/dial9/releases) add system information in trace segments, FreeBSD telemetry, off-CPU and spawn-to-first-poll points of interest, and fixes for task dumps, rotation and liveset reallocations. They also deprecate `RecorderSourceExt` methods in favour of inherent `RecorderBuilder` methods and mark sealing the extension traits as breaking. The line I want you to notice, after last week's tokio_rcu entry, is this: **dial9 0.5 works without `tokio_unstable`**. It degrades, since task spawn and terminate events and per-worker queue depth need the runtime hooks and poll coverage narrows to tasks started through dial9's own spawn helpers, but it compiles and runs on a stock toolchain, which is the difference between a tool your platform team can adopt and one they have to get a rustflags exception for. Go deeper with Cohen's [Principles for fast Tokio applications](https://dial9-rs.github.io/blog/principles-for-fast-tokio-applications/), written on the way home from the RustConf Unconf and listed in This Week in Rust 669: work backward from a real metric before you fix any long poll, treat schedule latency as the number that matters, batch for throughput and yield for latency (his mini-Redis example cuts p99 from 2.548 ms to 0.320 ms by yielding after four consecutive ready reads), keep every std mutex critical section to a hashmap update because one contended lock can stall all four workers at once, and reserve cores for the runtime rather than giving Tokio all of them. It is the best short document on production Tokio I have read this year, and it is explicitly a first draft with a PR link.
-<br/>*Maintenance: actively maintained (Russell Cohen and Jess Izen; the crate is co-owned on crates.io by Carl Lerche; eighteen named contributors on 0.5 including David Tolnay); Apache-2.0; ~500 stars, 534 commits · Latest: v0.5.1 (Sep 17, 2026); 0.5.0 Aug 26; ~750k downloads under the old crate name · Adoption: **Trial**; AWS services were the early adopters and Ditto runs the CPU profiler on production Android behind a flag; the cost is a 0.3-to-0.5 migration guide, `force-frame-pointers` for profiling, and `tokio_unstable` if you want every task; the exit cost is close to zero because telemetry is not in your data path*
+[**dial9 0.5.1**](https://github.com/dial9-rs/dial9) — a flight recorder for Tokio. **Trial.**
+
+Cohen's AWS investigation found an 18-millisecond gap between Tokio asking the kernel to wake worker 47 and the worker being scheduled. The event trace exposed a delay the aggregate metrics could not explain.
+
+dial9 records poll starts and stops, worker park and unpark events with kernel timestamps, and wake causality. It also captures sampled allocations and liveset tracking, frame-pointer CPU profiles, `tracing` spans, `getrusage`, and TCP accept-queue depth. Output goes to a rotating disk or memory buffer, or S3.
+
+The project's [March introduction](https://tokio.rs/blog/2026-03-18-dial9) described overhead as typically under 5%. That is the project's measurement; I have not independently verified it for another workload.
+
+### What changed in 0.5
+
+Version 0.5.0 shipped on August 26. The crate was renamed from `dial9-tokio-telemetry` to `dial9`, and Tokio became one `Source` among several. The profilers no longer depend on Tokio.
+
+- **Native spans:** `dial9_span!` and a Tower layer can record spans without going through your tracing subscriber.
+- **Trigger mode:** keep a ring buffer and flush when your code detects a problem.
+- **Multi-trace analysis:** aggregate flamegraphs and span histograms across files and hosts, then compare slow operations with fast ones.
+
+The [0.5.1 release notes](https://github.com/dial9-rs/dial9/releases), dated September 17, add system information in trace segments, FreeBSD telemetry, and off-CPU and spawn-to-first-poll points of interest. Fixes cover task dumps, rotation, and liveset reallocations.
+
+There is also API migration work: `RecorderSourceExt` methods are deprecated in favour of inherent `RecorderBuilder` methods. Sealing the extension traits is marked as breaking.
+
+### Running without unstable hooks
+
+dial9 0.5 works without `tokio_unstable`, with reduced coverage. Task spawn and terminate events and per-worker queue depth still need runtime hooks. Poll coverage is limited to tasks started through dial9's own spawn helpers.
+
+That gives a platform team a way to evaluate it without a rustflags exception. Check those coverage limits against the incident you need to investigate.
+
+Cohen's [Principles for fast Tokio applications](https://dial9-rs.github.io/blog/principles-for-fast-tokio-applications/), written after the RustConf Unconf and listed in TWiR 669, is the companion read. Start from a real metric, inspect schedule latency, batch for throughput, and yield for latency. Keep contended `std` mutex sections short, such as a hashmap update, and reserve cores for the runtime.
+
+His mini-Redis example reports p99 falling from 2.548 ms to 0.320 ms after yielding every four consecutive ready reads. Those are the author's results. The post is a first draft and accepts PRs.
+
+- **Maintenance:** Russell Cohen and Jess Izen, with Carl Lerche also a crates.io co-owner. Eighteen named contributors on 0.5, including David Tolnay. Apache-2.0; about 500 stars and 534 commits.
+- **Latest:** 0.5.1, September 17. About 750k downloads under the old crate name.
+- **Adoption:** Trial. AWS services were early adopters; Ditto runs the CPU profiler on production Android behind a flag. Budget for the 0.3-to-0.5 migration and `force-frame-pointers` for profiling. Exit cost is low because telemetry is outside the application's data path.
 
 ## Codecs
 
-[**zenjpeg 0.8.4**](https://github.com/imazen/zenjpeg) — This Week in Rust 669's Crate of the Week, suggested by Kornel, and the entry this week where licensing belongs beside the performance table. The code is impressive. Lilith River at Imazen started it as a port of Google's jpegli, rewrote it six times, and ended up with an independent pure-Rust JPEG encoder and decoder under `#![forbid(unsafe_code)]`, with SIMD through her archmage safe-token crate rather than raw intrinsics, streaming single-pass encode and decode with bounded memory, decode limits on pixels and bytes so a hostile image cannot exhaust a server, cooperative cancellation tokens, parallel decode when restart markers are present, adaptive and trellis quantization, XYB, UltraHDR gain maps, and JPEG-to-JPEG recompression. The author's published numbers on a Ryzen 9 7950X, with a pinned-commit reproduction in the repo, not independently rerun here: baseline decode at 0.94x libjpeg-turbo, progressive decode 1.35x faster because the pipeline is fused, a 4096px parallel decode in 13% of the C time, and encode beating mozjpeg at matched file size on 81% of a 337-photo corpus. The README discloses that it was developed with Claude and tested against the C++ reference with 930-plus tests. For anyone building an image-ingestion path for a vision model, this is the shape you want: no C toolchain, no unsafe, limits by default. Now the LICENSE. zenjpeg is dual-licensed AGPL-3.0 or commercial, with a $1 startup licence under $1M revenue and fewer than five employees and a sliding-scale subscription above that. River is candid about why: she has maintained this ecosystem full-time since 2011 and dual-licensing is how it stays funded without venture capital. That is a legitimate model and, after last week's issue, a refreshingly explicit answer to "who is paying for this." It is also the reason this is Assess and not Trial: for most companies the AGPL is a conversation with legal before it is a conversation with engineering, and the decoder API is still marked prerelease with breaking changes expected. zune-jpeg (0.5.16-rc2 on September 8) and the image crate remain the permissively licensed defaults.
-<br/>*Maintenance: actively developed, effectively solo but funded (Lilith River / Imazen); 2,599 commits; 15 stars · Latest: v0.8.4 (Jun 1, 2026), the fourteenth GitHub release; formerly published as jpegli-rs · Adoption: **Assess**; read LICENSE-COMMERCIAL before you read the benchmarks, and if the licence works for you this is the most complete safe-Rust JPEG codec I have seen*
+[**zenjpeg 0.8.4**](https://github.com/imazen/zenjpeg) — TWiR 669's Crate of the Week, suggested by Kornel. **Assess.**
+
+Lilith River at Imazen started with a port of Google's jpegli, then rewrote it six times into an independent pure-Rust JPEG encoder and decoder. It uses `#![forbid(unsafe_code)]`, with SIMD through archmage's safe-token API.
+
+For an image-ingestion service, the useful features are single-pass streaming with bounded memory, decode limits on pixels and bytes, and cooperative cancellation. The codec also supports parallel decoding with restart markers, adaptive and trellis quantization, XYB, UltraHDR gain maps, and JPEG-to-JPEG recompression.
+
+### Performance and licence
+
+The author publishes a pinned-commit reproduction on a Ryzen 9 7950X. I have not rerun these benchmarks:
+
+- Baseline decode: 0.94x libjpeg-turbo.
+- Progressive decode: 1.35x faster, attributed to the fused pipeline.
+- Parallel decode of a 4096px image: 13% of the C implementation's time.
+- Encode: beats mozjpeg at matched file size on 81% of a 337-photo corpus.
+
+The README discloses development with Claude and more than 930 tests against the C++ reference.
+
+zenjpeg is AGPL-3.0 or commercial. The commercial offer includes a $1 startup licence for businesses under $1M revenue with fewer than five employees, then a sliding-scale subscription. Read LICENSE-COMMERCIAL for eligibility and obligations.
+
+River has maintained the broader Imazen ecosystem full-time since 2011; the dual licence funds that work. For a company evaluation, the licensing decision comes before the benchmark comparison. The decoder API is also marked prerelease, with breaking changes expected.
+
+- **Maintenance:** actively developed, effectively solo but funded, by Lilith River / Imazen. 2,599 commits; 15 stars.
+- **Latest:** 0.8.4, June 1, 2026; the fourteenth GitHub release. Formerly published as jpegli-rs.
+- **Adoption:** Assess. Check commercial terms and tolerance for decoder API changes. zune-jpeg, with 0.5.16-rc2 released September 8, and the image crate remain permissively licensed alternatives.
 
 ## SIMD
 
-[**fearless_simd 1.0.0**](https://github.com/linebender/fearless_simd) — an update to [issue #8](/blog/2026-08-17-rust-ai-weekly-8)'s Trial entry, and my carry-over item from #11 finally resolved. The [August 0.7 post](https://linebender.org/blog/fearless-simd-0-7/) targeted 1.0 for early September if no API concerns emerged, with no further breaking changes planned. It did not promise an API freeze. Two release candidates followed: rc.1 on September 13 and rc.2 on September 19, both cut by LaurenzV with Shnatsel writing nearly every change. Both contain breaking changes. Final 1.0.0 shipped on September 21, alongside `fearless_simd_macros` 0.1.0. rc.1 renamed `N` to `LEN` and reshaped the `as_array` family to match `std::simd`, moved `abs` down to `SimdBase` so integers get it too, and added reductions including `reduce_sum`, `reduce_product`, `reduce_min` and `reduce_max`, with precise min/max variants. Floating-point sum/product reductions use a fixed evaluation order and agree across backends for a given vector type and lane count, except for NaN bit patterns. It also added `mul_add_precise` with a single-rounding guarantee even without hardware FMA. rc.2 moved `witness()` to a new `ExtractToken` supertrait and renamed it `token()`, and shipped a companion `fearless_simd_macros` crate whose `#[simd]` attribute runs a generic function body with the right target features enabled. Two things here are the kind of record I keep asking you to read instead of the badge. First, rc.1 documents the storage representation of vector types and promises it will not change without a semver major. Second, the project adopted a security policy: from 1.0, the latest release for each MSRV gets security backports for at least three years after that Rust version shipped. That is a written stewardship commitment, and it is rarer than a 1.0. Verdict holds at Trial, with one adjustment: trial the final 1.0 release and test the migration from 0.7 against those API changes. The August plan described intent; the release history records what actually shipped.
-<br/>*Maintenance: actively maintained (Linebender; Shnatsel writing, LaurenzV releasing); ~458 stars; MIT OR Apache-2.0; security policy with a three-year backport window per MSRV · Latest: v1.0.0 (Sep 21, 2026); rc.2 Sep 19, rc.1 Sep 13; requires Rust 1.89 · Adoption: **Trial**, unchanged from #8; 1.0 arrived September 21 after two breaking release candidates; review the migration before upgrading*
+[**fearless_simd 1.0.0**](https://github.com/linebender/fearless_simd) — final 1.0 shipped September 21, alongside `fearless_simd_macros` 0.1.0. **Trial**, unchanged from [issue #8](/blog/2026-08-17-rust-ai-weekly-8).
+
+The [August 0.7 post](https://linebender.org/blog/fearless-simd-0-7/) targeted early September if no API concerns emerged. It expected no further breaking changes, but did not promise an API freeze. Two breaking release candidates followed: rc.1 on September 13 and rc.2 on September 19, released by LaurenzV with Shnatsel writing nearly every change.
+
+### Migration from 0.7
+
+- **rc.1:** `N` became `LEN`; the `as_array` family now follows `std::simd`; `abs` moved to `SimdBase`, making it available for integers.
+- **Reductions:** `reduce_sum`, `reduce_product`, `reduce_min` and `reduce_max`, plus precise min/max variants. Floating-point sum and product use a fixed evaluation order and agree across backends for the same vector type and lane count, except for NaN bit patterns.
+- **Fused arithmetic:** `mul_add_precise` guarantees single rounding, including without hardware FMA.
+- **rc.2:** `witness()` became `token()` on the new `ExtractToken` supertrait. The companion macros crate adds `#[simd]` to run a generic function body with the appropriate target features.
+
+Two support commitments are worth including in an evaluation. Vector storage representation is documented and will change only with a semver major. From 1.0, the latest release for each MSRV receives security backports for at least three years after that Rust version shipped.
+
+- **Maintenance:** Linebender; Shnatsel writing, LaurenzV releasing. About 458 stars; MIT OR Apache-2.0.
+- **Latest:** 1.0.0, September 21. Requires Rust 1.89.
+- **Adoption:** Trial. Evaluate final 1.0 and test the 0.7 migration against the API changes above. This closes the 1.0 carry-over from issue #11.
 
 ## Concurrency
 
-[**tokio_rcu 0.2.1**](https://github.com/roeeshoshani/tokio_rcu) — last week's Crate of the Week did not sit still. Roee Shoshani shipped 0.2.0 on September 15 and 0.2.1 on September 17, stars went from 8 to 38, and commits from 157 to 226. The [commit history](https://github.com/roeeshoshani/tokio_rcu/commits/master/) and versioned docs make the changes clearer than the current README: `rcu_block_on` and `enable_rcu` already existed in [0.1.3](https://docs.rs/tokio_rcu/0.1.3). The API rename was `rcu_ptr::RcuPtr` to `rcu_box::RcuBox`. The 0.2 work removed per-thread live-guard reader bookkeeping, added an `include_calling_thread` argument to `synchronize_rcu`, and reorganized and reran the benchmarks. Version 0.2.1 then tightened `RcuBox`'s `Sync` bound to require `T: Send + Sync`, fixed a stall involving blocking tasks, and added branch hints. This is not a correction to last week's three-times-faster figure: that was the previous README's claim. The refreshed i7-12700 table reports mean read-only times of 2.166 to 3.496 ms for `RcuBox` versus 23.87 to 132.9 ms for arc-swap over 1, 8, 16, 32 and 64 tasks; the README describes that as reads 9 to 40 times faster and writes twice as slow. [PR 6](https://github.com/roeeshoshani/tokio_rcu/pull/6) renamed the existing Divan benchmark functions, without changing their workloads in that diff, after the implementation changed. It is not a new harness, nor a measured 9-to-40-times gain over 0.1.3. These remain the author's results, not independently rerun here. What did not change is the gate in the [0.2.1 docs](https://docs.rs/tokio_rcu/0.2.1): `tokio_unstable` is still required. Read this next to dial9 above. dial9 made the hooks optional by accepting reduced coverage; this RCU primitive relies on `on_after_task_poll` for its correctness argument. Assess holds.
-<br/>*Maintenance: brand new, solo (Roee Shoshani); 226 commits; 38 stars; MIT · Latest: v0.2.1 (Sep 17, 2026) · Adoption: **Assess**, unchanged; the required `on_after_task_poll` hook remains unstable; whether the Tokio team has answered last week's question is unverified this run*
+[**tokio_rcu 0.2.1**](https://github.com/roeeshoshani/tokio_rcu) — Roee Shoshani shipped 0.2.0 on September 15 and 0.2.1 on September 17. **Assess.**
+
+The [commit history](https://github.com/roeeshoshani/tokio_rcu/commits/master/) and versioned docs clarify what changed. `rcu_block_on` and `enable_rcu` already existed in [0.1.3](https://docs.rs/tokio_rcu/0.1.3). The API rename was `rcu_ptr::RcuPtr` to `rcu_box::RcuBox`.
+
+Version 0.2 removed per-thread live-guard reader bookkeeping and added `include_calling_thread` to `synchronize_rcu`. Version 0.2.1 tightened `RcuBox`'s `Sync` bound to require `T: Send + Sync`, fixed a stall involving blocking tasks, and added branch hints.
+
+### Reading the new benchmarks
+
+The refreshed i7-12700 table reports mean read-only times of 2.166–3.496 ms for `RcuBox`, versus 23.87–132.9 ms for arc-swap, across 1, 8, 16, 32 and 64 tasks. The README describes reads as 9–40 times faster and writes as twice as slow.
+
+These are the author's results; I have not rerun them. Last week's three-times-faster figure came from the previous README. The new table compares against arc-swap, so it does not establish a 9–40-times gain over 0.1.3.
+
+[PR 6](https://github.com/roeeshoshani/tokio_rcu/pull/6) renamed existing Divan benchmark functions after the implementation changed. That diff preserved their workloads; it did not introduce a new harness.
+
+The [0.2.1 docs](https://docs.rs/tokio_rcu/0.2.1) still require `tokio_unstable`. Unlike dial9's optional telemetry hooks, tokio_rcu relies on `on_after_task_poll` for its correctness argument. That keeps it at Assess.
+
+- **Maintenance:** new, solo project by Roee Shoshani; MIT. Stars rose from 8 to 38 and commits from 157 to 226 this week.
+- **Latest:** 0.2.1, September 17.
+- **Adoption:** Assess, unchanged. The required hook remains unstable; a Tokio team answer to last week's question is still unverified.
 
 ## GUI
 
-[**Slint 1.18**](https://slint.dev/blog/slint-1.18-released) — the [issue #3](/blog/2026-07-08-rust-ai-weekly-3) Deep Dive subject shipped 1.18.0 on September 16, listed in TWiR 669. The headline is `FlexboxLayout`, which brings the web's layout model into the Slint DSL with wrapping items and a familiar API, so a team that knows CSS can lay out a native panel without learning a second mental model. Also: z-order changes at runtime (long requested), spring animations alongside easing curves, animating and orienting an item along a path, `push`, `remove` and `insert` on arrays and models, custom default values for struct fields, a `WindowMoveArea` element for custom title bars, screen-reader support for text inputs, an experimental Vello-based renderer, and a compiler that emits leaner code for faster builds and smaller binaries. Large-text rendering and editing got much faster. For this newsletter the relevance is the same as in July: Slint remains the embedded-and-desktop toolkit with an MCP server built in, so an agent can drive a running UI, and every release like this one widens the set of apps you would plausibly build that way. Verdict holds at Trial; the tri-licence still needs a legal read, which makes it the second entry this week where the licence is part of the evaluation.
-<br/>*Maintenance: actively maintained (SixtyFPS GmbH; NLnet-funded features); ~23.9k stars · Latest: v1.18.1 (Sep 21, 2026); the feature release above was 1.18.0 (Sep 16) · Adoption: **Trial**, unchanged from #3*
+[**Slint 1.18**](https://slint.dev/blog/slint-1.18-released) — the toolkit covered in [issue #3](/blog/2026-07-08-rust-ai-weekly-3) released 1.18.0 on September 16, listed in TWiR 669. **Trial.**
+
+`FlexboxLayout` brings wrapping items and a CSS-familiar layout API into the Slint DSL. The rest of the release covers several parts of a native app:
+
+- **Layout and motion:** runtime z-order changes, spring animations, and animation and orientation along a path.
+- **Models and windows:** array and model `push`, `remove` and `insert`, custom struct-field defaults, and `WindowMoveArea` for custom title bars.
+- **Accessibility and rendering:** screen-reader support for text inputs and an experimental Vello renderer.
+- **Performance:** leaner compiler output for faster builds and smaller binaries, plus faster large-text rendering and editing.
+
+Slint's built-in MCP server lets an agent drive a running UI. That remains its relevance here for embedded and desktop applications. The tri-licence still needs a legal read.
+
+- **Maintenance:** SixtyFPS GmbH, with NLnet-funded features. About 23.9k stars.
+- **Latest:** 1.18.1, September 21. The features above arrived in 1.18.0 on September 16.
+- **Adoption:** Trial, unchanged from issue #3.
 
 ## Data plumbing
 
-[**html2text 0.17.1**](https://github.com/jugglerchris/rust-html2text) — surfaced by the newsletter scan. The draft's lib.rs trending claim is unverified this run: html2text is absent from the [current list](https://lib.rs/new). Go Weekly 618 listed [k3a/html2text 1.5](https://github.com/k3a/html2text), a zero-dependency Go converter from HTML to plain text. The Rust crate of the same name, by Chris Emerson, has been doing the harder version of that job since 2016: it parses with html5ever and then runs a real layout pass, so tables render as tables, lists as lists, links get numbered footnotes, and text wraps to a width you choose, with rich and coloured output modes for terminals. If you are building a RAG ingestion path, the difference is not cosmetic. Flattening a pricing table into a paragraph destroys the structure your retriever would have matched on; rendering it as aligned columns keeps it. About 6.1 million all-time downloads on crates.io and about 521,000 downloads per month on [lib.rs](https://lib.rs/crates/html2text), MIT, and one primary maintainer since 2016, alongside other contributors. Trial rather than Adopt for that last reason, and because 0.x versioning still moves the API between minors.
-<br/>*Maintenance: maintained, one primary maintainer (Chris Emerson / jugglerchris); ~245 stars; MIT · Latest: v0.17.1 (Apr 19, 2026) · Adoption: **Trial**; the Rust seat opposite Go's html2text, and the more capable of the two*
+[**html2text 0.17.1**](https://github.com/jugglerchris/rust-html2text) — Chris Emerson's Rust HTML-to-text converter, maintained since 2016. **Trial.**
+
+It parses with html5ever and runs a layout pass: tables keep their columns, lists keep their structure, links receive numbered footnotes, and text wraps to a chosen width. Rich and coloured output modes serve terminals.
+
+For RAG ingestion, that can preserve information a text flattener loses. A pricing table rendered as aligned columns retains relationships between plans and prices.
+
+Go Weekly 618 listed [k3a/html2text 1.5](https://github.com/k3a/html2text), a zero-dependency Go converter. That prompted this Rust pairing. The draft's separate lib.rs trending claim remains unverified: html2text is absent from the [current list](https://lib.rs/new).
+
+- **Maintenance:** Chris Emerson / jugglerchris, with other contributors; one primary maintainer. MIT; about 245 stars.
+- **Latest:** 0.17.1, April 19, 2026. About 6.1 million all-time crates.io downloads and about 521,000 per month on [lib.rs](https://lib.rs/crates/html2text).
+- **Adoption:** Trial. Account for reliance on one primary maintainer and API changes between 0.x minor versions.
 
 ## Language watch
 
-- **`Allocator` is heading for stable.** [PR 156882](https://github.com/rust-lang/rust/pull/156882) by nia-e, "alloc: stabilise `Allocator`", finished its final comment period with a disposition to merge and is still open as of September 22, awaiting the merge itself. This is the trait behind custom allocators for `Box`, `Vec` and friends, unstable since 2020; if it lands, cetra3's allocator survey from last week stops being a nightly story.
-- **Merged stabilization work:** `core::mem::DropGuard` ([PR 161520](https://github.com/rust-lang/rust/pull/161520) by Yoshua Wuyts, merged Sep 13, closing last week's FCP item), `Vec::from_fn` ([PR 162685](https://github.com/rust-lang/rust/pull/162685), merged Sep 12), `unsafe_cell_access` ([PR 162504](https://github.com/rust-lang/rust/pull/162504), merged Sep 14), and the RISC-V `d` and `f` target features ([PR 161385](https://github.com/rust-lang/rust/pull/161385) by Ralf Jung, merged Sep 13). Separately, `Thread::os_id` ([PR 160219](https://github.com/rust-lang/rust/pull/160219), merged Sep 9) was implemented as an **unstable** API, not stabilized. Also merged and now confirmed in TWiR's Cargo list: `cargo install` uses the packaged lockfile by default ([PR 17388](https://github.com/rust-lang/cargo/pull/17388)).
-- **In final comment period:** `funnel_shifts` including `const` ([PR 161015](https://github.com/rust-lang/rust/pull/161015)), `Result::into_ok` and `into_err` ([PR 161712](https://github.com/rust-lang/rust/pull/161712)), the WebAssembly `wide-arithmetic` target feature ([PR 160877](https://github.com/rust-lang/rust/pull/160877) by Alex Crichton), and, in Cargo, `build.profile` and `install.profile` config keys ([PR 17215](https://github.com/rust-lang/cargo/pull/17215) by Ed Page) so a team can default `cargo build` to a custom profile without wrapping the command. The 8-byte `RawWakerVTable` alignment guarantee ([PR 158186](https://github.com/rust-lang/rust/pull/158186)) finished FCP with disposition merge and is not yet merged.
-- **Compiler performance:** [Kobzol's September 14 triage](https://github.com/rust-lang/rustc-perf/blob/master/triage/2026/2026-09-14.md) reports zero primary regressions and 199 primary improvements (mean -0.7% in instruction counts), several of them reverts of earlier regressions, with [PR 162422](https://github.com/rust-lang/rust/pull/162422) bringing Polonius closer to the old NLL borrow checker's speed.
+`Allocator` is close to stabilization. [PR 156882](https://github.com/rust-lang/rust/pull/156882) by nia-e finished its final comment period with a disposition to merge, but remained open on September 22. The trait supports custom allocators for `Box`, `Vec` and related types and has been unstable since 2020. It would make last week's allocator survey relevant beyond nightly.
+
+### Merged
+
+- `core::mem::DropGuard`: [PR 161520](https://github.com/rust-lang/rust/pull/161520), Yoshua Wuyts, September 13. Closes last week's FCP item.
+- `Vec::from_fn`: [PR 162685](https://github.com/rust-lang/rust/pull/162685), September 12.
+- `unsafe_cell_access`: [PR 162504](https://github.com/rust-lang/rust/pull/162504), September 14.
+- RISC-V `d` and `f` target features: [PR 161385](https://github.com/rust-lang/rust/pull/161385), Ralf Jung, September 13.
+- `cargo install` uses the packaged lockfile by default: [PR 17388](https://github.com/rust-lang/cargo/pull/17388), also confirmed in TWiR's Cargo list.
+
+Separately, `Thread::os_id` merged September 9 in [PR 160219](https://github.com/rust-lang/rust/pull/160219) as an unstable API. It was not stabilized.
+
+### In final comment period
+
+- `funnel_shifts`, including `const`: [PR 161015](https://github.com/rust-lang/rust/pull/161015).
+- `Result::into_ok` and `into_err`: [PR 161712](https://github.com/rust-lang/rust/pull/161712).
+- WebAssembly `wide-arithmetic`: [PR 160877](https://github.com/rust-lang/rust/pull/160877), Alex Crichton.
+- Cargo's `build.profile` and `install.profile` config keys: [PR 17215](https://github.com/rust-lang/cargo/pull/17215), Ed Page. These allow a custom default profile without a command wrapper.
+
+The 8-byte `RawWakerVTable` alignment guarantee, [PR 158186](https://github.com/rust-lang/rust/pull/158186), finished FCP with disposition merge and remained unmerged.
+
+[Kobzol's September 14 compiler-performance triage](https://github.com/rust-lang/rustc-perf/blob/master/triage/2026/2026-09-14.md) reports zero primary regressions and 199 primary improvements, with mean instruction counts down 0.7%. Several improvements revert earlier regressions. [PR 162422](https://github.com/rust-lang/rust/pull/162422) brings Polonius closer to the old NLL borrow checker's speed.
 
 ## In brief
 
-[**Rust is a Tier-1 language at Microsoft**](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/) — Victor Ciura's Rust Foundation guest post (Sep 10) puts Rust alongside C++, C# and TypeScript for internal development, and the technical artefact is `rustc_codegen_utc`, an alternative rustc backend in the same family as `rustc_codegen_gcc` and cranelift that emits through the MSVC backend, production-ready since early 2026, self-hosting since Rust 1.90, and used by more than 100 Microsoft repositories; that is two custom rustc codegen backends in two weeks after cuda-oxide, and Rust Bytes #136 included this in its link roundup, so I am filing it rather than leading · [**Rust Foundation adds Solana Foundation and NVIDIA as Platinum members**](https://rustfoundation.org/media/rust-foundation-announces-solana-foundation-and-nvidia-as-platinum-members/) — announced September 9, alongside the RustConf week of NVIDIA's CUDA Rust commitment, which is the funding half of last week's lead · [**Developing provably correct Rust code with Verus**](https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus) — Bryan Parno at Amazon Science on the SMT-backed verifier that [issue #11](/blog/2026-09-07-rust-ai-weekly-11)'s Kani entry listed as "under review" for the std verification effort · [**Optimizing a single Clippy lint by 3133x**](https://blog.goose.love/posts/making-a-clippy-lint-faster-by-3133x/) by Alejandra González, also linked in Rust Bytes #136 · [**Shipping Rust static libraries without symbol collisions**](https://ai-coustics.com/blog/libpatcher) by Stephan Eckes at ai-coustics, whose Rust audio SDK hit collisions between symbols bundled into static libraries; the draft's specific `ring` attribution is unverified this run · [**CO3: Toward the Optimal FFI**](https://mversic.github.io/co3/) by mversic · [**Why building a Rust LSP is hard**](https://rust-glancer.github.io/blog/why-lsp-is-hard/) from the Rust Glancer project · [**A visual guide to Rust async**](https://akesson.io/a-visual-guide-to-rust-async/) by Henrik Åkesson, a good pairing with dial9's principles post · [**Operators of death: checked arithmetic in Rust**](https://bitfieldconsulting.com/posts/operators-of-death) by John Arundel · [**Rust generics: from static to dynamic dispatch**](https://kerkour.com/rust-generics) by Sylvain Kerkour · [**Trying to make a loop auto-vectorize**](https://jsgroth.dev/blog/posts/trying-to-make-a-loop-auto-vectorize/) by jsgroth, which is the problem fearless_simd exists to make unnecessary · [**One Lock to Rule Them All**](https://flakm.com/posts/sqlx_migration_wrapper_til/) by FlakM on a PostgreSQL advisory-lock wrapper inspired by sqlx migrations · and lib.rs's notable-releases list this week included wasmtime, clap, crypto-bigint, cudarc, syd, picoserve, postcard-rpc and vello, unverified this run as a historical list; the live list has since changed, and I did not verify those releases individually.
+- [**Rust is a Tier-1 language at Microsoft**](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/) — Victor Ciura's September 10 post places Rust alongside C++, C# and TypeScript for internal development. The `rustc_codegen_utc` backend emits through MSVC, has been production-ready since early 2026 and self-hosting since Rust 1.90, and is used by more than 100 Microsoft repositories. Rust Bytes #136 also covered it.
+
+- [**Solana Foundation and NVIDIA join the Rust Foundation as Platinum members**](https://rustfoundation.org/media/rust-foundation-announces-solana-foundation-and-nvidia-as-platinum-members/) — announced September 9, during the RustConf week of NVIDIA's CUDA Rust commitment.
+
+- [**Developing provably correct Rust code with Verus**](https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus) — Bryan Parno on the SMT-backed verifier listed as “under review” in [issue #11](/blog/2026-09-07-rust-ai-weekly-11)'s std-verification coverage.
+
+- [**Optimizing a single Clippy lint by 3133x**](https://blog.goose.love/posts/making-a-clippy-lint-faster-by-3133x/), Alejandra González. Also linked in Rust Bytes #136.
+
+- [**Shipping Rust static libraries without symbol collisions**](https://ai-coustics.com/blog/libpatcher), Stephan Eckes at ai-coustics. Their Rust audio SDK hit bundled-symbol collisions; the draft's specific `ring` attribution remains unverified.
+
+- [**CO3: Toward the Optimal FFI**](https://mversic.github.io/co3/), mversic.
+
+- [**Why building a Rust LSP is hard**](https://rust-glancer.github.io/blog/why-lsp-is-hard/), the Rust Glancer project.
+
+- [**A visual guide to Rust async**](https://akesson.io/a-visual-guide-to-rust-async/), Henrik Åkesson. A pairing for dial9's principles post.
+
+- [**Operators of death: checked arithmetic in Rust**](https://bitfieldconsulting.com/posts/operators-of-death), John Arundel.
+
+- [**Rust generics: from static to dynamic dispatch**](https://kerkour.com/rust-generics), Sylvain Kerkour.
+
+- [**Trying to make a loop auto-vectorize**](https://jsgroth.dev/blog/posts/trying-to-make-a-loop-auto-vectorize/), jsgroth. Read alongside fearless_simd.
+
+- [**One Lock to Rule Them All**](https://flakm.com/posts/sqlx_migration_wrapper_til/), FlakM, on a PostgreSQL advisory-lock wrapper inspired by sqlx migrations.
+
+The draft also listed wasmtime, clap, crypto-bigint, cudarc, syd, picoserve, postcard-rpc and vello from lib.rs's notable releases. That historical list remains unverified; the live list changed, and I did not check those releases individually.
 
 ## Elsewhere
 
-- **Go shipped a GPU-accelerated native IDE; the Rust seat at that table has been occupied for two years.** Go Weekly 618 led its tools section with [Rune](https://rune.build/blog/rune-is-now-open-source) by Ernest Romero Climent, a native IDE built on a fork of Ebitengine, now GPLv3 with about a thousand stars, and the interesting engineering note is how they got the integrated terminal close to Alacritty and Ghostty speed without cgo on the hot path. The Rust counterpart is Zed, which has been on this radar at Adopt since [issue #1](/blog/2026-06-19-rust-ai-weekly-1) and whose GPUI renderer serves the same role in a different implementation. Two languages, the same conclusion: if you want a native editor that feels native, you write the renderer yourself.
-- **Go has two wasm-to-Go compilers now. Rust's wasm2rs has 47 downloads.** Go Weekly also listed [goccy/wasm2go](https://github.com/goccy/wasm2go) by Masaaki Goshima, which translates a Wasm binary into standalone Go source plus amd64 and arm64 assembly, alongside the older [ncruces/wasm2go](https://github.com/ncruces/wasm2go) that powers the cgo-free go-sqlite3. The use case is real: ship a C library built with the WASI SDK inside your binary without carrying a Wasm engine. The Rust answer is [wasm2rs](https://crates.io/crates/wasm2rs) by hirosassa, at 0.1.1 from August with a few dozen downloads. Rust's usual answer is "just link the C library," which is true and also the thing the Go tools exist to avoid. **A mature Rust counterpart remains an unverified gap this run**: these projects were checked, not the entire ecosystem. Keep it as a research lead, not a claim that no alternative exists.
-- **Two HTML-to-text libraries, one name, different ambitions.** The pairing is in the Data plumbing entry above: Go's k3a/html2text is a dependency-free flattener; Chris Emerson's Rust html2text is a layout engine. If your RAG chunks come from HTML, the second one is the one that keeps your tables.
-- **Go Weekly carried the Rust maintainer alert to another ecosystem.** [Issue 618](https://golangweekly.com/issues/618) ran it in "In brief" on September 18 and warned that Go is not immune. [Rust Bytes #136](https://weeklyrust.substack.com/p/rust-debugging-survey-findings), published September 15, led with the debugging survey and included Microsoft's Tier-1 post in its roundup. Its full body contains none of dial9, the Tokio principles post, zenjpeg, the targeted-attacks alert, fearless_simd, tokio_rcu, Slint 1.18 or html2text. It predates the September 17 alert, so that absence says nothing about how quickly Rust readers heard the warning. The attack pattern crosses ecosystems, and the defence starts with the maintainer.
+### Native editors
+
+Go Weekly 618 led its tools section with [Rune](https://rune.build/blog/rune-is-now-open-source), Ernest Romero Climent's native IDE on a fork of Ebitengine. It is now GPLv3, with about a thousand stars. The engineering write-up describes bringing its integrated terminal close to Alacritty and Ghostty speed without cgo on the hot path.
+
+The Rust pairing is Zed, at Adopt since [issue #1](/blog/2026-06-19-rust-ai-weekly-1). Its GPUI renderer serves the same role through a different implementation.
+
+### Wasm translated to native source
+
+[goccy/wasm2go](https://github.com/goccy/wasm2go), by Masaaki Goshima, translates a Wasm binary into standalone Go source plus amd64 and arm64 assembly. The older [ncruces/wasm2go](https://github.com/ncruces/wasm2go) powers cgo-free go-sqlite3. Both address shipping a C library built with the WASI SDK without bundling a Wasm engine.
+
+The Rust project checked here is hirosassa's [wasm2rs](https://crates.io/crates/wasm2rs), at 0.1.1 from August with a few dozen downloads. A mature Rust counterpart remains an unverified research lead: checking these projects does not establish the absence of alternatives.
+
+### Newsletter coverage
+
+[Go Weekly 618](https://golangweekly.com/issues/618) carried the Rust maintainer alert on September 18 and the Go html2text pairing covered above.
+
+[Rust Bytes #136](https://weeklyrust.substack.com/p/rust-debugging-survey-findings), dated September 15, led with the debugging survey and spotlighted rust-smallvec. Its roundup included Microsoft Tier-1, Cargo team changes, Rustls, Dioxus and the Clippy optimization. It remained the latest issue in the archive on September 22.
+
+Its full body contained none of this issue's six crate entries or the dial9 principles post. It also predates the September 17 maintainer alert, so that omission says nothing about how quickly Rust readers heard the warning.
 
 ## A thought for the week
 
-Aggregates tell you that something is wrong. Only the record tells you what.
+dial9's AWS example is a reason to test event recording before an incident. Start with a service where schedule latency matters. Measure the recorder's overhead and check what trigger mode retains when the service slows down.
 
-dial9 exists because a set of perfectly good Tokio metrics described a service as simultaneously idle and overloaded, and both were true and neither was useful. The counters were not lying. They were summarising, and the thing that mattered, an 18 millisecond gap between "wake worker 47" and worker 47 waking, lives below the resolution of any counter. It took an event log to see it. That is the technical version of this week's theme, and the rest of the issue is the same shape with different nouns. A LinkedIn profile is a counter: it summarises a company into a plausibility score, and the Rust project's alert says attackers now clear that bar on purpose. A crates.io page is a counter: version, downloads, a licence badge. zenjpeg's registry page correctly lists AGPL or commercial licensing. That badge tells you the choices; the README and commercial terms explain eligibility and obligations. A release plan with no further breaking changes expected is a summary of the maintainers' intentions; the record is two breaking release candidates followed by final 1.0 on September 21.
+Two dependency-review tasks follow from this issue: read the actual licence terms for zenjpeg or Slint, and include fearless_simd's written security-backport window in the maintenance evaluation. A registry badge alone does not answer either question.
 
-The leadership version of this is that you already have dashboards, and your dashboards are why incidents take so long. Not because the dashboards are wrong but because the review meeting stops at them. Green means "nobody looked further." The organisations I have seen debug well share one habit: when the summary and the symptom disagree, they go get the log, whether that is a dial9 trace, a `git log` on the dependency, the actual LICENSE file, or a five-minute check of whether the recruiter's company existed last quarter. It is slower per question and much faster per incident.
-
-So, three concrete things. Put an event recorder in your async services before you need one, because you cannot install it during the incident; dial9's trigger mode makes the storage cost negligible until the moment it is not. Add "read the LICENSE and SECURITY.md" to your dependency checklist as separate line items from "check the licence badge," because zenjpeg and Slint require a read of the actual terms, and fearless_simd puts its support commitment in SECURITY.md. And if you have publish rights on anything people depend on, treat every unsolicited call as an incident until you have set it up yourself, on your own platform. The counter says you are fine. Go look.
+For maintainers with publish rights, the Rust team's immediate recommendation is to arrange unsolicited calls yourself on a platform you already use.
 
 ## Before I go
 
-Housekeeping on last week's open threads. fearless_simd 1.0 shipped on September 21 after two breaking release candidates, so that carry-over closes. tokio_rcu moved to 0.2 and gained thirty stars in a week, and the required `on_after_task_poll` hook remains unstable; if you are on the tokio team, I would still rather report your answer than guess. RustConf recordings were not yet published where I could find them this run, so Melih Elibol's and Joe Birr-Pixton's talks from last week's issue remain the pairings to add when they land. I read Rust Bytes #136 in full: its September 15 lead was the debugging survey (which I ran as an In brief last week), its spotlight was rust-smallvec, and its roundup included Microsoft Tier-1, Cargo team changes, Rustls, Dioxus and the Clippy optimization. None of this issue's six crate entries or the dial9 principles post appeared there. The archive still showed #136 as the latest issue on September 22.
+The fearless_simd 1.0 carry-over is closed. tokio_rcu's required hook remains unstable, and a Tokio team response is still unverified.
 
-Two things I would like to hear about. First, if you run dial9 in production, especially outside AWS: what did the overhead look like, and did trigger mode change how much you keep? Second, if your legal team has actually evaluated an AGPL-or-commercial Rust dependency, how long did it take and what did they ask for? Both answers would make better entries than anything I can find on GitHub.
+RustConf recordings were not published where I could find them during this check. Melih Elibol's and Joe Birr-Pixton's talks remain the pairings to add when available.
 
-That's the issue. Got a Rust+AI crate or tool I should feature next week? Reply and tell me; reader picks shape the list.
+I'd like to hear from readers running dial9 in production, especially outside AWS: what overhead did you measure, and did trigger mode change how much you keep?
+
+If your team evaluated an AGPL-or-commercial Rust dependency, what did legal need, and how long did the review take? Reply with that experience, or a Rust+AI crate to consider for next week.
 
 Keep shipping,
 Decebal
