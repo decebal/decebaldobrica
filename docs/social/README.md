@@ -3,6 +3,8 @@
 ## Rust & AI Weekly #13
 
 - [Launch pack and verification evidence](../../apps/web/content/blog/_launch-notes-rust-ai-weekly-13.md)
+- [Corrected LinkedIn post and publishing checks](rust-ai-weekly-13-linkedin.md)
+- [Newsletter readability edit and preview evidence](rust-ai-weekly-13-readability.html)
 - [Formatted Substack paste source](rust-ai-weekly-13-substack.html)
 - [Unpublished syndication Markdown](rust-ai-weekly-13-syndication.md)
 - [Issue card](rust-ai-weekly-13-card.png)
