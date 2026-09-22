@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-09-14'
+export const RADAR_GENERATED_AT = '2026-09-21'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 12
+export const RADAR_ISSUE = 13
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -247,10 +247,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'Slint', url: 'https://github.com/slint-ui/slint', category: 'dev-tools/gui', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'actively maintained (SixtyFPS GmbH; NLnet-funded features)', latest: '1.17 (Jun 2026)',
+    ring: 'Trial', maintenance: 'actively maintained (SixtyFPS GmbH; NLnet-funded features); ~23.9k★', latest: '1.18.1 (Sep 21, 2026); feature release 1.18.0 Sep 16',
     adopters: 'LibrePCB; broad embedded base',
-    mentions: 'Rust & AI Weekly #3 (2026-07-08); Crate Radar Deep Dive (2026-07-08)', returning: false,
-    note: 'desktop-ready push (DnD, tray, tooltips) + embedded MCP server so agents can drive a running UI; tri-license needs a legal read',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08); Crate Radar Deep Dive (2026-07-08); Rust & AI Weekly #13 (2026-09-21)', returning: true,
+    note: 'Second mention at #13 for 1.18: FlexboxLayout brings the web layout model to the DSL, z-order can change at runtime, spring animations and animate-along-a-path, push/remove/insert on models, an experimental Vello-based renderer, a WindowMoveArea element for custom title bars, and screen-reader support for text inputs; the compiler also emits leaner code. Verdict holds at Trial. Earlier: desktop-ready push (DnD, tray, tooltips) + embedded MCP server so agents can drive a running UI; tri-license needs a legal read',
   },
   {
     name: 'curve25519-dalek', url: 'https://github.com/dalek-cryptography/curve25519-dalek', category: 'dev-tools/crypto', quadrant: 'dev',
@@ -430,10 +430,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'fearless_simd', url: 'https://github.com/linebender/fearless_simd', category: 'inference/simd', quadrant: 'inference',
-    ring: 'Trial', maintenance: 'actively maintained (Linebender; Shnatsel driving releases)', latest: 'v0.7.0 (Aug 12, 2026; v1.0 targeted for early September)',
+    ring: 'Trial', maintenance: 'actively maintained (Linebender; Shnatsel driving releases, LaurenzV cutting them); ~458★; security policy promises backports for the latest release per MSRV for at least three years after that Rust version shipped', latest: 'v1.0.0 (Sep 21, 2026); macros 0.1.0 same day; rc.2 Sep 19, rc.1 Sep 13; MSRV 1.89',
     adopters: 'a dozen-plus direct dependents on crates.io; 1000+ repos directly or transitively',
-    mentions: 'Rust & AI Weekly #8 (2026-08-17)', returning: false,
-    note: 'takes unsafe out of SIMD: the compiler tracks which intrinsics belong to which instruction set, so the crate itself carries orders of magnitude less unsafe than the alternatives; 0.7 completes type coverage with 64-bit integers, adds an explicit SSE2 level, and makes every operation reachable through traits; zero dependencies and a 2-second cold build; API frozen ahead of 1.0, so speak now',
+    mentions: 'Rust & AI Weekly #8 (2026-08-17); Rust & AI Weekly #13 (2026-09-21)', returning: true,
+    note: 'Verified Sep 22 for #13: final 1.0 shipped Sep 21 after two breaking RCs. August 0.7 post conditionally targeted early September with no further breaks planned; it did not say API frozen. rc.1 renamed N to LEN and the as_array family and moved abs to SimdBase; rc.2 moved witness() to ExtractToken::token(). Fixed-order floating reductions agree for a given vector type and lane count except NaN bit patterns; precise fused arithmetic, documented semver-stable storage, and optional #[simd] macros also landed. MIT OR Apache-2.0. Latest release per MSRV receives security backports for at least three years after that Rust version shipped. Trial holds; test 0.7-to-1.0 migration. Earlier #8: safe SIMD tokens, 64-bit integer coverage and explicit SSE2 level in 0.7; every operation reachable through traits',
   },
   {
     name: 'OXVG', url: 'https://github.com/noahbald/oxvg', category: 'dev-tools/svg', quadrant: 'dev',
@@ -557,10 +557,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'tokio_rcu', url: 'https://github.com/roeeshoshani/tokio_rcu', category: 'infra/concurrency', quadrant: 'dev',
-    ring: 'Assess', maintenance: 'brand new, solo (Roee Shoshani); 157 commits; MIT', latest: 'v0.1.3 (Sep 11, 2026)',
-    stars: '8★', adopters: 'none',
-    mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
-    note: 'This Week in Rust 668 Crate of the Week, self-suggested: user-space read-copy-update built around tokio\'s semantics. The quiescent state is tokio\'s on_after_task_poll hook, which works because RCU-protected pointers cannot be held across an await, so when the hook fires the thread provably holds none. Readers pay one atomic load; the author\'s divan benchmarks against arc-swap show reads about 3x faster and flat under contention, writes about 3x slower because they sleep through a grace period. The catch is the dependency chain: it needs tokio_unstable (the hook is not stable), Linux or Windows only (membarrier / FlushProcessWriteBuffers), and assumes one runtime per process. Assess: a well-reasoned primitive for read-mostly hot paths like routing tables and model registries, whose stability is gated on a tokio decision the author does not control',
+    ring: 'Assess', maintenance: 'brand new, solo (Roee Shoshani); 226 commits; MIT', latest: 'v0.2.1 (Sep 17, 2026); 0.2.0 Sep 15',
+    stars: '38★', adopters: 'none',
+    mentions: 'Rust & AI Weekly #12 (2026-09-14); Rust & AI Weekly #13 (2026-09-21)', returning: true,
+    note: 'Verified Sep 22 for #13: 0.2.0 Sep 15 and 0.2.1 Sep 17. rcu_block_on and enable_rcu already existed in 0.1.3; rename was rcu_ptr::RcuPtr to rcu_box::RcuBox. Removed thread-local live-guard reader bookkeeping; synchronize_rcu gained include_calling_thread. PR 6 renamed existing Divan benchmark functions and reran them, without new workloads in that diff. 0.2.1 tightened RcuBox Sync to T: Send + Sync, fixed blocking-task stalls and added branch hints. Current i7-12700 read-only means: RcuBox 2.166-3.496 ms, arc-swap 23.87-132.9 ms across 1/8/16/32/64 tasks; author claims reads 9-40x faster and writes 2x slower, not independently rerun. The previous ~3x read/~3x write figures reported in #12 described the old README, not an error. Still needs tokio_unstable and on_after_task_poll, Linux or Windows, one runtime per process. Assess unchanged; benchmark multiple now source-verified, performance not independently validated',
   },
   {
     name: 'oracledb', url: 'https://github.com/oracle/rust-oracledb', category: 'data/database-driver', quadrant: 'data',
@@ -568,5 +568,26 @@ export const crateRadarTools: RadarTool[] = [
     stars: '7★', adopters: 'none yet; Oracle-maintained',
     mentions: 'Rust & AI Weekly #12 (2026-09-14)', returning: false,
     note: 'rust-alternative-to Go\'s go-oracledb, which Go Weekly 617 flagged as Oracle\'s first official pure-Go driver; the same week Oracle published beta.3 of the Rust one, and almost nobody noticed. Pure Rust thin driver speaking TNS directly, no Instant Client or OCI, Rust 1.89+, Oracle 12 through 26ai, with compressed fetch, statement caching, DRCP, VECTOR and JSON types, and an optional Arrow feature that returns query results as RecordBatches. Assess: an official vendor driver at beta.3 with a single-digit commit count is a stewardship signal and a maturity warning in the same sentence; the community driver it replaces is the fallback if the vendor loses interest. Watch for the sync-only API growing an async story',
+  },
+  {
+    name: 'dial9', url: 'https://github.com/dial9-rs/dial9', category: 'dev-tools/observability', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'actively maintained (Russell Cohen / rcoh, Jess Izen / jlizen, Carl Lerche / carllerche are crate owners; 18 named 0.5 contributors incl. David Tolnay); Apache-2.0; 534 commits', latest: 'v0.5.1 (Sep 17, 2026); 0.5.0 Aug 26; renamed from dial9-tokio-telemetry (~750k downloads under the old name)',
+    stars: '~507★', adopters: 'AWS services (early adopters named in the Tokio blog post); Ditto runs the CPU profiler on production Android behind a feature flag',
+    mentions: 'Rust & AI Weekly #13 (2026-09-21)', returning: false,
+    note: 'Verified Sep 22: flight recorder for Tokio and Rust applications, storing polls, parks, wakes, scheduling delay, allocations, CPU profiles, spans and socket telemetry. Typically under 5% overhead is the project\'s March introduction claim, not independently validated for 0.5 or a user workload. 0.5 made Tokio an optional Source, added trigger-mode ring buffers, native spans and multi-trace analysis; tokio_unstable optional with narrower task coverage. 0.5.1 adds trace system metadata, FreeBSD telemetry and viewer points of interest, fixes task dumps/rotation/liveset reallocations, deprecates RecorderSourceExt methods and marks sealing extension traits breaking. Principles post Sep 13 (updated Sep 15) credits Alice Ryhl and Saghm Rossi; published mini-Redis p99 2.548 to 0.320 ms. Trial: early AWS use; measure workload overhead and read migration guide; full task visibility requires tokio_unstable',
+  },
+  {
+    name: 'zenjpeg', url: 'https://github.com/imazen/zenjpeg', category: 'data/image-codec', quadrant: 'data',
+    ring: 'Assess', maintenance: 'actively developed, effectively solo but funded (Lilith River / Imazen, full-time on image-processing ecosystem since 2011; 2,599 commits; README reports 930+ tests); AGPL-3.0 or commercial ($1 startup licence under $1M revenue AND fewer than five employees; sliding-scale subscription)', latest: 'v0.8.4 (Jun 1, 2026); 14 GitHub releases; formerly published as jpegli-rs',
+    stars: '~15★', adopters: 'Imazen\'s own Imageflow pipeline; none named externally',
+    mentions: 'Rust & AI Weekly #13 (2026-09-21)', returning: false,
+    note: 'This Week in Rust 669 Crate of the Week, suggested by Kornel. Pure Rust JPEG encoder and decoder that began as a port of Google\'s jpegli and after six rewrites diverged: #![forbid(unsafe_code)] with safe SIMD via archmage tokens, streaming single-pass encode and decode with bounded memory and DoS limits, parallel decode, adaptive and trellis quantization, XYB, UltraHDR gain maps and JPEG-to-JPEG recompression. Author-published numbers (Ryzen 9 7950X), not independently rerun: baseline decode 0.94x libjpeg-turbo, progressive 1.35x faster, parallel decode of a 4096px image 0.13x the C time; encode wins 81% of a 337-photo corpus against mozjpeg at matched size. AI disclosure: developed with Claude. Assess for one reason above all: AGPL-3.0 or pay, which is a legal conversation before it is a technical one, and the decoder API is still marked prerelease; zune-jpeg and image remain the permissively licensed defaults',
+  },
+  {
+    name: 'html2text', url: 'https://github.com/jugglerchris/rust-html2text', category: 'data/text-extraction', quadrant: 'data',
+    ring: 'Trial', maintenance: 'maintained, one primary maintainer (Chris Emerson / jugglerchris), with other contributors; first release Dec 21, 2016; MIT; ~245★', latest: 'v0.17.1 (Apr 19, 2026)',
+    downloads: '~6.1M all-time (crates.io); ~521k/month (lib.rs), checked Sep 22', adopters: 'historical lib.rs trending claim unverified this run; absent from Sep 22 live list',
+    mentions: 'Rust & AI Weekly #13 (2026-09-21)', returning: false,
+    note: 'rust-alternative-to Go\'s k3a/html2text 1.5, which Go Weekly 618 listed as a zero-dependency HTML-to-plain-text converter. The Rust crate does the harder version of the job: a real layout pass over html5ever\'s DOM that renders tables, lists, links and wrapping to a target width, with rich and coloured output modes. That matters for RAG ingestion, where the text you embed should preserve table structure rather than flatten it. Trial rather than Adopt: one primary maintainer since 2016 is a stewardship risk however steady the cadence, and 0.x versioning still moves the API',
   },
 ]
