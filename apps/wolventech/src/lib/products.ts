@@ -1,4 +1,8 @@
 export type Product = {
+  worksheetHref: string
+  worksheetLabel: string
+  artCell: number
+  artAlt: string
   slug: string
   name: string
   category: string
@@ -15,6 +19,10 @@ export type Product = {
 export const products: Product[] = [
   {
     slug: 'allsource',
+    worksheetHref: "https://www.all-source.xyz/event-replay-validation-checklist",
+    worksheetLabel: "Event Replay Validation Checklist",
+    artCell: 0,
+    artAlt: "Three linked event blocks leading to a rebuilt stack of state",
     name: 'AllSource',
     category: 'Developer infrastructure',
     description:
@@ -29,12 +37,16 @@ export const products: Product[] = [
   },
   {
     slug: 'chargewindow',
+    worksheetHref: "https://chargewindow.com/ev-charging-session-cost-example",
+    worksheetLabel: "EV Charging Session Cost Example",
+    artCell: 7,
+    artAlt: "An EV charging plug beside separate energy, parking, time and fee blocks",
     name: 'ChargeWindow',
     category: 'EV charging',
     description:
-      'England-first EV charging cost calculator that compares tariff windows and turns vehicle, battery, and charger details into a clear charging plan.',
-    audience: 'UK EV drivers comparing when and how much to charge.',
-    outcome: 'Understand charging-window cost before changing routine or tariff.',
+      'EV charging cost calculator that combines entered energy, connection, parking and idle fees into a whole-session estimate.',
+    audience: 'Residents using a building-selected EV charger provider.',
+    outcome: 'Understand the full session cost and the choices available under the applicable tariff.',
     href: 'https://chargewindow.com',
     proofHref: 'https://chargewindow.com/guides/ev-charging-fees',
     proofLabel: 'See every fee in one session',
@@ -43,6 +55,10 @@ export const products: Product[] = [
   },
   {
     slug: 'solarquote-check-uk',
+    worksheetHref: "https://solarquote-check-uk.com/solar-quote-questions-template",
+    worksheetLabel: "Solar Quote Questions Template",
+    artCell: 6,
+    artAlt: "Two solar installation quote cards with roof panels and batteries",
     name: 'SolarQuote Check UK',
     category: 'Home solar',
     description:
@@ -57,6 +73,10 @@ export const products: Product[] = [
   },
   {
     slug: 'move-to-own-uk',
+    worksheetHref: "https://movetoownuk.com/landlord-option-discussion-checklist",
+    worksheetLabel: "Landlord Option Discussion Checklist",
+    artCell: 9,
+    artAlt: "A house with separate tenancy and purchase documents beside a key",
     name: 'Move to Own UK',
     category: 'Property',
     description:
@@ -71,6 +91,10 @@ export const products: Product[] = [
   },
   {
     slug: 'reefdose',
+    worksheetHref: "https://reefdose.com/reef-supplement-label-worksheet",
+    worksheetLabel: "Reef Supplement Label Worksheet",
+    artCell: 8,
+    artAlt: "A reef aquarium beside a closed supplement bottle and measuring cylinder",
     name: 'ReefDose',
     category: 'Reef keeping',
     description:
@@ -85,6 +109,10 @@ export const products: Product[] = [
   },
   {
     slug: 'viewing-ledger-uk',
+    worksheetHref: "https://viewingledger.com/property-viewing-notes-template",
+    worksheetLabel: "Property Viewing Notes Template",
+    artCell: 1,
+    artAlt: "A model house beside a twelve-check notebook and a cost sheet",
     name: 'Viewing Ledger UK',
     category: 'Property viewing',
     description:
@@ -99,6 +127,10 @@ export const products: Product[] = [
   },
   {
     slug: 'edit-scope-ledger-uk',
+    worksheetHref: "https://editscopeledger.com/video-edit-change-request-template",
+    worksheetLabel: "Video Edit Change Request Template",
+    artCell: 4,
+    artAlt: "A video editing timeline beside a change request card and scissors",
     name: 'Edit Scope Ledger UK',
     category: 'Freelance video editing',
     description:
@@ -114,6 +146,10 @@ export const products: Product[] = [
   },
   {
     slug: 'sponsor-ledger-uk',
+    worksheetHref: "https://sponsorledger.app/newsletter-sponsor-recap-template",
+    worksheetLabel: "Newsletter Sponsor Recap Template",
+    artCell: 3,
+    artAlt: "Four newsletter issues arranged in a sponsor booking rack",
     name: 'Sponsor Ledger UK',
     category: 'Newsletter operations',
     description:
@@ -125,6 +161,57 @@ export const products: Product[] = [
     proofLabel: 'Inspect sponsor pricing method',
     commercialModel: 'Free worked pack · £39 once for real enquiry workflow',
     cta: 'Open Sponsor Ledger',
+  },
+  {
+    slug: 'talk-run-card-uk',
+    worksheetHref: "https://talkruncard.com/conference-talk-overrun-checklist",
+    worksheetLabel: "Conference Talk Overrun Checklist",
+    artCell: 2,
+    artAlt: "A lectern, cue cards and a clock divided into talk sections",
+    name: "Talk Run Card UK",
+    audience: "Speakers preparing a fixed-slot conference talk.",
+    outcome: "Record rehearsal sections, identify overruns and protect time for questions.",
+    href: "https://talkruncard.com",
+    proofHref: "https://talkruncard.com/guides/30-minute-talk-run-card",
+    category: "Conference speaking",
+    description: "Record rehearsal sections, identify overruns and protect time for questions.",
+    proofLabel: "Worked thirty-minute timing card",
+    commercialModel: "Free planning and first-run preview; paid release not announced here",
+    cta: "Explore Talk Run Card UK",
+  },
+  {
+    slug: 'logo-handoff-card-uk',
+    worksheetHref: "https://logohandoffcard.com/logo-handoff-acceptance-template",
+    worksheetLabel: "Logo Handoff Acceptance Template",
+    artCell: 5,
+    artAlt: "Organised logo delivery folders beside an acceptance checklist",
+    name: "Logo Handoff Card UK",
+    audience: "UK microbusiness owners reviewing a commissioned logo delivery.",
+    outcome: "Record expected files, missing variants and questions before acceptance.",
+    href: "https://logohandoffcard.com",
+    proofHref: "https://logohandoffcard.com/guide",
+    category: "Design handoff",
+    description: "Record expected files, missing variants and questions before acceptance.",
+    proofLabel: "Logo file handoff guide",
+    commercialModel: "Free handoff preview; paid availability shown on the product site",
+    cta: "Explore Logo Handoff Card UK",
+  },
+  {
+    slug: 'aplaceahead',
+    worksheetHref: "https://aplaceahead.com/compare-three-family-homes",
+    worksheetLabel: "Compare Three Family Homes",
+    artCell: 10,
+    artAlt: "Three model family homes arranged above a map and source cards",
+    name: "A Place Ahead",
+    audience: "Households comparing family homes and school admissions evidence.",
+    outcome: "Keep property facts, school questions and daily-life needs in one comparison.",
+    href: "https://aplaceahead.com",
+    proofHref: "https://aplaceahead.com/school-first-home-search",
+    category: "Family-home research",
+    description: "Keep property facts, school questions and daily-life needs in one comparison.",
+    proofLabel: "School evidence checklist",
+    commercialModel: "Free public guides and calculator; working research remains private",
+    cta: "Explore A Place Ahead",
   },
 ]
 

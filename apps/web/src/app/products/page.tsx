@@ -1,3 +1,4 @@
+import { ProductScene } from '@/components/product-scene'
 import Footer from '@/components/Footer'
 import { founderProductHref, founderProducts } from '@/data/products'
 import { jsonLd } from '@/lib/structuredData'
@@ -7,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Products built by Decebal Dobrica and Wolven Tech',
   description:
-    'AllSource and seven focused decision tools built by Decebal Dobrica through Wolven Tech, with direct links to working product evidence.',
+    "Explore eleven products from Decebal Dobrica and Wolven Tech, with practical guides, free worksheets and clear links to each product's current availability.",
   alternates: { canonical: '/products' },
 }
 
@@ -51,7 +52,7 @@ export default function ProductsPage() {
             </h1>
             <p className="mt-6 text-xl leading-8 text-gray-200">
               Current software I build and operate. Each link goes to a working product or its
-              strongest public proof—not a speculative roadmap.
+              public guides, examples and clearly stated availability.
             </p>
           </header>
 
@@ -61,6 +62,7 @@ export default function ProductsPage() {
                 key={product.slug}
                 className="rounded-xl border border-white/15 bg-white/5 p-6"
               >
+                <ProductScene cell={product.artCell} label={product.artAlt} />
                 <p className="text-sm font-semibold text-brand-teal">{product.audience}</p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">{product.name}</h2>
                 <p className="mt-4 leading-7 text-gray-200">{product.outcome}</p>
@@ -79,6 +81,7 @@ export default function ProductsPage() {
                     {product.proof}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </a>
+                  <a href={product.worksheetHref} className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{product.worksheetLabel} · Free worksheet</a>
                 </div>
               </article>
             ))}

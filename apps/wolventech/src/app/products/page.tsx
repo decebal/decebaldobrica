@@ -1,3 +1,4 @@
+import { ProductScene } from '@/components/product-scene'
 import { portfolioHref, products } from '@/lib/products'
 import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
@@ -8,7 +9,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Products built by Wolven Tech',
   description:
-    'Eight focused products from Wolven Tech, each with a defined buyer, useful outcome, proof route, and commercial model.',
+    'Eleven focused products from Wolven Tech, with useful guides, free worksheets, product-specific illustrations and clearly described access.',
   alternates: { canonical: '/products' },
 }
 
@@ -59,6 +60,7 @@ export default function ProductsPage() {
         {products.map((product) => (
           <Card key={product.name} className="flex flex-col border-rust-line bg-rust-surface">
             <CardHeader className="space-y-3">
+              <ProductScene cell={product.artCell} label={product.artAlt} />
               <Badge
                 variant="outline"
                 className="w-max border-rust-primary/40 bg-rust-primary/10 text-[10px] uppercase tracking-[0.12em] text-rust-primary-2"
@@ -109,6 +111,7 @@ export default function ProductsPage() {
                 >
                   {product.proofLabel}
                 </a>
+                  <a href={product.worksheetHref} className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{product.worksheetLabel} · Free worksheet</a>
               </div>
             </CardContent>
           </Card>
