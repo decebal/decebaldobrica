@@ -1,0 +1,28 @@
+{
+  "h2": 8,
+  "h3": 7,
+  "images": 2,
+  "lists": 8,
+  "longest_paragraph_words": 65,
+  "paragraphs": 56,
+  "paragraphs_over_100_words": 0,
+  "radar_rings": {
+    "Adopt": 15,
+    "Assess": 33,
+    "Hold": 2,
+    "Trial": 34
+  },
+  "radar_total": 84,
+  "rendered_body_words": 2676,
+  "substack_body_generated_from_site_markdown_pipeline": true,
+  "syndication_body_matches_mdx_after_absolutizing_links": true,
+  "unique_links_and_images": 41,
+  "x_weighted_characters": [
+    235,
+    223,
+    221,
+    250,
+    244,
+    222
+  ]
+}

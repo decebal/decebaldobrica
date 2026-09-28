@@ -1,0 +1,10 @@
+bcb086bcfcc82c64c21c47f34e75e420b3564ef02c6e6441ecf344a23b5bbef4  apps/web/content/blog/2026-09-28-rust-ai-weekly-14.mdx
+13fda2bea640ad079989ead6a85d6a76257957b042250f9fd4e92fcce5ffc4f5  apps/web/content/blog/_launch-notes-rust-ai-weekly-14.md
+d2670e8536133ff504f55477b09a4a6dbcab3bf88dd7b32878d0c81bb3326fd7  apps/web/src/data/crateRadar.ts
+b924c8c6b7901c8ff46a6da977ae1913afc733d1679d8a90397596f3ec7ac4b9  apps/web/scripts/generate-radar-image.mjs
+da2125b650a8e550fa24fcb8891d67b570d3e2a9b16fa308a1b7bc82817a1467  docs/social/rust-ai-weekly-14-substack.html
+267642c956722e049eb543a9776ed7b4f317329073308595d7db3919d84e7e04  docs/social/rust-ai-weekly-14-syndication.md
+45831c8b1870e68bbf2c3fd86876e8094d9ee7bcc966dafb1315c0338c2f0299  docs/social/rust-ai-weekly-14-linkedin.md
+937b379c55e35a2ead75c9e1a34830640aa4c6f71456e09be2bb7d515c19383b  docs/social/rust-ai-weekly-14-x-thread.md
+337f9645fdda113986baacd75fbfcb21bfbf03c87701b27fef544683f4a181c7  apps/web/public/images/blog/2026-09-28-rust-ai-weekly-14-3d-hero.png
+1e69c73bd1e3edb71f8d14d369f4b811dbb6e41f5df2e4c748515867a6fc4f6d  apps/web/public/images/radar/2026-09-28-radar.png

@@ -159,24 +159,25 @@ for (const b of blips) {
   svg += `<text x="${p.x}" y="${p.y + 3.5}" fill="#0d1117" font-size="${rr > 9 ? 10 : 8.5}" font-weight="700" text-anchor="middle">${b.number}</text>`
 }
 
-// legend (right column), grouped by quadrant
-let ly = 108
+// Keep the email snapshot readable as the full radar grows. The interactive
+// page has every tool; this sidebar identifies the current edition's reviews.
 const legX = W - 470
-svg += `<text x="${legX}" y="${ly - 18}" fill="${muted}" font-size="12">↺ = returning (also in an earlier issue)</text>`
-for (const q of QUADRANTS) {
-  svg += `<text x="${legX}" y="${ly}" fill="${fg}" font-size="14" font-weight="700">${esc(q.label)}</text>`
-  ly += 20
-  const items = blips.filter((b) => b.quadrant === q.key).sort((a, b) => a.number - b.number)
-  for (const b of items) {
-    svg += `<circle cx="${legX + 6}" cy="${ly - 4}" r="5.5" fill="${RING_COLORS[b.ring]}"/>`
-    svg += `<text x="${legX + 6}" y="${ly - 0.5}" fill="#0d1117" font-size="8" font-weight="700" text-anchor="middle">${b.number}</text>`
-    const name = esc(b.name) + (b.returning ? ' ↺' : '')
-    svg += `<text x="${legX + 18}" y="${ly}" fill="${fg}" font-size="13.5">${name}</text>`
-    svg += `<text x="${legX + 18 + 150}" y="${ly}" fill="${muted}" font-size="12">${b.ring}</text>`
-    ly += 18
-  }
-  ly += 8
+const featured = blips.filter((b) => new RegExp(`#${ISSUE}(?!\\d)`).test(b.mentions || ''))
+svg += `<text x="${legX}" y="115" fill="${fg}" font-size="21" font-weight="700">Reviewed in issue #${ISSUE}</text>`
+let ly = 158
+for (const b of featured.slice(0, 10)) {
+  svg += `<circle cx="${legX + 10}" cy="${ly - 6}" r="11" fill="${RING_COLORS[b.ring]}"/>`
+  svg += `<text x="${legX + 10}" y="${ly - 2}" fill="#0d1117" font-size="10" font-weight="700" text-anchor="middle">${b.number}</text>`
+  svg += `<text x="${legX + 32}" y="${ly}" fill="${fg}" font-size="19">${esc(b.name)}</text>`
+  svg += `<text x="${legX + 275}" y="${ly}" fill="${RING_COLORS[b.ring]}" font-size="17">${b.ring}</text>`
+  ly += 36
 }
+if (featured.length > 10) svg += `<text x="${legX}" y="${ly}" fill="${muted}" font-size="14">+ ${featured.length - 10} more in the article</text>`
+svg += `<text x="${legX}" y="565" fill="${fg}" font-size="19" font-weight="700">${tools.length} tools in the full radar</text>`
+svg += `<text x="${legX}" y="595" fill="${muted}" font-size="15">${RINGS.map((ring) => `${tools.filter((t) => t.ring === ring).length} ${ring}`).join(' · ')}</text>`
+svg += `<text x="${legX}" y="635" fill="${muted}" font-size="14">Older entries keep their previous review dates.</text>`
+svg += `<text x="${legX}" y="660" fill="${muted}" font-size="14">Verdicts and source notes for every tool:</text>`
+svg += `<text x="${legX}" y="690" fill="#58a6ff" font-size="18">decebaldobrica.com/radar</text>`
 
 svg += `</svg>`
 
