@@ -1,0 +1,36 @@
+{
+  "finalReloadVerifiedAt": "2026-09-28T10:37:10.233Z",
+  "finalWords": 2676,
+  "images": [
+    {
+      "alt": "A silver wolf watches an open graphite storage drawer containing metal tiles and a red key.",
+      "loaded": true
+    },
+    {
+      "alt": "Rust and AI Crate Radar for September 28: 84 tools across Adopt, Trial, Assess and Hold.",
+      "loaded": true
+    }
+  ],
+  "missingLinks": [],
+  "mobile": {
+    "overflow": [],
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "normalization": "Native accessibility body adds bullet glyphs; compared after stripping bullets, whitespace and normalizing smart quotes.",
+  "sameTextIgnoringWhitespaceAndSmartQuotes": true,
+  "site": {
+    "h2": 8,
+    "h3": 7,
+    "lists": 8
+  },
+  "substack": {
+    "bodyVerifiedThrough": "Native Chrome accessibility snapshot",
+    "emailLengthWarning": "Near email length limit; still present, not falsely marked cleared.",
+    "freshMobileEmailPreview": "Passed before publication on September 28; screenshots retained; email includes closing reader question.",
+    "imageLoadAfterRevision": "Both uploaded images loaded with descriptive alt text.",
+    "noEmailSent": true,
+    "savedAfterReload": true
+  },
+  "titleMatches": true
+}

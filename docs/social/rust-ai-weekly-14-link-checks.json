@@ -1,0 +1,298 @@
+[
+  {
+    "checked_url": "https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/",
+    "final_url": "https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://blog.cloudflare.com/saving-100-tb-of-ram-with-math/"
+  },
+  {
+    "checked_url": "https://blog.rust-lang.org/2026/09/21/github-actions-leaking-secrets-when-miri-output-is-cached/",
+    "final_url": "https://blog.rust-lang.org/2026/09/21/github-actions-leaking-secrets-when-miri-output-is-cached/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://blog.rust-lang.org/2026/09/21/github-actions-leaking-secrets-when-miri-output-is-cached/"
+  },
+  {
+    "checked_url": "https://blog.rust-lang.org/2026/09/22/announcing-a-maintainer-in-residence-scott-schafer-for-the-cargo-team/",
+    "final_url": "https://blog.rust-lang.org/2026/09/22/announcing-a-maintainer-in-residence-scott-schafer-for-the-cargo-team/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://blog.rust-lang.org/2026/09/22/announcing-a-maintainer-in-residence-scott-schafer-for-the-cargo-team/"
+  },
+  {
+    "browser_check": "PASS: crate root renders expected latest version in authenticated Chrome. Direct fetch root also returned empty 404; API data supplied exact version evidence.",
+    "browser_checked_on": "2026-09-28",
+    "checked_url": "https://crates.io/crates/fastlogging",
+    "final_url": "https://crates.io/crates/fastlogging",
+    "initial_version_url": "https://crates.io/crates/fastlogging/0.9.0",
+    "scope": "public link",
+    "status": 404,
+    "url": "https://crates.io/crates/fastlogging"
+  },
+  {
+    "browser_check": "PASS: crate root renders expected latest version in authenticated Chrome. Direct fetch root also returned empty 404; API data supplied exact version evidence.",
+    "browser_checked_on": "2026-09-28",
+    "checked_url": "https://crates.io/crates/rmcp",
+    "final_url": "https://crates.io/crates/rmcp",
+    "initial_version_url": "https://crates.io/crates/rmcp/3.5.0",
+    "scope": "public link",
+    "status": 404,
+    "url": "https://crates.io/crates/rmcp"
+  },
+  {
+    "browser_check": "PASS: crate root renders expected latest version in authenticated Chrome. Direct fetch root also returned empty 404; API data supplied exact version evidence.",
+    "browser_checked_on": "2026-09-28",
+    "checked_url": "https://crates.io/crates/symposium",
+    "final_url": "https://crates.io/crates/symposium",
+    "initial_version_url": "https://crates.io/crates/symposium/0.4.0",
+    "scope": "public link",
+    "status": 404,
+    "url": "https://crates.io/crates/symposium"
+  },
+  {
+    "checked_url": "https://davidlattimore.github.io/posts/2026/09/18/benchmarking-wild-vs-mold.html",
+    "final_url": "https://davidlattimore.github.io/posts/2026/09/18/benchmarking-wild-vs-mold.html",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://davidlattimore.github.io/posts/2026/09/18/benchmarking-wild-vs-mold.html"
+  },
+  {
+    "checked_url": "http://127.0.0.1:4144/blog/2026-09-07-rust-ai-weekly-11",
+    "final_url": "http://127.0.0.1:4144/blog/2026-09-07-rust-ai-weekly-11",
+    "scope": "local preview; canonical needs deployment",
+    "status": 200,
+    "url": "https://decebaldobrica.com/blog/2026-09-07-rust-ai-weekly-11"
+  },
+  {
+    "checked_url": "http://127.0.0.1:4144/images/blog/2026-09-28-rust-ai-weekly-14-3d-hero.png",
+    "final_url": "http://127.0.0.1:4144/images/blog/2026-09-28-rust-ai-weekly-14-3d-hero.png",
+    "scope": "local preview; canonical needs deployment",
+    "status": 200,
+    "url": "https://decebaldobrica.com/images/blog/2026-09-28-rust-ai-weekly-14-3d-hero.png"
+  },
+  {
+    "checked_url": "http://127.0.0.1:4144/images/radar/2026-09-28-radar.png",
+    "final_url": "http://127.0.0.1:4144/images/radar/2026-09-28-radar.png",
+    "scope": "local preview; canonical needs deployment",
+    "status": 200,
+    "url": "https://decebaldobrica.com/images/radar/2026-09-28-radar.png"
+  },
+  {
+    "checked_url": "http://127.0.0.1:4144/radar",
+    "final_url": "http://127.0.0.1:4144/radar",
+    "scope": "local preview; canonical needs deployment",
+    "status": 200,
+    "url": "https://decebaldobrica.com/radar"
+  },
+  {
+    "checked_url": "https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching",
+    "final_url": "https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://docs.github.com/en/actions/concepts/workflows-and-actions/dependency-caching"
+  },
+  {
+    "checked_url": "https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.on_after_task_poll",
+    "final_url": "https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.on_after_task_poll"
+  },
+  {
+    "checked_url": "https://github.com/brmmm3/fastlogging-rs#readme",
+    "final_url": "https://github.com/brmmm3/fastlogging-rs",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/brmmm3/fastlogging-rs#readme"
+  },
+  {
+    "checked_url": "https://github.com/brmmm3/fastlogging-rs/blob/master/CHANGELOG.md",
+    "final_url": "https://github.com/brmmm3/fastlogging-rs/blob/master/CHANGELOG.md",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/brmmm3/fastlogging-rs/blob/master/CHANGELOG.md"
+  },
+  {
+    "checked_url": "https://github.com/brmmm3/fastlogging-rs/blob/master/fastlogging/README.md",
+    "final_url": "https://github.com/brmmm3/fastlogging-rs/blob/master/fastlogging/README.md",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/brmmm3/fastlogging-rs/blob/master/fastlogging/README.md"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/LICENSE",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/LICENSE",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/LICENSE"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/crates/rmcp/src/model.rs",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/crates/rmcp/src/model.rs",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.5.0/crates/rmcp/src/model.rs"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1270",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1270",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1270"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1274",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1274",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1274"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1281",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1281",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/pull/1281"
+  },
+  {
+    "checked_url": "https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.0",
+    "final_url": "https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.0",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.0"
+  },
+  {
+    "checked_url": "https://github.com/rust-lang/miri",
+    "final_url": "https://github.com/rust-lang/miri",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/rust-lang/miri"
+  },
+  {
+    "checked_url": "https://github.com/rust-lang/miri#readme",
+    "final_url": "https://github.com/rust-lang/miri",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/rust-lang/miri#readme"
+  },
+  {
+    "checked_url": "https://github.com/rust-lang/miri/pull/5337",
+    "final_url": "https://github.com/rust-lang/miri/pull/5337",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/rust-lang/miri/pull/5337"
+  },
+  {
+    "checked_url": "https://github.com/rust-lang/rust/blob/1303417c416e1595173d9689e7394c31e136ae95/src/tools/miri/cargo-miri/src/util.rs",
+    "final_url": "https://github.com/rust-lang/rust/blob/1303417c416e1595173d9689e7394c31e136ae95/src/tools/miri/cargo-miri/src/util.rs",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/rust-lang/rust/blob/1303417c416e1595173d9689e7394c31e136ae95/src/tools/miri/cargo-miri/src/util.rs"
+  },
+  {
+    "checked_url": "https://github.com/rust-lang/rust/pull/156882",
+    "final_url": "https://github.com/rust-lang/rust/pull/156882",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/rust-lang/rust/pull/156882"
+  },
+  {
+    "checked_url": "https://github.com/symposium-dev/symposium#readme",
+    "final_url": "https://github.com/symposium-dev/symposium",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/symposium-dev/symposium#readme"
+  },
+  {
+    "checked_url": "https://github.com/symposium-dev/symposium/blob/symposium-v0.4.0/README.md",
+    "final_url": "https://github.com/symposium-dev/symposium/blob/symposium-v0.4.0/README.md",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/symposium-dev/symposium/blob/symposium-v0.4.0/README.md"
+  },
+  {
+    "checked_url": "https://github.com/symposium-dev/symposium/releases/tag/symposium-v0.4.0",
+    "final_url": "https://github.com/symposium-dev/symposium/releases/tag/symposium-v0.4.0",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/symposium-dev/symposium/releases/tag/symposium-v0.4.0"
+  },
+  {
+    "checked_url": "https://github.com/wild-linker/wild/releases/tag/0.10.0",
+    "final_url": "https://github.com/wild-linker/wild/releases/tag/0.10.0",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/wild-linker/wild/releases/tag/0.10.0"
+  },
+  {
+    "checked_url": "https://github.com/wild-linker/wild/tree/0.10.0",
+    "final_url": "https://github.com/wild-linker/wild/tree/0.10.0",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://github.com/wild-linker/wild/tree/0.10.0"
+  },
+  {
+    "checked_url": "https://go.dev/blog/simd-experiment",
+    "final_url": "https://go.dev/blog/simd-experiment",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://go.dev/blog/simd-experiment"
+  },
+  {
+    "checked_url": "https://golangweekly.com/issues/619",
+    "final_url": "https://golangweekly.com/issues/619",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://golangweekly.com/issues/619"
+  },
+  {
+    "checked_url": "https://rustfoundation.org/media/your-ai-agent-is-writing-rust-but-is-it-good-explore-on-this-upcoming-livestream/",
+    "final_url": "https://rustfoundation.org/media/your-ai-agent-is-writing-rust-but-is-it-good-explore-on-this-upcoming-livestream/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://rustfoundation.org/media/your-ai-agent-is-writing-rust-but-is-it-good-explore-on-this-upcoming-livestream/"
+  },
+  {
+    "checked_url": "https://static.rust-lang.org/dist/2026-09-22/channel-rust-nightly.toml",
+    "final_url": "https://static.rust-lang.org/dist/2026-09-22/channel-rust-nightly.toml",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://static.rust-lang.org/dist/2026-09-22/channel-rust-nightly.toml"
+  },
+  {
+    "checked_url": "https://symposium.dev/",
+    "final_url": "https://symposium.dev/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://symposium.dev/"
+  },
+  {
+    "checked_url": "https://symposium.dev/install.html",
+    "final_url": "https://symposium.dev/install.html",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://symposium.dev/install.html"
+  },
+  {
+    "checked_url": "https://this-week-in-rust.org/blog/2026/09/23/this-week-in-rust-670/",
+    "final_url": "https://this-week-in-rust.org/blog/2026/09/23/this-week-in-rust-670/",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://this-week-in-rust.org/blog/2026/09/23/this-week-in-rust-670/"
+  },
+  {
+    "checked_url": "https://weeklyrust.substack.com/p/saving-100tb-of-ram-with-rust",
+    "final_url": "https://weeklyrust.substack.com/p/saving-100tb-of-ram-with-rust",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://weeklyrust.substack.com/p/saving-100tb-of-ram-with-rust"
+  },
+  {
+    "checked_url": "https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus",
+    "final_url": "https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus",
+    "scope": "public link",
+    "status": 200,
+    "url": "https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus"
+  }
+]

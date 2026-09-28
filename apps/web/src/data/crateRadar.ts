@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-09-21'
+export const RADAR_GENERATED_AT = '2026-09-28'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 13
+export const RADAR_ISSUE = 14
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -57,10 +57,38 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'rmcp', url: 'https://github.com/modelcontextprotocol/rust-sdk', category: 'agentic', quadrant: 'agentic',
-    ring: 'Trial', maintenance: 'actively maintained (official MCP org; 4t145, jokemanfire, alexhancock)', latest: 'v3.2.0 (Aug 31, 2026)',
-    stars: '~3.9k★', downloads: '~13M', adopters: 'canonical Rust MCP SDK',
-    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07)', returning: true,
-    note: 'DOWNGRADED Adopt to Trial at #11, and not for anything wrong with the code. Fifteen weeks took this crate from 1.7.0 (May 13) to 3.2.0 (Aug 31): three majors, two migration guides, and a 1.8.0 whose own release notes open with a warning that it contains a source-breaking change and "should have been 2.0.0", so anyone on rmcp = "1.7" had Cargo resolve them into a failing build. 3.x tracks the MCP 2026-07-28 spec. Still the only official SDK and still the right choice; it is just not a crate you standardize on without pinning an exact version and booking migration capacity each quarter. The GitHub Releases tab has no notes past rmcp-v2.2.0, so the 3.x changelog lives in the repo and the migration discussions',
+    ring: 'Trial', maintenance: 'actively maintained by the official MCP organisation; September 2026 releases and merged fixes', latest: 'v3.5.0 (Sep 28, 2026; Rust 1.88)',
+    stars: '~4.0k★ (Sep 28, 2026)', downloads: '~29.8M (Sep 28, 2026)', adopters: 'official Rust MCP SDK',
+    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07); Rust & AI Weekly #14 (2026-09-28)', returning: true,
+    note: 'Adopt to Trial at #11 because of migration churn; Trial retained at #14. 3.5.0 rejects duplicate SEP-2243 headers, fixes explicit default-port Origin matching and empty cacheScope handling, and adds LATEST_WITH_INITIALIZE. The current GitHub Releases page now carries 3.x notes, superseding the #11 discovery limitation. Registry says Apache-2.0; LICENSE describes legacy MIT contributions during relicensing. Verify transport and protocol compatibility with deployed peers. Sources: https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.0 and PRs 1274, 1270, 1281.',
+  },
+  {
+    name: 'Symposium', url: 'https://github.com/symposium-dev/symposium', category: 'agentic/developer-context', quadrant: 'agentic',
+    ring: 'Assess', maintenance: 'Niko Matsakis, Jack Huey and Symposium core team; repository active Sep 25, 2026', latest: 'v0.4.0 (May 14, 2026; pre-alpha project)',
+    stars: '~227★ (Sep 28, 2026)', downloads: '~440 (Sep 28, 2026)', adopters: 'no production adoption established in this review',
+    mentions: 'Rust & AI Weekly #14 (2026-09-28)', returning: false,
+    note: 'Dependency-matched agent skills, hooks and MCP servers. Website/main-branch guidance differs from the tagged README; verify the installed version. Start with project-scoped hooks and reviewed sync/update settings. MIT OR Apache-2.0 confirmed in LICENSE.txt. Sources: https://symposium.dev/install.html and https://github.com/symposium-dev/symposium/releases/tag/symposium-v0.4.0.',
+  },
+  {
+    name: 'Miri', url: 'https://github.com/rust-lang/miri', category: 'safety/testing', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'Rust project tooling; security patch merged Sep 21, 2026', latest: 'cache-environment fix verified in nightly-2026-09-22 source',
+    adopters: 'project documents real-world bugs found; targeted tests, not proof of soundness',
+    mentions: 'Rust & AI Weekly #14 (2026-09-28)', returning: false,
+    note: 'Adopt for targeted undefined-behaviour testing on a patched nightly. Clear affected CI caches and review exposed credentials separately; upgrading does not erase prior caches. Interpreter/FFI limits apply; isolation is not a security sandbox. MIT/Apache-2.0. Source: https://blog.rust-lang.org/2026/09/21/github-actions-leaking-secrets-when-miri-output-is-cached/; patch https://github.com/rust-lang/miri/pull/5337.',
+  },
+  {
+    name: 'Wild', url: 'https://github.com/wild-linker/wild', category: 'dev/linker', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'active project led by David Lattimore with contributors and sponsors', latest: 'v0.10.0 (Aug 4, 2026)',
+    stars: '~4.0k★ (Sep 28, 2026)', adopters: 'project reports popular-crate tests; no independent deployment claim here',
+    mentions: 'Rust & AI Weekly #14 (2026-09-28)', returning: false,
+    note: 'Trial for supported Linux builds. Incremental linking remains a goal in the 0.10.0 README. September 18 author benchmark explains filesystem, output deletion, fork and version differences against Mold; not independently reproduced and not end-to-end build times. MIT OR Apache-2.0. Source: https://davidlattimore.github.io/posts/2026/09/18/benchmarking-wild-vs-mold.html.',
+  },
+  {
+    name: 'fastlogging', url: 'https://github.com/brmmm3/fastlogging-rs', category: 'observability/logging', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'Marty B. (brmmm3), sole registry owner; repository active Sep 26, 2026', latest: 'v0.9.0 (Sep 17, 2026)',
+    stars: '14★ (Sep 28, 2026)', downloads: '26 (Sep 28, 2026)', adopters: 'early public signals; no production adoption established',
+    mentions: 'Rust & AI Weekly #14 (2026-09-28)', returning: false,
+    note: 'Mixed-language logging with background writers; 0.9 adds OpenTelemetry support. Test queue pressure, shutdown/drain and collector outages before shared use. No speedup claim adopted from the README table. MIT OR Apache-2.0. Sources: https://crates.io/crates/fastlogging/0.9.0 and repository CHANGELOG.md.',
   },
   {
     name: 'rig', url: 'https://github.com/0xPlaygrounds/rig', category: 'agentic', quadrant: 'agentic',
