@@ -1,5 +1,7 @@
 # Social publishing sources
 
+- [WolvenTech LinkedIn company page](wolventech-linkedin-company.md)
+
 ## Rust & AI Weekly #13
 
 - [Launch pack and verification evidence](../../apps/web/content/blog/_launch-notes-rust-ai-weekly-13.md)

@@ -89,6 +89,7 @@ const organizationSchema = {
   },
   sameAs: [
     'https://github.com/wolven-tech',
+    'https://www.linkedin.com/company/wolven-tech-advisory/',
     'https://find-and-update.company-information.service.gov.uk/company/16811183',
   ],
 }
