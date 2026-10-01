@@ -193,6 +193,8 @@ Auto-posting • Content Distribution • Engagement Tracking
 
 ## 📖 Documentation
 
+- [Wolven Tech search-content focus](./docs/reports/2026-10-01-wolventech-search-content.md): service-page intent, canonical-host correction and verification.
+
 ### 🗄️ Data & Architecture (AllSource)
 - [AllSource Cutover](./docs/ALLSOURCE_CUTOVER.md) - How the app moved off Supabase to AllSource
 - [AllSource Event Model](./docs/ALLSOURCE_EVENT_MODEL.md) - Streams, events, and projections per domain

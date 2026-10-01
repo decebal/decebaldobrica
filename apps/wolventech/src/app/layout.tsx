@@ -3,12 +3,11 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
+import { siteUrl } from '@/lib/site'
 import { Toaster } from '@decebal/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' })
-
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wolventech.com'
 
 export const metadata: Metadata = {
   title: {

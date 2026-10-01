@@ -23,6 +23,7 @@ export const proofPoints: ProofPoint[] = [
 ]
 
 export type Service = {
+  href?: string
   kicker: string
   title: string
   description: string
@@ -34,6 +35,7 @@ export const services: Service[] = [
   {
     kicker: 'Fixed scope · 1–2 weeks',
     title: 'Technical Due Diligence',
+    href: '/services/software-technical-due-diligence',
     description:
       'For VC partners and acquirers evaluating a Rust-heavy or event-sourced codebase. We assess workspace health, clippy discipline, async boundaries, test coverage, observability, operational maturity, and security hygiene.',
     scope: ['Codebase audit', 'Architecture review', 'Risk register', 'Written report'],
@@ -42,6 +44,7 @@ export const services: Service[] = [
   {
     kicker: 'Retainer · 1–3 days/week',
     title: 'Fractional Rust Architect',
+    href: '/services/rust-consulting',
     description:
       'Embedded on your platform team as a senior-to-staff architect. Code reviews, architecture decisions, team mentoring, and hands-on work when the hot path needs to ship. Typical terms: 3-month minimum, monthly retainer.',
     scope: ['Architecture', 'Code reviews', 'Mentoring', 'Hands-on'],
