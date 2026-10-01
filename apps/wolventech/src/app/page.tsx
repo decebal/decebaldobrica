@@ -9,7 +9,22 @@ import { ArrowUpRight, Check } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+  title: 'Rust Consulting & Software Architecture Reviews',
+  description:
+    'Work directly with Decebal Dobrica on Rust services, architecture reviews and software technical due diligence. Explore scope, deliverables and public work.',
   alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Rust Consulting & Software Architecture Reviews',
+    description:
+      'Work directly with Decebal Dobrica on Rust services, architecture reviews and software technical due diligence. Explore scope, deliverables and public work.',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rust Consulting & Software Architecture Reviews',
+    description:
+      'Work directly with Decebal Dobrica on Rust services, architecture reviews and software technical due diligence. Explore scope, deliverables and public work.',
+  },
 }
 
 export default function HomePage() {
@@ -31,7 +46,7 @@ export default function HomePage() {
             </Badge>
           </div>
           <h1 className="text-[clamp(36px,5.3vw,60px)] font-extrabold leading-[1.04] tracking-[-0.02em] text-rust-ink">
-            Rust systems, <span className="text-gradient-rust">shipped with intent</span>.
+            Rust consulting, <span className="text-gradient-rust">from review to production</span>.
           </h1>
           <p className="mt-5 max-w-[620px] text-lg text-rust-ink-soft">
             Wolven Tech is a one-person, Rust-only advisory practice, built for HFT, prop trading,
@@ -110,6 +125,16 @@ export default function HomePage() {
                 <p className="mt-3.5 border-t border-dashed border-rust-line-soft pt-3.5 text-[13px] text-rust-muted">
                   {s.price}
                 </p>
+                {s.href && (
+                  <a
+                    href={s.href}
+                    className="mt-4 inline-flex text-sm font-semibold text-rust-primary-2 underline underline-offset-4"
+                  >
+                    {s.title === 'Technical Due Diligence'
+                      ? 'Review the software due diligence scope'
+                      : 'Explore Rust consulting and architecture review'}
+                  </a>
+                )}
               </CardContent>
             </Card>
           ))}
