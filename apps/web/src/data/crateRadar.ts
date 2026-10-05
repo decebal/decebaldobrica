@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-09-28'
+export const RADAR_GENERATED_AT = '2026-10-05'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 14
+export const RADAR_ISSUE = 15
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -47,6 +47,27 @@ export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
 export const RADAR_RINGS: RadarRing[] = ['Adopt', 'Trial', 'Assess', 'Hold']
 
 export const crateRadarTools: RadarTool[] = [
+  {
+    name: 'wasm-bindgen Emscripten integration', url: 'https://wasm-bindgen.github.io/wasm-bindgen/reference/emscripten.html', category: 'dev-tools/wasm', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'experimental integration; Cloudflare and upstream collaboration, with Tokio/Mio/Emscripten patchsets still required (checked Oct 5, 2026)', latest: 'wasm-bindgen 0.2.129 (Sep 25, 2026; Rust 1.81); integration preview Sep 28',
+    adopters: 'adapted Cloudflare demonstration; independent production use of this integration not verified',
+    mentions: 'Rust & AI Weekly #15 (2026-10-05)', returning: false,
+    note: 'Verdict applies only to the experimental Emscripten/Tokio integration. Tagged Mio 1.2.3-cf.emscripten and Tokio 1.53.1-cf.emscripten plus unstable cfgs; network readiness/DNS need patched Emscripten. Guide says the Emscripten test harness compiles test bodies without executing them. Test the exported operation in the intended host. wasm-bindgen is MIT OR Apache-2.0; native dependencies need their own licence inventory. Sources: guide URL and https://blog.cloudflare.com/rust-workers-emscripten-target/.',
+  },
+  {
+    name: 'Deser', url: 'https://github.com/mitsuhiko/deser', category: 'data/serialization', quadrant: 'data',
+    ring: 'Assess', maintenance: 'active experimental project led by Armin Ronacher; release sequence checked Oct 5, 2026', latest: 'v0.10.0 (Oct 4, 2026; Rust 1.88)',
+    adopters: 'design informed by Sentry Relay experience; Relay adoption of Deser not established',
+    mentions: 'Rust & AI Weekly #15 (2026-10-05)', returning: false,
+    note: 'Event-driven serialisation for self-describing formats; nested state in a driver, location-preserving buffering and composable adapters. Non-self-describing formats excluded; Send/Sync requirements exclude Rc and RefCell. Incremental input support varies by format. Derive feature opt-in. Apache-2.0. No independent performance reproduction or complete 0.9-to-0.10 migration checklist. Sources: https://lucumr.pocoo.org/2026/9/29/deser/ and LIMITATIONS.md at e4ba19c34229987c0af98dfc56e8095812744990.',
+  },
+  {
+    name: 'ying-profiler', url: 'https://github.com/velvia/ying-profiler', category: 'dev-tools/observability', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'Evan Chan; published allocator re-entry/deadlock implementation notes and stress guidance', latest: 'v0.3.0 (Sep 10, 2026; Rust 1.85); TWiR spotlight Sep 30',
+    adopters: 'packaged example and self-nominated community spotlight; independent production overhead unverified',
+    mentions: 'Rust & AI Weekly #15 (2026-10-05)', returning: false,
+    note: 'Sampling retained-memory profiler using the global allocator slot over System. Collection and reporting are separate. start_profiling uses a five-minute check interval and 10% retained-memory change trigger; profile_spans is incomplete. Test release-build stacks, pressure, shutdown and overhead before rollout. Apache-2.0. Published 0.3.0 README/source checked at 415e022da7c76764c5c7040c96a3c7994a82400f.',
+  },
   // ── Agentic & LLM ──
   {
     name: 'goose', url: 'https://github.com/block/goose', category: 'agentic', quadrant: 'agentic',
@@ -460,7 +481,7 @@ export const crateRadarTools: RadarTool[] = [
     name: 'fearless_simd', url: 'https://github.com/linebender/fearless_simd', category: 'inference/simd', quadrant: 'inference',
     ring: 'Trial', maintenance: 'actively maintained (Linebender; Shnatsel driving releases, LaurenzV cutting them); ~458★; security policy promises backports for the latest release per MSRV for at least three years after that Rust version shipped', latest: 'v1.0.0 (Sep 21, 2026); macros 0.1.0 same day; rc.2 Sep 19, rc.1 Sep 13; MSRV 1.89',
     adopters: 'a dozen-plus direct dependents on crates.io; 1000+ repos directly or transitively',
-    mentions: 'Rust & AI Weekly #8 (2026-08-17); Rust & AI Weekly #13 (2026-09-21)', returning: true,
+    mentions: 'Rust & AI Weekly #8 (2026-08-17); Rust & AI Weekly #13 (2026-09-21); Rust & AI Weekly #15 (2026-10-05)', returning: true,
     note: 'Verified Sep 22 for #13: final 1.0 shipped Sep 21 after two breaking RCs. August 0.7 post conditionally targeted early September with no further breaks planned; it did not say API frozen. rc.1 renamed N to LEN and the as_array family and moved abs to SimdBase; rc.2 moved witness() to ExtractToken::token(). Fixed-order floating reductions agree for a given vector type and lane count except NaN bit patterns; precise fused arithmetic, documented semver-stable storage, and optional #[simd] macros also landed. MIT OR Apache-2.0. Latest release per MSRV receives security backports for at least three years after that Rust version shipped. Trial holds; test 0.7-to-1.0 migration. Earlier #8: safe SIMD tokens, 64-bit integer coverage and explicit SSE2 level in 0.7; every operation reachable through traits',
   },
   {

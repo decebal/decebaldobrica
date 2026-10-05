@@ -1,0 +1,151 @@
+---
+title: "Rust & AI Weekly #15: Rust on Workers still needs a runtime plan"
+published: false
+canonical_url: https://decebaldobrica.com/blog/2026-10-05-rust-ai-weekly-15
+tags: rust, webassembly, ai, observability
+---
+
+![A silver mechanical wolf watches a transfer arm move a metal block towards a circular workbench.](https://decebaldobrica.com/images/blog/2026-10-05-rust-ai-weekly-15-3d-hero.png)
+
+*Native dependencies and their host runtime need an explicit handoff. Original 3D illustration; not an architecture diagram.*
+
+Cloudflare's September 28 [Rust-on-Workers preview](https://blog.cloudflare.com/rust-workers-emscripten-target/) demonstrates a Minecraft server running through Emscripten. Getting there involved turning its thread pool, tick loop and chunk work into cooperative tasks. The demonstration shows how much Rust code can travel, and where the execution model still needs work.
+
+That distinction matters if you are considering Workers for an agent's tool endpoint or an existing Rust service. A dependency can compile successfully while still expecting a thread it can block. On a host-owned JavaScript event loop, the integration must return control so other work can proceed.
+
+My first step would be to choose one request path and list everything it expects from its runtime: blocking work, sockets, timers, filesystem access and background tasks. Port that path with explicit cancellation and shutdown checks before proposing a service migration. The evaluation below identifies the preview's pinned dependencies and its current test-harness limitation.
+
+**Rust & AI Weekly #15** covers September 28–October 5, with older releases labelled. Four evaluations follow, alongside Rust 1.99 and a Windows toolchain change announced for 1.100. These are source-based engineering assessments. I have not deployed these tools or independently reproduced their performance claims for this issue.
+
+[![Rust and AI Crate Radar for October 5: 87 tools across Adopt, Trial, Assess and Hold.](https://decebaldobrica.com/images/radar/2026-10-05-radar.png)](https://decebaldobrica.com/radar)
+
+*Three additions and one returning evaluation. The snapshot contains 87 tools: 15 Adopt, 34 Trial, 36 Assess and 2 Hold. Other entries retain their previous review dates. [Explore the radar](https://decebaldobrica.com/radar).*
+
+## Rust on Workers: Assess the Emscripten integration
+
+**Assess for the experimental integration.** This verdict covers the new Emscripten/Tokio path, rather than wasm-bindgen's established browser use. It is a candidate for a contained compatibility investigation when a native dependency has prevented a smaller Wasm build.
+
+Emscripten supplies a C/C++ linking environment and a runtime around the Wasm module. Cloudflare's integration combines that with wasm-bindgen's Rust-to-JavaScript bindings. Its proposed Tokio event-loop model separates driving ready tasks from arranging the next host wake-up. That gives the host control over scheduling instead of requiring a conventional blocking runtime loop.
+
+For an AI tool service, a useful experiment might be a parser or native library already used behind one endpoint. Nothing in the announcement establishes that an arbitrary model server, GPU dependency or multithreaded daemon will run unchanged. Treat the project's demonstration as evidence about its adapted example.
+
+### What the setup currently requires
+
+The [Emscripten guide](https://wasm-bindgen.github.io/wasm-bindgen/reference/emscripten.html) calls the support experimental. Its Tokio section explicitly says the event-loop support has not shipped in a Tokio release. As checked on October 5, the documented setup includes:
+
+- Tagged Mio and Tokio patchsets, `1.2.3-cf.emscripten` and `1.53.1-cf.emscripten`, plus both unstable configuration flags.
+- A patched Emscripten frontend for network readiness and asynchronous DNS. Stock 6.0.10 is insufficient for that documented network path.
+- `panic=abort`; unwinding across the wasm-bindgen boundary remains unsupported.
+- A matching wasm-bindgen CLI and crate version. JavaScript snippets can also require copying files from Cargo's `deps/` output.
+
+The guide says its Emscripten test harness currently compiles test bodies but does not execute them. Run the exported operation in the intended host and check an observable result. A successful harness invocation alone cannot establish runtime behaviour.
+
+### A bounded trial
+
+I would give the trial one endpoint, representative input fixtures and an explicit exit criterion. Check overlapping invocations, a cancelled request and the lifetime of any task spawned from that request. Capture toolchain revisions alongside the result so a later upstream release can be tested against the same case.
+
+Also compare the deployed package and cold-start behaviour with your current implementation. That is a proposed measurement, not a performance result from this issue. If the native dependency can be removed cheaply, include that option in the comparison; carrying a patched toolchain needs a concrete benefit.
+
+- **Maintenance:** Cloudflare's engineers and upstream projects are collaborating on the integration; several pieces remain patchsets under review.
+- **Latest release:** wasm-bindgen **0.2.129**, September 25, with Rust **1.81** in its published manifest. That version number does not make the entire preview a stable release.
+- **Adoption:** the announcement supplies an adapted demonstration. I have not verified an independent production deployment of this integration.
+- **Licence:** the wasm-bindgen crate is MIT OR Apache-2.0. That is not a licence inventory for every native library you link into a Worker.
+
+## Deser 0.10: Assess a different serialisation model
+
+**Assess.** [Deser](https://github.com/mitsuhiko/deser) is relevant when your input format and error handling have outgrown a straightforward derive. A useful evaluation case is a configuration file with tagged variants, flattened fields and an error that must identify the exact nested value. For an agent tool, the same concern appears when malformed arguments need a useful diagnostic.
+
+Armin Ronacher [introduced the revived project on September 29](https://lucumr.pocoo.org/2026/9/29/deser/). The registry now lists **0.10.0**, published October 4. Deser receives events into sinks and keeps nested state in a driver rather than recursively chaining it on the call stack. Its buffering model aims to retain information such as locations and exact numeric values.
+
+Test it against an input your application currently struggles to handle. Similar derive names can hide different trait requirements and a different set of format crates. Keep the first experiment behind an application boundary that you can remove.
+
+### Compatibility comes before speed
+
+The [version-matched limitations](https://github.com/mitsuhiko/deser/blob/e4ba19c34229987c0af98dfc56e8095812744990/LIMITATIONS.md) rule out non-self-describing formats, including postcard and Protocol Buffers. They also exclude types such as `Rc` and `RefCell` through the thread-safety requirements. Those are selection criteria, not optimisation work to postpone until after migration.
+
+Streaming also depends on the format. The documented JSON family, CBOR and MessagePack paths can parse arriving input incrementally. TOML and XML documents are read in full before parsing. Moving recursive state off the call stack does not mean an arbitrarily large document has a bounded memory cost.
+
+The project's performance discussion reports different outcomes across formats and workloads, including slower paths. I am not carrying its ratios into this recommendation: I have not reproduced the benchmarks on a specified reader workload and machine. Start by deciding whether the error and buffering behaviour solves an existing problem.
+
+For a contained assessment, I would compare:
+
+- The accepted input set, including duplicate keys, unknown fields and deeply nested values.
+- The reported field path and source location after buffering a tagged value.
+- Peak memory and parse time for the largest document you intend to accept.
+- How much adapter code your current public types and format dependencies require.
+
+The [published 0.10 README](https://docs.rs/crate/deser/0.10.0/source/README.md) makes `derive` opt-in. Pin the format crates with the core crate during the experiment, and keep representative serialised output as fixtures. I have not established a complete 0.9-to-0.10 migration checklist, so this is not an upgrade instruction for existing Deser users.
+
+- **Maintenance:** Ronacher is actively developing the project. Its own description remains experimental, and the current release sequence is moving quickly.
+- **Latest release:** **0.10.0**, October 4; declared minimum Rust **1.88**. This supersedes the version available when the introduction was published.
+- **Adoption:** Ronacher's experience building Sentry Relay informs the design. That does not establish that Relay has adopted Deser.
+- **Licence:** the published crate contains Apache-2.0 terms. Commercial use is permitted subject to those terms; a migration still needs its normal dependency review.
+
+## Ying: Assess retained-memory profiling on your workload
+
+**Assess.** [ying-profiler](https://github.com/velvia/ying-profiler) was This Week in Rust's Crate of the Week on September 30. Its latest published version is **0.3.0 from September 10**. The new item this week is the community spotlight, not a new crate release.
+
+Ying samples allocations and tracks retained memory, including reallocations. Its reports can rank stacks by retained bytes or total allocated bytes and generate flamegraphs. For an async service whose memory keeps growing, that distinction gives you a more specific question to investigate: which allocation sites still account for live memory after the work has finished?
+
+The [published README](https://docs.rs/crate/ying-profiler/0.3.0/source/README.md) positions it for async Rust and describes symbol expansion that makes inlined frames easier to interpret. I would test that claim against a known allocation in the service's release build. A readable example flamegraph does not establish that your build's symbols and async call paths will be equally useful.
+
+### Collection and reporting are separate
+
+Ying takes the global allocator slot and delegates allocation to `System`. Declaring it starts collection; reporting needs separate setup. The packaged `start_profiling` convenience method uses a five-minute interval and a 10% retained-memory change trigger, writes to `ying-profiles`, and enables flamegraphs. A custom runner can change these decisions.
+
+Those defaults need checking against the incident you want to diagnose. A brief peak might have disappeared by the next report. A stable but unexpectedly large retained set might need an explicit capture. Ensure the process can write to the chosen directory and that the output survives the environment in which you run it.
+
+The [release's implementation notes](https://github.com/velvia/ying-profiler/blob/415e022da7c76764c5c7040c96a3c7994a82400f/README.md) describe allocator re-entry and deadlock fixes, including thread-local guards and non-allocating lock paths. Those notes explain why I want a stress run before production use. They are not evidence of an unresolved vulnerability in 0.3.0.
+
+I would run the profiler first against a repeatable workload with a known retained allocation, alongside an uninstrumented baseline. Check whether the retained stack appears, whether reports remain readable, and what happens during allocation pressure and shutdown. Put the timeout outside the profiled process: a stuck allocator may prevent its own reporting path from working.
+
+For an inference service or agent worker, choose a test that includes the lifetime you care about: a cache eviction, a completed batch, or cancellation after partial work. The intended output is evidence you can connect to that lifecycle. Sampling does not promise an exact account of every allocation.
+
+- **Maintenance:** Evan Chan maintains the project; the release includes allocator-path implementation notes and stress-testing guidance. The `profile_spans` feature is explicitly incomplete.
+- **Latest release:** **0.3.0**, September 10; declared minimum Rust **1.85**.
+- **Adoption:** a self-nominated community spotlight and a packaged example. Independent production adoption and overhead remain unverified here.
+- **Licence:** Apache-2.0 in the published package, with commercial use subject to its terms.
+
+## fearless_simd: keep Trial, test the fallback you ship
+
+**Trial, unchanged.** [fearless_simd 1.0.0](https://docs.rs/fearless_simd/1.0.0/fearless_simd/) shipped September 21 and remains the latest registry release checked for this issue. September's [SIMD survey by Sergey Davidoff](https://shnatsel.github.io/state-of-simd-rust-2026/) brings it back into discussion. Davidoff contributes to the library; read the comparison with that relationship visible.
+
+The practical question is whether its dispatch model fits the machines you support. The versioned documentation covers x86 variants, AArch64 NEON and Wasm SIMD, with a scalar fallback. It also describes the binary-size cost of producing multiple x86 implementations. Those are useful inputs to a trial plan, before choosing the fastest result from one laptop.
+
+For a CPU-heavy inference preprocessing step, image operation or search kernel, select one measured hot function. Keep a scalar reference implementation and compare its outputs across supported targets. Include short slices and leftover elements; a vectorised main loop still needs correct handling for the part that does not fill a vector.
+
+### Record the dispatch configuration
+
+The [1.0 documentation](https://docs.rs/fearless_simd/1.0.0/fearless_simd/#multiversioning-on-x86) provides configuration flags for disabling particular automatically dispatched x86 levels. Disabling dispatch does not remove that level's token type or explicit kernel support. Record the build flags as part of the result, especially if the deployed fleet is narrower than your development machines.
+
+Wasm takes a different deployment path: the guide describes separate SIMD and non-SIMD bundles selected by host feature detection. Do not assume the x86 runtime-dispatch arrangement carries across unchanged. Test the bundle your intended runtime will load, including the fallback where you promise support.
+
+This is also where the [Go team's September 24 SIMD article](https://go.dev/blog/simd-experiment) makes a useful comparison. Its experimental portable API includes an emulation mode selected with `GODEBUG=simd=0`. The shared engineering task is to exercise the lower-capability path deliberately. The APIs and release guarantees differ; this is not a Rust-versus-Go speed ranking.
+
+- **Maintenance:** Linebender maintains the crate. Its [security policy](https://docs.rs/crate/fearless_simd/1.0.0/source/SECURITY.md) promises backports for the latest release at each MSRV for at least three years from that Rust version's release.
+- **Latest release:** **1.0.0**, September 21; minimum Rust **1.89**. The optional macro crate has its own version.
+- **Adoption:** the follow-up has not established version-specific production migration evidence that warrants moving the verdict to Adopt. Aggregate download counts would not answer that question.
+- **Licence:** MIT OR Apache-2.0 in the published package.
+
+## Rust 1.99 is out; Windows host tools change later
+
+[Rust 1.99.0](https://blog.rust-lang.org/2026/10/01/Rust-1.99.0/) shipped October 1. It stabilises definitions of C-variadic functions with the supported C ABIs and raw-pointer layout inspection APIs. FFI maintainers should review the release's linked API documentation against their current wrappers.
+
+The release also changes the guidance around `Box::leak`: use `Box::into_raw` or `Box::into_non_null` when the allocation will later be reclaimed. This is a documentation recommendation in 1.99, with future compiler optimisation and custom-allocator work in view. It does not announce an immediate semantic change to existing code.
+
+For an upgrade review, search your own `Box::leak` call sites and separate intentional process-lifetime storage from pointers eventually reconstructed and freed. Review the latter's ownership and safety contract before changing them. A textual replacement alone cannot establish that the lifetime is correct.
+
+The [October 2 Windows announcement](https://blog.rust-lang.org/2026/10/02/demoting-i686-windows-targets-to-std-only/) takes effect in **1.100**, not 1.99. Rust will stop distributing host tools for the i686 Windows targets. Standard-library distributions continue, allowing cross-compilation from supported hosts; the MSVC target retains Tier 1 status without host tools, while GNU is Tier 2 without host tools.
+
+If a build job runs its compiler on 32-bit Windows, plan its host migration. A job on a supported 64-bit host that produces a 32-bit Windows binary is a different case. Keep both host and target triples visible in your CI inventory so the announcement reaches the affected owner.
+
+Last issue's `Allocator` merge remains a separate milestone from stable shipping. The 1.99 announcement still describes custom allocators as upcoming work. I am not treating the merged implementation as a new 1.99 capability. The [Tokio post-poll hook](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.on_after_task_poll) also remains documented as `tokio_unstable`; tokio_rcu stays Assess.
+
+## Reading list
+
+- [This Week in Rust 671](https://this-week-in-rust.org/blog/2026/09/30/this-week-in-rust-671/), September 30: the week's discovery index and ying-profiler spotlight. Follow its release and pull-request links for their individual shipping status.
+- [Rust Bytes 138](https://weeklyrust.substack.com/p/what-is-happening-with-simd-in-rust), September 29: its SIMD roundup led back to the primary survey used above.
+- [Josh joins the Rust Innovation Lab](https://rustfoundation.org/media/welcoming-the-josh-project-to-the-rust-innovation-lab/), October 1: the Foundation describes its use for synchronising Rust repositories. The proposed merge queue and review interface remain work in progress.
+- [Go Weekly 619](https://golangweekly.com/issues/619), September 25: an explicitly older comparison source. The editor announced a break for October 2 and a return on October 9.
+
+If you are considering the Workers preview, reply with the dependency you want to bring over and the runtime operation that currently blocks the port. A concrete socket, thread or cancellation requirement would make the next evaluation more useful.
