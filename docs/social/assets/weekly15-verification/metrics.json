@@ -1,0 +1,32 @@
+{
+  "title": "Rust & AI Weekly #15: Rust on Workers still needs a runtime plan",
+  "slug": "2026-10-05-rust-ai-weekly-15",
+  "date": "2026-10-05T08:00:00.000Z",
+  "words": 2430,
+  "paragraphs": 44,
+  "longestParagraph": 55,
+  "paragraphsOver100": 0,
+  "uniqueDestinations": 24,
+  "images": [
+    "<img src=\"https://decebaldobrica.com/images/blog/2026-10-05-rust-ai-weekly-15-3d-hero.png\" alt=\"A silver mechanical wolf watches a transfer arm move a metal block towards a circular workbench.\"/>",
+    "<img src=\"https://decebaldobrica.com/images/radar/2026-10-05-radar.png\" alt=\"Rust and AI Crate Radar for October 5: 87 tools across Adopt, Trial, Assess and Hold.\"/>"
+  ],
+  "radarTools": 87,
+  "counts": {
+    "Adopt": 15,
+    "Trial": 34,
+    "Assess": 36,
+    "Hold": 2
+  },
+  "xCounts": [
+    216,
+    220,
+    227,
+    235,
+    235,
+    226,
+    178
+  ],
+  "emailBodyBytes": 20106,
+  "renderer": "ReactMarkdown + remark-gfm + rehype-raw + rehype-highlight (installed site dependencies)"
+}

@@ -2,6 +2,17 @@
 
 - [WolvenTech LinkedIn company page](wolventech-linkedin-company.md)
 
+## Rust & AI Weekly #15
+
+- [Article and verification ledger](../../apps/web/content/blog/_launch-notes-rust-ai-weekly-15.md)
+- [Readability evidence and preview screenshots](rust-ai-weekly-15-readability.html)
+- [Substack paste source](rust-ai-weekly-15-substack.html)
+- [Saved Substack copy with uploaded images](rust-ai-weekly-15-substack-uploaded.html)
+- [Unpublished syndication Markdown](rust-ai-weekly-15-syndication.md)
+- [LinkedIn copy](rust-ai-weekly-15-linkedin.md)
+- [Connected X thread](rust-ai-weekly-15-x.md)
+- [Artwork and source prompt](rust-ai-weekly-15-artwork.md)
+
 ## Rust & AI Weekly #13
 
 - [Launch pack and verification evidence](../../apps/web/content/blog/_launch-notes-rust-ai-weekly-13.md)
