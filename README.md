@@ -193,6 +193,9 @@ Auto-posting • Content Distribution • Engagement Tracking
 
 ## 📖 Documentation
 
+- [Wolven Tech inbound mail recovery](./docs/runbooks/wolventech-mail-recovery.md): forwarding checks, safe replay and release requirements.
+- [Inbound mail screening design](./docs/plans/2026-10-07-inbound-mail-screening-design.md): spam/phishing checks and recoverable quarantine.
+- [Wolven Tech recovery evidence](./docs/reports/2026-10-07-wolventech-mail-recovery.md): production repair, recovered delivery receipts and remaining routing decisions.
 - [Wolven Tech search-content focus](./docs/reports/2026-10-01-wolventech-search-content.md): service-page intent, canonical-host correction and verification.
 
 ### 🗄️ Data & Architecture (AllSource)
