@@ -1,0 +1,25 @@
+name: Wolven Tech inbound mail
+on:
+  pull_request:
+    paths:
+      - 'apps/wolventech/**'
+      - 'tooling/mail-recovery/**'
+      - '.github/workflows/wolventech-mail.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/wolventech/**'
+      - 'tooling/mail-recovery/**'
+      - '.github/workflows/wolventech-mail.yml'
+permissions:
+  contents: read
+jobs:
+  forwarding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.0'
+      - run: timeout -k 5 120 bun test apps/wolventech/tests/inbound-mail.test.mjs apps/wolventech/tests/mail-screening.test.mjs

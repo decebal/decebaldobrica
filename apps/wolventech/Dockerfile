@@ -43,7 +43,7 @@ ENV NODE_ENV=production \
     NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
 
 WORKDIR /app/apps/wolventech
-RUN bun next build
+RUN bun test tests/inbound-mail.test.mjs tests/mail-screening.test.mjs && bun next build
 
 FROM node:22-alpine AS runner
 

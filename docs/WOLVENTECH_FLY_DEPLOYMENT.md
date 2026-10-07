@@ -9,7 +9,7 @@ permanent redirect to apex.
 Run from repository root:
 
 ```bash
-flyctl deploy . --config apps/wolventech/fly.toml --remote-only --ha=false
+gtimeout -k 5 300 flyctl deploy . --config apps/wolventech/fly.toml --remote-only --ha=false
 ```
 
 Runtime health endpoint:
@@ -29,6 +29,9 @@ Public build configuration:
 Booking flow requires these Fly secrets/config values:
 
 - `RESEND_API_KEY`
+- `RESEND_INBOUND_WEBHOOK_SECRET` for inbound forwarding
+- `RESEND_INBOUND_FORWARD_TO` for the private forwarding destination
+- `RESEND_INBOUND_WEBHOOK_ID` for operator recovery tooling
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_REFRESH_TOKEN`
@@ -67,9 +70,16 @@ one release cycle as rollback source.
 
 ```bash
 curl -fsS https://wolventech.com/api/healthz
+curl -fsS https://wolventech.com/api/email/inbound
 curl -fsS https://wolventech.com/sitemap.xml >/dev/null
 curl -fsS https://wolventech.com/robots.txt >/dev/null
 curl -fsSI https://www.wolventech.com/
 ```
 
 Expected `www` response is permanent redirect to `https://wolventech.com/`.
+
+The inbound route must return `{"status":"ready"}`. Its dedicated Fly health
+check blocks an unhealthy release, and the Docker build runs the forwarding
+regression tests. Follow the [mail recovery runbook](runbooks/wolventech-mail-recovery.md)
+before replaying failed events. Deploy only from source that includes this route;
+a previous release from a branch without the handler returned 404 for inbound mail.
