@@ -15,6 +15,7 @@
     "test:install": "playwright install --with-deps"
   },
   "dependencies": {
+    "@decebal/products": "workspace:*",
     "@decebal/ui": "workspace:*",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",

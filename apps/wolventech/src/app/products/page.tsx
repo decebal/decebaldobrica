@@ -1,5 +1,5 @@
-import { ProductScene } from '@/components/product-scene'
-import { portfolioHref, products } from '@/lib/products'
+import { productCountWord, productHref, products } from '@decebal/products'
+import { ProductScene } from '@decebal/products/scene'
 import { Badge } from '@decebal/ui/badge'
 import { Button } from '@decebal/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@decebal/ui/card'
@@ -8,8 +8,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Products built by Wolven Tech',
-  description:
-    'Eleven focused products from Wolven Tech, with useful guides, free worksheets, product-specific illustrations and clearly described access.',
+  description: `${productCountWord.charAt(0).toUpperCase()}${productCountWord.slice(1)} focused products from Wolven Tech, with useful guides, free worksheets, product-specific illustrations and clearly described access.`,
   alternates: { canonical: '/products' },
 }
 
@@ -60,7 +59,7 @@ export default function ProductsPage() {
         {products.map((product) => (
           <Card key={product.name} className="flex flex-col border-rust-line bg-rust-surface">
             <CardHeader className="space-y-3">
-              <ProductScene cell={product.artCell} label={product.artAlt} />
+              <ProductScene cell={product.art.cell} label={product.art.alt} />
               <Badge
                 variant="outline"
                 className="w-max border-rust-primary/40 bg-rust-primary/10 text-[10px] uppercase tracking-[0.12em] text-rust-primary-2"
@@ -92,7 +91,7 @@ export default function ProductsPage() {
                   <dt className="text-xs font-bold uppercase tracking-[0.12em] text-rust-muted">
                     Access
                   </dt>
-                  <dd className="mt-1 text-rust-ink-soft">{product.commercialModel}</dd>
+                  <dd className="mt-1 text-rust-ink-soft">{product.access}</dd>
                 </div>
               </dl>
               <div className="flex flex-wrap items-center gap-4">
@@ -100,18 +99,25 @@ export default function ProductsPage() {
                   asChild
                   className="w-max bg-rust-primary font-semibold text-white hover:bg-rust-primary-2"
                 >
-                  <a href={portfolioHref(product, 'product')}>
+                  <a href={productHref(product, 'product', 'wolventech.com')}>
                     {product.cta}
                     <ArrowUpRight className="ml-2 h-4 w-4" />
                   </a>
                 </Button>
                 <a
                   className="inline-flex min-h-11 items-center text-sm font-semibold text-rust-primary-2 underline decoration-rust-line underline-offset-4 hover:decoration-rust-primary"
-                  href={portfolioHref(product, 'proof')}
+                  href={productHref(product, 'proof', 'wolventech.com')}
                 >
-                  {product.proofLabel}
+                  {product.proof.label}
                 </a>
-                  <a href={product.worksheetHref} className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{product.worksheetLabel} · Free worksheet</a>
+                {product.worksheet && (
+                  <a
+                    href={product.worksheet.href}
+                    className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
+                  >
+                    {product.worksheet.label} · Free worksheet
+                  </a>
+                )}
               </div>
             </CardContent>
           </Card>

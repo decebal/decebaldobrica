@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  transpilePackages: ['@decebal/products', '@decebal/ui'],
   eslint: {
     // Disable ESLint during builds - use task lint instead
     ignoreDuringBuilds: true,

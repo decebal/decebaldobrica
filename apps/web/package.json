@@ -24,6 +24,7 @@
     "@ai-sdk/react": "^2.0.60",
     "@decebal/analytics": "workspace:*",
     "@decebal/payment-gate": "workspace:*",
+    "@decebal/products": "workspace:*",
     "@decebal/ui": "workspace:*",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",

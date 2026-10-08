@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(process.cwd(), '../..'),
-  transpilePackages: ['@decebal/ui', '@decebal/booking'],
+  transpilePackages: ['@decebal/products', '@decebal/ui', '@decebal/booking'],
   eslint: {
     ignoreDuringBuilds: true,
   },

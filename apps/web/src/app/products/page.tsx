@@ -1,14 +1,13 @@
-import { ProductScene } from '@/components/product-scene'
 import Footer from '@/components/Footer'
-import { founderProductHref, founderProducts } from '@/data/products'
 import { jsonLd } from '@/lib/structuredData'
+import { productCountWord, productHref, products } from '@decebal/products'
+import { ProductScene } from '@decebal/products/scene'
 import { ArrowRight, ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Products built by Decebal Dobrica and Wolven Tech',
-  description:
-    "Explore eleven products from Decebal Dobrica and Wolven Tech, with practical guides, free worksheets and clear links to each product's current availability.",
+  description: `Explore ${productCountWord} products from Decebal Dobrica and Wolven Tech, with practical guides, free worksheets and clear links to each product's current availability.`,
   alternates: { canonical: '/products' },
 }
 
@@ -20,7 +19,7 @@ export default function ProductsPage() {
     url: 'https://decebaldobrica.com/products',
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: founderProducts.map((product, index) => ({
+      itemListElement: products.map((product, index) => ({
         '@type': 'ListItem',
         position: index + 1,
         item: {
@@ -57,31 +56,38 @@ export default function ProductsPage() {
           </header>
 
           <section className="mt-12 grid gap-5 md:grid-cols-2" aria-label="Product portfolio">
-            {founderProducts.map((product) => (
+            {products.map((product) => (
               <article
                 key={product.slug}
                 className="rounded-xl border border-white/15 bg-white/5 p-6"
               >
-                <ProductScene cell={product.artCell} label={product.artAlt} />
+                <ProductScene cell={product.art.cell} label={product.art.alt} />
                 <p className="text-sm font-semibold text-brand-teal">{product.audience}</p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">{product.name}</h2>
                 <p className="mt-4 leading-7 text-gray-200">{product.outcome}</p>
                 <div className="mt-6 flex flex-wrap items-center gap-5">
                   <a
-                    href={founderProductHref(product, 'product')}
+                    href={productHref(product, 'product', 'decebaldobrica.com')}
                     className="inline-flex min-h-12 items-center gap-2 font-semibold text-brand-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
                   >
                     Open product
                     <ExternalLink className="h-4 w-4" aria-hidden="true" />
                   </a>
                   <a
-                    href={founderProductHref(product, 'proof')}
+                    href={productHref(product, 'proof', 'decebaldobrica.com')}
                     className="inline-flex min-h-12 items-center gap-2 font-semibold text-gray-100 hover:text-brand-teal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal"
                   >
-                    {product.proof}
+                    {product.proof.label}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </a>
-                  <a href={product.worksheetHref} className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">{product.worksheetLabel} · Free worksheet</a>
+                  {product.worksheet && (
+                    <a
+                      href={product.worksheet.href}
+                      className="inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
+                    >
+                      {product.worksheet.label} · Free worksheet
+                    </a>
+                  )}
                 </div>
               </article>
             ))}
