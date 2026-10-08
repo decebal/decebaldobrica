@@ -1,0 +1,23 @@
+{
+  "name": "@decebal/products",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./scene": "./src/scene.tsx"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "type-check": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "typescript": "^5.7.3",
+    "vitest": "^1"
+  }
+}

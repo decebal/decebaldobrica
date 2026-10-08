@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "source": "wolven-tech/portfolio-control-room config/portfolio.json",
+  "products": [
+    {
+      "slug": "allsource",
+      "bet": "all-source",
+      "name": "AllSource",
+      "href": "https://www.all-source.xyz",
+      "category": "Developer infrastructure",
+      "description": "AI-native event store built in Rust, with immutable event history, replay, projections, graph exploration, MCP access, and query services for realtime, HTTP, and analytics reads.",
+      "audience": "Teams building event-sourced software and durable AI-agent memory.",
+      "outcome": "Keep complete history and serve each read workload through the right query path.",
+      "proof": {
+        "label": "Restart-safe event replay",
+        "href": "https://www.all-source.xyz/event-replay-debugging"
+      },
+      "worksheet": {
+        "label": "Event Replay Validation Checklist",
+        "href": "https://www.all-source.xyz/event-replay-validation-checklist"
+      },
+      "access": "Apache-2.0 self-hosting · hosted plans from £18.99/month",
+      "cta": "Explore AllSource",
+      "art": {
+        "cell": 0,
+        "alt": "Three linked event blocks leading to a rebuilt stack of state"
+      }
+    },
+    {
+      "slug": "chargewindow",
+      "bet": "chargewindow",
+      "name": "ChargeWindow",
+      "href": "https://chargewindow.com",
+      "category": "EV charging",
+      "description": "EV charging cost calculator that combines entered energy, connection, parking and idle fees into a whole-session estimate.",
+      "audience": "Residents using a building-selected EV charger provider.",
+      "outcome": "Understand the full session cost and the choices available under the applicable tariff.",
+      "proof": {
+        "label": "EV charging fee anatomy",
+        "href": "https://chargewindow.com/guides/ev-charging-fees"
+      },
+      "worksheet": {
+        "label": "EV Charging Session Cost Example",
+        "href": "https://chargewindow.com/ev-charging-session-cost-example"
+      },
+      "access": "£29 once · no account",
+      "cta": "Open ChargeWindow",
+      "art": {
+        "cell": 7,
+        "alt": "An EV charging plug beside separate energy, parking, time and fee blocks"
+      }
+    },
+    {
+      "slug": "solarquote-check-uk",
+      "bet": "solarquote-check-uk",
+      "name": "SolarQuote Check UK",
+      "href": "https://solarquote-check-uk.com",
+      "category": "Home solar",
+      "description": "Independent comparison tool for two written residential solar PV quotes, showing scope gaps and mismatched assumptions line by line.",
+      "audience": "English homeowners choosing between solar installation quotes.",
+      "outcome": "Ask better questions before selecting an installer.",
+      "proof": {
+        "label": "Two-quote cost-per-kWp comparison",
+        "href": "https://solarquote-check-uk.com/solar-quote-cost-per-kwp"
+      },
+      "worksheet": {
+        "label": "Solar Quote Questions Template",
+        "href": "https://solarquote-check-uk.com/solar-quote-questions-template"
+      },
+      "access": "£29 once · independent comparison",
+      "cta": "Compare solar quotes",
+      "art": {
+        "cell": 6,
+        "alt": "Two solar installation quote cards with roof panels and batteries"
+      }
+    },
+    {
+      "slug": "move-to-own-uk",
+      "bet": "move-to-own-uk",
+      "name": "Move to Own UK",
+      "href": "https://movetoownuk.com",
+      "category": "Property",
+      "description": "England-first marketplace for landlords considering a signed tenancy plus a separate option-to-purchase route.",
+      "audience": "Landlords with empty buy-to-let property and prospective buyers building a deposit.",
+      "outcome": "Let landlords set terms, review applicants, and choose who moves in.",
+      "proof": {
+        "label": "Tenancy with option-to-purchase route",
+        "href": "https://movetoownuk.com/tenancy-with-option-to-purchase"
+      },
+      "worksheet": {
+        "label": "Landlord Option Discussion Checklist",
+        "href": "https://movetoownuk.com/landlord-option-discussion-checklist"
+      },
+      "access": "£0 upfront · landlord success fee after move-in trigger",
+      "cta": "See Move to Own UK",
+      "art": {
+        "cell": 9,
+        "alt": "A house with separate tenancy and purchase documents beside a key"
+      }
+    },
+    {
+      "slug": "reefdose",
+      "bet": "reefdose-card",
+      "name": "ReefDose",
+      "href": "https://reefdose.com",
+      "category": "Reef keeping",
+      "description": "Deterministic reef supplement arithmetic using keeper-chosen target, net water volume, product-label effect, and any stated daily maximum.",
+      "audience": "UK one-tank reef keepers working from a representable supplement label.",
+      "outcome": "Produce a transparent dose card without outsourcing chemistry judgement.",
+      "proof": {
+        "label": "Label-to-dose worked method",
+        "href": "https://reefdose.com/reef-dosing-calculator"
+      },
+      "worksheet": {
+        "label": "Reef Supplement Label Worksheet",
+        "href": "https://reefdose.com/reef-supplement-label-worksheet"
+      },
+      "access": "£29 once · one tank · local history",
+      "cta": "Open ReefDose",
+      "art": {
+        "cell": 8,
+        "alt": "A reef aquarium beside a closed supplement bottle and measuring cylinder"
+      }
+    },
+    {
+      "slug": "viewing-ledger-uk",
+      "bet": "viewing-ledger-uk",
+      "name": "Viewing Ledger UK",
+      "href": "https://viewingledger.com",
+      "category": "Property viewing",
+      "description": "Free twelve-check viewing record with explicit states, follow-up questions, and buyer-entered first-year cost arithmetic.",
+      "audience": "UK home buyers preparing for or comparing in-person property viewings.",
+      "outcome": "Leave each viewing with one comparable local record and clear follow-ups.",
+      "proof": {
+        "label": "Twelve-check viewing guide",
+        "href": "https://viewingledger.com/property-viewing-checklist"
+      },
+      "worksheet": {
+        "label": "Property Viewing Notes Template",
+        "href": "https://viewingledger.com/property-viewing-notes-template"
+      },
+      "access": "Free · local-first · no account",
+      "cta": "Use Viewing Ledger",
+      "art": {
+        "cell": 1,
+        "alt": "A model house beside a twelve-check notebook and a cost sheet"
+      }
+    },
+    {
+      "slug": "edit-scope-ledger-uk",
+      "bet": "edit-scope-ledger-uk",
+      "name": "Edit Scope Ledger UK",
+      "href": "https://editscopeledger.com",
+      "category": "Freelance video editing",
+      "description": "Owner-set fixed-price video edit scope, contribution view, review limits, change triggers, and delivery handoff record.",
+      "audience": "UK freelance video editors answering a real fixed-price brief.",
+      "outcome": "Make included work, contribution, changes, and handoff inspectable before work starts.",
+      "proof": {
+        "label": "Worked £1,991 video edit scope",
+        "href": "https://editscopeledger.com/example"
+      },
+      "worksheet": {
+        "label": "Video Edit Change Request Template",
+        "href": "https://editscopeledger.com/video-edit-change-request-template"
+      },
+      "access": "Free preview · £39 export and handoff unlock",
+      "cta": "Open Edit Scope Ledger",
+      "art": {
+        "cell": 4,
+        "alt": "A video editing timeline beside a change request card and scissors"
+      }
+    },
+    {
+      "slug": "sponsor-ledger-uk",
+      "bet": "sponsor-ledger-uk",
+      "name": "Sponsor Ledger UK",
+      "href": "https://sponsorledger.app",
+      "category": "Newsletter operations",
+      "description": "Sponsor quote, availability, booking, fulfilment, contribution, and recap record for one real newsletter enquiry.",
+      "audience": "UK newsletter operators turning sponsor enquiries into repeatable issue delivery.",
+      "outcome": "Keep quote promises and four-issue fulfilment in one inspectable pack.",
+      "proof": {
+        "label": "Sponsor-slot pricing method",
+        "href": "https://sponsorledger.app/knowledge/pricing-a-sponsor-slot"
+      },
+      "worksheet": {
+        "label": "Newsletter Sponsor Recap Template",
+        "href": "https://sponsorledger.app/newsletter-sponsor-recap-template"
+      },
+      "access": "Free worked pack · £39 once for real enquiry workflow",
+      "cta": "Open Sponsor Ledger",
+      "art": {
+        "cell": 3,
+        "alt": "Four newsletter issues arranged in a sponsor booking rack"
+      }
+    },
+    {
+      "slug": "talk-run-card-uk",
+      "bet": "talk-run-card-uk",
+      "name": "Talk Run Card UK",
+      "href": "https://talkruncard.com",
+      "category": "Conference speaking",
+      "description": "Record rehearsal sections, identify overruns and protect time for questions.",
+      "audience": "Speakers preparing a fixed-slot conference talk.",
+      "outcome": "Record rehearsal sections, identify overruns and protect time for questions.",
+      "proof": {
+        "label": "Worked thirty-minute timing card",
+        "href": "https://talkruncard.com/guides/30-minute-talk-run-card"
+      },
+      "worksheet": {
+        "label": "Conference Talk Overrun Checklist",
+        "href": "https://talkruncard.com/conference-talk-overrun-checklist"
+      },
+      "access": "Free planning and first-run preview; paid release not announced here",
+      "cta": "Explore Talk Run Card UK",
+      "art": {
+        "cell": 2,
+        "alt": "A lectern, cue cards and a clock divided into talk sections"
+      }
+    },
+    {
+      "slug": "logo-handoff-card-uk",
+      "bet": "logo-handoff-card-uk",
+      "name": "Logo Handoff Card UK",
+      "href": "https://logohandoffcard.com",
+      "category": "Design handoff",
+      "description": "Record expected files, missing variants and questions before acceptance.",
+      "audience": "UK microbusiness owners reviewing a commissioned logo delivery.",
+      "outcome": "Record expected files, missing variants and questions before acceptance.",
+      "proof": {
+        "label": "Logo file handoff guide",
+        "href": "https://logohandoffcard.com/guide"
+      },
+      "worksheet": {
+        "label": "Logo Handoff Acceptance Template",
+        "href": "https://logohandoffcard.com/logo-handoff-acceptance-template"
+      },
+      "access": "Free handoff preview; paid availability shown on the product site",
+      "cta": "Explore Logo Handoff Card UK",
+      "art": {
+        "cell": 5,
+        "alt": "Organised logo delivery folders beside an acceptance checklist"
+      }
+    },
+    {
+      "slug": "aplaceahead",
+      "bet": "aplaceahead",
+      "name": "A Place Ahead",
+      "href": "https://aplaceahead.com",
+      "category": "Family-home research",
+      "description": "Keep property facts, school questions and daily-life needs in one comparison.",
+      "audience": "Households comparing family homes and school admissions evidence.",
+      "outcome": "Keep property facts, school questions and daily-life needs in one comparison.",
+      "proof": {
+        "label": "School evidence checklist",
+        "href": "https://aplaceahead.com/school-first-home-search"
+      },
+      "worksheet": {
+        "label": "Compare Three Family Homes",
+        "href": "https://aplaceahead.com/compare-three-family-homes"
+      },
+      "access": "Free public guides and calculator; working research remains private",
+      "cta": "Explore A Place Ahead",
+      "art": {
+        "cell": 10,
+        "alt": "Three model family homes arranged above a map and source cards"
+      }
+    },
+    {
+      "slug": "jobbreakdown",
+      "bet": "jobbreakdown",
+      "name": "Job Breakdown",
+      "href": "https://jobbreakdown.com",
+      "category": "Hiring research",
+      "description": "Searchable register of UK tech employers with careers sources, engineering role counts read from public job boards, and market charts.",
+      "audience": "Engineers and engineering leaders researching UK tech employers.",
+      "outcome": "Compare employers by index, stack and open engineering roles, then follow each entry back to its careers source.",
+      "proof": {
+        "label": "How the data is gathered",
+        "href": "https://jobbreakdown.com/about-the-data"
+      },
+      "access": "Free public research · sign in for a private workspace",
+      "cta": "Explore Job Breakdown",
+      "art": {
+        "cell": 12,
+        "alt": "A small office building beside fanned company cards, a magnifying glass and a rising bar chart"
+      }
+    },
+    {
+      "slug": "saved-ledger",
+      "bet": "saved-ledger",
+      "name": "Saved Ledger",
+      "href": "https://savedledger.com",
+      "category": "Research library",
+      "description": "Private ledger for captured LinkedIn and X posts, with categories, search, links back to each source, and reply drafts you review before publishing.",
+      "audience": "People who save LinkedIn posts and X bookmarks for research and replies.",
+      "outcome": "Group saved posts by topic, find the original source again, and review reply drafts before publishing them yourself.",
+      "proof": {
+        "label": "Research library from saved posts",
+        "href": "https://savedledger.com/use-cases/research-library/"
+      },
+      "access": "Private account · free public workflow guides",
+      "cta": "Open Saved Ledger",
+      "art": {
+        "cell": 11,
+        "alt": "A magnifying glass over saved photo cards beside a note and a checkbox"
+      }
+    }
+  ]
+}
