@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-10-05'
+export const RADAR_GENERATED_AT = '2026-10-12'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 15
+export const RADAR_ISSUE = 16
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -47,6 +47,27 @@ export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
 export const RADAR_RINGS: RadarRing[] = ['Adopt', 'Trial', 'Assess', 'Hold']
 
 export const crateRadarTools: RadarTool[] = [
+  {
+    name: 'mold', url: 'https://github.com/rui314/mold', category: 'dev-tools/linker', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'established Rui Ueyama project; first Rust release checked Oct 12, 2026', latest: 'stable v3.0.0 (Oct 5, 2026; building requires Rust 1.95 and a C compiler)',
+    adopters: 'project reports production use since 2021; version-specific adoption of 3.0 not established',
+    mentions: 'Rust & AI Weekly #16 (2026-10-12)', returning: false,
+    note: 'First Rust version; 2.42.1 final C++ release. Cargo replaces CMake; target selection uses features. Upstream reports compatibility and performance parity, not independently reproduced. August README benchmark predates the rewrite and measures linker-only wall time. MIT. Sources: https://github.com/rui314/mold/releases/tag/v3.0.0 and tagged README/LICENSE.',
+  },
+  {
+    name: 'GitHub MCP Server', url: 'https://github.com/github/github-mcp-server', category: 'agentic/mcp-peer', quadrant: 'agentic',
+    ring: 'Trial', maintenance: 'GitHub-owned Go implementation; tagged release and configuration inspected Oct 12, 2026', latest: 'stable v2.0.0 (Oct 6, 2026)',
+    adopters: 'official vendor provenance; independent programmatic-calling results not reproduced',
+    mentions: 'Rust & AI Weekly #16 (2026-10-12)', returning: false,
+    note: 'Cross-ecosystem peer for Rust agents. Structured output schemas advertised only to MCP 2026-07-28+ clients. Tagged README documents scoped toolsets and read-only mode; exported Go API remains unstable. A hosted endpoint is not verified by a local binary tag. MIT. Source: https://github.com/github/github-mcp-server/releases/tag/v2.0.0.',
+  },
+  {
+    name: 'Fullbleed', url: 'https://github.com/fullbleed-engine/fullbleed-official', category: 'data/document-generation', quadrant: 'data',
+    ring: 'Assess', maintenance: 'public Rust engine with versioned release evidence and author-described Windows/Linux validation', latest: 'stable v2.5.22 (GitHub release Oct 9, 2026; published package requires Rust 1.85)',
+    adopters: 'runnable examples; independent production adoption not established',
+    mentions: 'Rust & AI Weekly #16 (2026-10-12)', returning: false,
+    note: 'Static HTML/CSS to PDF. 2.5.22 fixes floated first-letter layout in a scoped plain-text block path. Authors retain source-corpus failures and separate public-package checks; no independent reproduction, full CSS parity or standards-conformance claim. Rust font assets require explicit registration and their own notice review. MIT. Sources: https://github.com/fullbleed-engine/fullbleed-official/releases/tag/v2.5.22 and https://docs.fullbleed.dev/getting-started/rust/.',
+  },
   {
     name: 'wasm-bindgen Emscripten integration', url: 'https://wasm-bindgen.github.io/wasm-bindgen/reference/emscripten.html', category: 'dev-tools/wasm', quadrant: 'dev',
     ring: 'Assess', maintenance: 'experimental integration; Cloudflare and upstream collaboration, with Tokio/Mio/Emscripten patchsets still required (checked Oct 5, 2026)', latest: 'wasm-bindgen 0.2.129 (Sep 25, 2026; Rust 1.81); integration preview Sep 28',
@@ -78,10 +99,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'rmcp', url: 'https://github.com/modelcontextprotocol/rust-sdk', category: 'agentic', quadrant: 'agentic',
-    ring: 'Trial', maintenance: 'actively maintained by the official MCP organisation; September 2026 releases and merged fixes', latest: 'v3.5.0 (Sep 28, 2026; Rust 1.88)',
+    ring: 'Trial', maintenance: 'actively maintained by the official MCP organisation; tagged October patch checked Oct 12, 2026', latest: 'v3.5.1 (Oct 5, 2026; Rust 1.88)',
     stars: '~4.0k★ (Sep 28, 2026)', downloads: '~29.8M (Sep 28, 2026)', adopters: 'official Rust MCP SDK',
-    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07); Rust & AI Weekly #14 (2026-09-28)', returning: true,
-    note: 'Adopt to Trial at #11 because of migration churn; Trial retained at #14. 3.5.0 rejects duplicate SEP-2243 headers, fixes explicit default-port Origin matching and empty cacheScope handling, and adds LATEST_WITH_INITIALIZE. The current GitHub Releases page now carries 3.x notes, superseding the #11 discovery limitation. Registry says Apache-2.0; LICENSE describes legacy MIT contributions during relicensing. Verify transport and protocol compatibility with deployed peers. Sources: https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.0 and PRs 1274, 1270, 1281.',
+    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07); Rust & AI Weekly #14 (2026-09-28); Rust & AI Weekly #16 (2026-10-12)', returning: true,
+    note: 'Adopt to Trial at #11 because of migration churn; Trial retained at #14 and #16. 3.5.0 rejects duplicate SEP-2243 headers, fixes explicit default-port Origin matching and empty cacheScope handling, and adds LATEST_WITH_INITIALIZE. 3.5.1 keeps handler-generated invalid params in-band, defaults missing cache hints for modern peers and adds a refresh-token-rejection store callback whose default is a no-op. Test deployed peer error handling and custom credential policy. Package says Apache-2.0; LICENSE retains legacy MIT contributions. Sources: https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.1 and PRs 1322/1285. Historical 3.5.0 sources: release tag and PRs 1274, 1270, 1281.',
   },
   {
     name: 'Symposium', url: 'https://github.com/symposium-dev/symposium', category: 'agentic/developer-context', quadrant: 'agentic',
