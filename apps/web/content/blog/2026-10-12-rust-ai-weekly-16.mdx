@@ -1,0 +1,169 @@
+---
+title: 'Rust & AI Weekly #16: an MCP error should not change your protocol'
+date: '2026-10-12T08:00:00.000Z'
+author: Decebal D.
+description: 'rmcp 3.5.1 fixes a protocol fallback triggered by application errors. Also: mold 3.0 moves to Rust, GitHub MCP Server 2.0 adds negotiated output schemas, and Fullbleed 2.5.22 makes its PDF evidence inspectable.'
+tags:
+  - rust
+  - ai
+  - agents
+  - developer-tools
+  - newsletter
+slug: 2026-10-12-rust-ai-weekly-16
+seoTitle: 'Rust & AI Weekly #16: rmcp, mold 3.0 and typed tool outputs'
+seoDescription: 'Four tool evaluations with bounded trials: rmcp 3.5.1, mold 3.0, GitHub MCP Server 2.0 and Fullbleed 2.5.22. Plus experimental const generics and Cargo changes.'
+---
+
+![A silver mechanical wolf inspects an interlocking metal bridge beneath an optical inspection head, beside stacked translucent output sheets.](/images/blog/2026-10-12-rust-ai-weekly-16-3d-hero.png)
+
+*Inspect the join and the resulting artifact. Original 3D editorial illustration; the sculpture represents no measured system or benchmark.*
+
+An MCP client asks for a resource that does not exist. The server returns an application error, but the HTTP status tells the client to try the older initialization flow. A missing resource has now changed how the two sides communicate.
+
+That is the failure described in the official Rust SDK's [invalid-parameters fix](https://github.com/modelcontextprotocol/rust-sdk/pull/1322), shipped in rmcp 3.5.1 on October 5. The previous mapper returned HTTP 400 for every `-32602` error. A compatible client could interpret an ordinary handler error as a reason to fall back to `initialize`.
+
+If you run a Rust MCP server, make the next upgrade check an unsuccessful call. Request a missing resource, capture the HTTP status and JSON-RPC response, then check whether the client changes protocol behaviour. A passing tool call gives you little evidence about that path.
+
+This week's four evaluations cover the SDK fix, mold's Rust rewrite, GitHub's negotiated output schemas and a native Rust PDF engine. The common review task is concrete: inspect what comes out of the operation you intend to depend on. The trials below are recommendations, not tests I have run on these tools.
+
+*Sources checked October 12, 2026. Discovery window: October 5–12, with older material identified separately. No benchmark was independently reproduced. Registry API access failed for this run; published crate packages and tagged project releases supplied the version evidence.*
+
+[![Rust and AI tool radar for issue 16, with tools placed in Adopt, Trial, Assess and Hold rings.](/images/radar/2026-10-12-radar.png)](/radar)
+
+*The radar covers 90 tools: 15 Adopt, 36 Trial, 37 Assess and 2 Hold. Three additions and one returning evaluation. [Explore the interactive radar](/radar).*
+
+## Pick of the week: rmcp 3.5.1
+
+**Trial, retained.** The [October 5 patch release](https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.1) fixes useful compatibility cases. It also gives credential-store implementations a hook they must deliberately implement before it changes their behaviour.
+
+### Keep application errors in the application protocol
+
+The [HTTP mapping change](https://github.com/modelcontextprotocol/rust-sdk/pull/1322) separates handler-generated invalid-parameter errors from malformed request metadata. Unknown resources, prompts or tools can use `-32602` without producing the same HTTP 400 response as missing required protocol metadata. The PR explains how the old response could trigger a backwards-compatibility fallback.
+
+This distinction affects a client that follows those fallback rules. It does not establish that every deployed client downgraded or that every missing-resource response caused an incident. The published 3.5.1 package contains the changed mapper; I checked the source, without executing an interoperability suite.
+
+For your deployment, pair the SDK version with the client version and negotiated protocol. Exercise a valid request, a handler rejection and a request with missing required metadata. Record the response body alongside its status. Treat a client changing its initialization flow as part of the result, rather than checking only that an error reached the screen.
+
+Include whatever sits between the peers. A proxy or an application wrapper may rewrite an error response. Running a unit test directly against the handler leaves that layer out. Use the same transport and routing path that the agent uses, and retain a trace with credentials removed so a reviewer can follow the exchange.
+
+### A rejected refresh token needs a store policy
+
+The [credential-store change](https://github.com/modelcontextprotocol/rust-sdk/pull/1285) adds `CredentialStore::on_refresh_token_rejected`. A provider can reject a token with `invalid_grant`; without a retirement policy, later calls can reload it and repeat the failed exchange.
+
+The default callback does nothing. Existing stores therefore keep their behaviour until they implement it. The callback runs while the refresh guard is held, and callback failures preserve the rejection signal to the caller. The implementation must avoid reacquiring that guard or overwriting credentials replaced by another operation.
+
+I would test a rejected token, a temporary provider failure and a rejection callback that itself fails. Verify both the stored credential state and the signal shown to the caller. Counting fewer retries is insufficient if the application has also lost its route back to authorization. These are proposed acceptance cases for a custom store.
+
+- **Maintenance:** official MCP Rust SDK; tagged fixes and their implementation PRs are available.
+- **Latest release checked:** 3.5.1, October 5 at 18:35:11 UTC. Published package requires Rust 1.88. The macros package has its own release notes.
+- **Adoption:** official project ownership supports provenance. Independent production results for this patch were not established in this review.
+- **Licence:** package metadata says Apache-2.0. The tagged LICENSE retains MIT terms for contributions whose relicensing consent is outstanding, and separate documentation terms. Preserve the applicable notices when redistributing.
+
+Keep Trial until your deployed peer pair passes the failure cases that matter to it. The patch is a useful upgrade candidate for existing users; it does not remove transport selection or credential-store review from the integration.
+
+## mold 3.0: review the packaging as well as the executable
+
+**Trial.** [mold 3.0.0](https://github.com/rui314/mold/releases/tag/v3.0.0), released October 5, is the first Rust version of the linker. Version 2.42.1 is the final C++ release. The project intends 3.0 to replace it without changing command-line options or supported targets.
+
+The maintainers report compatibility checks across supported targets, real workloads and Gentoo packages, with linking performance on par with 2.42.1. Those are upstream results. I have not reproduced them, and the release notes do not provide a new, hardware-specified performance comparison for the rewrite.
+
+Building the linker now uses Cargo and requires Rust 1.95 or later plus a C compiler. CMake options are gone; target selection moves to Cargo features. A distributor with libraries outside the usual prefix needs the documented `MOLD_LIBDIR` configuration for both build and installation. See the [tagged README](https://github.com/rui314/mold/blob/v3.0.0/README.md).
+
+That gives an existing user two separate checks. First, does the new executable link the application's inputs correctly? Second, does the packaging job build and install the executable and its companion library where the compiler driver expects them? A successful direct invocation leaves the second question open.
+
+### Keep the comparison inputs fixed
+
+The tagged README includes an older August benchmark with named machines, release-built linkers and caller-visible wall-clock timings. It uses a warm-up followed by the median of three runs. It is not a measurement of the October Rust rewrite, and it does not measure the entire edit-to-test cycle.
+
+For a local comparison, preserve the object inputs and capture the actual link command before switching binaries. Keep the output-removal policy, filesystem and concurrent workload consistent. Record the linker-only measurement separately from the full build. Otherwise an incremental compilation change can be credited to the linker, or a busy machine can obscure it.
+
+Correctness checks should use artifacts your application ships. Run the resulting binary, load its shared libraries and exercise the relevant startup and exception paths. If your build uses linker scripts, symbol versioning or relocatable output, include those modes. A different checksum can be a clue to investigate; a matching checksum alone is not your application's acceptance test.
+
+Start with one existing build configuration and preserve an executable route back to the previous linker. For an engineering lead, the useful review output is the command, the artifact checks and the remaining incompatibility, rather than a broad instruction to migrate every build to Rust-based tooling.
+
+- **Maintenance:** Rui Ueyama's established linker project; 3.0 is a maintained rewrite of an existing tool.
+- **Latest release checked:** stable GitHub release 3.0.0, October 5 at 10:23:19 UTC.
+- **Adoption:** the project reports production use of mold since 2021. That history is not evidence of production adoption of 3.0 specifically.
+- **Licence:** [tagged MIT licence](https://github.com/rui314/mold/blob/v3.0.0/LICENSE); commercial use is permitted subject to its notice terms. Dependencies remain a separate inventory.
+
+Wild remains a separate Trial entry. Nothing in this review reproduces the competing September measurements or establishes a universal winner between the linkers.
+
+## GitHub MCP Server 2.0: schemas depend on the peer
+
+**Trial.** [Version 2.0.0](https://github.com/github/github-mcp-server/releases/tag/v2.0.0) shipped on October 6 with structured outputs and output schemas intended to support programmatic tool calling. This is a Go implementation, included here because it is a peer that Rust agent clients can actually encounter.
+
+The release advertises those schemas only to clients supporting MCP 2026-07-28 or later. Compound-tool output schemas need the newer protocol's rules, so older peers do not receive them. Installing server 2.0 alone therefore does not establish that your agent sees the new schema surface.
+
+Capture the protocol exchange and the tool inventory from the client you intend to use. Then compare one successful result with its advertised schema and one unsuccessful result with the client's error handling. Keep text, structured data and tool error status visible in the fixture. An agent describing a result accurately in one conversation is weaker evidence than a repeatable check of those fields.
+
+### Scope the first trial to reading
+
+The [tagged README](https://github.com/github/github-mcp-server/blob/v2.0.0/README.md) documents explicit tools and toolsets, plus `--read-only`. Read-only mode removes write tools even when they were requested through the tool configuration. The exported Go API remains described as unstable, despite the server's major version.
+
+I would begin with a disposable repository and a small read-only inventory. Choose an operation with a known answer, such as reading a specific file at a pinned revision. Check that the client records the repository and revision alongside the content; without that provenance, a correct-looking summary can still refer to the wrong code.
+
+If the next stage adds writes, make the permission change a separate review decision. Define the exact repository operation and inspect the resulting change through GitHub before expanding the inventory again. The schema describes the shape of a tool response. Your workflow still has to decide which operations an agent may perform and how their effects are verified.
+
+Local deployment and the hosted service should also be recorded separately. A tag identifies the binary source you reviewed. It does not prove that a hosted endpoint runs an identical deployment. Retain the observed tool inventory and negotiated protocol as part of the trial, rather than copying a release number into the integration notes and stopping there.
+
+- **Maintenance:** GitHub-owned repository, with public tagged releases and configuration documentation.
+- **Latest release checked:** stable 2.0.0, October 6 at 23:34:00 UTC.
+- **Adoption:** official vendor provenance; no independent evaluation of 2.0's programmatic-calling behaviour was reproduced here.
+- **Licence:** [MIT](https://github.com/github/github-mcp-server/blob/v2.0.0/LICENSE), with its notice obligations. Hosted access has a separate operational context.
+
+## Fullbleed 2.5.22: make the PDF the acceptance artifact
+
+**Assess.** [Fullbleed](https://docs.fullbleed.dev/getting-started/rust/) renders static HTML and CSS into PDFs through a native Rust API. Its quickstart pins 2.5.22, registers fonts explicitly for broader character coverage and exposes a missing-glyph report. A Rust service can use it without a browser rendering process.
+
+For generated reports, including agent-produced documents, the useful question is whether the saved PDF preserves the intended content and layout. A template compiling successfully leaves line wrapping, pagination and font coverage unresolved. Keep actual output files in the review loop before committing to a renderer.
+
+### A release with inspectable limits
+
+The [October 9 release](https://github.com/fullbleed-engine/fullbleed-official/releases/tag/v2.5.22) fixes floated `::first-letter` layout. It supplies before-and-after artifacts and describes the supported plain-text block path. Arbitrary nested inline selection remains outside that fix's scope.
+
+The project's unchanged 1,662-fixture source corpus reports 1,619 passes, 25 failures and 18 reference-disputed cases. It separately describes targeted verification of public packages. The notes explicitly avoid claiming complete CSS parity or PDF standards conformance, and retain the failed corpus gate. These are project-reported results, not my independent measurements.
+
+I prefer having the failing cases and their boundaries available when choosing a renderer. They let a team ask whether its particular template exercises an unresolved behaviour. A total pass count cannot answer that question; the fixture and the output can.
+
+For an initial trial, choose one real report and keep its data, HTML, CSS and font files fixed. Compare the saved PDF's extracted text and page layout with the expected result. Add a long table, an unbreakable value and a character outside the primary font's coverage if those occur in your documents. Inspect both the missing-glyph result and the actual selected typeface.
+
+Treat visual inspection and text checks as complementary. A PDF can preserve every word while putting a heading on the wrong page. It can also look plausible while omitting a value. If an agent drafts the document, keep the source data available to compare with the exported file; fluency in the draft does not verify the document's contents.
+
+The Rust package does not include the Python wheel's bundled fonts. Review the font assets you actually ship and their redistribution notices. The quickstart's trusted local inputs also do not establish a safe policy for arbitrary HTML or file references supplied to your service.
+
+- **Maintenance:** public project with versioned source, release evidence and Windows/Linux validation described by the authors.
+- **Latest release checked:** stable GitHub release 2.5.22, October 9 at 06:42:57 UTC. The downloaded crates.io package confirms version 2.5.22 and Rust 1.85.
+- **Adoption:** runnable project examples; independent production adoption was not established. Documentation identifies its AI-assisted authorship and links verification code.
+- **Licence:** [MIT](https://github.com/fullbleed-engine/fullbleed-official/blob/v2.5.22/LICENSE). Fonts and other redistributed assets need their own notices.
+
+## Language and toolchain: keep the release boundary visible
+
+The [Generic Const Args explanation](https://blog.rust-lang.org/inside-rust/2026/10/02/generic-const-args-and-you/) is an October 2 carry-over. It describes a family of experimental features, including explicit `gca!` arguments. The full `gca_const_items` path requires `-Znext-solver`; the minimal variant does not. Both still use feature gates.
+
+The temporary macro also has expression restrictions. The article says `gca!(N + 1)` is unsupported, while const items provide an indirect route for expressions. The authors recommend explicit macro use over the very experimental macroless features. This is material for a contained nightly experiment, with the relevant flags recorded alongside the example.
+
+For a library considering it, choose one blocked type-level expression and keep the experiment outside the stable public API. Record the nightly and the feature set that compile it. Feedback based on a small failing example is useful to the project; a green nightly build is insufficient evidence to raise the library's advertised stable compiler requirements.
+
+Cargo's [`profile.trim-paths` stabilization PR](https://github.com/rust-lang/cargo/pull/17488) merged on October 6. The report describes `none`, `object` and `all`, and debugger support through unremap sidecars. It also says trimming is best effort and leaves the default profile policy for later. A merged stabilization change is not proof that the stable Cargo binary installed in your CI has shipped it.
+
+Before enabling path trimming for released artifacts, identify a released toolchain that contains the change. Inspect both the executable and the debugging files you intend to distribute. Verify source lookup in the debugger your team uses. Treat privacy and reproducibility claims as separate checks; the stabilization report explicitly retains limitations.
+
+The [peak-memory timings table](https://github.com/rust-lang/cargo/pull/17531) merged on October 1 and appeared in this week's roundup. It is behind unstable `-Zmem-stats`. The author describes build-analysis integration as follow-up work. Keep those statuses separate when planning a build-memory investigation.
+
+## Across ecosystems: a returned HTTP call can still own its body
+
+[VictoriaMetrics' HTTP race investigation](https://victoriametrics.com/blog/http-race-condition/), linked by Go Weekly on October 9, follows a reused request buffer. Go's HTTP client can return a response while a transport goroutine is still consuming the body. Reusing the buffer on the next attempt can therefore race with the previous request's reader.
+
+The article traces the transport and distinguishes the team's two cases. It is not evidence of an equivalent defect in a Rust HTTP client. The useful comparison for a Rust retry wrapper is a test question: what retains ownership of the request data after an early response, timeout or cancellation?
+
+Use a test server that replies before consuming the request body, then observe the wrapper's retry and shutdown paths. Inspect the chosen client's documented ownership contract before introducing pooling or shared mutable storage. If the buffer cannot be safely reused yet, keep its ownership with the in-flight operation. That proposed test is narrower than assuming that a returned future proves every subordinate operation has finished.
+
+## Reading list and open checks
+
+- [This Week in Rust 672](https://this-week-in-rust.org/blog/2026/10/07/this-week-in-rust-672/) provides the week's community and project index. Its Karatepe spotlight identifies a localisation project; repository and registry verification were incomplete here, so it receives no verdict.
+- [Rust Bytes 139](https://weeklyrust.substack.com/p/whats-new-in-1990) revisits Rust 1.99 and links further project work. Its October 9 linker edition was visible in RSS, but the feed supplied only a read-more body. The mold evaluation above uses primary project sources.
+- [Go Weekly 620](https://golangweekly.com/issues/620) returned October 9 and announces another break before October 23. Its [arch-specific SIMD link](https://go.dev/blog/archsimd) describes an experiment requiring `GOEXPERIMENT=simd`, useful context for the fallback checks in issue #15.
+
+The earlier Workers, Deser and Ying evaluations retain their recorded verdicts. Their unresolved host execution, migration and overhead checks remain open; this issue supplies no fresh evidence to upgrade them. The same applies to the allocator stabilization and tokio_rcu contract questions.
+
+If you run rmcp, reply with the client, SDK version and response from one missing-resource call. Did the peer preserve the intended protocol path? A trace with credentials removed would give the next evaluation something concrete to work from.

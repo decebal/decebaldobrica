@@ -1,0 +1,58 @@
+{
+  "slug": "2026-10-12-rust-ai-weekly-16",
+  "date": "2026-10-12T08:00:00.000Z",
+  "words": 2796,
+  "paragraphs": 53,
+  "maxParagraphWords": 65,
+  "over100": 0,
+  "htmlBytes": 21823,
+  "xWeightedCharacters": [
+    216,
+    246,
+    223,
+    242,
+    245,
+    254,
+    183
+  ],
+  "radar": {
+    "total": 90,
+    "Adopt": 15,
+    "Trial": 36,
+    "Assess": 37,
+    "Hold": 2
+  },
+  "images": [
+    {
+      "src": "https://decebaldobrica.com/images/blog/2026-10-12-rust-ai-weekly-16-3d-hero.png",
+      "alt": "A silver mechanical wolf inspects an interlocking metal bridge beneath an optical inspection head, beside stacked translucent output sheets."
+    },
+    {
+      "src": "https://decebaldobrica.com/images/radar/2026-10-12-radar.png",
+      "alt": "Rust and AI tool radar for issue 16, with tools placed in Adopt, Trial, Assess and Hold rings."
+    }
+  ],
+  "urls": [
+    "https://github.com/modelcontextprotocol/rust-sdk/pull/1322",
+    "https://decebaldobrica.com/radar",
+    "https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.1",
+    "https://github.com/modelcontextprotocol/rust-sdk/pull/1285",
+    "https://github.com/rui314/mold/releases/tag/v3.0.0",
+    "https://github.com/rui314/mold/blob/v3.0.0/README.md",
+    "https://github.com/rui314/mold/blob/v3.0.0/LICENSE",
+    "https://github.com/github/github-mcp-server/releases/tag/v2.0.0",
+    "https://github.com/github/github-mcp-server/blob/v2.0.0/README.md",
+    "https://github.com/github/github-mcp-server/blob/v2.0.0/LICENSE",
+    "https://docs.fullbleed.dev/getting-started/rust/",
+    "https://github.com/fullbleed-engine/fullbleed-official/releases/tag/v2.5.22",
+    "https://github.com/fullbleed-engine/fullbleed-official/blob/v2.5.22/LICENSE",
+    "https://blog.rust-lang.org/inside-rust/2026/10/02/generic-const-args-and-you/",
+    "https://github.com/rust-lang/cargo/pull/17488",
+    "https://github.com/rust-lang/cargo/pull/17531",
+    "https://victoriametrics.com/blog/http-race-condition/",
+    "https://this-week-in-rust.org/blog/2026/10/07/this-week-in-rust-672/",
+    "https://weeklyrust.substack.com/p/whats-new-in-1990",
+    "https://golangweekly.com/issues/620",
+    "https://go.dev/blog/archsimd"
+  ]
+}
