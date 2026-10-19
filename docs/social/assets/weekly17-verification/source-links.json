@@ -1,0 +1,72 @@
+[
+  {
+    "url": "https://github.com/rust-lang/rust/issues/163911",
+    "status": 200,
+    "final": "https://github.com/rust-lang/rust/issues/163911"
+  },
+  {
+    "url": "https://blog.rust-lang.org/2026/10/15/Rust-1.99.1/",
+    "status": 200,
+    "final": "https://blog.rust-lang.org/2026/10/15/Rust-1.99.1/"
+  },
+  {
+    "url": "https://github.com/creusot-rs/creusot/releases/tag/v0.14.0",
+    "status": 200,
+    "final": "https://github.com/creusot-rs/creusot/releases/tag/v0.14.0"
+  },
+  {
+    "url": "https://devlog.creusot.rs/v0-14-0/",
+    "status": 200,
+    "final": "https://devlog.creusot.rs/v0-14-0/"
+  },
+  {
+    "url": "https://github.com/creusot-rs/creusot/blob/v0.14.0/CHANGELOG.md",
+    "status": 200,
+    "final": "https://github.com/creusot-rs/creusot/blob/v0.14.0/CHANGELOG.md"
+  },
+  {
+    "url": "https://github.com/alordash/hotcode",
+    "status": 200,
+    "final": "https://github.com/alordash/hotcode"
+  },
+  {
+    "url": "https://docs.rs/hotcode/1.0.3/hotcode/",
+    "status": 200,
+    "final": "https://docs.rs/hotcode/1.0.3/hotcode/"
+  },
+  {
+    "url": "https://hotpath.rs/blog/rust-performance-grafana",
+    "status": 200,
+    "final": "https://hotpath.rs/blog/rust-performance-grafana"
+  },
+  {
+    "url": "https://github.com/pawurb/hotpath-rs/blob/v0.28.6/crates/hotpath/Cargo.toml",
+    "status": 200,
+    "final": "https://github.com/pawurb/hotpath-rs/blob/v0.28.6/crates/hotpath/Cargo.toml"
+  },
+  {
+    "url": "https://blog.rust-lang.org/inside-rust/2026/10/12/infrastructure-team-q3-recap-and-q4-plan/",
+    "status": 200,
+    "final": "https://blog.rust-lang.org/inside-rust/2026/10/12/infrastructure-team-q3-recap-and-q4-plan/"
+  },
+  {
+    "url": "https://rustfoundation.org/media/rust-foundation-board-updates-october-2026/",
+    "status": 200,
+    "final": "https://rustfoundation.org/media/rust-foundation-board-updates-october-2026/"
+  },
+  {
+    "url": "https://this-week-in-rust.org/blog/2026/10/14/this-week-in-rust-673/",
+    "status": 200,
+    "final": "https://this-week-in-rust.org/blog/2026/10/14/this-week-in-rust-673/"
+  },
+  {
+    "url": "https://weeklyrust.substack.com/p/never-bet-against-rust",
+    "status": 200,
+    "final": "https://weeklyrust.substack.com/p/never-bet-against-rust"
+  },
+  {
+    "url": "https://golangweekly.com/issues/620",
+    "status": 200,
+    "final": "https://golangweekly.com/issues/620"
+  }
+]

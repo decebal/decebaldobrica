@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-10-12'
+export const RADAR_GENERATED_AT = '2026-10-19'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 16
+export const RADAR_ISSUE = 17
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -47,6 +47,20 @@ export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
 export const RADAR_RINGS: RadarRing[] = ['Adopt', 'Trial', 'Assess', 'Hold']
 
 export const crateRadarTools: RadarTool[] = [
+  {
+    name: 'Creusot', url: 'https://github.com/creusot-rs/creusot', category: 'dev-tools/verification', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'public experimental verifier; tagged changelog and examples checked Oct 19, 2026', latest: 'v0.14.0 (GitHub Oct 12, 2026; nightly-2026-08-03 pin)',
+    adopters: 'tagged README names CreuSAT and Krabka; usage claims not independently validated',
+    mentions: 'Rust & AI Weekly #17 (2026-10-19)', returning: false,
+    note: 'Snapshot logic-call verification conditions and specification navigation. Partial-order change dates to 0.13. Assess one isolated algorithm and review the contract; no proof executed here. Root LGPL licence; creusot-std specifies LGPL-2.1-or-later. Review component and redistribution obligations. Source: https://github.com/creusot-rs/creusot/releases/tag/v0.14.0.',
+  },
+  {
+    name: 'hotcode', url: 'https://github.com/alordash/hotcode', category: 'dev-tools/hot-reload', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'Aleksei Orazov project; source commit d125836c7ea80d6ee70067675e8c0a49aa6d3bd0 checked Oct 19, 2026', latest: 'crates.io 1.0.3 (Oct 17, 2026; Rust 1.89.0; not yanked)',
+    adopters: 'examples and TWiR 673 spotlight; independent production use not established',
+    mentions: 'Rust & AI Weekly #17 (2026-10-19)', returning: false,
+    note: 'Development reloads only after defining fixed ABI and ownership constraints. Docs warn about stale callers after ABI edits and dangling static references after unload; generics unsupported. Default debug_assertions behavior differs from hotreload(always). MIT. No local execution or overhead measurement. Source: https://docs.rs/hotcode/1.0.3/hotcode/.',
+  },
   {
     name: 'mold', url: 'https://github.com/rui314/mold', category: 'dev-tools/linker', quadrant: 'dev',
     ring: 'Trial', maintenance: 'established Rui Ueyama project; first Rust release checked Oct 12, 2026', latest: 'stable v3.0.0 (Oct 5, 2026; building requires Rust 1.95 and a C compiler)',
@@ -352,9 +366,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'hotpath', url: 'https://hotpath.rs', category: 'dev-tools/profiling', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'actively developed, young', latest: '0.18 (Jun 2026)',
-    mentions: 'Rust & AI Weekly #3 (2026-07-08)', returning: false,
-    note: 'async profiling that understands channel + lock contention; treat output as a lead, not gospel',
+    ring: 'Trial', maintenance: 'actively developed; tagged release and Oct 12 Grafana tutorial checked Oct 19, 2026', latest: '0.28.6 (Oct 8, 2026; registry metadata declares no MSRV)',
+    adopters: 'author describes own backend and profiler; minimal-traffic tutorial results are not independent production validation',
+    mentions: 'Rust & AI Weekly #3 (2026-07-08); Rust & AI Weekly #17 (2026-10-19)', returning: true,
+    note: 'Trial retained. Route-scoped profiling, inclusive timing and allocation accounting require explicit interpretation; some Tokio worker series require tokio_unstable. Prometheus export feature checked in tagged manifest. Tagged changelog starts at 0.28.5, so no unverified 0.28.6-specific feature claim. MIT. No overhead reproduced. Source: https://hotpath.rs/blog/rust-performance-grafana.',
   },
   {
     name: 'cargo-rdme', url: 'https://github.com/orium/cargo-rdme', category: 'dev-tools/cargo', quadrant: 'dev',
