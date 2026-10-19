@@ -1,0 +1,16 @@
+{
+  "ending": true,
+  "images": [
+    {
+      "alt": "A silver mechanical wolf watches copper inspection equipment between graphite blocks, with a misaligned metal tile set aside in a tray.",
+      "loaded": true
+    },
+    {
+      "alt": "Rust and AI Crate Radar for issue 17: 92 tools across Adopt, Trial, Assess and Hold.",
+      "loaded": true
+    }
+  ],
+  "scrollWidth": 390,
+  "title": "Rust & AI Weekly #17: test the value across the FFI boundary",
+  "width": 390
+}

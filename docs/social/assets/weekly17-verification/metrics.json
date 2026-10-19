@@ -1,0 +1,51 @@
+{
+  "slug": "2026-10-19-rust-ai-weekly-17",
+  "date": "2026-10-19T08:00:00.000Z",
+  "words": 2652,
+  "paragraphs": 45,
+  "maxParagraphWords": 62,
+  "paragraphsOver100": 0,
+  "htmlBytes": 20320,
+  "radar": {
+    "total": 92,
+    "Adopt": 15,
+    "Trial": 36,
+    "Assess": 39,
+    "Hold": 2
+  },
+  "xWeightedCharacters": [
+    228,
+    249,
+    251,
+    252,
+    252,
+    142
+  ],
+  "images": [
+    {
+      "src": "https://decebaldobrica.com/images/blog/2026-10-19-rust-ai-weekly-17-3d-hero.png",
+      "alt": "A silver mechanical wolf watches copper inspection equipment between graphite blocks, with a misaligned metal tile set aside in a tray."
+    },
+    {
+      "src": "https://decebaldobrica.com/images/radar/2026-10-19-radar.png",
+      "alt": "Rust and AI Crate Radar for issue 17: 92 tools across Adopt, Trial, Assess and Hold."
+    }
+  ],
+  "links": [
+    "https://github.com/rust-lang/rust/issues/163911",
+    "https://decebaldobrica.com/radar",
+    "https://blog.rust-lang.org/2026/10/15/Rust-1.99.1/",
+    "https://github.com/creusot-rs/creusot/releases/tag/v0.14.0",
+    "https://devlog.creusot.rs/v0-14-0/",
+    "https://github.com/creusot-rs/creusot/blob/v0.14.0/CHANGELOG.md",
+    "https://github.com/alordash/hotcode",
+    "https://docs.rs/hotcode/1.0.3/hotcode/",
+    "https://hotpath.rs/blog/rust-performance-grafana",
+    "https://github.com/pawurb/hotpath-rs/blob/v0.28.6/crates/hotpath/Cargo.toml",
+    "https://blog.rust-lang.org/inside-rust/2026/10/12/infrastructure-team-q3-recap-and-q4-plan/",
+    "https://rustfoundation.org/media/rust-foundation-board-updates-october-2026/",
+    "https://this-week-in-rust.org/blog/2026/10/14/this-week-in-rust-673/",
+    "https://weeklyrust.substack.com/p/never-bet-against-rust",
+    "https://golangweekly.com/issues/620"
+  ]
+}
