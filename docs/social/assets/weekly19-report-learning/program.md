@@ -1,0 +1,15 @@
+# Newsletter 19 action-placement experiment
+
+Frozen before baseline, 2 November 2026. Source: 27 report bodies, 152 Supergrow rows, unequal ages and mixed scopes; five missing windows. No newsletter open/click/reply data or comparable X baseline. Hypothesis: move a usable archive compatibility check earlier while preserving mechanism, qualification and independent tool decisions. This tests document structure, not reach, model behaviour or reader comprehension.
+
+Only newsletter19/article.mdx, newsletter19/linkedin.txt and newsletter19/x.txt are mutable experimental copies. Portfolio source files remain outside this repository's history. Existing copy/learning files and previous runs remain intact. No remote exists. The installed autoresearch 0.1.0 runner freezes this evaluator, fixtures and objective at baseline.
+
+Objective: minimise the sum of words preceding one frozen usable-action phrase in each asset, counting full article body from its first prose paragraph and ignoring image captions/frontmatter. Article anchor: Run the proposed parser against that corpus before changing extraction code. LinkedIn anchor: My first check would be a corpus of accepted archives, explicit rejected cases and a separate extraction policy. X anchor: Start with real accepted archives, explicit rejected cases and a separate extraction policy. This is not a total-word-count objective. The metric can be gamed by duplication or poor ordering; manual review must reject those outcomes.
+
+Hard gates: protected original prose blocks except enumerated editorial paragraphs, all original article links and image paths, explicit versions/licences/qualifications/verdicts, source/caveat anchors in social text, at least 85% of original article words, no paragraph over 100 words, six ordered X posts within 280 weighted characters and LinkedIn below 3000, no selected bait/experience inventions. No added technical fact is authorised by passing these gates. Manual source and editorial review remains separate.
+
+Editable exceptions: lead action paragraph and its repeated question; evaluation openings may gain sourced verdict reasons; CGA reachability question becomes a statement; CGA/apalis repeated closing recommendations can be removed while their unexecuted-test qualifications remain. Parallel release/status details may be split into lists with identical content. All other article blocks are protected by normalised literal inclusion.
+
+Cap: two candidates. First structural candidate; second deliberately removes the tar-codec readiness qualification from LinkedIn, preserving the earlier action. The evidence control must fail even if position score is unchanged. Then run fresh verify at the retained commit and stop. No generated model outputs or live A/B test are included.
+
+Manual review: source case remains first; action is useful and conditional; opposing compatibility case and caveats remain nearby; verdict reasons are supported; release signals are separable; ordinary British newsletter paragraphs survive; one practitioner invitation per asset; no duplicate anchor stuffing. A shorter issue is not presumed better.

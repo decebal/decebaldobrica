@@ -1,0 +1,276 @@
+{
+  "command": "report",
+  "schema_version": 1,
+  "run_id": "run-1793614371021-39922-a591f845",
+  "base_commit": "a591f8459ec4ec70b23b368218f80db102205e1a",
+  "current_best_commit": "17ca842e800cf157d59e4495507c7d6329829c33",
+  "frozen_identity_sha256": "4e99fed1584f20132d40ad7a3b1aa1debdc77a6dc3403d3ff6e51f47ab0cb414",
+  "environment": {
+    "fingerprint_sha256": "bbb3b83c43feb5e93ba22beb9fc8588130a42f9c2f4f0b47263662ffc3ff66aa",
+    "record": null,
+    "status": "fingerprint_captured"
+  },
+  "objective": {
+    "name": "words_before_actions",
+    "direction": "minimize"
+  },
+  "recovery_action": "finished",
+  "baseline": {
+    "commit": "a591f8459ec4ec70b23b368218f80db102205e1a",
+    "snapshot": {
+      "measurements": [
+        {
+          "kind": "hard_gate",
+          "name": "evidence_preserved",
+          "outcome": {
+            "passed": true,
+            "detail": null
+          }
+        },
+        {
+          "kind": "hard_gate",
+          "name": "substance_and_platform",
+          "outcome": {
+            "passed": true,
+            "detail": null
+          }
+        },
+        {
+          "kind": "hard_gate",
+          "name": "no_selected_bait",
+          "outcome": {
+            "passed": true,
+            "detail": null
+          }
+        },
+        {
+          "kind": "numeric",
+          "name": "words_before_actions",
+          "metric_kind": "objective",
+          "direction": "minimize",
+          "value": 246.0
+        }
+      ],
+      "complexity": {
+        "changed_lines": 0,
+        "dependency_delta": 0,
+        "runtime_ms": 0
+      }
+    },
+    "artifact_references_status": "not_recorded_in_baseline_journal"
+  },
+  "baseline_failure": null,
+  "current_best_snapshot": {
+    "measurements": [
+      {
+        "kind": "hard_gate",
+        "name": "evidence_preserved",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "substance_and_platform",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "no_selected_bait",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "numeric",
+        "name": "words_before_actions",
+        "metric_kind": "objective",
+        "direction": "minimize",
+        "value": 109.0
+      }
+    ],
+    "complexity": {
+      "changed_lines": 52,
+      "dependency_delta": 0,
+      "runtime_ms": 209
+    }
+  },
+  "candidates": [
+    {
+      "index": 1,
+      "parent_commit": "a591f8459ec4ec70b23b368218f80db102205e1a",
+      "candidate_commit": "17ca842e800cf157d59e4495507c7d6329829c33",
+      "changed_paths": [
+        "newsletter19/article.mdx",
+        "newsletter19/linkedin.txt",
+        "newsletter19/x.txt"
+      ],
+      "changed_paths_status": "journaled",
+      "hard_gates": [
+        {
+          "name": "evidence_preserved",
+          "prior_best_passed": true,
+          "candidate_passed": true
+        },
+        {
+          "name": "substance_and_platform",
+          "prior_best_passed": true,
+          "candidate_passed": true
+        },
+        {
+          "name": "no_selected_bait",
+          "prior_best_passed": true,
+          "candidate_passed": true
+        }
+      ],
+      "objective_delta": -137.0,
+      "runtime_ms": 209,
+      "snapshot": {
+        "measurements": [
+          {
+            "kind": "hard_gate",
+            "name": "evidence_preserved",
+            "outcome": {
+              "passed": true,
+              "detail": null
+            }
+          },
+          {
+            "kind": "hard_gate",
+            "name": "substance_and_platform",
+            "outcome": {
+              "passed": true,
+              "detail": null
+            }
+          },
+          {
+            "kind": "hard_gate",
+            "name": "no_selected_bait",
+            "outcome": {
+              "passed": true,
+              "detail": null
+            }
+          },
+          {
+            "kind": "numeric",
+            "name": "words_before_actions",
+            "metric_kind": "objective",
+            "direction": "minimize",
+            "value": 109.0
+          }
+        ],
+        "complexity": {
+          "changed_lines": 52,
+          "dependency_delta": 0,
+          "runtime_ms": 209
+        }
+      },
+      "decision": {
+        "disposition": "keep",
+        "reason": {
+          "reason": "primary_improvement"
+        }
+      },
+      "finalization": {
+        "outcome": "kept",
+        "commit": "17ca842e800cf157d59e4495507c7d6329829c33"
+      },
+      "artifacts": [],
+      "failures": [],
+      "state": "kept"
+    },
+    {
+      "index": 2,
+      "parent_commit": "17ca842e800cf157d59e4495507c7d6329829c33",
+      "candidate_commit": "3b1c4923e83351b25eab35b44d19f9a88beb0b36",
+      "changed_paths": [
+        "newsletter19/linkedin.txt"
+      ],
+      "changed_paths_status": "journaled",
+      "hard_gates": [
+        {
+          "name": "evidence_preserved",
+          "prior_best_passed": true,
+          "candidate_passed": false
+        },
+        {
+          "name": "substance_and_platform",
+          "prior_best_passed": true,
+          "candidate_passed": true
+        },
+        {
+          "name": "no_selected_bait",
+          "prior_best_passed": true,
+          "candidate_passed": true
+        }
+      ],
+      "objective_delta": 0.0,
+      "runtime_ms": 503,
+      "snapshot": {
+        "measurements": [
+          {
+            "kind": "hard_gate",
+            "name": "evidence_preserved",
+            "outcome": {
+              "passed": false,
+              "detail": null
+            }
+          },
+          {
+            "kind": "hard_gate",
+            "name": "substance_and_platform",
+            "outcome": {
+              "passed": true,
+              "detail": null
+            }
+          },
+          {
+            "kind": "hard_gate",
+            "name": "no_selected_bait",
+            "outcome": {
+              "passed": true,
+              "detail": null
+            }
+          },
+          {
+            "kind": "numeric",
+            "name": "words_before_actions",
+            "metric_kind": "objective",
+            "direction": "minimize",
+            "value": 109.0
+          }
+        ],
+        "complexity": {
+          "changed_lines": 2,
+          "dependency_delta": 0,
+          "runtime_ms": 503
+        }
+      },
+      "decision": {
+        "disposition": "discard",
+        "reason": {
+          "reason": "failed_hard_gates",
+          "names": [
+            "evidence_preserved"
+          ]
+        }
+      },
+      "finalization": {
+        "outcome": "discarded"
+      },
+      "artifacts": [],
+      "failures": [],
+      "state": "discarded"
+    }
+  ],
+  "stop_reason": "operator_cancelled",
+  "market_evidence": {
+    "receipts": []
+  },
+  "commercial_validation_status": "not_assessed_by_internal_evaluators"
+}

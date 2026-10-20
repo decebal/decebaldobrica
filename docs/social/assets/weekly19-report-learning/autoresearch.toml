@@ -1,0 +1,29 @@
+schema_version = 1
+[experiment]
+name = "newsletter19-action-placement-2026-11-02"
+[experiment.objective]
+name = "words_before_actions"
+direction = "minimize"
+[experiment.budget]
+max_candidates = 2
+max_failures = 2
+wall_clock_seconds = 1800
+[scope]
+mutable_paths = ["newsletter19/article.mdx", "newsletter19/linkedin.txt", "newsletter19/x.txt"]
+[agent]
+program = "/usr/bin/git"
+args = ["status", "--short"]
+timeout_seconds = 10
+[[evaluators]]
+id = "newsletter_structure"
+hard_gates = ["evidence_preserved", "substance_and_platform", "no_selected_bait"]
+[evaluators.command]
+program = "/opt/homebrew/bin/node"
+args = ["newsletter19-evaluator.mjs"]
+timeout_seconds = 10
+[[evaluators.metrics]]
+name = "words_before_actions"
+kind = "objective"
+direction = "minimize"
+[authority]
+allow = []

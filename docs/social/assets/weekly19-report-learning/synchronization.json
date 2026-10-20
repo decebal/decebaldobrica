@@ -1,0 +1,13 @@
+{
+  "htmlAndUploadedTextEqual": true,
+  "syndicationBodyExact": true,
+  "images": [
+    "/images/blog/2026-11-02-rust-ai-weekly-19-3d-hero.png",
+    "/images/radar/2026-11-02-radar.png"
+  ],
+  "artHashes": {
+    "/images/blog/2026-11-02-rust-ai-weekly-19-3d-hero.png": "edbcda3aa204b44937b76af059455c262b6fb4504aa5b79985779b320eb8344a",
+    "/images/radar/2026-11-02-radar.png": "0e18796549de070091d8e94d4ffd9393ba598203281a06f705c670935896ebfc"
+  },
+  "sourceLinksUnchanged": true
+}

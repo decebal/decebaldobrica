@@ -1,0 +1,23 @@
+{
+  "words": 2323,
+  "maxParagraphWords": 66,
+  "paragraphsOver100": 0,
+  "tools": 95,
+  "counts": {
+    "Adopt": 16,
+    "Trial": 36,
+    "Assess": 41,
+    "Hold": 2
+  },
+  "images": 2,
+  "bodyHtmlBytes": 18221,
+  "xWeightedCharacters": [
+    206,
+    137,
+    242,
+    264,
+    232,
+    262
+  ],
+  "reportLearningRevision": "manual-final-artifact-hashes"
+}
