@@ -1,6 +1,14 @@
 # Issue 17 review pack
 
-October 19, 2026. Status: local review draft; Substack save and verification blocked. Git commit, push and PR creation approved. Merge, newsletter send and social publication remain unapproved.
+October 19, 2026 edition. Status: **complete and published**. Publication links and verification recorded October 20. The user approved sending issue 17 to Everyone and publishing its LinkedIn announcement and connected X thread.
+
+## Published links
+
+- [Blog article](https://decebaldobrica.com/blog/2026-10-19-rust-ai-weekly-17)
+- [Substack newsletter](https://ddonprogramming.substack.com/p/rust-and-ai-weekly-17-test-the-value), published October 19 to Everyone with email and app delivery enabled
+- [LinkedIn announcement](https://www.linkedin.com/feed/update/urn:li:share:7517910462223503363/)
+- [Connected six-post X thread](https://x.com/ddonprogramming/status/2112145056526372880)
+- [Merged preparation PR #29](https://github.com/decebal/decebaldobrica/pull/29)
 
 ## Assets
 
@@ -13,15 +21,15 @@ October 19, 2026. Status: local review draft; Substack save and verification blo
 - [Metrics](assets/weekly17-verification/metrics.json), [source-link checks](assets/weekly17-verification/source-links.json)
 - [Site mobile proof](assets/weekly17-verification/site-mobile.png), [local email mobile proof](assets/weekly17-verification/email-mobile-local.png), [desktop preview](assets/weekly17-verification/email-desktop-local.png)
 
-Canonical URL after deployment: `https://decebaldobrica.com/blog/2026-10-19-rust-ai-weekly-17`.
+Live canonical URL: `https://decebaldobrica.com/blog/2026-10-19-rust-ai-weekly-17`.
 
 ## Publication and repository state
 
-Fetched main at `b2658c030e0238473161eb6cdfde185cd7fb27cf`, which contains issue 16 and no issue 17. The prior conversation records issue 16 published October 12 on Substack, LinkedIn and X. Issue 16's launch notes describe its earlier draft state and are not treated as current publication status.
+PR #29 merged the article and launch assets into main. The live blog route was checked before social publication: the issue 17 title, October 19 date, artwork and 92-tool radar were present.
 
 Registered worktrees contained no issue 17. Work started in an isolated detached worktree from main, preserving unrelated dirty changes in the primary checkout. Publication branch: `docs/rust-ai-weekly-17`. Preparation is tracked in Chronis task `t-2baca6`. Repository instructions and issue 13's corrected article/LinkedIn structure, issue 14's framework map and issue 16's carry-over notes informed the draft.
 
-An attempt to open the publication's Substack draft list was denied by automatic browser approval review. The stated reason was that the page required observation authority for `substack.com`, broader than the approved `ddonprogramming.substack.com` destination. No workaround, alternate browser surface or indirect draft API was used. Fresh remote draft inventory therefore could not be checked. Before creating any draft, recheck that inventory and resume the existing issue if one exists.
+Substack inventory was checked after the user approved browser access and signed in. No issue 17 draft or publication existed; the latest published edition was 16. One issue 17 draft was created at post ID `221118708`. The user separately approved Everyone as its audience and later approved newsletter and social publication. The publisher then showed Published; LinkedIn showed Post successful; X showed Your posts were sent. The live X conversation contained all six numbered posts in order.
 
 ## Claim-to-source ledger
 
@@ -44,7 +52,7 @@ Primary bodies were read before drafting. Tagged files and published packages we
 | Infrastructure audits deployed, SQS provisioned but unused | [October 12 infrastructure recap](https://blog.rust-lang.org/inside-rust/2026/10/12/infrastructure-team-q3-recap-and-q4-plan/) | Relevant report body read. 23 Zizmor audits stated by team. No claim these checks enforce delivery in a reader's repo. |
 | Foundation board changes | [October 13 update](https://rustfoundation.org/media/rust-foundation-board-updates-october-2026/) | Full post read; names retained without inferring tool adoption or performance. |
 | Source indexes and window | [TWiR 673](https://this-week-in-rust.org/blog/2026/10/14/this-week-in-rust-673/), [Rust Bytes 141](https://weeklyrust.substack.com/p/never-bet-against-rust), [Go Weekly 620](https://golangweekly.com/issues/620) | TWiR and Go issue bodies read. Full Rust Bytes 141 RSS body read: October 13 06:31:41 GMT. Survey, Polars and benchmark links not used as independently verified claims. Go archive confirms October 16 break and October 23 return. |
-| X standard limit | [Official counting rules](https://docs.x.com/fundamentals/counting-characters) | ASCII copy and 23-character URL weighting: 228, 249, 251, 252, 252, 142. No post submitted or scheduled. |
+| X standard limit | [Official counting rules](https://docs.x.com/fundamentals/counting-characters) | ASCII copy and 23-character URL weighting: 228, 249, 251, 252, 252, 142. Published together through Post all; all six connected posts verified in the live conversation. |
 
 ## Verdicts and carry-over
 
@@ -75,12 +83,16 @@ What changed: lead starts with the exact reported value; proposed checks are exp
 
 Actual Next.js route returned 200 through React Markdown, GFM, raw HTML and highlight plugins. The site's mobile view at 390 × 844 has scroll width 390 and both images loaded with descriptive alt text. The complete ending is present in DOM. Screenshots inspected. The local email-layout preview also has width/scroll width 390, both images loaded and 21.25px paragraph gaps. Desktop preview captured separately. These are local browser checks, not saved Substack previews or delivered-mailbox testing.
 
-Synchronized HTML and syndication generated through the same Markdown plugins. Temporary JavaScript helper used because React rendering and the installed plugin stack are JavaScript; no new production tooling or dependency added. Metrics: 2,652 tokenized words, 45 prose paragraphs, maximum 62 words, none above 100; 20,320-byte HTML; 15 unique link targets. All 14 external article links returned 200 in bounded GET checks. New canonical article/images still require deployment. Source-link status does not substitute for the source-body review above.
+Synchronized HTML and syndication generated through the same Markdown plugins. Temporary JavaScript helper used because React rendering and the installed plugin stack are JavaScript; no new production tooling or dependency added. Metrics: 2,652 tokenized words, 45 prose paragraphs, maximum 62 words, none above 100; 20,320-byte HTML; 15 unique link targets. All 14 external article links returned 200 in bounded GET checks. The deployed canonical article and edition artwork were checked before social publication. Source-link status does not substitute for the source-body review above.
 
-Substack draft: **not created or updated**. Existing remote draft inventory, saved-content equality, uploaded images and settled email-length warnings are unverified because of the automatic approval rejection. No warning absence is claimed. Do not call this publication-ready until those checks are completed. Newsletter and social publishing require separate edition-specific approval.
+Substack saved-content verification passed after reload: normalized body text matched the source exactly (14,867 characters after whitespace removal and quote normalization), every source link was present, and both uploaded images loaded with their descriptive alt text. Full-content mobile and email previews were inspected. The email frame contained the ending and both images, with width and scroll width both 600px. No email-length warning appeared after settled reload. These checks verify the saved editor and browser previews; delivery to a recipient's mailbox was not tested.
 
-## Next actions
+LinkedIn was published with seven explicit empty paragraphs separating the eight copy blocks, verified in the composer before posting. Its link preview used the edition artwork. X was published as one connected six-post thread, with the article link in the final post. Syndication Markdown remains unpublished intentionally; it is not an outstanding launch action.
 
-1. Approve browser access needed for the Substack publication editor. Recheck October 19 drafts before creating anything, then save this edition and compare text, links, alt text and mobile/email previews after settled reload.
-2. Record any email-length warning. Test delivery only with explicit authorization to send; local HTML size alone does not establish delivered-mailbox behaviour.
-3. Review factual scope and commercial integration obligations, then complete the outstanding Substack checks. Git publication is approved; no newsletter or social publication is approved.
+## Completion
+
+- Article merged and live.
+- Substack saved, verified and published to Everyone under edition-specific approval.
+- LinkedIn announcement published with paragraph gaps.
+- Six connected X posts published and verified.
+- No issue 17 publishing actions remain. Tool trials, benchmark reproduction and dependency integration checks described above remain research carry-over, not claims of completed execution.
