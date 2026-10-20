@@ -1,0 +1,29 @@
+schema_version = 1
+[experiment]
+name = "report-learning-2026-11-02"
+[experiment.objective]
+name = "total_words"
+direction = "minimize"
+[experiment.budget]
+max_candidates = 2
+max_failures = 2
+wall_clock_seconds = 3600
+[scope]
+mutable_paths = ["learning/guide.md"]
+[agent]
+program = "/usr/bin/git"
+args = ["status", "--short"]
+timeout_seconds = 10
+[[evaluators]]
+id = "post_copy"
+hard_gates = ["evidence_preserved", "platform_and_substance", "no_bait_or_invented_experience"]
+[evaluators.command]
+program = "/opt/homebrew/bin/node"
+args = ["learning-evaluator.mjs"]
+timeout_seconds = 10
+[[evaluators.metrics]]
+name = "total_words"
+kind = "objective"
+direction = "minimize"
+[authority]
+allow = []

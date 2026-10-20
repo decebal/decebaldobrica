@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-10-19'
+export const RADAR_GENERATED_AT = '2026-11-02'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 17
+export const RADAR_ISSUE = 19
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -47,6 +47,27 @@ export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
 export const RADAR_RINGS: RadarRing[] = ['Adopt', 'Trial', 'Assess', 'Hold']
 
 export const crateRadarTools: RadarTool[] = [
+  {
+    name: 'tar-codec', url: 'https://github.com/astral-sh/astral-codec', category: 'infra/archive-parsing', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'Astral; main revision Oct 30 checked Nov 2, 2026', latest: 'v0.0.15 (Oct 13, 2026)',
+    adopters: 'Astral reports default use in uv 0.13; integration not independently exercised',
+    mentions: 'Rust & AI Weekly #19 (2026-11-02)', returning: false,
+    note: 'Explicit tar-family classification and rejection of mixed conventions. README warns early and not production-ready. Assess accepted archive corpus and extraction policy. MIT OR Apache-2.0; MIT notice checked. No benchmark reproduced.',
+  },
+  {
+    name: 'CGA', url: 'https://github.com/OpenDevicePartnership/cga', category: 'dev-tools/static-analysis', quadrant: 'dev',
+    ring: 'Assess', maintenance: 'OpenDevicePartnership; source revision Oct 20 and author walkthrough Oct 27 checked Nov 2, 2026', latest: 'source manifest 0.1.0, publish=false; nightly-2026-10-18 pin',
+    adopters: 'no independent deployment verified in this review',
+    mentions: 'Rust & AI Weekly #19 (2026-11-02)', returning: false,
+    note: 'Monomorphized MIR panic paths; compiler/profile and false-positive caveats. Blacklists cannot enforce isolation across assembly or external objects. MIT. No analysis executed here.',
+  },
+  {
+    name: 'cargo-audit', url: 'https://github.com/rustsec/rustsec', category: 'dev-tools/security', quadrant: 'dev',
+    ring: 'Adopt', maintenance: 'RustSec project; tagged documentation and registry checked Oct 26, 2026', latest: 'v0.22.2 (Jun 5, 2026; Rust 1.88)',
+    adopters: 'documented CI integration; no independent production adopter verified',
+    mentions: 'Rust & AI Weekly #18 (2026-10-26)', returning: false,
+    note: 'Adopt for RustSec advisory checking of the intended Cargo.lock. Record advisory database state. Binary scans without cargo-auditable metadata recover partial dependency coverage. No scan executed here. Apache-2.0 OR MIT; component MIT file checked. Source: https://github.com/rustsec/rustsec/tree/cargo-audit/v0.22.2/cargo-audit',
+  },
   {
     name: 'Creusot', url: 'https://github.com/creusot-rs/creusot', category: 'dev-tools/verification', quadrant: 'dev',
     ring: 'Assess', maintenance: 'public experimental verifier; tagged changelog and examples checked Oct 19, 2026', latest: 'v0.14.0 (GitHub Oct 12, 2026; nightly-2026-08-03 pin)',
@@ -113,10 +134,10 @@ export const crateRadarTools: RadarTool[] = [
   },
   {
     name: 'rmcp', url: 'https://github.com/modelcontextprotocol/rust-sdk', category: 'agentic', quadrant: 'agentic',
-    ring: 'Trial', maintenance: 'actively maintained by the official MCP organisation; tagged October patch checked Oct 12, 2026', latest: 'v3.5.1 (Oct 5, 2026; Rust 1.88)',
+    ring: 'Trial', maintenance: 'official MCP organisation; tagged release and auth PRs checked Oct 26, 2026', latest: 'v3.7.0 (GitHub Oct 22, 2026; Rust 1.88)',
     stars: '~4.0k★ (Sep 28, 2026)', downloads: '~29.8M (Sep 28, 2026)', adopters: 'official Rust MCP SDK',
-    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07); Rust & AI Weekly #14 (2026-09-28); Rust & AI Weekly #16 (2026-10-12)', returning: true,
-    note: 'Adopt to Trial at #11 because of migration churn; Trial retained at #14 and #16. 3.5.0 rejects duplicate SEP-2243 headers, fixes explicit default-port Origin matching and empty cacheScope handling, and adds LATEST_WITH_INITIALIZE. 3.5.1 keeps handler-generated invalid params in-band, defaults missing cache hints for modern peers and adds a refresh-token-rejection store callback whose default is a no-op. Test deployed peer error handling and custom credential policy. Package says Apache-2.0; LICENSE retains legacy MIT contributions. Sources: https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.1 and PRs 1322/1285. Historical 3.5.0 sources: release tag and PRs 1274, 1270, 1281.',
+    mentions: 'Rust & AI Weekly #1 (2026-06-19); Rust & AI Weekly #11 (2026-09-07); Rust & AI Weekly #14 (2026-09-28); Rust & AI Weekly #16 (2026-10-12); Rust & AI Weekly #18 (2026-10-26)', returning: true,
+    note: '3.7.0 retains HTTP 401/403 without challenges for JSON-RPC bodies, allows cross-origin resource metadata through the auth-server SSRF host check, and adds an OIDC ID-token exchange constructor. Caller owns freshness. Trial retained at #18; release and PRs 1341/1302/1385 checked. Adopt to Trial at #11 because of migration churn; Trial retained at #14 and #16. 3.5.0 rejects duplicate SEP-2243 headers, fixes explicit default-port Origin matching and empty cacheScope handling, and adds LATEST_WITH_INITIALIZE. 3.5.1 keeps handler-generated invalid params in-band, defaults missing cache hints for modern peers and adds a refresh-token-rejection store callback whose default is a no-op. Test deployed peer error handling and custom credential policy. Package says Apache-2.0; LICENSE retains legacy MIT contributions. Sources: https://github.com/modelcontextprotocol/rust-sdk/releases/tag/rmcp-v3.5.1 and PRs 1322/1285. Historical 3.5.0 sources: release tag and PRs 1274, 1270, 1281.',
   },
   {
     name: 'Symposium', url: 'https://github.com/symposium-dev/symposium', category: 'agentic/developer-context', quadrant: 'agentic',
@@ -404,10 +425,10 @@ export const crateRadarTools: RadarTool[] = [
     note: 'hot-reconfigurable reverse proxy adds UDP load balancing for the programmable edge; corporate steward with production skin in the game',
   },
   {
-    name: 'apalis', url: 'https://github.com/geofmureithi/apalis', category: 'infra/background-jobs', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'actively maintained (geofmureithi)', latest: 'v1.0.0-rc (2026; apalis-postgres updated May 2026)',
-    mentions: 'Rust & AI Weekly #4 (2026-07-13)', returning: false,
-    note: 'the Rust seat at the Postgres-job-queue table Go-land calls River; tower-style middleware, Postgres NOTIFY low-latency fetch, nearing 1.0',
+    name: 'apalis', url: 'https://github.com/apalis-dev/apalis', category: 'infra/background-jobs', quadrant: 'dev',
+    ring: 'Trial', maintenance: 'apalis-dev; tagged changelog and package checked Nov 2, 2026', latest: 'v1.0.0 stable (Oct 12, 2026)',
+    mentions: 'Rust & AI Weekly #4 (2026-07-13); Rust & AI Weekly #19 (2026-11-02)', returning: true,
+    note: 'Trial retained for one backend and worker lifecycle. Breaking migration changes; test restart, shutdown and repeated external effects. Changelog Task generic summaries conflict; check exact API. MIT OR Apache-2.0; tagged MIT file checked. No worker executed here.',
   },
   {
     name: 'GuardianDB', url: 'https://www.willsearch.com.br/blog/2026/07/04/meet-guardiandbs-new-postgresql-compatibility-layer/', category: 'data/p2p', quadrant: 'data',

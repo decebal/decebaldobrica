@@ -1,0 +1,84 @@
+{
+  "run_id": "run-1793614371021-39922-a591f845",
+  "verified_commit": "17ca842e800cf157d59e4495507c7d6329829c33",
+  "selection_snapshot": {
+    "measurements": [
+      {
+        "kind": "hard_gate",
+        "name": "evidence_preserved",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "substance_and_platform",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "no_selected_bait",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "numeric",
+        "name": "words_before_actions",
+        "metric_kind": "objective",
+        "direction": "minimize",
+        "value": 109.0
+      }
+    ],
+    "complexity": {
+      "changed_lines": 52,
+      "dependency_delta": 0,
+      "runtime_ms": 209
+    }
+  },
+  "fresh_snapshot": {
+    "measurements": [
+      {
+        "kind": "hard_gate",
+        "name": "evidence_preserved",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "substance_and_platform",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "hard_gate",
+        "name": "no_selected_bait",
+        "outcome": {
+          "passed": true,
+          "detail": null
+        }
+      },
+      {
+        "kind": "numeric",
+        "name": "words_before_actions",
+        "metric_kind": "objective",
+        "direction": "minimize",
+        "value": 109.0
+      }
+    ],
+    "runtime_ms": 215
+  },
+  "failed_evaluator": null,
+  "failure": null,
+  "status": "matched",
+  "evidence_path": "/Users/decebaldobrica/Projects/personal/ralph-wiggum-marketer/content/experiments/2026-11-01-post-refinement/repository/.autoresearch/runs/run-1793614371021-39922-a591f845/verifications/verify-1793614509333878000-49042-0/verification.json"
+}

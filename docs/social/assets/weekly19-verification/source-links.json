@@ -1,0 +1,86 @@
+[
+  {
+    "url": "https://astral.sh/blog/tar-codec",
+    "status": 200,
+    "bytes": 315658,
+    "final": "https://astral.sh/blog/tar-codec"
+  },
+  {
+    "url": "https://github.com/astral-sh/astral-codec/blob/e7ee6c058ac302f50667affa46fa32e84f53cedb/crates/tar-codec/README.md",
+    "status": 200,
+    "bytes": 206059,
+    "final": "https://github.com/astral-sh/astral-codec/blob/e7ee6c058ac302f50667affa46fa32e84f53cedb/crates/tar-codec/README.md"
+  },
+  {
+    "url": "https://crates.io/api/v1/crates/tar-codec/0.0.15",
+    "status": 200,
+    "bytes": 1260,
+    "final": "https://crates.io/api/v1/crates/tar-codec/0.0.15"
+  },
+  {
+    "url": "https://tweedegolf.nl/en/blog/242/finding-panics-with-call-graph-analyzer/",
+    "status": 200,
+    "bytes": 54930,
+    "final": "https://tweedegolf.nl/en/blog/242/finding-panics-with-call-graph-analyzer/"
+  },
+  {
+    "url": "https://github.com/OpenDevicePartnership/cga/blob/2fc63108f0b674fe7a178191ffa15647a18879f1/Cargo.toml",
+    "status": 200,
+    "bytes": 201979,
+    "final": "https://github.com/OpenDevicePartnership/cga/blob/2fc63108f0b674fe7a178191ffa15647a18879f1/Cargo.toml"
+  },
+  {
+    "url": "https://github.com/OpenDevicePartnership/cga/tree/2fc63108f0b674fe7a178191ffa15647a18879f1",
+    "status": 200,
+    "bytes": 323168,
+    "final": "https://github.com/OpenDevicePartnership/cga/tree/2fc63108f0b674fe7a178191ffa15647a18879f1"
+  },
+  {
+    "url": "https://github.com/apalis-dev/apalis/releases/tag/v1.0.0",
+    "status": 200,
+    "bytes": 207698,
+    "final": "https://github.com/apalis-dev/apalis/releases/tag/v1.0.0"
+  },
+  {
+    "url": "https://github.com/apalis-dev/apalis/blob/v1.0.0/CHANGELOG.md",
+    "status": 200,
+    "bytes": 592748,
+    "final": "https://github.com/apalis-dev/apalis/blob/v1.0.0/CHANGELOG.md"
+  },
+  {
+    "url": "https://blog.rust-lang.org/inside-rust/2026/10/27/variadic-generics-micro-survey-results/",
+    "status": 200,
+    "bytes": 38406,
+    "final": "https://blog.rust-lang.org/inside-rust/2026/10/27/variadic-generics-micro-survey-results/"
+  },
+  {
+    "url": "https://blog.rust-lang.org/2026/10/26/how-to-fund-rust-contributors/",
+    "status": 200,
+    "bytes": 17364,
+    "final": "https://blog.rust-lang.org/2026/10/26/how-to-fund-rust-contributors/"
+  },
+  {
+    "url": "https://rustfoundation.org/media/update-on-rust-foundation-staffing/",
+    "status": 200,
+    "bytes": 96674,
+    "final": "https://rustfoundation.org/media/update-on-rust-foundation-staffing/"
+  },
+  {
+    "url": "https://this-week-in-rust.org/blog/2026/10/28/this-week-in-rust-675/",
+    "status": 200,
+    "bytes": 43224,
+    "final": "https://this-week-in-rust.org/blog/2026/10/28/this-week-in-rust-675/"
+  },
+  {
+    "url": "https://weeklyrust.substack.com/",
+    "status": 200,
+    "bytes": 96982,
+    "final": "https://weeklyrust.substack.com/"
+  },
+  {
+    "url": "https://golangweekly.com/issues/622",
+    "status": 200,
+    "bytes": 41026,
+    "final": "https://golangweekly.com/issues/622"
+  }
+]

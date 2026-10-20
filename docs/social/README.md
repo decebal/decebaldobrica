@@ -2,6 +2,23 @@
 
 - [WolvenTech LinkedIn company page](wolventech-linkedin-company.md)
 
+## Newsletter guidance
+
+- [Report learning, issue 19 experiment and measurement limits](newsletter-report-learning.md)
+- [Newsletter framework reference snapshot](newsletter-frameworks.md)
+- [Report-informed writing reference snapshot](weekly-content-learning.md)
+
+## Rust & AI Weekly #19
+
+- [Publication evidence](rust-ai-weekly-19-evidence.html)
+
+- [Article draft](../../apps/web/content/blog/2026-11-02-rust-ai-weekly-19.mdx)
+- [Launch pack and verification ledger](rust-ai-weekly-19-launch-notes.md)
+- [Substack HTML](rust-ai-weekly-19-substack.html) and [readability preview](rust-ai-weekly-19-readability.html)
+- [Unpublished syndication](rust-ai-weekly-19-syndication.md)
+- [LinkedIn copy](rust-ai-weekly-19-linkedin.md) and [connected X thread](rust-ai-weekly-19-x.md)
+- [Artwork and prompt](rust-ai-weekly-19-artwork.md)
+
 ## Rust & AI Weekly #17
 
 - [Review evidence and limits](rust-ai-weekly-17-evidence.html)
