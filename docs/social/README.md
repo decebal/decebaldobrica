@@ -8,6 +8,17 @@
 - [Newsletter framework reference snapshot](newsletter-frameworks.md)
 - [Report-informed writing reference snapshot](weekly-content-learning.md)
 
+## Rust & AI Weekly #20
+
+- [Publication evidence report](rust-ai-weekly-20-evidence.html)
+- [Saved Substack draft](https://ddonprogramming.substack.com/publish/post/224126934) and [uploaded-image mirror](rust-ai-weekly-20-substack-uploaded.html)
+- [Article draft](../../apps/web/content/blog/2026-11-09-rust-ai-weekly-20.mdx)
+- [Launch pack and claim ledger](rust-ai-weekly-20-launch-notes.md)
+- [Substack HTML](rust-ai-weekly-20-substack.html) and [readability preview](rust-ai-weekly-20-readability.html)
+- [Unpublished syndication](rust-ai-weekly-20-syndication.md)
+- [LinkedIn copy](rust-ai-weekly-20-linkedin.md) and [connected X thread](rust-ai-weekly-20-x.md)
+- [Artwork and source prompt](rust-ai-weekly-20-artwork.md)
+
 ## Rust & AI Weekly #19
 
 - [Publication evidence](rust-ai-weekly-19-evidence.html)

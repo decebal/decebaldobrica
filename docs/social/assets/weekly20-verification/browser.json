@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-09",
+  "siteRoute": "http://127.0.0.1:4120/blog/2026-11-09-rust-ai-weekly-20",
+  "sameRenderedText": true,
+  "siteListItems": 16,
+  "emailListItems": 16,
+  "siteImages": [
+    {
+      "alt": "A silver mechanical wolf inspects a copper connector between a small replaceable module and a large graphite machine.",
+      "loaded": true,
+      "src": "/images/blog/2026-11-09-rust-ai-weekly-20-3d-hero.png"
+    },
+    {
+      "alt": "Rust and AI Crate Radar for November 9, with 98 tools across Adopt, Trial, Assess and Hold.",
+      "loaded": true,
+      "src": "/images/radar/2026-11-09-radar.png"
+    }
+  ],
+  "emailImages": [
+    {
+      "alt": "A silver mechanical wolf inspects a copper connector between a small replaceable module and a large graphite machine.",
+      "loaded": true
+    },
+    {
+      "alt": "Rust and AI Crate Radar for November 9, with 98 tools across Adopt, Trial, Assess and Hold.",
+      "loaded": true
+    }
+  ],
+  "mobileSite": {
+    "width": 390,
+    "scrollWidth": 390
+  },
+  "mobileEmail": {
+    "width": 390,
+    "scrollWidth": 390
+  },
+  "substackSaved": false,
+  "deliveredMailboxTest": false
+}

@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-11-02'
+export const RADAR_GENERATED_AT = '2026-11-09'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 19
+export const RADAR_ISSUE = 20
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -47,6 +47,45 @@ export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
 export const RADAR_RINGS: RadarRing[] = ['Adopt', 'Trial', 'Assess', 'Hold']
 
 export const crateRadarTools: RadarTool[] = [
+  {
+    "name": "rustup",
+    "url": "https://github.com/rust-lang/rustup",
+    "category": "dev-tools/toolchains",
+    "quadrant": "dev",
+    "ring": "Adopt",
+    "maintenance": "Rustup team; November 3 patch and tagged changelog reviewed November 9, 2026",
+    "latest": "1.29.3 (November 3, 2026)",
+    "adopters": "Recommended installer by Rust project; no install-count claim",
+    "mentions": "Rust & AI Weekly #20 (2026-11-09)",
+    "returning": false,
+    "note": "Fixes illegal instruction on affected x86_64 CPUs without SSE4.1 and Solaris lock error. Scope installer update separately from project compiler pins. MIT OR Apache-2.0; MIT file checked. Acceptance check proposed, not run."
+  },
+  {
+    "name": "tellus",
+    "url": "https://github.com/tellus-rs/tellus",
+    "category": "infra/actors",
+    "quadrant": "agentic",
+    "ring": "Assess",
+    "maintenance": "tellus-rs; published source 819cdbb and explicit persistence contract checked November 9, 2026; API settling",
+    "latest": "0.5.3 (November 1, 2026)",
+    "adopters": "TWiR 676 selection; no independent production adopter verified",
+    "mentions": "Rust & AI Weekly #20 (2026-11-09)",
+    "returning": false,
+    "note": "Event-sourced actors on Tokio. Durable append precedes application and then; continuation can be lost after append and is not replayed. Conditional append is optimistic concurrency, not exclusive ownership. Apache-2.0. No declared rust-version in released manifest. Keep cluster-dev out of production. Backend tests proposed, not run."
+  },
+  {
+    "name": "sysinfo",
+    "url": "https://github.com/GuillaumeGomez/sysinfo",
+    "category": "infra/observability",
+    "quadrant": "dev",
+    "ring": "Trial",
+    "maintenance": "Guillaume Gomez; tagged 0.40.1 and October 30 investigation checked November 9, 2026",
+    "latest": "0.40.1 (October 30, 2026)",
+    "adopters": "No new deployment or popularity claim verified",
+    "mentions": "Rust & AI Weekly #20 (2026-11-09)",
+    "returning": false,
+    "note": "0.40 adds process GPU APIs and breaks collection/name APIs; 0.40.1 restores conversions and marks Windows load average unsupported. Rust 1.95; MIT file checked. Measure required refresh workload; author performance results not reproduced."
+  },
   {
     name: 'tar-codec', url: 'https://github.com/astral-sh/astral-codec', category: 'infra/archive-parsing', quadrant: 'dev',
     ring: 'Assess', maintenance: 'Astral; main revision Oct 30 checked Nov 2, 2026', latest: 'v0.0.15 (Oct 13, 2026)',

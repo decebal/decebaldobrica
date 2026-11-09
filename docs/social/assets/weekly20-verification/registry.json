@@ -1,0 +1,24 @@
+{
+  "checked": "2026-11-09",
+  "tellus": {
+    "version": "0.5.3",
+    "date": "2026-11-01T23:56:51Z",
+    "yanked": false,
+    "packageSha256": "1995380a53a3703761e078b043342e2c25badb5147161cef63b639d6e347d6ad",
+    "sourceRevision": "819cdbbd1a822b5b01db17328d3cf429b7df76ec"
+  },
+  "sysinfo": [
+    {
+      "version": "0.40.0",
+      "date": "2026-10-28T23:27:43Z",
+      "yanked": false,
+      "rustVersion": "1.95"
+    },
+    {
+      "version": "0.40.1",
+      "date": "2026-10-30T14:18:56Z",
+      "yanked": false,
+      "rustVersion": "1.95"
+    }
+  ]
+}

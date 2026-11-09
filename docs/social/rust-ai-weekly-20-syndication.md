@@ -1,0 +1,131 @@
+---
+title: "Rust & AI Weekly #20: define the boundary before the rewrite"
+published: false
+canonical_url: https://decebaldobrica.com/blog/2026-11-09-rust-ai-weekly-20
+cover_image: https://decebaldobrica.com/images/blog/2026-11-09-rust-ai-weekly-20-3d-hero.png
+tags: rust, ai, devtools
+---
+
+![A silver mechanical wolf inspects a copper connector between a small replaceable module and a large graphite machine.](https://decebaldobrica.com/images/blog/2026-11-09-rust-ai-weekly-20-3d-hero.png)
+
+*Review the interface before connecting the component. Original 3D illustration, not a system diagram.*
+
+Systemd accepted support for Rust programs on October 24. The maintainers’ [November 3 explanation](https://amutable.com/blog/systemd-loves-rust) describes a deliberately limited integration: new leaf binaries can use Rust while shared core code remains C. Existing behaviour and build conventions still apply.
+
+For a team considering Rust inside an established service, I would start with one component’s boundary. Write down the calls it makes, who owns its allocations and which observable behaviour must survive replacement. That gives the review a smaller, testable proposal than a language-wide migration.
+
+This issue covers November 2–9, with earlier releases labelled where this week’s reading brings them back into view. Rustup has a shipped patch. Tellus needs a careful distinction between durable events and outward effects. Sysinfo’s GPU work has migration consequences beyond a new measurement field.
+
+The verdicts below come from source and documentation review. The proposed acceptance checks have not been executed here; no production deployment or benchmark result is claimed.
+
+[![Rust and AI Crate Radar for November 9, with 98 tools across Adopt, Trial, Assess and Hold.](https://decebaldobrica.com/images/radar/2026-11-09-radar.png)](https://decebaldobrica.com/radar)
+
+*Three additions bring the radar to 98 tools: 17 Adopt, 37 Trial, 42 Assess and 2 Hold. Older entries keep their previous review dates. [Explore the radar](https://decebaldobrica.com/radar).*
+
+## What systemd accepted
+
+The [merged implementation](https://github.com/systemd/systemd/pull/44324) supports new Rust leaf programs, uses Meson and keeps the existing C shared-library interface. This is a merge into the project, not evidence that every distribution has shipped the resulting components. The October merge date also precedes this edition’s reporting window.
+
+The maintainers’ policy retains `no_std`, controlled dependencies and fallible allocation. Rust remains optional. Their argument about shared components includes Rust’s shared-library and ABI constraints; their decision does not establish that all Rust services should avoid Cargo or the standard library.
+
+I would borrow the boundary review. For a hypothetical service with a C-facing parser, specify ownership of the input buffer and returned allocations before choosing the implementation. Include how malformed input becomes an error. If callers rely on an error code or a particular output shape, put it in an acceptance fixture.
+
+There is a practical counterweight to a small initial scope: a leaf component still needs packaging, debugging and operational support. A replacement that compiles on a developer laptop can leave the distribution’s build job broken. Include the target build environment in the proposal and keep a way to compare both implementations on the same inputs.
+
+The review output I want is one named boundary and a reproducible compatibility check. A broad claim that a rewrite improves safety cannot answer who frees a buffer or what a failed allocation returns.
+
+## Rustup 1.29.3: update affected installers
+
+[**Rustup 1.29.3**](https://blog.rust-lang.org/2026/11/03/Rustup-1.29.3/) gets **Adopt for Rust toolchain management**, with this patch relevant to the affected hosts. Published November 3, it fixes an illegal-instruction failure on some x86_64 CPUs without SSE4.1 and a `lock()`-unsupported error on Solaris. It is a rustup release, separate from the Rust compiler’s version.
+
+The [tagged changelog](https://github.com/rust-lang/rustup/blob/1.29.3/CHANGELOG.md) lists both fixes. The ordinary update path is `rustup self update`; `rustup update` also updates rustup at the end of a normal toolchain update. The announcement asks users to stop programs using rustup before updating.
+
+For a fleet with an affected host class, I would check the installed rustup version and execute one existing toolchain-management operation on that class after updating. Record the host details with the result. A successful install on a newer development machine leaves the older CPU path untested.
+
+That check should preserve the project’s compiler pin. Treating the installer update as an opportunity to move every project to a different compiler would mix two changes and make a regression harder to attribute. The patch’s scope is small enough to review separately.
+
+If self-update fails, use the announcement’s manual recovery instructions for the correct platform. It describes downloading `rustup-init`, ensuring no rustup processes are running and replacing the rustup executable. Keep that procedure tied to the official instructions rather than copying a platform-agnostic binary command into a fleet script.
+
+- **Maintenance:** the Rustup team published the patch and its changelog. This is direct maintenance evidence, not a response-time guarantee.
+- **Latest checked:** 1.29.3, dated November 3. The release number has no prerelease suffix.
+- **Adoption:** the Rust project recommends rustup for installing Rust. This verdict concerns its established role, without a new install-count claim.
+- **Licence:** the tagged package declares MIT OR Apache-2.0. The MIT file permits commercial use with its notice conditions; dependency compliance still needs its own review.
+
+## Tellus 0.5.3: test the gap after persistence
+
+[**Tellus**](https://github.com/tellus-rs/tellus), this week’s TWiR crate, gets **Assess**. It offers typed actors on Tokio, supervision and optional event-sourced persistence. The [published 0.5.3 documentation](https://docs.rs/tellus/0.5.3/tellus/) gives useful guarantees to test, while the repository warns that its API is still settling. A first evaluation should stay small enough to discard.
+
+Version 0.5.3 was published November 1 at 23:56:51 UTC, just before this week’s window. The official registry index marks it not yanked. The downloaded package identifies source revision `819cdbb`; that revision supplies the persistence contract used here. A successful fetch of current documentation alone would not establish what the released crate promised.
+
+### Events survive; a continuation can be lost
+
+The [persistence contract](https://github.com/tellus-rs/tellus/blob/819cdbbd1a822b5b01db17328d3cf429b7df76ec/docs/persistence.md) says events are appended before application to state. Recovery rebuilds state from those events, optionally starting from a snapshot. A `then` continuation runs after durability and application, and does not run during replay.
+
+The documented consequence is precise: a crash between the append and `then` can lose the outward action. The event remains durable. An application that needs a notification to reach another system must account for that gap in its own design. Persisting a decision does not by itself establish delivery of the decision’s effect.
+
+For a hypothetical agent coordinator, I would use a harmless notification sink and interrupt execution after the event append but before the notification. Restart the actor and compare the reconstructed state with the sink’s records. Write down whether the application requires retry, reconciliation or an explicitly acceptable missing notification before choosing a delivery design.
+
+Keep the test’s observable result outside the actor’s own status field. A state saying “notification requested” can be correct while the receiver has no record. The acceptance condition should name what the receiver must observe and how duplicate requests are handled if the application adds retries.
+
+### Concurrent writers need a separate decision
+
+Tellus also documents conditional append using the expected next sequence number. That prevents two appends from extending the same stream head. The contract explicitly distinguishes this optimistic concurrency from exclusive ownership: two incarnations can alternate successful writes after recovering each other’s events.
+
+If the application requires one owner throughout an operation, I would make that requirement explicit before trying the framework. Test two live incarnations using the same persistence identity against the intended backend. Check both stream consistency and the outward work each incarnation can perform; those are different observations.
+
+The built-in in-memory store is for tests and loses its contents with the process. A realistic restart check therefore needs a persistent backend. The project supplies store contract tests behind `persistence-tests`; run those against the actual backend before treating its durability promise as established for the deployment.
+
+- **Maintenance:** the `tellus-rs` repository supplies explicit contracts and tests, and warns that the API is settling. No maintainer-capacity guarantee follows.
+- **Latest checked:** 0.5.3, November 1; no declared `rust-version` in the released manifest. There is no verified MSRV promise here.
+- **Adoption:** TWiR selection is a discovery signal. No independent production adopter was verified for this review.
+- **Licence and features:** Apache-2.0; commercial use carries the licence and redistribution conditions. Persistence and clustering are optional. `cluster-dev` includes a transport that skips certificate verification and must stay out of production.
+
+## Sysinfo 0.40.1: choose what the collector refreshes
+
+[**Sysinfo 0.40.1**](https://github.com/GuillaumeGomez/sysinfo/blob/v0.40.1/CHANGELOG.md) gets **Trial for system telemetry**, including a scoped GPU-collection evaluation. Its October 30 release is an earlier item surfaced by this week’s TWiR reading. The preceding 0.40.0 release added process GPU usage and memory APIs, alongside several breaking changes.
+
+For an existing collector, I would list which fields the service uses before migrating. Run the same collection workload with the required refresh settings, then add GPU collection only if a real consumer needs it. Compare collection cost and missing-data handling under the same workload; this review supplies no performance estimate for your machines.
+
+### Read the migration list before adding a field
+
+The tagged changelog records removal of `set_open_files_limit`, collection `list` methods and `IS_SUPPORTED_SYSTEM`. Network interface names change from `String` to `OsString`. Version 0.40.1 restores some `From` conversions and changes Windows `System::load_average` to return `Err(Error::Unsupported)`.
+
+Those changes affect callers beyond a GPU dashboard. A collector that serialises interface names needs an explicit representation choice. A Windows caller needs to preserve unsupported status rather than silently emitting a normal-looking value. Include those cases in the upgrade review even if the original request was to expose GPU usage.
+
+The [package manifest](https://github.com/GuillaumeGomez/sysinfo/blob/v0.40.1/Cargo.toml) declares Rust 1.95 and includes `gpu` among default features. Review feature selection as well as the refresh calls. Build configuration determines which capabilities enter the dependency graph; refresh configuration determines what a particular collection operation requests.
+
+### What the GPU investigation demonstrates
+
+Guillaume Gomez’s [October 30 investigation](https://blog.guillaume-gomez.fr/articles/2026-10-30+sysinfo:+fixing+performance+to+retrieve+process+GPU+usage) follows the cost of Linux process GPU collection. Its later changes avoid repeating work for threads sharing a process’s file-descriptor table. The author distinguishes that case from threads with a separate table.
+
+I would use that mechanism to choose a workload: include a multithreaded GPU process, and record the process/thread mix beside the collector settings. A mostly idle machine with few threads answers a different question from a busy inference host. Also check that process-level GPU data is not presented to users as independently measured per-thread attribution.
+
+The post contains author measurements from changing live process populations. I have not reproduced them and am not carrying a percentage speedup into this recommendation. Its useful contribution here is the investigation and the workload distinction, alongside the released API and migration records.
+
+- **Maintenance:** Guillaume Gomez published a detailed investigation; the tagged changelog contains the release and follow-up fixes.
+- **Latest checked:** 0.40.1, published October 30 at 14:18:56 UTC, not yanked; Rust 1.95 declared in manifest and registry index.
+- **Adoption:** the review verifies a maintained library and documented capabilities, without asserting a new production deployment or download ranking.
+- **Licence:** MIT, with notice retention. The root licence is compatible with commercial use; transitive dependencies were not audited here.
+
+## Agent history and language work to read
+
+Antonio Scandurra’s October 29 [DeltaDB architecture article](https://delta.dev/blog/fine-grained-version-control-for-agents) is a carry-over read for agent infrastructure. It describes Rust-based CRDT state in SQLite and synchronization through one Cloudflare Durable Object per thread. The stated purpose is to preserve the relationship between code edits and the conversation that produced them.
+
+For an evaluation, I would ask to recover one edit’s conversation after an offline interval and a conflicting edit, then export the evidence needed for review. The article is a vendor architecture account. This issue does not establish a package release, commercial terms or an independent production result, so DeltaDB receives no adoption verdict or new radar entry.
+
+The Rust Foundation’s [November 5 program-manager update](https://rustfoundation.org/media/rust-program-manager-updates/) reports discussion about documenting stability expectations for tooling and services, including Cargo interfaces and the crates.io API. These are coordination discussions and proposed documentation work. They do not create a new stability guarantee for every interface mentioned.
+
+The same update describes a proof of concept for building a Rust module into CPython and ongoing API design. Keep that status beside the headline; it is insufficient evidence of a shipped CPython-wide migration.
+
+Go Weekly 623 led to the Go team’s [November 4 JSON API article](https://go.dev/blog/jsonv2) and [migration guide](https://go.dev/doc/jsonv2-migration). The team states that `encoding/json/v2` and `jsontext` are stable in Go 1.27. The documented behaviour differences include rejecting duplicate names and invalid UTF-8 by default.
+
+For a Rust service exchanging JSON with a Go service, keep those cases in a shared input corpus before changing the Go side’s defaults. Record the expected acceptance or rejection at each endpoint. This is a compatibility check to perform, not a claim that a particular Rust decoder matches Go’s new behaviour.
+
+## Reading list
+
+- [This Week in Rust 676](https://this-week-in-rust.org/blog/2026/11/04/this-week-in-rust-676/): discovery links and merged development work. Its compiler/library list does not establish stable availability.
+- [Rust Bytes, November 2](https://weeklyrust.substack.com/p/rebuild-rust-in-milliseconds): build-directory and agent-concurrency reading routes. Individual claims need their linked primary sources.
+- [The Missing Future State](https://blog.yoshuawuyts.com/the-future-trait-has-a-missing-state): a design discussion to read alongside async lifecycle code, without treating proposed directions as shipped syntax.
+- [Go Weekly 623](https://golangweekly.com/issues/623): cross-ecosystem discovery; the primary JSON documentation above supplies the compatibility details.
+
+For the next integration review, choose one externally visible behaviour and write its failure case before replacing the component. Which boundary would you put under that check first?

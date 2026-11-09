@@ -1,0 +1,21 @@
+{
+  "issue": 20,
+  "date": "2026-11-09",
+  "status": "authorised; blog first",
+  "branch": "docs/rust-ai-weekly-20",
+  "blog": "https://decebaldobrica.com/blog/2026-11-09-rust-ai-weekly-20",
+  "substack": {
+    "draft": "https://ddonprogramming.substack.com/publish/post/224126934",
+    "audience": "Everyone",
+    "emailAppSelected": true,
+    "scheduleSelected": false,
+    "published": false
+  },
+  "linkedin": {
+    "published": false
+  },
+  "x": {
+    "published": false,
+    "threadPosts": 6
+  }
+}

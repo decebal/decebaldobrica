@@ -1,0 +1,42 @@
+{
+  "draftUrl": "https://ddonprogramming.substack.com/publish/post/224126934",
+  "checked": "2026-11-09",
+  "reloaded": true,
+  "saved": true,
+  "bodyCharacters": 14343,
+  "warnings": [],
+  "images": [
+    {
+      "alt": "A silver mechanical wolf inspects a copper connector between a small replaceable module and a large graphite machine.",
+      "loaded": true,
+      "src": "https://substackcdn.com/image/fetch/$s_!IV-8!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fea017fc5-68be-45a0-8902-60094e6f45f1_1731x909.png"
+    },
+    {
+      "alt": "Rust and AI Crate Radar for November 9, with 98 tools across Adopt, Trial, Assess and Hold.",
+      "loaded": true,
+      "src": "https://substackcdn.com/image/fetch/$s_!TsQO!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc1030e1b-54fd-48b5-bea9-a54cd41348ae_3278x2278.png"
+    }
+  ],
+  "mobileFullBodyVerified": true,
+  "emailPreview": {
+    "ending": true,
+    "images": [
+      {
+        "alt": "A silver mechanical wolf inspects a copper connector between a small replaceable module and a large graphite machine.",
+        "loaded": true
+      },
+      {
+        "alt": "Rust and AI Crate Radar for November 9, with 98 tools across Adopt, Trial, Assess and Hold.",
+        "loaded": true
+      }
+    ],
+    "listItems": 16
+  },
+  "previewAudience": "Paid subscriber view",
+  "audienceChanged": false,
+  "deliveredMailboxTest": false,
+  "published": false,
+  "sameNormalizedSourceText": true,
+  "normalizedSourceCharacters": 14278,
+  "normalizedSavedCharacters": 14278
+}
