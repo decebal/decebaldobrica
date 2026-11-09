@@ -1,0 +1,92 @@
+[
+  {
+    "url": "https://amutable.com/blog/systemd-loves-rust",
+    "status": 200,
+    "bytes": 110349
+  },
+  {
+    "url": "https://github.com/systemd/systemd/pull/44324",
+    "status": 200,
+    "bytes": 628004
+  },
+  {
+    "url": "https://blog.rust-lang.org/2026/11/03/Rustup-1.29.3/",
+    "status": 200,
+    "bytes": 11442
+  },
+  {
+    "url": "https://github.com/rust-lang/rustup/blob/1.29.3/CHANGELOG.md",
+    "status": 200,
+    "bytes": 1467674
+  },
+  {
+    "url": "https://github.com/tellus-rs/tellus",
+    "status": 200,
+    "bytes": 299319
+  },
+  {
+    "url": "https://docs.rs/tellus/0.5.3/tellus/",
+    "status": 200,
+    "bytes": 72596
+  },
+  {
+    "url": "https://github.com/tellus-rs/tellus/blob/819cdbbd1a822b5b01db17328d3cf429b7df76ec/docs/persistence.md",
+    "status": 200,
+    "bytes": 319527
+  },
+  {
+    "url": "https://github.com/GuillaumeGomez/sysinfo/blob/v0.40.1/CHANGELOG.md",
+    "status": 200,
+    "bytes": 739396
+  },
+  {
+    "url": "https://github.com/GuillaumeGomez/sysinfo/blob/v0.40.1/Cargo.toml",
+    "status": 200,
+    "bytes": 274626
+  },
+  {
+    "url": "https://blog.guillaume-gomez.fr/articles/2026-10-30+sysinfo:+fixing+performance+to+retrieve+process+GPU+usage",
+    "status": 200,
+    "bytes": 46045
+  },
+  {
+    "url": "https://delta.dev/blog/fine-grained-version-control-for-agents",
+    "status": 200,
+    "bytes": 385887
+  },
+  {
+    "url": "https://rustfoundation.org/media/rust-program-manager-updates/",
+    "status": 200,
+    "bytes": 108112
+  },
+  {
+    "url": "https://go.dev/blog/jsonv2",
+    "status": 200,
+    "bytes": 61930
+  },
+  {
+    "url": "https://go.dev/doc/jsonv2-migration",
+    "status": 200,
+    "bytes": 43511
+  },
+  {
+    "url": "https://this-week-in-rust.org/blog/2026/11/04/this-week-in-rust-676/",
+    "status": 200,
+    "bytes": 41266
+  },
+  {
+    "url": "https://weeklyrust.substack.com/p/rebuild-rust-in-milliseconds",
+    "status": 200,
+    "bytes": 183898
+  },
+  {
+    "url": "https://blog.yoshuawuyts.com/the-future-trait-has-a-missing-state",
+    "status": 200,
+    "bytes": 83905
+  },
+  {
+    "url": "https://golangweekly.com/issues/623",
+    "status": 200,
+    "bytes": 42271
+  }
+]
