@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ritual-full adoption: evidence report</title>
+<style>
+  :root { --fg:#1d1d1f; --muted:#5f6368; --line:#d0d7de; --bg:#ffffff; --code:#f6f8fa; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --fg:#e6e6e6; --muted:#9aa0a6; --line:#3c4043; --bg:#121212; --code:#1e1e1e; }
+  }
+  :root[data-theme="dark"] { --fg:#e6e6e6; --muted:#9aa0a6; --line:#3c4043; --bg:#121212; --code:#1e1e1e; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui,-apple-system,sans-serif; }
+  main { max-width:860px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  h2 { font-size:17px; margin:28px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  p, li { margin:6px 0; }
+  .muted { color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  code, pre { font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px; }
+  pre { background:var(--code); padding:10px; overflow-x:auto; border-radius:4px; }
+  code { word-break:break-word; }
+</style>
+</head>
+<body>
+<main>
+<h1>ritual-full adoption: evidence report</h1>
+<p class="muted">Branch <code>chore/ritual-full</code>. Base <code>origin/main</code>. Text-only change: no code gate was run.</p>
+
+<h2>Claim</h2>
+<ul>
+  <li>Planned work in this repo runs as the <code>ritual-full</code> flow (Think, Spec, Plan, Build, Review, Ship, Reflect) on a Chronis epic.</li>
+  <li><code>ritual</code>, <code>ritual-full</code> and <code>semantic-isa</code> are vendored into <code>.claude/skills/</code> unedited from decebal-claude-skills#97 (open, head <code>8af7330</code>).</li>
+  <li><code>CLAUDE.md</code> gains a <code>## Planning</code> section: bug with a clear reproduction skips Think and Spec; design approval is the user's decision and needs an explicit instruction in the conversation.</li>
+</ul>
+
+<h2>Evidence</h2>
+<table>
+  <thead><tr><th>Check</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td><code>git diff origin/main...HEAD --stat</code></td><td>18 files changed, 1269 insertions(+), 0 deletions(-)</td></tr>
+    <tr><td><code>diff -r</code> of the three vendored dirs against upstream #97 head <code>8af7330</code></td><td>no differences</td></tr>
+    <tr><td>Relative markdown links inside the vendored skills, resolved by path</td><td>resolve, except <code>../../docs/ritual-zero-to-hero.md</code> (exists only upstream)</td></tr>
+    <tr><td>Approval precondition in <code>CLAUDE.md</code> matches <code>.claude/skills/ritual/references/spec.md</code> (the <code>ritual-approved:</code> line, then <code>cn approve</code>)</td><td>matches by text</td></tr>
+    <tr><td><code>git grep</code> for the claude-guard approval rule in <code>CLAUDE.md</code></td><td>no match</td></tr>
+  </tbody>
+</table>
+
+<h2>Limits</h2>
+<ul>
+  <li>Vendored from decebal-claude-skills#97, which is open. If its head moves or it merges with edits, re-vendor and update this report.</li>
+  <li><code>.claude/skills/ritual-full/SKILL.md:23</code> gives <code>cp -R skills/semantic-isa</code> as the install step. That path is relative to the upstream repo. Here the copy is <code>.claude/skills/semantic-isa</code>. Noted in <code>CLAUDE.md</code>; vendored text is not edited.</li>
+  <li><code>--yes</code> on <code>cos ritual approve</code> depends on decebal/chief-of-staff-v2#23. Not verified in this change.</li>
+  <li>No code gate, test, or build was run. The change is Markdown only.</li>
+  <li>The tracker task counts from the earlier PR body are removed: they describe local tracker state, not this change, and could not be reproduced from the worktree.</li>
+</ul>
+
+<h2>Test plan</h2>
+<pre>[x] git diff origin/main...HEAD --stat        18 files, 1269 insertions, 0 deletions
+[x] diff -r vs upstream #97 @ 8af7330          no differences
+[x] relative links in vendored skills          resolve by path (one upstream-only exception)
+[ ] not run: text-only change (no repo code gates)</pre>
+</main>
+</body>
+</html>
