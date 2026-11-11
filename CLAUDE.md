@@ -280,3 +280,25 @@ git push --force-with-lease=refs/heads/<branch>:<old-head> origin HEAD:<branch>
 
 Pin the lease to the old head you actually reviewed. The bare form does not
 refuse when someone else pushed in between; the pinned form does.
+
+## Planning
+
+Planned work runs as the `ritual-full` flow in `.claude/skills/ritual-full`:
+Think, Spec, Plan, Build, Review, Ship, Reflect, on a Chronis (`cn`) epic.
+Each `ritual-*` line on the epic names the file for that step. `ritual` and
+`semantic-isa` are its dependencies; all three are vendored from
+[decebal-claude-skills](https://github.com/decebal/decebal-claude-skills). Edit
+them upstream, not here. The `ritual-full` install step `cp -R skills/semantic-isa`
+is relative to the upstream repo; here the copy is `.claude/skills/semantic-isa`.
+
+- **Bug with a clear reproduction:** skip Think and Spec, go through
+  `systematic-debugging`.
+- **Design approval is the user's decision.** Approve only after the user
+  explicitly tells you to approve, in the conversation. Quote that instruction
+  in your report. Never approve on your own initiative.
+  - With `cos`: run `cos ritual approve --help` and confirm it lists `--yes`
+    (needs decebal/chief-of-staff-v2#23); if not, stop. Then run
+    `cos ritual approve <epic> <design> --by "<name>" --review <path> --yes`.
+  - Without `cos`: the user computes `shasum -a 256 <design>` and appends
+    `ritual-approved: <design> sha256:<digest> by <name>` to the epic. Then run
+    `cn approve <epic>`. Bare `cn approve` without that line skips the drift check.
