@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.json bun.lockb turbo.json ./
+COPY package.json bun.lock turbo.json ./
 COPY apps/anything-llm/package.json apps/anything-llm/
 COPY apps/newsletter-admin/package.json apps/newsletter-admin/
 COPY apps/services-admin/package.json apps/services-admin/
@@ -22,6 +22,7 @@ COPY packages/database/package.json packages/database/
 COPY packages/email/package.json packages/email/
 COPY packages/newsletter/package.json packages/newsletter/
 COPY packages/payment-gate/package.json packages/payment-gate/
+COPY packages/products/package.json packages/products/
 COPY packages/social/package.json packages/social/
 COPY packages/ui/package.json packages/ui/
 
@@ -29,11 +30,13 @@ RUN bun install --frozen-lockfile \
     --filter @decebal/wolventech \
     --filter @decebal/booking \
     --filter @decebal/email \
+    --filter @decebal/products \
     --filter @decebal/ui
 
 COPY tooling/typescript tooling/typescript
 COPY packages/booking packages/booking
 COPY packages/email packages/email
+COPY packages/products packages/products
 COPY packages/ui packages/ui
 COPY apps/wolventech apps/wolventech
 

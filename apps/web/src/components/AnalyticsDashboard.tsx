@@ -237,7 +237,8 @@ export default function AnalyticsDashboard() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(entry) => `${entry.role}: ${entry.count}`}
+                    nameKey="role"
+                    label={(entry) => `${entry.name}: ${entry.value}`}
                     outerRadius={120}
                     fill="#8884d8"
                     dataKey="count"

@@ -85,6 +85,45 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }
           },
         })
+        const onBookingCompleted = () =>
+          posthog.capture('contact_submit_success', {
+            site: window.location.hostname,
+            page_path: window.location.pathname,
+          })
+        const onMedia = (event: Event) => {
+          const target = event.target
+          if (!(target instanceof HTMLAudioElement)) return
+          if (!target.currentSrc.endsWith('/images/ai-engineer-hiring-audio.m4a')) return
+          posthog.capture(event.type === 'play' ? 'media_play' : 'media_complete', {
+            site: window.location.hostname,
+            article_path: window.location.pathname,
+            asset: 'ai-engineer-hiring-audio',
+          })
+        }
+        const onArticleLink = (event: MouseEvent) => {
+          if (!window.location.pathname.startsWith('/blog/')) return
+          if (!(event.target instanceof Element)) return
+          const link = event.target.closest('article a')
+          if (!(link instanceof HTMLAnchorElement)) return
+          const target = new URL(link.href)
+          if (target.hostname !== 'wolventech.com') return
+          posthog.capture('content_cta_click', {
+            site: window.location.hostname,
+            article_path: window.location.pathname,
+            destination_host: target.hostname,
+            destination_path: target.pathname,
+          })
+        }
+        window.addEventListener('booking_completed', onBookingCompleted)
+        document.addEventListener('play', onMedia, true)
+        document.addEventListener('ended', onMedia, true)
+        document.addEventListener('click', onArticleLink)
+        return () => {
+          window.removeEventListener('booking_completed', onBookingCompleted)
+          document.removeEventListener('play', onMedia, true)
+          document.removeEventListener('ended', onMedia, true)
+          document.removeEventListener('click', onArticleLink)
+        }
       } catch (error) {
         console.warn('⚠️  PostHog initialization failed:', error)
       }

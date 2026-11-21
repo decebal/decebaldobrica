@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
+import Analytics from '@/components/Analytics'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
 import { siteUrl } from '@/lib/site'
@@ -113,6 +114,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <Analytics />
         <Toaster />
       </body>
     </html>

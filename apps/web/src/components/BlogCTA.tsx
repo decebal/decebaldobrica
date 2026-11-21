@@ -7,14 +7,23 @@ import { Github, Linkedin, MessageCircle, Twitter } from 'lucide-react'
 import { motion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { usePostHog } from 'posthog-js/react'
 
 interface BlogCTAProps {
   postTitle?: string
 }
 
 export function BlogCTA({ postTitle }: BlogCTAProps) {
+  const posthog = usePostHog()
+  const pathname = usePathname()
   const handleGetInTouch = () => {
     setReferralData('Blog Post', postTitle)
+    posthog?.capture('content_cta_click', {
+      article_path: pathname,
+      destination_path: '/contact',
+      placement: 'article_footer',
+    })
   }
   return (
     <motion.div
