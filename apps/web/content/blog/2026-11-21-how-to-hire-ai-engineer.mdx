@@ -1,0 +1,62 @@
+---
+title: How to hire an AI engineer when you need someone to ship
+description: A practical scorecard for hiring an AI engineer who can scope, build, test and hand over a working system.
+date: 2026-11-21T12:00:00.000Z
+author: Decebal D.
+tags: [ai, hiring, engineering, founders]
+slug: 2026-11-21-how-to-hire-ai-engineer
+---
+
+An AI coding tool can produce a convincing prototype before anyone has agreed what success means. Hiring the person who can turn that prototype into a useful, supportable product is a different decision.
+
+For a founder, the risk is straightforward. You pay for visible progress, but the system depends on an undocumented prompt, an account only one person controls, and a workflow nobody has tested when an API fails. The demonstration looks finished. The operating model is still missing.
+
+When you hire an AI engineer, ask for evidence of the whole job: selecting a useful problem, building the smallest meaningful workflow, testing its behaviour, and handing over something another person can operate.
+
+## Listen to the discussion
+
+This NotebookLM audio overview discusses hiring and agent delivery using the editorial brief and linked public sources. The article below provides the written guidance.
+
+<audio controls preload="none" class="w-full" aria-label="Hiring an AI engineer audio discussion" src="/images/ai-engineer-hiring-audio.m4a">Your browser does not support audio playback. <a href="/images/ai-engineer-hiring-audio.m4a">Download the audio overview</a>.</audio>
+
+![Five hiring checks: define the business task, evaluate failure handling, run a bounded paid exercise, inspect test results and their limits, and agree ownership and handover.](/images/ai-engineer-hiring-scorecard.png)
+
+*Hiring scorecard generated with NotebookLM from this editorial brief and linked public sources.*
+
+### Start with the decision, not the job title
+
+Write down one task the business needs completed. Name the person who does it today, what information they need, and what happens when the result is wrong. A useful brief might be: “A support lead reviews a proposed answer against the relevant policy before sending it.”
+
+That is more useful than “build an autonomous customer-service agent”. It exposes the human decision, the source of truth and the boundary around sending. It also lets a candidate say that a search interface or ordinary automation would solve the problem better.
+
+Ask candidates to describe the first useful result they would deliver, the evidence needed to accept it, and what they would leave under human control. A strong answer includes a way to stop, inspect and change the workflow.
+
+### Assess judgement alongside implementation
+
+An engineer should be able to explain model choice, integration and failure handling in plain language. The exact stack matters when it constrains the work; it does not replace a discussion of outcomes.
+
+Use a scorecard:
+
+- **Define the job:** Ask for written scope, success examples and cases that should be rejected.
+- **Build it:** Ask for work they can explain, including their contribution and the trade-offs.
+- **Handle failure:** Look for retries, permission boundaries, error visibility and a safe fallback.
+- **Verify it:** Request tests that execute, representative cases and results someone else can inspect.
+- **Hand it over:** Agree source access, deployment instructions, operating notes and a handover owner.
+
+Ask what the candidate personally did. A team result may still be useful evidence, but it does not establish that every contributor made every decision. Avoid treating a repository star count, a polished demo or a tool certificate as proof of production ownership.
+
+### Use a bounded, paid exercise
+
+If you need direct evidence, give shortlisted candidates the same small, paid problem. Provide representative but non-sensitive material, a clear output and an opportunity to ask questions. Assess the result against the same criteria for everyone.
+
+One useful exercise is to propose a workflow that reads a supplied document and drafts an answer for a human reviewer. Ask the candidate to identify uncertain answers, demonstrate one failure case, and explain how they would test the system with real users. You are assessing the reasoning and the working result, not who produces the most files.
+
+Do not put real customer credentials or confidential production data into an unfamiliar trial environment. Agree who owns the exercise output and how it will be used.
+
+### Decide which engagement fits
+
+A founding engineer may own product decisions and implementation over time. A contract engineer can take responsibility for a defined delivery problem inside an existing team. An adviser can review options and challenge assumptions while your own team builds. Those categories overlap; agree decision rights and deliverables rather than relying on the title.
+
+AI can accelerate implementation. It also makes plausible errors easier to produce. Ask who reviews the generated work, which checks can fail the delivery, and what evidence the business receives when the work ends.
+
+If you need hands-on help with an AI or Rust delivery problem, [see how I work](https://decebaldobrica.com/). If the work fits a Rust architecture review or scoped platform engagement, read [Wolven Tech's guide to agent engagements](https://wolventech.com/guides/ai-agent-development-engagement). Contract status depends on the actual engagement and client determination.

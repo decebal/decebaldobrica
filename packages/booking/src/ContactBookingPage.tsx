@@ -410,6 +410,7 @@ export default function ContactBookingPage({
 
       if (result.success) {
         setBookingSuccess(true)
+        window.dispatchEvent(new Event('booking_completed'))
         clearReferralData() // Clear referral tracking after successful booking
         toast({
           title: 'Meeting Booked!',
