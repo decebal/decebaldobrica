@@ -8,6 +8,15 @@
 - [Newsletter framework reference snapshot](newsletter-frameworks.md)
 - [Report-informed writing reference snapshot](weekly-content-learning.md)
 
+## Rust & AI Weekly #21
+
+- [Review evidence and preview captures](rust-ai-weekly-21-evidence.html)
+
+- [Article and verification ledger](rust-ai-weekly-21-launch-notes.md)
+- [Artwork and prompt](rust-ai-weekly-21-artwork.md)
+- [Email HTML](rust-ai-weekly-21-substack.html), [preview](rust-ai-weekly-21-readability.html) and [unpublished syndication](rust-ai-weekly-21-syndication.md)
+- [LinkedIn](rust-ai-weekly-21-linkedin.md) and [connected X thread](rust-ai-weekly-21-x.md)
+
 ## Rust & AI Weekly #20
 
 - [Publication evidence report](rust-ai-weekly-20-evidence.html)
