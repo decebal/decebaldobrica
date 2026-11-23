@@ -1,0 +1,38 @@
+{
+  "checked": "2026-11-23",
+  "source": "official sparse crates.io index",
+  "records": {
+    "jiff": [
+      {
+        "version": "1.0.0",
+        "pubtime": "2026-11-15T21:48:13Z",
+        "yanked": false,
+        "rust_version": "1.85",
+        "checksum": "9cc767b5763de45e810109520123bb2829a653f3a7ed9be40b2bc4f81158f595"
+      },
+      {
+        "version": "1.0.1",
+        "pubtime": "2026-11-18T00:50:13Z",
+        "yanked": false,
+        "rust_version": "1.85",
+        "checksum": "ed5d126d72eb017f10b302e73bdeca446bea405ee449af4d9e7866d6b082d83e"
+      },
+      {
+        "version": "1.0.2",
+        "pubtime": "2026-11-21T16:15:29Z",
+        "yanked": false,
+        "rust_version": "1.85",
+        "checksum": "c5e77cbfb9fff4798e283c2d69dff39fc2c45e7da017e5ce95b654e46ea41236"
+      }
+    ],
+    "slint": [
+      {
+        "version": "1.19.0",
+        "pubtime": "2026-11-16T09:03:50Z",
+        "yanked": false,
+        "rust_version": "1.95",
+        "checksum": "19d806f1d4638f4e147cdf6bc038731b77793d4c30bd617f5e615b88b9f8d28b"
+      }
+    ]
+  }
+}

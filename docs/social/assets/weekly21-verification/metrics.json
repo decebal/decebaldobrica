@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-23",
+  "slug": "2026-11-23-rust-ai-weekly-21",
+  "bodyWords": 2071,
+  "paragraphs": 39,
+  "maxParagraphWords": 61,
+  "over100": 0,
+  "images": [
+    {
+      "src": "https://decebaldobrica.com/images/blog/2026-11-23-rust-ai-weekly-21-3d-hero.png",
+      "alt": "A silver mechanical wolf watches two copper assembly lanes carrying ceramic components towards an inspection gate."
+    },
+    {
+      "src": "https://decebaldobrica.com/images/radar/2026-11-23-radar.png",
+      "alt": "Rust and AI Crate Radar for November 23, with 100 tools across Adopt, Trial, Assess and Hold."
+    }
+  ],
+  "articleSha": "b92a2d75c51d2f124316c0c6f861f67b7685d2aa63640b478401ef034c758b33"
+}

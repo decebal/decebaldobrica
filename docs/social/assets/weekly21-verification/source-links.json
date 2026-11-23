@@ -1,0 +1,97 @@
+[
+  {
+    "url": "https://blog.rust-lang.org/2026/11/16/enabling-parallel-frontend-on-nightly/",
+    "status": 200,
+    "final": "https://blog.rust-lang.org/2026/11/16/enabling-parallel-frontend-on-nightly/"
+  },
+  {
+    "url": "https://index.crates.io/ji/ff/jiff",
+    "status": 200,
+    "final": "https://index.crates.io/ji/ff/jiff"
+  },
+  {
+    "url": "https://docs.rs/jiff/1.0.2/jiff/",
+    "status": 200,
+    "final": "https://docs.rs/jiff/1.0.2/jiff/"
+  },
+  {
+    "url": "https://github.com/BurntSushi/jiff/blob/1.0.2/crates/jiff/Cargo.toml",
+    "status": 200,
+    "final": "https://github.com/BurntSushi/jiff/blob/1.0.2/crates/jiff/Cargo.toml"
+  },
+  {
+    "url": "https://github.com/BurntSushi/jiff/blob/1.0.2/LICENSE-MIT",
+    "status": 200,
+    "final": "https://github.com/BurntSushi/jiff/blob/1.0.2/LICENSE-MIT"
+  },
+  {
+    "url": "https://burntsushi.net/jiff/",
+    "status": 200,
+    "final": "https://burntsushi.net/jiff/"
+  },
+  {
+    "url": "https://slint.dev/blog/slint-1.19-released",
+    "status": 200,
+    "final": "https://slint.dev/blog/slint-1.19-released"
+  },
+  {
+    "url": "https://github.com/BurntSushi/jiff/blob/1.0.2/CHANGELOG.md",
+    "status": 200,
+    "final": "https://github.com/BurntSushi/jiff/blob/1.0.2/CHANGELOG.md"
+  },
+  {
+    "url": "https://github.com/slint-ui/slint/blob/v1.19.0/LICENSE.md",
+    "status": 200,
+    "final": "https://github.com/slint-ui/slint/blob/v1.19.0/LICENSE.md"
+  },
+  {
+    "url": "https://github.com/slint-ui/slint/blob/v1.19.0/api/rs/slint/Cargo.toml",
+    "status": 200,
+    "final": "https://github.com/slint-ui/slint/blob/v1.19.0/api/rs/slint/Cargo.toml"
+  },
+  {
+    "url": "https://tvm.apache.org/2026/11/16/rust-native-cross-language-ml-compiler-foundation",
+    "status": 200,
+    "final": "https://tvm.apache.org/2026/11/16/rust-native-cross-language-ml-compiler-foundation"
+  },
+  {
+    "url": "https://github.com/slint-ui/slint/blob/v1.19.0/LICENSES/LicenseRef-Slint-Royalty-free-2.0.md",
+    "status": 200,
+    "final": "https://github.com/slint-ui/slint/blob/v1.19.0/LICENSES/LicenseRef-Slint-Royalty-free-2.0.md"
+  },
+  {
+    "url": "https://this-week-in-rust.org/blog/2026/11/18/this-week-in-rust-678/",
+    "status": 200,
+    "final": "https://this-week-in-rust.org/blog/2026/11/18/this-week-in-rust-678/"
+  },
+  {
+    "url": "https://github.com/slint-ui/slint/blob/v1.19.0/CHANGELOG.md",
+    "status": 200,
+    "final": "https://github.com/slint-ui/slint/blob/v1.19.0/CHANGELOG.md"
+  },
+  {
+    "url": "https://golangweekly.com/issues/625",
+    "status": 200,
+    "final": "https://golangweekly.com/issues/625"
+  },
+  {
+    "url": "https://github.com/apache/tvm-tirx/blob/8856236965d5b35cf7f6f3d3e72e71a3f1cedf60/LICENSE",
+    "status": 200,
+    "final": "https://github.com/apache/tvm-tirx/blob/8856236965d5b35cf7f6f3d3e72e71a3f1cedf60/LICENSE"
+  },
+  {
+    "url": "https://github.com/apache/tvm-tirx/tree/8856236965d5b35cf7f6f3d3e72e71a3f1cedf60",
+    "status": 200,
+    "final": "https://github.com/apache/tvm-tirx/tree/8856236965d5b35cf7f6f3d3e72e71a3f1cedf60"
+  },
+  {
+    "url": "https://weeklyrust.substack.com/p/discords-big-rust-rewrite",
+    "status": 200,
+    "final": "https://weeklyrust.substack.com/p/discords-big-rust-rewrite"
+  },
+  {
+    "url": "https://rustfoundation.org/media/rust-program-manager-updates-2/",
+    "status": 200,
+    "final": "https://rustfoundation.org/media/rust-program-manager-updates-2/"
+  }
+]

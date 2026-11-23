@@ -1,0 +1,17 @@
+{
+  "total": 100,
+  "counts": {
+    "Adopt": 17,
+    "Trial": 38,
+    "Assess": 43,
+    "Hold": 2
+  },
+  "unchanged": 97,
+  "updated": [
+    "Slint"
+  ],
+  "added": [
+    "Jiff",
+    "TIRx Rust"
+  ]
+}

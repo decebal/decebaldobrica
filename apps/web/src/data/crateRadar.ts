@@ -32,10 +32,10 @@ export interface RadarTool {
   note?: string
 }
 
-export const RADAR_GENERATED_AT = '2026-11-09'
+export const RADAR_GENERATED_AT = '2026-11-23'
 
 /** Issue number shown in the generated radar image subtitle. Bump per issue. */
-export const RADAR_ISSUE = 20
+export const RADAR_ISSUE = 21
 
 export const RADAR_QUADRANTS: { key: RadarQuadrant; label: string }[] = [
   { key: 'agentic', label: 'Agentic & LLM' },
@@ -390,11 +390,17 @@ export const crateRadarTools: RadarTool[] = [
     note: 'the LSP move replayed for agents; JSON-RPC seam keeps exit cost modest; spec young and Zed-steered',
   },
   {
-    name: 'Slint', url: 'https://github.com/slint-ui/slint', category: 'dev-tools/gui', quadrant: 'dev',
-    ring: 'Trial', maintenance: 'actively maintained (SixtyFPS GmbH; NLnet-funded features); ~23.9k★', latest: '1.18.1 (Sep 21, 2026); feature release 1.18.0 Sep 16',
-    adopters: 'LibrePCB; broad embedded base',
-    mentions: 'Rust & AI Weekly #3 (2026-07-08); Crate Radar Deep Dive (2026-07-08); Rust & AI Weekly #13 (2026-09-21)', returning: true,
-    note: 'Second mention at #13 for 1.18: FlexboxLayout brings the web layout model to the DSL, z-order can change at runtime, spring animations and animate-along-a-path, push/remove/insert on models, an experimental Vello-based renderer, a WindowMoveArea element for custom title bars, and screen-reader support for text inputs; the compiler also emits leaner code. Verdict holds at Trial. Earlier: desktop-ready push (DnD, tray, tooltips) + embedded MCP server so agents can drive a running UI; tri-license needs a legal read',
+    "name": "Slint",
+    "url": "https://github.com/slint-ui/slint",
+    "category": "dev-tools/gui",
+    "quadrant": "dev",
+    "ring": "Trial",
+    "maintenance": "Slint team; stable 1.19 release and tagged migration notes checked November 23, 2026",
+    "latest": "1.19.0 (November 16, 2026); Rust 1.95",
+    "adopters": "Returning evaluation; no new independent deployment verified",
+    "mentions": "Rust & AI Weekly #3 (2026-07-08); Crate Radar Deep Dive (2026-07-08); Rust & AI Weekly #13 (2026-09-21); Rust & AI Weekly #21 (2026-11-23)",
+    "returning": true,
+    "note": "Second mention at #13 for 1.18: FlexboxLayout brings the web layout model to the DSL, z-order can change at runtime, spring animations and animate-along-a-path, push/remove/insert on models, an experimental Vello-based renderer, a WindowMoveArea element for custom title bars, and screen-reader support for text inputs; the compiler also emits leaner code. Verdict holds at Trial. Earlier: desktop-ready push (DnD, tray, tooltips) + embedded MCP server so agents can drive a running UI; tri-license needs a legal read Issue 21: Trial retained. Review edition 1.19 layout, named experimental features and deployment-specific licence route. Royalty-free terms exclude embedded deployments. Prior maintenance/adoption notes: actively maintained (SixtyFPS GmbH; NLnet-funded features); ~23.9k★; LibrePCB; broad embedded base"
   },
   {
     name: 'curve25519-dalek', url: 'https://github.com/dalek-cryptography/curve25519-dalek', category: 'dev-tools/crypto', quadrant: 'dev',
@@ -734,5 +740,31 @@ export const crateRadarTools: RadarTool[] = [
     downloads: '~6.1M all-time (crates.io); ~521k/month (lib.rs), checked Sep 22', adopters: 'historical lib.rs trending claim unverified this run; absent from Sep 22 live list',
     mentions: 'Rust & AI Weekly #13 (2026-09-21)', returning: false,
     note: 'rust-alternative-to Go\'s k3a/html2text 1.5, which Go Weekly 618 listed as a zero-dependency HTML-to-plain-text converter. The Rust crate does the harder version of the job: a real layout pass over html5ever\'s DOM that renders tables, lists, links and wrapping to a target width, with rich and coloured output modes. That matters for RAG ingestion, where the text you embed should preserve table structure rather than flatten it. Trial rather than Adopt: one primary maintainer since 2016 is a stewardship risk however steady the cadence, and 0.x versioning still moves the API',
+  },
+  {
+    "name": "Jiff",
+    "url": "https://github.com/BurntSushi/jiff",
+    "category": "data/datetime",
+    "quadrant": "data",
+    "ring": "Trial",
+    "maintenance": "Andrew Gallant; major release and patch history reviewed November 23, 2026",
+    "latest": "1.0.2 (November 21, 2026); Rust 1.85",
+    "adopters": "Maintainer names Cargo, uv and Jujutsu; no fresh independent deployment survey",
+    "mentions": "Rust & AI Weekly #21 (2026-11-23)",
+    "returning": false,
+    "note": "Trial for datetime migration. Zoned becomes ZonedDateTime; timestamp subtraction changes and SystemTime conversions become fallible. Test persisted records and transition policy. Unlicense OR MIT; MIT terms reviewed."
+  },
+  {
+    "name": "TIRx Rust",
+    "url": "https://github.com/apache/tvm-tirx",
+    "category": "inference/compiler-analysis",
+    "quadrant": "inference",
+    "ring": "Assess",
+    "maintenance": "Apache source and November 16 architecture article reviewed November 23, 2026",
+    "latest": "Source 8856236965d5b35cf7f6f3d3e72e71a3f1cedf60; no stable package-version claim",
+    "adopters": "Project cites TIRx Harness; no independent production deployment verified",
+    "mentions": "Rust & AI Weekly #21 (2026-11-23)",
+    "returning": false,
+    "note": "Assess read-only IR traversal and unfamiliar-node validation. Generated layouts checked from compiled library per project documentation; acceptance checks proposed, not run. Apache-2.0 root licence checked."
   },
 ]
